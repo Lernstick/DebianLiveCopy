@@ -1,0 +1,510 @@
+dlcopy (201104291601-1) unstable; urgency=low
+
+  * do *not* show errors on first partition trial
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 29 Apr 2011 16:01:07 +0200
+
+dlcopy (201104061753-1) unstable; urgency=low
+
+  * disable swap partitions on target device
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Wed, 06 Apr 2011 17:53:39 +0200
+
+dlcopy (201104051929-1) unstable; urgency=low
+
+  * show warning when disabling swap file becomes dangerous
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Tue, 05 Apr 2011 19:29:28 +0200
+
+dlcopy (201104051525-1) unstable; urgency=low
+
+  * disable swap files when umounting partitions
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Tue, 05 Apr 2011 15:25:35 +0200
+
+dlcopy (201103231809-1) unstable; urgency=low
+
+  * retry in case of failed partitioning
+  * improved wording of harddrive input message
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Wed, 23 Mar 2011 18:09:26 +0100
+
+dlcopy (201102161614-1) unstable; urgency=low
+
+  * sync after writing syslinux boot block
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Wed, 16 Feb 2011 16:14:34 +0100
+
+dlcopy (201102101028-1) unstable; urgency=low
+
+  * fixed installation from hard disk to flash drive
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Thu, 10 Feb 2011 10:28:01 +0100
+
+dlcopy (201102091109-1) unstable; urgency=low
+
+  * improved hard disk installation support
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 09 Feb 2011 11:09:50 +0100
+
+dlcopy (201102081824-1) unstable; urgency=low
+
+  * added support for hard disk installation
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 08 Feb 2011 18:24:08 +0100
+
+dlcopy (201101021121-1) unstable; urgency=low
+
+  * new file copy library
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Sun, 02 Jan 2011 11:21:20 +0100
+
+dlcopy (201012201328-1) unstable; urgency=low
+
+  * updated application icon
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Mon, 20 Dec 2010 13:28:38 +0100
+
+dlcopy (201011162005-1) unstable; urgency=low
+
+  * use su-to-root instead of sudo (fixes startup problem on squeeze)
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 16 Nov 2010 20:05:50 +0100
+
+dlcopy (201011111615-1) unstable; urgency=low
+
+  * fixed string replacement
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Thu, 11 Nov 2010 16:15:26 +0100
+
+dlcopy (201006072010-2) unstable; urgency=low
+
+  * added dependency to hal
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Thu, 11 Nov 2010 09:37:36 +0100
+
+dlcopy (201006072010-1) unstable; urgency=low
+
+  * show umounting after rsync in GUI
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Mon, 07 Jun 2010 20:10:45 +0200
+
+dlcopy (201006071948-1) unstable; urgency=low
+
+  * no incremental recursion for rsync
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Mon, 07 Jun 2010 19:48:30 +0200
+
+dlcopy (201006011740-1) unstable; urgency=low
+
+  * updated JavaFileCopyLibrary, fixed resetting rsync progress between targets
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 01 Jun 2010 17:40:30 +0200
+
+dlcopy (201005262032-2) unstable; urgency=low
+
+  * do not put .svn directories into deb package
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Fri, 28 May 2010 19:20:37 +0200
+
+dlcopy (201005262032-1) unstable; urgency=low
+
+  * added support for CompactFlash cards
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 26 May 2010 20:32:30 +0200
+
+dlcopy (201004301814-1) unstable; urgency=low
+
+  * updated internal file copy library
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Fri, 30 Apr 2010 18:14:27 +0200
+
+dlcopy (201004072032-1) unstable; urgency=low
+
+  * translation update
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 07 Apr 2010 20:32:27 +0200
+
+dlcopy (201004072022-1) unstable; urgency=low
+
+  * show syslinux error messages
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 07 Apr 2010 20:22:39 +0200
+
+dlcopy (201004071935-1) unstable; urgency=low
+
+  * fixed reading of sector size
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 07 Apr 2010 19:35:26 +0200
+
+dlcopy (201004071925-1) unstable; urgency=low
+
+  * added support for disks with sector size 4096
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 07 Apr 2010 19:25:02 +0200
+
+dlcopy (201004071811-1) unstable; urgency=low
+
+  * translation update
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 07 Apr 2010 18:11:38 +0200
+
+dlcopy (201004071534-1) unstable; urgency=low
+
+  * updated file copy library
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 07 Apr 2010 15:34:48 +0200
+
+dlcopy (201004061545-1) unstable; urgency=low
+
+  * added Albanian translation
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 06 Apr 2010 15:45:39 +0200
+
+dlcopy (201003301243-1) unstable; urgency=low
+
+  * added safety wait between creating and formatting partitions
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 30 Mar 2010 12:43:59 +0200
+
+dlcopy (201003301225-1) unstable; urgency=low
+
+  * fixed some i18n
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 30 Mar 2010 12:25:37 +0200
+
+dlcopy (201003261537-1) unstable; urgency=low
+
+  * fixed creating of exchange partition on SD cards
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Fri, 26 Mar 2010 15:37:18 +0100
+
+dlcopy (201003231735-1) unstable; urgency=low
+
+  * fixed small layout problem
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 23 Mar 2010 17:35:05 +0100
+
+dlcopy (201003231731-1) unstable; urgency=low
+
+  * fixed missing ressource exception
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 23 Mar 2010 17:31:57 +0100
+
+dlcopy (201003231722-2) unstable; urgency=low
+
+  * fixed description in debian control file
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 23 Mar 2010 17:28:31 +0100
+
+dlcopy (201003231722-1) unstable; urgency=low
+
+  * adopted program texts (support for more than just usb flash drives)
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 23 Mar 2010 17:22:03 +0100
+
+dlcopy (201003231635-1) unstable; urgency=low
+
+  * added support for USB harddisks
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 23 Mar 2010 16:35:27 +0100
+
+dlcopy (201003231206-1) unstable; urgency=low
+
+  * improved error handling, made unit tests work again
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 23 Mar 2010 12:06:04 +0100
+
+dlcopy (201003191913-1) unstable; urgency=low
+
+  * added i18n/L10n for an error message
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Fri, 19 Mar 2010 19:13:32 +0100
+
+dlcopy (201003181435-1) unstable; urgency=low
+
+  * added startscript
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Thu, 18 Mar 2010 14:35:41 +0100
+
+dlcopy (201003041755-2) unstable; urgency=low
+
+  * fixed dependencies
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Thu, 04 Mar 2010 18:03:55 +0100
+
+dlcopy (201003041755-1) unstable; urgency=low
+
+  * removed syslinux dependency check, added package dependency
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Thu, 04 Mar 2010 17:55:51 +0100
+
+dlcopy (201002161910-1) unstable; urgency=low
+
+  * upgraded to Java File Copy Library 0.9.5
+  * enforce persistency mode on target devices
+  * play sound notificytion instead of beep
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 16 Feb 2010 19:10:56 +0100
+
+dlcopy (201001121016-1) unstable; urgency=low
+
+    * do not display USB removal warning when installing from DVD to USB flash
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Tue, 12 Jan 2010 10:16:39 +0100
+
+dlcopy (201001081743-1) unstable; urgency=low
+
+    * better support for SD storage devices
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Fri, 08 Jan 2010 17:43:13 +0100
+
+dlcopy (200912081104-1) unstable; urgency=low
+
+    * hardcode path to media notifier config file (because of sudo)
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Tue, 08 Dec 2009 11:04:09 +0100
+
+dlcopy (200912081035-1) unstable; urgency=low
+
+    * show indeterministic progress bar when unmounting file systems
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Tue, 08 Dec 2009 10:35:24 +0100
+
+dlcopy (200912081014-1) unstable; urgency=low
+
+    * added hint about read-only NTFS for ISO creation
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Tue, 08 Dec 2009 10:14:38 +0100
+
+dlcopy (200912080953-1) unstable; urgency=low
+
+    * run whole program with sudo
+    * preselect /media/ as temp folder for iso creation
+    * added "does not exist" status message for temp folders
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Tue, 08 Dec 2009 09:53:57 +0100
+
+dlcopy (200912041847-1) unstable; urgency=low
+
+  * added installer autostart option when creating ISO
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Fri, 04 Dec 2009 18:47:46 +0100
+
+dlcopy (200912041828-1) unstable; urgency=low
+
+  * added hint about mounting storage media when creating ISO
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Fri, 04 Dec 2009 18:28:46 +0100
+
+dlcopy (200912041756-1) unstable; urgency=low
+
+  * fixed NPE
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Fri, 04 Dec 2009 17:56:22 +0100
+
+dlcopy (200912041748-1) unstable; urgency=low
+
+  * support for custom volume ID when creating ISO
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Fri, 04 Dec 2009 17:48:13 +0100
+
+dlcopy (200912041726-1) unstable; urgency=low
+
+  * restore lernstick autostart after creating ISO
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Fri, 04 Dec 2009 17:26:35 +0100
+
+dlcopy (200912041642-1) unstable; urgency=low
+
+  * fixed status messages when creating ISO
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Fri, 04 Dec 2009 16:42:33 +0100
+
+dlcopy (200912041634-1) unstable; urgency=low
+
+  * remove lernstick autostart when creating ISO
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Fri, 04 Dec 2009 16:34:45 +0100
+
+dlcopy (200912041532-1) unstable; urgency=low
+
+  * fixed partitioning script for [exchange|system] scenario (and again)
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Fri, 04 Dec 2009 15:32:29 +0100
+
+dlcopy (200912041523-1) unstable; urgency=low
+
+  * fixed partitioning script for [exchange|system] scenario (again)
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Fri, 04 Dec 2009 15:23:31 +0100
+
+dlcopy (200912041512-1) unstable; urgency=low
+
+  * fixed partitioning script for [exchange|system] scenario
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Fri, 04 Dec 2009 15:12:55 +0100
+
+dlcopy (200912031926-1) unstable; urgency=low
+
+  * another button handling fix
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Thu, 03 Dec 2009 19:26:42 +0100
+
+dlcopy (200912031922-1) unstable; urgency=low
+
+  * fixed desktop file
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Thu, 03 Dec 2009 19:22:42 +0100
+
+dlcopy (200912031918-1) unstable; urgency=low
+
+  * fixed default button handling
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Thu, 03 Dec 2009 19:18:42 +0100
+
+dlcopy (200912031904-1) unstable; urgency=low
+
+  * actually create squashfs when creating ISO
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Thu, 03 Dec 2009 19:04:42 +0100
+
+dlcopy (200912031814-1) unstable; urgency=low
+
+  * updated file copy library (fixed slice handling)
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Thu, 03 Dec 2009 18:14:24 +0100
+
+dlcopy (200912021921-1) unstable; urgency=low
+
+  * support for USB to DVD installation
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Wed, 02 Dec 2009 19:21:58 +0100
+
+dlcopy (200910201354-1) unstable; urgency=low
+
+  * fixed even more default button handling
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Tue, 20 Oct 2009 13:54:53 +0200
+
+dlcopy (200910201333-1) unstable; urgency=low
+
+  * fixed more default button handling
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Tue, 20 Oct 2009 13:33:12 +0200
+
+dlcopy (200910201328-1) unstable; urgency=low
+
+  * fixed some keyboard focus and default button handling
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Tue, 20 Oct 2009 13:28:29 +0200
+
+dlcopy (20091020-1) unstable; urgency=low
+
+  * auto-selection of new USB flash drives
+  * improved keyboard handling
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Tue, 20 Oct 2009 13:08:29 +0200
+
+dlcopy (20090729-1) unstable; urgency=low
+
+  * hide decreasing rsync progress values
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Wed, 29 Jul 2009 10:29:59 +0200
+
+dlcopy (20090728-1) unstable; urgency=low
+
+  * keep syslinux template untouched (uncommenting no longer needed)
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Tue, 28 Jul 2009 10:46:51 +0200
+
+dlcopy (20090724-1) unstable; urgency=low
+
+  * fixed RessourceBundle bug (introduced by project renaming)
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Fri, 24 Jul 2009 11:15:27 +0200
+
+dlcopy (20090723-1) unstable; urgency=low
+
+  * renamed project from debianlivecopy to dlcopy (to make Daniel happy)
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Thu, 23 Jul 2009 16:19:47 +0200
+
+dlcopy (20090606-1) unstable; urgency=low
+
+  * support for multiple target usb flash drives
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Sat, 06 Jun 2009 18:23:17 +0200
+
+dlcopy (20090605-1) unstable; urgency=low
+
+  * some small logging changes
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Fri, 05 Jun 2009 09:46:06 +0200
+
+dlcopy (20090604-3) unstable; urgency=low
+
+  * log file copy operations
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Thu, 04 Jun 2009 16:47:31 +0200
+
+dlcopy (20090604-2) unstable; urgency=low
+
+  * mount target exchange partition with umask=0
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Thu, 04 Jun 2009 15:28:49 +0200
+
+dlcopy (20090604-1) unstable; urgency=low
+
+  * do not try umounting source exchange partition when not previously mounted
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Thu, 04 Jun 2009 09:58:44 +0200
+
+dlcopy (20090603-2) unstable; urgency=low
+
+  * support for exchange partition copy
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Wed, 03 Jun 2009 08:29:02 +0200
+
+dlcopy (20090603-1) unstable; urgency=low
+
+  * fixed wording of persistency copy
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Wed, 03 Jun 2009 08:29:02 +0200
+
+dlcopy (20090602-1) unstable; urgency=low
+
+  * copying persistency layer works now
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Tue, 02 Jun 2009 21:09:32 +0200
+
+dlcopy (20090529-1) unstable; urgency=low
+
+  * adopted desktop file to new command line arguments
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Fri, 29 May 2009 16:29:19 +0200
+
+dlcopy (20090525-1) unstable; urgency=low
+
+  * default exchange partition size to zero
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Mon, 25 May 2009 18:44:58 +0200
+
+dlcopy (20090514-1) unstable; urgency=low
+
+  * corrected fix
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Thu, 14 May 2009 12:46:30 +0200
+
+dlcopy (20090512-2) unstable; urgency=low
+
+  * fixed enabling of button "Next"
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Tue, 12 May 2009 14:26:04 +0200
+
+dlcopy (20090512-1) unstable; urgency=low
+
+  * Initial release
+
+ -- Ronny Standtke <Ronny.Standtke@gmx.net>  Tue, 12 May 2009 11:54:48 +0200
+

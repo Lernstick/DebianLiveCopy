@@ -1,0 +1,16 @@
+Source: dlcopy
+Section: misc
+Priority: extra
+Maintainer: Ronny Standtke <Ronny.Standtke@gmx.net>
+Build-Depends: debhelper (>= 7), ant-optional, junit, openjdk-6-jdk | sun-java6-jdk
+Standards-Version: 3.8.0
+Homepage: http://www.imedias.ch/lernstick
+
+Package: dlcopy
+Architecture: all
+Depends: openjdk-6-jre | sun-java6-jre, squashfs-tools, cpio, genisoimage, syslinux, hal
+Description: an application to copy Debian Live to other storage media
+ This is a small application that copies Debian Live to other storage media like
+ USB flash drives, USB hard drives or SD memory cards. It has hot-plug support
+ for target storage media, allows the specification of an exchange partition and
+ provides a graphical copy progress feedback.

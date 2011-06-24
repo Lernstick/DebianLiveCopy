@@ -1,0 +1,30 @@
+- Image erzeugen:
+    - auch von Festplatteninstallation ermöglichen
+
+- ISO
+    - Schritt x/y anzeigen (Gesamtliste mit Hervorhebung und Häkchen)
+    - Zeitanzeige (gesamt)
+    - Fortschritt auch im Fenstertitel?
+
+- Renderer:
+    - verschiedene Icons für USB-Sticks, USB-Festplatten, SD-Karten, CF-Karten
+    - Legende anstatt Text im Balken
+
+- Installation:
+    - Liste aller ausgewählten USB-Sticks anzeigen
+    - Partitionen und Dateisysteme parallel erzeugen
+    - Betriebssystempartition parallel kopieren
+    - Datenpartition ggf. kopieren (seriell)
+    - Austauschpartition ggf. kopieren (seriell)
+
+- UncaughtExceptionHandler!
+    muss ins Log schreiben
+
+- i18n für Fehlermeldungen
+
+- Eingabefeld für Name der Datenpartition
+    -> Umlaute sind ein Problem
+        https://bugs.kde.org/show_bug.cgi?id=169195
+
+- Update eines bereits bespielten USB-Sticks
+    - persönliche Daten automatisch migrieren

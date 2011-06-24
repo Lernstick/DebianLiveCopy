@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- You may freely edit this file. See commented blocks below for -->
+<!-- some examples of how to customize the build. -->
+<!-- (If you delete it and reopen the project it will be recreated.) -->
+<project name="DLCopy" default="default" basedir=".">
+    <description>Builds, tests, and runs the project DLCopy.</description>
+    <import file="nbproject/build-impl.xml"/>
+    <!-- Our own Jar Building Target -->
+    <target
+        depends="init,compile,-pre-jar,-do-jar-with-manifest,-do-jar-without-manifest,-do-jar-with-mainclass,-do-jar-with-libraries,-post-jar,bin-jar,full-jar"
+        description="Build JAR." name="jar"/>
+
+    <target name="bin-jar" depends="init,compile,-pre-pre-jar">
+        <jar destfile="dist/DLCopy.jar" basedir="build/classes/">
+            <zipfileset
+                src="${file.reference.java_file_copy_library-0.9.7.jar}"
+                excludes="META-INF/**"/>
+            <manifest>
+                <attribute name="Main-Class" value="dlcopy.DLCopy"/>
+            </manifest>
+        </jar>
+    </target>
+
+    <target name="full-jar" depends="init,compile,-pre-pre-jar">
+        <jar destfile="dist/DLCopy_full.jar" basedir="build/classes/">
+            <zipfileset
+                src="${file.reference.java_file_copy_library-0.9.7.jar}"
+                excludes="META-INF/**"/>
+            <manifest>
+                <attribute name="Main-Class" value="dlcopy.DLCopy"/>
+            </manifest>
+        </jar>
+        <jar destfile="dist/DLCopy_full.jar" basedir="src" update="true"/>
+    </target>
+
+    <target name="1_debian_package">
+        <!-- build debian package -->
+        <exec executable="dpkg-buildpackage">
+            <arg value="-ai386"/>
+            <arg value="-mronny.standtke@fhnw.ch"/>
+        </exec>
+        <exec executable="fakeroot">
+            <arg value="debian/rules"/>
+            <arg value="clean"/>
+        </exec>
+    </target>
+    <target name="2_check_strings">
+        <exec executable="sh">
+            <arg value="check_strings.sh"></arg>
+        </exec>
+    </target>
+    <target name="3_sort_strings">
+        <exec executable="sh">
+            <arg value="sort_strings.sh"></arg>
+        </exec>
+    </target>
+</project>
