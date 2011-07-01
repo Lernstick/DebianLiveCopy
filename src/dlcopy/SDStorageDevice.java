@@ -10,19 +10,20 @@ public class SDStorageDevice extends StorageDevice {
 
     /**
      * Creates a new SDStorageDevice
-     * @param vendor the vendor
-     * @param model the model
+     * @param name the name of the device
+     * @param revision the revision of the device
      * @param device the device node (e.g. /dev/sdb)
      * @param size the size in Byte
      */
-    public SDStorageDevice(String name, String device, long size) {
-        super(device, size);
+    public SDStorageDevice(String name, String revision, String device,
+            long size) {
+        super(device, revision, size);
         this.name = name;
     }
 
     @Override
     public String toString() {
-        return name + " " + ", /dev/" + device + ", " +
+        return name + " " + ", " + device + ", " +
                 DLCopy.getDataVolumeString(size, 1);
     }
 

@@ -1,3 +1,6 @@
+- D-Bus verwenden, um Infos über Geräte und Partitionen abzufragen
+    kdesudo "java -Djava.library.path=/usr/lib/jni -jar dist/DLCopy_orig.jar"
+
 - Image erzeugen:
     - auch von Festplatteninstallation ermöglichen
 

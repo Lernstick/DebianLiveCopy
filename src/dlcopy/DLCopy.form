@@ -41,16 +41,16 @@
 
       <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout"/>
       <SubComponents>
-        <Component class="javax.swing.JLabel" name="jLabel4">
+        <Component class="javax.swing.JLabel" name="choiceLabel">
           <Properties>
             <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
               <FontInfo relative="true">
-                <Font component="jLabel4" property="font" relativeSize="true" size="5"/>
+                <Font component="choiceLabel" property="font" relativeSize="true" size="5"/>
               </FontInfo>
             </Property>
             <Property name="horizontalAlignment" type="int" value="0"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="dlcopy/Strings.properties" key="DLCopy.jLabel4.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="dlcopy/Strings.properties" key="DLCopy.choiceLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
           <Constraints>
@@ -128,10 +128,10 @@
         </Component>
       </SubComponents>
     </Container>
-    <Container class="javax.swing.JPanel" name="usbPanel">
+    <Container class="javax.swing.JPanel" name="executionPanel">
       <Constraints>
         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
-          <CardConstraints cardName="usbPanel"/>
+          <CardConstraints cardName="executionPanel"/>
         </Constraint>
       </Constraints>
 
@@ -921,6 +921,9 @@
               </SubComponents>
             </Container>
             <Container class="javax.swing.JPanel" name="upgradeSelectionPanel">
+              <Events>
+                <EventHandler event="componentShown" listener="java.awt.event.ComponentListener" parameters="java.awt.event.ComponentEvent" handler="upgradeSelectionPanelComponentShown"/>
+              </Events>
               <Constraints>
                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
                   <CardConstraints cardName="upgradeSelectionPanel"/>
@@ -969,7 +972,7 @@
                               <Group type="102" alignment="0" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="upgradeStorageDeviceListScrollPane" alignment="0" pref="632" max="32767" attributes="0"/>
+                                      <Component id="upgradeStorageDeviceListScrollPane" alignment="0" pref="751" max="32767" attributes="0"/>
                                       <Component id="upgradeOsDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="upgradeDataDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="upgradeExchangeDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -982,7 +985,7 @@
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="1" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="upgradeStorageDeviceListScrollPane" pref="221" max="32767" attributes="0"/>
+                                  <Component id="upgradeStorageDeviceListScrollPane" pref="358" max="32767" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="upgradeExchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>

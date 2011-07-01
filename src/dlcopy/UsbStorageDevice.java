@@ -13,12 +13,13 @@ public class UsbStorageDevice extends StorageDevice {
      * Creates a new UsbStorageDevice
      * @param vendor the vendor
      * @param model the model
+     * @param revision the revision of the device
      * @param device the device node (e.g. /dev/sdb)
      * @param size the size in Byte
      */
-    public UsbStorageDevice(String vendor, String model, String device,
-            long size) {
-        super(device, size);
+    public UsbStorageDevice(String vendor, String model, String revision,
+            String device, long size) {
+        super(device, revision, size);
         this.vendor = vendor;
         this.model = model;
     }

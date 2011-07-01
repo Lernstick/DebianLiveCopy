@@ -101,7 +101,7 @@ public class StorageDeviceRenderer extends JPanel implements ListCellRenderer {
                     (UsbStorageDevice) storageDevice;
             deviceText = usbStorageDevice.getVendor() + " "
                     + usbStorageDevice.getModel() + ", "
-                    + DLCopy.getDataVolumeString(usbStorageSize, 1) + " (/dev/"
+                    + DLCopy.getDataVolumeString(usbStorageSize, 1) + " ("
                     + usbStorageDevice.getDevice() + ")";
             iconLabel.setIcon(new ImageIcon(getClass().getResource(
                     "/dlcopy/icons/32x32/drive-removable-media-usb-pendrive.png")));
@@ -109,7 +109,7 @@ public class StorageDeviceRenderer extends JPanel implements ListCellRenderer {
             Harddisk harddisk = (Harddisk) storageDevice;
             deviceText = harddisk.getVendor() + " "
                     + harddisk.getModel() + ", "
-                    + DLCopy.getDataVolumeString(usbStorageSize, 1) + " (/dev/"
+                    + DLCopy.getDataVolumeString(usbStorageSize, 1) + " ("
                     + harddisk.getDevice() + ")";
             iconLabel.setIcon(new ImageIcon(getClass().getResource(
                     "/dlcopy/icons/32x32/drive-harddisk.png")));
@@ -117,7 +117,7 @@ public class StorageDeviceRenderer extends JPanel implements ListCellRenderer {
             SDStorageDevice sdStorageDevice =
                     (SDStorageDevice) storageDevice;
             deviceText = sdStorageDevice.getName() + " "
-                    + DLCopy.getDataVolumeString(usbStorageSize, 1) + " (/dev/"
+                    + DLCopy.getDataVolumeString(usbStorageSize, 1) + " ("
                     + sdStorageDevice.getDevice() + ")";
             iconLabel.setIcon(new ImageIcon(getClass().getResource(
                     "/dlcopy/icons/32x32/media-flash-sd-mmc.png")));

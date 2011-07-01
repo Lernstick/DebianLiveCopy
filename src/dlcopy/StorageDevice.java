@@ -6,16 +6,28 @@ package dlcopy;
  */
 public class StorageDevice {
 
+    /**
+     * the device file path
+     */
     protected final String device;
+    /**
+     * the revision of this device
+     */
+    protected final String revision;
+    /**
+     * the storage size of the device given in byte
+     */
     protected final long size;
 
     /**
      * Creates a new StorageDevice
      * @param device the device node (e.g. /dev/sdb)
+     * @param revision the revision of the device
      * @param size the size in Byte
      */
-    public StorageDevice(String device, long size) {
+    public StorageDevice(String device, String revision, long size) {
         this.device = device;
+        this.revision = revision;
         this.size = size;
     }
 
@@ -44,8 +56,8 @@ public class StorageDevice {
     public boolean equals(Object other) {
         if (other instanceof StorageDevice) {
             StorageDevice otherDevice = (StorageDevice) other;
-            return otherDevice.getDevice().equals(device) &&
-                    otherDevice.getSize() == size;
+            return otherDevice.getDevice().equals(device)
+                    && otherDevice.getSize() == size;
         }
         return false;
     }

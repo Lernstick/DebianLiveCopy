@@ -57,6 +57,11 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
+import org.freedesktop.DBus;
+import org.freedesktop.dbus.DBusConnection;
+import org.freedesktop.dbus.UInt64;
+import org.freedesktop.dbus.exceptions.DBusException;
+import org.freedesktop.udisks.Device;
 
 /**
  * Installs Debian Live to a USB flash drive
@@ -158,7 +163,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
         public void actionPerformed(ActionEvent e) {
             try {
                 List<StorageDevice> storageDevices =
-                        getStorageDevices(showHarddiskCheckBox.isSelected());
+                        getStorageDevicesUDisks(showHarddiskCheckBox.isSelected());
                 if (storageDevices.isEmpty()) {
                     showCard(selectionCardPanel, "noStickPanel");
                     nextButton.setEnabled(false);
@@ -204,6 +209,9 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
                 }
 
             } catch (IOException ex) {
+                LOGGER.log(Level.SEVERE,
+                        "could not update usb storage device list", ex);
+            } catch (DBusException ex) {
                 LOGGER.log(Level.SEVERE,
                         "could not update usb storage device list", ex);
             }
@@ -732,11 +740,11 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
         java.awt.GridBagConstraints gridBagConstraints;
 
         choicePanel = new javax.swing.JPanel();
-        jLabel4 = new javax.swing.JLabel();
+        choiceLabel = new javax.swing.JLabel();
         usb2usbButton = new javax.swing.JButton();
         upgradeButton = new javax.swing.JButton();
         usb2dvdButton = new javax.swing.JButton();
-        usbPanel = new javax.swing.JPanel();
+        executionPanel = new javax.swing.JPanel();
         stepsPanel = new javax.swing.JPanel();
         stepsLabel = new javax.swing.JLabel();
         jSeparator1 = new javax.swing.JSeparator();
@@ -836,13 +844,13 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
         });
         choicePanel.setLayout(new java.awt.GridBagLayout());
 
-        jLabel4.setFont(jLabel4.getFont().deriveFont(jLabel4.getFont().getSize()+5f));
-        jLabel4.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        jLabel4.setText(bundle.getString("DLCopy.jLabel4.text")); // NOI18N
+        choiceLabel.setFont(choiceLabel.getFont().deriveFont(choiceLabel.getFont().getSize()+5f));
+        choiceLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        choiceLabel.setText(bundle.getString("DLCopy.choiceLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.insets = new java.awt.Insets(30, 0, 0, 0);
-        choicePanel.add(jLabel4, gridBagConstraints);
+        choicePanel.add(choiceLabel, gridBagConstraints);
 
         usb2usbButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/usb2usb.png"))); // NOI18N
         usb2usbButton.setText(bundle.getString("DLCopy.usb2usbButton.text")); // NOI18N
@@ -1297,6 +1305,11 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
 
         cardPanel.add(upgradeInfoPanel, "upgradeInfoPanel");
 
+        upgradeSelectionPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
+            public void componentShown(java.awt.event.ComponentEvent evt) {
+                upgradeSelectionPanelComponentShown(evt);
+            }
+        });
         upgradeSelectionPanel.setLayout(new java.awt.GridBagLayout());
 
         upgradeSelectionHeaderLabel.setFont(upgradeSelectionHeaderLabel.getFont().deriveFont(upgradeSelectionHeaderLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
@@ -1337,7 +1350,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
             .addGroup(upgradeListPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(upgradeListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 632, Short.MAX_VALUE)
+                    .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 751, Short.MAX_VALUE)
                     .addComponent(upgradeOsDefinitionLabel)
                     .addComponent(upgradeDataDefinitionLabel)
                     .addComponent(upgradeExchangeDefinitionLabel))
@@ -1347,7 +1360,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
             upgradeListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, upgradeListPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 221, Short.MAX_VALUE)
+                .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 358, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(upgradeExchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1576,17 +1589,17 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
             }
         });
 
-        javax.swing.GroupLayout usbPanelLayout = new javax.swing.GroupLayout(usbPanel);
-        usbPanel.setLayout(usbPanelLayout);
-        usbPanelLayout.setHorizontalGroup(
-            usbPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(usbPanelLayout.createSequentialGroup()
-                .addGroup(usbPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(usbPanelLayout.createSequentialGroup()
+        javax.swing.GroupLayout executionPanelLayout = new javax.swing.GroupLayout(executionPanel);
+        executionPanel.setLayout(executionPanelLayout);
+        executionPanelLayout.setHorizontalGroup(
+            executionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(executionPanelLayout.createSequentialGroup()
+                .addGroup(executionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(executionPanelLayout.createSequentialGroup()
                         .addComponent(stepsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 775, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, usbPanelLayout.createSequentialGroup()
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, executionPanelLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(previousButton)
                         .addGap(18, 18, 18)
@@ -1594,24 +1607,24 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
                 .addContainerGap())
             .addComponent(jSeparator2, javax.swing.GroupLayout.DEFAULT_SIZE, 925, Short.MAX_VALUE)
         );
-        usbPanelLayout.setVerticalGroup(
-            usbPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, usbPanelLayout.createSequentialGroup()
-                .addGroup(usbPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(usbPanelLayout.createSequentialGroup()
+        executionPanelLayout.setVerticalGroup(
+            executionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, executionPanelLayout.createSequentialGroup()
+                .addGroup(executionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(executionPanelLayout.createSequentialGroup()
                         .addGap(12, 12, 12)
                         .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 490, Short.MAX_VALUE))
                     .addComponent(stepsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(usbPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                .addGroup(executionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(nextButton)
                     .addComponent(previousButton))
                 .addContainerGap())
         );
 
-        getContentPane().add(usbPanel, "usbPanel");
+        getContentPane().add(executionPanel, "executionPanel");
     }// </editor-fold>//GEN-END:initComponents
 
     private void nextButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_nextButtonActionPerformed
@@ -1690,6 +1703,10 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
                 switchToUSBInformation();
                 break;
 
+            case UPGRADE_SELECTION:
+                switchToUpgradeInformation();
+                break;
+
             case ISO_SELECTION:
                 switchToISOInformation();
                 break;
@@ -1748,14 +1765,14 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
     }//GEN-LAST:event_previousButtonFocusGained
 
     private void usb2usbButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usb2usbButtonActionPerformed
-        globalShow("usbPanel");
+        globalShow("executionPanel");
         switchToUSBInformation();
     }//GEN-LAST:event_usb2usbButtonActionPerformed
 
     private void usb2dvdButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usb2dvdButtonActionPerformed
         try {
             if (isUnmountedPersistencyAvailable()) {
-                globalShow("usbPanel");
+                globalShow("executionPanel");
                 switchToISOInformation();
             }
         } catch (IOException ex) {
@@ -1828,13 +1845,23 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
     }//GEN-LAST:event_previousButtonKeyPressed
 
     private void upgradeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeButtonActionPerformed
-        globalShow("usbPanel");
+        globalShow("executionPanel");
         switchToUpgradeInformation();
     }//GEN-LAST:event_upgradeButtonActionPerformed
 
     private void upgradeStorageDeviceListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_upgradeStorageDeviceListValueChanged
         // TODO add your handling code here:
     }//GEN-LAST:event_upgradeStorageDeviceListValueChanged
+
+    private void upgradeSelectionPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_upgradeSelectionPanelComponentShown
+        try {
+            List<StorageDevice> storageDevices = getStorageDevicesUDisks(true);
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        } catch (DBusException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_upgradeSelectionPanelComponentShown
 
     private String getBootDevice(String path) throws IOException {
         String tmpBootDevice = null;
@@ -2059,9 +2086,9 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
 
     }
 
-    private List<StorageDevice> getLiveDevices() throws IOException {
+    private List<StorageDevice> getLiveDevices() throws IOException, DBusException {
         List<StorageDevice> liveDevices = new ArrayList<StorageDevice>();
-        List<StorageDevice> storageDevices = getStorageDevices(true);
+        List<StorageDevice> storageDevices = getStorageDevicesUDisks(true);
         for (StorageDevice storageDevice : storageDevices) {
             // TODO: check if Debian Live is installed:
             // two or three partitions?
@@ -2069,78 +2096,65 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
         return liveDevices;
     }
 
-    private List<StorageDevice> getStorageDevices(boolean includeHarddisks)
-            throws IOException {
-        // gather information about block devices
-        File blockDeviceDir = new File("/sys/block/");
-        if (!blockDeviceDir.exists() || !blockDeviceDir.isDirectory()) {
-            LOGGER.warning(STRINGS.getString("Error_Opening_Sys_Block"));
-            System.exit(-1);
-        }
-
-        FilenameFilter devicesFilter = new FilenameFilter() {
-
-            @Override
-            public boolean accept(File dir, String name) {
-                // do not list boot device
-                // cut off "/dev/"
-                String bootDev = bootDevice.substring(5);
-                return ((!bootDev.startsWith(name))
-                        && (name.startsWith("sd")
-                        || name.startsWith("hd")
-                        || name.startsWith("mmcblk")));
-            }
-        };
-
-        File[] deviceDirs = blockDeviceDir.listFiles(devicesFilter);
-
+    private List<StorageDevice> getStorageDevicesUDisks(
+            boolean includeHarddisks) throws IOException, DBusException {
         List<StorageDevice> storageDevices = new ArrayList<StorageDevice>();
-        for (File deviceDir : deviceDirs) {
-            // only add devices that actually have a size
-            File sizeFile = new File(deviceDir, "size");
-            String sizeString = readOneLineFile(sizeFile);
-            // size is given in number of 512 Byte blocks
-            long size = Long.parseLong(sizeString) * 512;
-            if (size > 0) {
-                String name = deviceDir.getName();
-                if (name.startsWith("mmcblk")) {
+        // using libdbus-java here fails on Debian Live
+        // therefore we parse the command line output
+        int returnValue = processExecutor.executeProcess(
+                true, "udisks", "--enumerate");
+        if (returnValue != 0) {
+            throw new IOException("calling \"udisks --enumerate\" failed with "
+                    + "the following output: " + processExecutor.getOutput());
+        }
+        List<String> udisksObjectPaths = processExecutor.getStdOut();
+        DBusConnection connection =
+                DBusConnection.getConnection(DBusConnection.SYSTEM);
+        for (String path : udisksObjectPaths) {
+            DBus.Properties deviceProperties = connection.getRemoteObject(
+                    "org.freedesktop.UDisks", path,
+                    DBus.Properties.class);
+            Boolean isDrive = deviceProperties.Get(
+                    "org.freedesktop.UDisks", "DeviceIsDrive");
+            Boolean isLoop = deviceProperties.Get(
+                    "org.freedesktop.UDisks", "DeviceIsLinuxLoop");
+            UInt64 size64 = deviceProperties.Get(
+                    "org.freedesktop.UDisks", "DeviceSize");
+            long size = size64.longValue();
+            if (isDrive && !isLoop && (size > 0)) {
+                String deviceFile = deviceProperties.Get(
+                        "org.freedesktop.UDisks", "DeviceFile");
+                String vendor = deviceProperties.Get(
+                        "org.freedesktop.UDisks", "DriveVendor");
+                String model = deviceProperties.Get(
+                        "org.freedesktop.UDisks", "DriveModel");
+                String revision = deviceProperties.Get(
+                        "org.freedesktop.UDisks", "DriveRevision");
+                String serial = deviceProperties.Get(
+                        "org.freedesktop.UDisks", "DriveSerial");
+                Boolean isSystemInternal = deviceProperties.Get(
+                        "org.freedesktop.UDisks", "DeviceIsSystemInternal");
+                Boolean removable = deviceProperties.Get(
+                        "org.freedesktop.UDisks", "DeviceIsRemovable");
+                String media = deviceProperties.Get(
+                        "org.freedesktop.UDisks", "DriveMedia");
+                if (deviceFile.startsWith("/dev/mmcblk")) {
                     // add SD card
-                    File deviceDirectory = new File(deviceDir, "device");
-                    File nameFile = new File(deviceDirectory, "name");
-                    String sdName = readOneLineFile(nameFile);
-                    String device = deviceDir.getName();
-                    SDStorageDevice sdStorageDevice =
-                            new SDStorageDevice(sdName, device, size);
+                    SDStorageDevice sdStorageDevice = new SDStorageDevice(
+                            model, revision, deviceFile, size);
                     storageDevices.add(sdStorageDevice);
                 } else {
-                    // check, if the device is attached to the usb bus
-                    File deviceDirectory = new File(deviceDir, "device");
-                    String canonicalDevicePath =
-                            deviceDirectory.getCanonicalPath();
-                    File vendorFile = new File(deviceDirectory, "vendor");
-                    String vendor = vendorFile.exists()
-                            ? readOneLineFile(vendorFile) : "";
-                    File modelFile = new File(deviceDirectory, "model");
-                    String model = readOneLineFile(modelFile);
-                    String device = deviceDir.getName();
-                    if (canonicalDevicePath.contains("usb")) {
-                        /**
-                         * the device symlink of usb devices looks like this
-                         * /sys/devices/pci0000:00/0000:00:1d.7/usb5/5-6/5-6:1.0/host5/target5:0:0/5:0:0:0
-                         */
-                        // check, if the device is removable
-                        //File removableFile = new File(deviceDir, "removable");
-                        //if (readOneLineFile(removableFile).equals("1")) {
-                        UsbStorageDevice usbStorageDevice =
+                    if (removable) {
+                        // probably USB flash drive
+                        UsbStorageDevice usbStorageDevice = 
                                 new UsbStorageDevice(
-                                vendor, model, device, size);
+                                vendor, model, revision, deviceFile, size);
                         storageDevices.add(usbStorageDevice);
-                        //}
                     } else {
-                        // probably a harddisk
+                        // probably hard drive
                         if (includeHarddisks) {
                             Harddisk harddisk = new Harddisk(
-                                    vendor, model, device, size);
+                                    vendor, model, revision, deviceFile, size);
                             storageDevices.add(harddisk);
                         }
                     }
@@ -2154,7 +2168,93 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
 
         return storageDevices;
     }
-
+//
+//    private List<StorageDevice> getStorageDevices(boolean includeHarddisks)
+//            throws IOException {
+//        // gather information about block devices
+//        File blockDeviceDir = new File("/sys/block/");
+//        if (!blockDeviceDir.exists() || !blockDeviceDir.isDirectory()) {
+//            LOGGER.warning(STRINGS.getString("Error_Opening_Sys_Block"));
+//            System.exit(-1);
+//        }
+//
+//        FilenameFilter devicesFilter = new FilenameFilter() {
+//
+//            @Override
+//            public boolean accept(File dir, String name) {
+//                // do not list boot device
+//                // cut off "/dev/"
+//                String bootDev = bootDevice.substring(5);
+//                return ((!bootDev.startsWith(name))
+//                        && (name.startsWith("sd")
+//                        || name.startsWith("hd")
+//                        || name.startsWith("mmcblk")));
+//            }
+//        };
+//
+//        File[] deviceDirs = blockDeviceDir.listFiles(devicesFilter);
+//
+//        List<StorageDevice> storageDevices = new ArrayList<StorageDevice>();
+//        for (File deviceDir : deviceDirs) {
+//            // only add devices that actually have a size
+//            File sizeFile = new File(deviceDir, "size");
+//            String sizeString = readOneLineFile(sizeFile);
+//            // size is given in number of 512 Byte blocks
+//            long size = Long.parseLong(sizeString) * 512;
+//            if (size > 0) {
+//                String name = deviceDir.getName();
+//                if (name.startsWith("mmcblk")) {
+//                    // add SD card
+//                    File deviceDirectory = new File(deviceDir, "device");
+//                    File nameFile = new File(deviceDirectory, "name");
+//                    String sdName = readOneLineFile(nameFile);
+//                    String device = deviceDir.getName();
+//                    SDStorageDevice sdStorageDevice =
+//                            new SDStorageDevice(sdName, device, size);
+//                    storageDevices.add(sdStorageDevice);
+//                } else {
+//                    // check, if the device is attached to the usb bus
+//                    File deviceDirectory = new File(deviceDir, "device");
+//                    String canonicalDevicePath =
+//                            deviceDirectory.getCanonicalPath();
+//                    File vendorFile = new File(deviceDirectory, "vendor");
+//                    String vendor = vendorFile.exists()
+//                            ? readOneLineFile(vendorFile) : "";
+//                    File modelFile = new File(deviceDirectory, "model");
+//                    String model = readOneLineFile(modelFile);
+//                    String device = deviceDir.getName();
+//                    if (canonicalDevicePath.contains("usb")) {
+//                        /**
+//                         * the device symlink of usb devices looks like this
+//                         * /sys/devices/pci0000:00/0000:00:1d.7/usb5/5-6/5-6:1.0/host5/target5:0:0/5:0:0:0
+//                         */
+//                        // check, if the device is removable
+//                        //File removableFile = new File(deviceDir, "removable");
+//                        //if (readOneLineFile(removableFile).equals("1")) {
+//                        UsbStorageDevice usbStorageDevice =
+//                                new UsbStorageDevice(
+//                                vendor, model, device, size);
+//                        storageDevices.add(usbStorageDevice);
+//                        //}
+//                    } else {
+//                        // probably a harddisk
+//                        if (includeHarddisks) {
+//                            Harddisk harddisk = new Harddisk(
+//                                    vendor, model, device, size);
+//                            storageDevices.add(harddisk);
+//                        }
+//                    }
+//                }
+//            }
+//        }
+//
+//        if (debugUsbStorageDevices != null) {
+//            storageDevices.addAll(debugUsbStorageDevices);
+//        }
+//
+//        return storageDevices;
+//    }
+//
     private static String readOneLineFile(File file) throws IOException {
         FileReader fileReader = null;
         BufferedReader bufferedReader = null;
@@ -3843,6 +3943,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox autoStartCheckBox;
     private javax.swing.JPanel cardPanel;
+    private javax.swing.JLabel choiceLabel;
     private javax.swing.JPanel choicePanel;
     private javax.swing.JCheckBox copyExchangeCheckBox;
     private javax.swing.JPanel copyPanel;
@@ -3859,6 +3960,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
     private javax.swing.JTextField exchangePartitionSizeTextField;
     private javax.swing.JLabel exchangePartitionSizeUnitLabel;
     private javax.swing.JTextField exchangePartitionTextField;
+    private javax.swing.JPanel executionPanel;
     private ch.fhnw.filecopier.FileCopierPanel fileCopierPanel;
     private javax.swing.JLabel freeSpaceLabel;
     private javax.swing.JTextField freeSpaceTextField;
@@ -3877,7 +3979,6 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
     private javax.swing.JTextField isoLabelTextField;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JSeparator jSeparator1;
@@ -3925,7 +4026,6 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
     private javax.swing.JScrollPane upgradeStorageDeviceListScrollPane;
     private javax.swing.JButton usb2dvdButton;
     private javax.swing.JButton usb2usbButton;
-    private javax.swing.JPanel usbPanel;
     private javax.swing.JLabel writableLabel;
     private javax.swing.JTextField writableTextField;
     // End of variables declaration//GEN-END:variables
