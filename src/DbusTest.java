@@ -1,16 +1,30 @@
 
-import java.util.List;
+import dlcopy.ProcessExecutor;
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import org.freedesktop.DBus;
 import org.freedesktop.UDisks;
 import org.freedesktop.dbus.DBusConnection;
-import org.freedesktop.dbus.Path;
-import org.freedesktop.dbus.UInt64;
 import org.freedesktop.dbus.exceptions.DBusException;
-import org.freedesktop.udisks.Device;
 
-public class DbusTest {
+public class DbusTest implements PropertyChangeListener {
 
-    public static void main(String[] args) {
+    private final static String UDISKS_ADDED = "added:";
+    private final static String UDISKS_REMOVED = "removed:";
+
+    public DbusTest() {
+        // monitor udisks changes
+        Thread udisksMonitorThread = new Thread() {
+
+            @Override
+            public void run() {
+                ProcessExecutor executor = new ProcessExecutor();
+                executor.addPropertyChangeListener(DbusTest.this);
+                executor.executeProcess("udisks", "--monitor");
+            }
+        };
+        udisksMonitorThread.start();
+
         try {
             DBusConnection connection =
                     DBusConnection.getConnection(DBusConnection.SYSTEM);
@@ -25,33 +39,26 @@ public class DbusTest {
                     "org.freedesktop.UDisks", "SupportsLuksDevices");
             System.out.println("SupportsLuksDevices: " + supportsLuksDevices);
 
-            List<Path> devicePaths = uDisks.EnumerateDevices();
-            for (Path devicePath : devicePaths) {
-                String path = devicePath.getPath();
-                DBus.Properties deviceProperties = connection.getRemoteObject(
-                        "org.freedesktop.UDisks", path,
-                        DBus.Properties.class);
-                Boolean isDrive = deviceProperties.Get(
-                        "org.freedesktop.UDisks", "DeviceIsDrive");
-                UInt64 size64 = deviceProperties.Get(
-                        "org.freedesktop.UDisks", "DeviceSize");
-                long size = size64.longValue();
-                if (isDrive && (size > 0)) {
-                    System.out.println();
-                    System.out.println(path);
-                    System.out.println(" size: " + size);
-                    String driveVendor = deviceProperties.Get(
-                            "org.freedesktop.UDisks", "DriveVendor");
-                    System.out.println(" driveVendor: " + driveVendor);
-                    Boolean removable = deviceProperties.Get(
-                            "org.freedesktop.UDisks", "DeviceIsRemovable");
-                    System.out.println(" removable: " + removable);
-                    Device device = connection.getRemoteObject(
-                            "org.freedesktop.UDisks", path, Device.class);
-                }
-            }
         } catch (DBusException ex) {
             ex.printStackTrace();
+        }
+    }
+
+    public static void main(String[] args) {
+        new DbusTest();
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        if ("line".equals(evt.getPropertyName())) {
+            String line = (String) evt.getNewValue();
+            if (line.startsWith(UDISKS_ADDED)) {
+                String path = line.substring(UDISKS_ADDED.length()).trim();
+                System.out.println("path: \"" + path + '\"');
+            } else if (line.startsWith(UDISKS_REMOVED)) {
+                String path = line.substring(UDISKS_REMOVED.length()).trim();
+                System.out.println("path: \"" + path + '\"');                
+            }
         }
     }
 }

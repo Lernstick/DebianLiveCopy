@@ -437,12 +437,12 @@
 
                           <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                           <SubComponents>
-                            <Component class="javax.swing.JList" name="storageDeviceList">
+                            <Component class="javax.swing.JList" name="installStorageDeviceList">
                               <Properties>
-                                <Property name="name" type="java.lang.String" value="storageDeviceList" noResource="true"/>
+                                <Property name="name" type="java.lang.String" value="installStorageDeviceList" noResource="true"/>
                               </Properties>
                               <Events>
-                                <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="storageDeviceListValueChanged"/>
+                                <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="installStorageDeviceListValueChanged"/>
                               </Events>
                             </Component>
                           </SubComponents>

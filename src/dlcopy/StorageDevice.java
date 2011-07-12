@@ -4,7 +4,7 @@ package dlcopy;
  * A storage device
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
-public class StorageDevice {
+public class StorageDevice implements Comparable<StorageDevice> {
 
     /**
      * the device file path
@@ -18,17 +18,47 @@ public class StorageDevice {
      * the storage size of the device given in byte
      */
     protected final long size;
+    /**
+     * the block size of the device given in byte
+     */
+    private final int blockSize;
 
     /**
      * Creates a new StorageDevice
      * @param device the device node (e.g. /dev/sdb)
      * @param revision the revision of the device
      * @param size the size in Byte
+     * @param blockSize the block size of the device given in byte
      */
-    public StorageDevice(String device, String revision, long size) {
+    public StorageDevice(String device, String revision, long size,
+            int blockSize) {
         this.device = device;
         this.revision = revision;
         this.size = size;
+        this.blockSize = blockSize;
+    }
+
+    @Override
+    public int compareTo(StorageDevice other) {
+        return device.compareTo(other.getDevice());
+    }
+
+    @Override
+    public boolean equals(Object other) {
+        if (other instanceof StorageDevice) {
+            StorageDevice otherDevice = (StorageDevice) other;
+            return otherDevice.getDevice().equals(device)
+                    && otherDevice.getSize() == size;
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        int hash = 5;
+        hash = 41 * hash + (this.device != null ? this.device.hashCode() : 0);
+        hash = 41 * hash + (int) (this.size ^ (this.size >>> 32));
+        return hash;
     }
 
     @Override
@@ -52,21 +82,10 @@ public class StorageDevice {
         return size;
     }
 
-    @Override
-    public boolean equals(Object other) {
-        if (other instanceof StorageDevice) {
-            StorageDevice otherDevice = (StorageDevice) other;
-            return otherDevice.getDevice().equals(device)
-                    && otherDevice.getSize() == size;
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 41 * hash + (this.device != null ? this.device.hashCode() : 0);
-        hash = 41 * hash + (int) (this.size ^ (this.size >>> 32));
-        return hash;
+    /**
+     * @return the blockSize
+     */
+    public int getBlockSize() {
+        return blockSize;
     }
 }

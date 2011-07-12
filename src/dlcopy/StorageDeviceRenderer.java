@@ -45,7 +45,7 @@ public class StorageDeviceRenderer extends JPanel implements ListCellRenderer {
     private final Color LIGHT_BLUE = new Color(170, 170, 255);
     private long maxUsbStorageSize;
     private StorageDevice storageDevice;
-    private boolean drawSeparator;
+//    private boolean drawSeparator;
     private boolean isSelected;
     private State state;
     private final int iconInsets;
@@ -76,7 +76,7 @@ public class StorageDeviceRenderer extends JPanel implements ListCellRenderer {
             }
         }
         this.isSelected = isSelected;
-        drawSeparator = (index != (list.getModel().getSize() - 1));
+//        drawSeparator = (index != (list.getModel().getSize() - 1));
 
         return this;
     }
@@ -290,12 +290,12 @@ public class StorageDeviceRenderer extends JPanel implements ListCellRenderer {
                         "unknown partitionState \"{0}\"", partitionState);
         }
 
-        if (drawSeparator) {
+//        if (drawSeparator) {
             graphics2D.setPaint(Color.BLACK);
             int separatorPosition = height - 1;
             graphics2D.drawLine(
                     0, separatorPosition, componentWidth, separatorPosition);
-        }
+//        }
     }
 
     /**

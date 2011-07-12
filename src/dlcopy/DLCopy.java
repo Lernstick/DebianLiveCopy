@@ -27,12 +27,12 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
-import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
@@ -47,6 +47,7 @@ import javax.swing.DefaultListModel;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
+import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JSlider;
@@ -61,13 +62,13 @@ import org.freedesktop.DBus;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.UInt64;
 import org.freedesktop.dbus.exceptions.DBusException;
-import org.freedesktop.udisks.Device;
 
 /**
  * Installs Debian Live to a USB flash drive
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
-public class DLCopy extends javax.swing.JFrame implements DocumentListener {
+public class DLCopy extends JFrame
+        implements DocumentListener, PropertyChangeListener {
 
     /**
      * 1024 * 1024
@@ -112,9 +113,11 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
     private final static Logger LOGGER =
             Logger.getLogger(DLCopy.class.getName());
     private final static long MINIMUM_FREE_MEMORY = 300 * MEGA;
-    private final DefaultListModel storageDeviceListModel =
+    private final static String UDISKS_ADDED = "added:";
+    private final static String UDISKS_REMOVED = "removed:";
+    private final DefaultListModel installStorageDeviceListModel =
             new DefaultListModel();
-    private final StorageDeviceRenderer usbRenderer;
+    private final StorageDeviceRenderer storageDeviceRenderer;
     private long systemSize = -1;
     // some things to change when debugging...
     // SIZE_FACTOR is >1 so that we leave some space for updates, etc...
@@ -157,66 +160,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
             Pattern.compile("(.*)\\..*%.*");
     private String exchangeSourcePartition;
     private String exchangeSourcePartitionUDI;
-    private Timer deviceListUpdater = new Timer(1000, new ActionListener() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            try {
-                List<StorageDevice> storageDevices =
-                        getStorageDevicesUDisks(showHarddiskCheckBox.isSelected());
-                if (storageDevices.isEmpty()) {
-                    showCard(selectionCardPanel, "noStickPanel");
-                    nextButton.setEnabled(false);
-                    previousButton.requestFocusInWindow();
-                    getRootPane().setDefaultButton(previousButton);
-                } else {
-                    showCard(selectionCardPanel, "listPanel");
-                    long maxSize = 0;
-                    for (StorageDevice storageDevice : storageDevices) {
-                        long size = storageDevice.getSize();
-                        if (size > maxSize) {
-                            maxSize = size;
-                        }
-                        // add devices that are not already present
-                        if (!storageDeviceListModel.contains(
-                                storageDevice)) {
-                            storageDeviceListModel.addElement(
-                                    storageDevice);
-                            int lastIndex =
-                                    storageDeviceListModel.size() - 1;
-                            storageDeviceList.addSelectionInterval(
-                                    lastIndex, lastIndex);
-                        }
-
-                    }
-                    usbRenderer.setMaxSize(maxSize);
-                    // remove devices that are no longer present
-                    for (int i = storageDeviceListModel.size() - 1;
-                            i >= 0; i--) {
-                        StorageDevice tmpDevice =
-                                (StorageDevice) storageDeviceListModel.getElementAt(i);
-                        if (!storageDevices.contains(tmpDevice)) {
-                            storageDeviceListModel.remove(i);
-                        }
-                    }
-
-                    // auto-select single entry
-                    if (storageDevices.size() == 1) {
-                        storageDeviceList.setSelectedIndex(0);
-                    }
-
-                    updateNextButton();
-                }
-
-            } catch (IOException ex) {
-                LOGGER.log(Level.SEVERE,
-                        "could not update usb storage device list", ex);
-            } catch (DBusException ex) {
-                LOGGER.log(Level.SEVERE,
-                        "could not update usb storage device list", ex);
-            }
-        }
-    });
+    private DBusConnection dbusSystemConnection;
 
     /** Creates new form DLCopy
      * @param arguments the command line arguments
@@ -460,9 +404,9 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
                     STRINGS.getString("No_Data_Partition"));
         }
 
-        storageDeviceList.setModel(storageDeviceListModel);
-        usbRenderer = new StorageDeviceRenderer(this, systemSize);
-        storageDeviceList.setCellRenderer(usbRenderer);
+        installStorageDeviceList.setModel(installStorageDeviceListModel);
+        storageDeviceRenderer = new StorageDeviceRenderer(this, systemSize);
+        installStorageDeviceList.setCellRenderer(storageDeviceRenderer);
 
         pack();
         setLocationRelativeTo(null);
@@ -474,6 +418,99 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
 
         if (debianLiveDistribution == DebianLiveDistribution.lernstick) {
             isoLabelTextField.setText("lernstick");
+        }
+
+        try {
+            dbusSystemConnection = DBusConnection.getConnection(
+                    DBusConnection.SYSTEM);
+        } catch (DBusException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+
+        // monitor udisks changes
+        Thread udisksMonitorThread = new Thread() {
+
+            @Override
+            public void run() {
+                ProcessExecutor executor = new ProcessExecutor();
+                executor.addPropertyChangeListener(DLCopy.this);
+                executor.executeProcess("udisks", "--monitor");
+            }
+        };
+        udisksMonitorThread.start();
+    }
+
+    @Override
+    public void propertyChange(final PropertyChangeEvent evt) {
+        // only handle line changes
+        if (!"line".equals(evt.getPropertyName())) {
+            return;
+        }
+
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                switch (state) {
+                    case INSTALL_SELECTION:
+                        String line = (String) evt.getNewValue();
+                        if (line.startsWith(UDISKS_ADDED)) {
+                            fillInstallStorageDeviceList();
+                            updateInstallStorageDeviceList();
+                        } else if (line.startsWith(UDISKS_REMOVED)) {
+                            // the device was just removed, so we can not use 
+                            // getStorageDevice() here...
+                            String[] tokens = line.split("/");
+                            String device = tokens[tokens.length - 1];
+                            System.out.println("removed device: " + device);
+                            for (int i = 0, size = installStorageDeviceListModel.getSize(); i < size; i++) {
+                                StorageDevice storageDevice = (StorageDevice) installStorageDeviceListModel.get(i);
+                                if (storageDevice.getDevice().endsWith(device)) {
+                                    installStorageDeviceListModel.remove(i);
+                                    updateInstallStorageDeviceList();
+                                    break; // for
+                                }
+                            }
+                        }
+                        break;
+
+                    case UPGRADE_SELECTION:
+                        // TODO...
+                        break;
+
+                    default:
+                        LOGGER.log(Level.INFO,
+                                "device change not handled in state {0}", state);
+                }
+            }
+        });
+    }
+
+    private void updateInstallStorageDeviceList() {
+        int deviceCount = installStorageDeviceListModel.size();
+        if (deviceCount == 0) {
+            showCard(selectionCardPanel, "noStickPanel");
+            nextButton.setEnabled(false);
+            previousButton.requestFocusInWindow();
+            getRootPane().setDefaultButton(previousButton);
+        } else {
+            long maxSize = 0;
+            for (int i = 0; i < deviceCount; i++) {
+                StorageDevice storageDevice =
+                        (StorageDevice) installStorageDeviceListModel.get(i);
+                long deviceSize = storageDevice.getSize();
+                if (deviceSize > maxSize) {
+                    maxSize = deviceSize;
+                }
+            }
+            storageDeviceRenderer.setMaxSize(maxSize);
+
+            showCard(selectionCardPanel, "listPanel");
+            // auto-select single entry
+            if (deviceCount == 1) {
+                installStorageDeviceList.setSelectedIndex(0);
+            }
+            updateNextButton();
         }
     }
 
@@ -760,7 +797,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
         selectionCardPanel = new javax.swing.JPanel();
         listPanel = new javax.swing.JPanel();
         storageDeviceListScrollPane = new javax.swing.JScrollPane();
-        storageDeviceList = new javax.swing.JList();
+        installStorageDeviceList = new javax.swing.JList();
         createPartitionPanel = new javax.swing.JPanel();
         exchangePartitionSizeLabel = new javax.swing.JLabel();
         exchangePartitionSizeSlider = new javax.swing.JSlider();
@@ -1012,13 +1049,13 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
 
         selectionCardPanel.setLayout(new java.awt.CardLayout());
 
-        storageDeviceList.setName("storageDeviceList"); // NOI18N
-        storageDeviceList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+        installStorageDeviceList.setName("installStorageDeviceList"); // NOI18N
+        installStorageDeviceList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                storageDeviceListValueChanged(evt);
+                installStorageDeviceListValueChanged(evt);
             }
         });
-        storageDeviceListScrollPane.setViewportView(storageDeviceList);
+        storageDeviceListScrollPane.setViewportView(installStorageDeviceList);
 
         createPartitionPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopy.createPartitionPanel.border.title"))); // NOI18N
 
@@ -1734,9 +1771,9 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
         }
     }//GEN-LAST:event_previousButtonActionPerformed
 
-    private void storageDeviceListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_storageDeviceListValueChanged
+    private void installStorageDeviceListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_installStorageDeviceListValueChanged
         listSelectionChanged();
-    }//GEN-LAST:event_storageDeviceListValueChanged
+    }//GEN-LAST:event_installStorageDeviceListValueChanged
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         exitProgram();
@@ -1749,7 +1786,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
                     String.valueOf(exchangePartitionSizeSlider.getValue()));
         }
         // repaint partition list
-        storageDeviceList.repaint();
+        installStorageDeviceList.repaint();
 }//GEN-LAST:event_exchangePartitionSizeSliderStateChanged
 
     private void exchangePartitionSizeSliderComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_exchangePartitionSizeSliderComponentResized
@@ -1799,7 +1836,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
     }//GEN-LAST:event_usb2dvdButtonFocusGained
 
     private void showHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_showHarddiskCheckBoxItemStateChanged
-        deviceListUpdater.restart();
+        fillInstallStorageDeviceList();
     }//GEN-LAST:event_showHarddiskCheckBoxItemStateChanged
 
     private void upgradeButtonFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_upgradeButtonFocusGained
@@ -1855,7 +1892,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
 
     private void upgradeSelectionPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_upgradeSelectionPanelComponentShown
         try {
-            List<StorageDevice> storageDevices = getStorageDevicesUDisks(true);
+            List<StorageDevice> storageDevices = getStorageDevices(true);
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         } catch (DBusException ex) {
@@ -1949,6 +1986,14 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
     }
 
     private void switchToSelection() {
+        // update label highlights
+        setLabelHighlighted(infoStepLabel, false);
+        setLabelHighlighted(selectionLabel, true);
+        setLabelHighlighted(installationLabel, false);
+
+        // update storage device list
+        fillInstallStorageDeviceList();
+
         // update copyExchangeCheckBox
         try {
             if (exchangeSourcePartitionUDI != null) {
@@ -1962,15 +2007,41 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
                     "could not update copyExchangeCheckBox", ex);
         }
 
-        setLabelHighlighted(infoStepLabel, false);
-        setLabelHighlighted(selectionLabel, true);
-        setLabelHighlighted(installationLabel, false);
-        deviceListUpdater.setInitialDelay(0);
-        deviceListUpdater.start();
+//        deviceListUpdater.setInitialDelay(0);
+//        deviceListUpdater.start();
         previousButton.setEnabled(true);
         listSelectionChanged();
         state = State.INSTALL_SELECTION;
         showCard(cardPanel, "installSelectionPanel");
+    }
+
+    private void fillInstallStorageDeviceList() {
+        // remember selected values so that we can restore the selection
+        Object[] selectedValues = installStorageDeviceList.getSelectedValues();
+
+        installStorageDeviceListModel.clear();
+        try {
+            List<StorageDevice> storageDevices =
+                    getStorageDevices(showHarddiskCheckBox.isSelected());
+            Collections.sort(storageDevices);
+            for (StorageDevice storageDevice : storageDevices) {
+                installStorageDeviceListModel.addElement(storageDevice);
+            }
+
+            // try to restore the previous selection
+            for (Object selectedValue : selectedValues) {
+                int index = storageDevices.indexOf(selectedValue);
+                if (index != -1) {
+                    installStorageDeviceList.addSelectionInterval(index, index);
+                }
+            }
+
+            updateInstallStorageDeviceList();
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        } catch (DBusException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
     }
 
     private void listSelectionChanged() {
@@ -1983,7 +2054,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
         // check all selected usb storage devices
         long minOverhead = Long.MAX_VALUE;
         boolean exchange = true;
-        int[] selectedIndices = storageDeviceList.getSelectedIndices();
+        int[] selectedIndices = installStorageDeviceList.getSelectedIndices();
         int selectionCount = selectedIndices.length;
         if (selectionCount == 0) {
             minOverhead = 0;
@@ -1991,7 +2062,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
         } else {
             for (int i = 0; i < selectionCount; i++) {
                 StorageDevice device =
-                        (StorageDevice) storageDeviceListModel.get(
+                        (StorageDevice) installStorageDeviceListModel.get(
                         selectedIndices[i]);
                 long overhead = device.getSize() - systemSize;
                 minOverhead = Math.min(minOverhead, overhead);
@@ -2088,7 +2159,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
 
     private List<StorageDevice> getLiveDevices() throws IOException, DBusException {
         List<StorageDevice> liveDevices = new ArrayList<StorageDevice>();
-        List<StorageDevice> storageDevices = getStorageDevicesUDisks(true);
+        List<StorageDevice> storageDevices = getStorageDevices(true);
         for (StorageDevice storageDevice : storageDevices) {
             // TODO: check if Debian Live is installed:
             // two or three partitions?
@@ -2096,165 +2167,89 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
         return liveDevices;
     }
 
-    private List<StorageDevice> getStorageDevicesUDisks(
-            boolean includeHarddisks) throws IOException, DBusException {
+    private List<StorageDevice> getStorageDevices(boolean includeHarddisks)
+            throws IOException, DBusException {
         List<StorageDevice> storageDevices = new ArrayList<StorageDevice>();
-        // using libdbus-java here fails on Debian Live
-        // therefore we parse the command line output
-        int returnValue = processExecutor.executeProcess(
-                true, "udisks", "--enumerate");
-        if (returnValue != 0) {
-            throw new IOException("calling \"udisks --enumerate\" failed with "
-                    + "the following output: " + processExecutor.getOutput());
-        }
-        List<String> udisksObjectPaths = processExecutor.getStdOut();
-        DBusConnection connection =
-                DBusConnection.getConnection(DBusConnection.SYSTEM);
-        for (String path : udisksObjectPaths) {
-            DBus.Properties deviceProperties = connection.getRemoteObject(
-                    "org.freedesktop.UDisks", path,
-                    DBus.Properties.class);
-            Boolean isDrive = deviceProperties.Get(
-                    "org.freedesktop.UDisks", "DeviceIsDrive");
-            Boolean isLoop = deviceProperties.Get(
-                    "org.freedesktop.UDisks", "DeviceIsLinuxLoop");
-            UInt64 size64 = deviceProperties.Get(
-                    "org.freedesktop.UDisks", "DeviceSize");
-            long size = size64.longValue();
-            if (isDrive && !isLoop && (size > 0)) {
-                String deviceFile = deviceProperties.Get(
-                        "org.freedesktop.UDisks", "DeviceFile");
-                String vendor = deviceProperties.Get(
-                        "org.freedesktop.UDisks", "DriveVendor");
-                String model = deviceProperties.Get(
-                        "org.freedesktop.UDisks", "DriveModel");
-                String revision = deviceProperties.Get(
-                        "org.freedesktop.UDisks", "DriveRevision");
-                String serial = deviceProperties.Get(
-                        "org.freedesktop.UDisks", "DriveSerial");
-                Boolean isSystemInternal = deviceProperties.Get(
-                        "org.freedesktop.UDisks", "DeviceIsSystemInternal");
-                Boolean removable = deviceProperties.Get(
-                        "org.freedesktop.UDisks", "DeviceIsRemovable");
-                String media = deviceProperties.Get(
-                        "org.freedesktop.UDisks", "DriveMedia");
-                if (deviceFile.startsWith("/dev/mmcblk")) {
-                    // add SD card
-                    SDStorageDevice sdStorageDevice = new SDStorageDevice(
-                            model, revision, deviceFile, size);
-                    storageDevices.add(sdStorageDevice);
-                } else {
-                    if (removable) {
-                        // probably USB flash drive
-                        UsbStorageDevice usbStorageDevice = 
-                                new UsbStorageDevice(
-                                vendor, model, revision, deviceFile, size);
-                        storageDevices.add(usbStorageDevice);
-                    } else {
-                        // probably hard drive
-                        if (includeHarddisks) {
-                            Harddisk harddisk = new Harddisk(
-                                    vendor, model, revision, deviceFile, size);
-                            storageDevices.add(harddisk);
-                        }
-                    }
+
+        if (debugUsbStorageDevices == null) {
+            // using libdbus-java here fails on Debian Live
+            // therefore we parse the command line output
+            int returnValue = processExecutor.executeProcess(
+                    true, "udisks", "--enumerate");
+            if (returnValue != 0) {
+                throw new IOException("calling \"udisks --enumerate\" failed "
+                        + "with the following output: "
+                        + processExecutor.getOutput());
+            }
+            List<String> udisksObjectPaths = processExecutor.getStdOut();
+            for (String path : udisksObjectPaths) {
+                StorageDevice storageDevice = getStorageDevice(
+                        path, includeHarddisks);
+                if (storageDevice != null) {
+                    storageDevices.add(storageDevice);
                 }
             }
-        }
 
-        if (debugUsbStorageDevices != null) {
+        } else {
             storageDevices.addAll(debugUsbStorageDevices);
         }
 
         return storageDevices;
     }
-//
-//    private List<StorageDevice> getStorageDevices(boolean includeHarddisks)
-//            throws IOException {
-//        // gather information about block devices
-//        File blockDeviceDir = new File("/sys/block/");
-//        if (!blockDeviceDir.exists() || !blockDeviceDir.isDirectory()) {
-//            LOGGER.warning(STRINGS.getString("Error_Opening_Sys_Block"));
-//            System.exit(-1);
-//        }
-//
-//        FilenameFilter devicesFilter = new FilenameFilter() {
-//
-//            @Override
-//            public boolean accept(File dir, String name) {
-//                // do not list boot device
-//                // cut off "/dev/"
-//                String bootDev = bootDevice.substring(5);
-//                return ((!bootDev.startsWith(name))
-//                        && (name.startsWith("sd")
-//                        || name.startsWith("hd")
-//                        || name.startsWith("mmcblk")));
-//            }
-//        };
-//
-//        File[] deviceDirs = blockDeviceDir.listFiles(devicesFilter);
-//
-//        List<StorageDevice> storageDevices = new ArrayList<StorageDevice>();
-//        for (File deviceDir : deviceDirs) {
-//            // only add devices that actually have a size
-//            File sizeFile = new File(deviceDir, "size");
-//            String sizeString = readOneLineFile(sizeFile);
-//            // size is given in number of 512 Byte blocks
-//            long size = Long.parseLong(sizeString) * 512;
-//            if (size > 0) {
-//                String name = deviceDir.getName();
-//                if (name.startsWith("mmcblk")) {
-//                    // add SD card
-//                    File deviceDirectory = new File(deviceDir, "device");
-//                    File nameFile = new File(deviceDirectory, "name");
-//                    String sdName = readOneLineFile(nameFile);
-//                    String device = deviceDir.getName();
-//                    SDStorageDevice sdStorageDevice =
-//                            new SDStorageDevice(sdName, device, size);
-//                    storageDevices.add(sdStorageDevice);
-//                } else {
-//                    // check, if the device is attached to the usb bus
-//                    File deviceDirectory = new File(deviceDir, "device");
-//                    String canonicalDevicePath =
-//                            deviceDirectory.getCanonicalPath();
-//                    File vendorFile = new File(deviceDirectory, "vendor");
-//                    String vendor = vendorFile.exists()
-//                            ? readOneLineFile(vendorFile) : "";
-//                    File modelFile = new File(deviceDirectory, "model");
-//                    String model = readOneLineFile(modelFile);
-//                    String device = deviceDir.getName();
-//                    if (canonicalDevicePath.contains("usb")) {
-//                        /**
-//                         * the device symlink of usb devices looks like this
-//                         * /sys/devices/pci0000:00/0000:00:1d.7/usb5/5-6/5-6:1.0/host5/target5:0:0/5:0:0:0
-//                         */
-//                        // check, if the device is removable
-//                        //File removableFile = new File(deviceDir, "removable");
-//                        //if (readOneLineFile(removableFile).equals("1")) {
-//                        UsbStorageDevice usbStorageDevice =
-//                                new UsbStorageDevice(
-//                                vendor, model, device, size);
-//                        storageDevices.add(usbStorageDevice);
-//                        //}
-//                    } else {
-//                        // probably a harddisk
-//                        if (includeHarddisks) {
-//                            Harddisk harddisk = new Harddisk(
-//                                    vendor, model, device, size);
-//                            storageDevices.add(harddisk);
-//                        }
-//                    }
-//                }
-//            }
-//        }
-//
-//        if (debugUsbStorageDevices != null) {
-//            storageDevices.addAll(debugUsbStorageDevices);
-//        }
-//
-//        return storageDevices;
-//    }
-//
+
+    private StorageDevice getStorageDevice(String path,
+            boolean includeHarddisks) throws DBusException {
+        DBus.Properties deviceProperties = dbusSystemConnection.getRemoteObject(
+                "org.freedesktop.UDisks", path,
+                DBus.Properties.class);
+        Boolean isDrive = deviceProperties.Get(
+                "org.freedesktop.UDisks", "DeviceIsDrive");
+        Boolean isLoop = deviceProperties.Get(
+                "org.freedesktop.UDisks", "DeviceIsLinuxLoop");
+        UInt64 size64 = deviceProperties.Get(
+                "org.freedesktop.UDisks", "DeviceSize");
+        long size = size64.longValue();
+        if (isDrive && !isLoop && (size > 0)) {
+            String deviceFile = deviceProperties.Get(
+                    "org.freedesktop.UDisks", "DeviceFile");
+            String vendor = deviceProperties.Get(
+                    "org.freedesktop.UDisks", "DriveVendor");
+            String model = deviceProperties.Get(
+                    "org.freedesktop.UDisks", "DriveModel");
+            String revision = deviceProperties.Get(
+                    "org.freedesktop.UDisks", "DriveRevision");
+            String serial = deviceProperties.Get(
+                    "org.freedesktop.UDisks", "DriveSerial");
+            Boolean isSystemInternal = deviceProperties.Get(
+                    "org.freedesktop.UDisks", "DeviceIsSystemInternal");
+            Boolean removable = deviceProperties.Get(
+                    "org.freedesktop.UDisks", "DeviceIsRemovable");
+            String media = deviceProperties.Get(
+                    "org.freedesktop.UDisks", "DriveMedia");
+            UInt64 blockSize64 = deviceProperties.Get(
+                    "org.freedesktop.UDisks", "DeviceBlockSize");
+            int blockSize = blockSize64.intValue();
+            if (deviceFile.startsWith("/dev/mmcblk")) {
+                // an SD card
+                return new SDStorageDevice(
+                        model, revision, deviceFile, size, blockSize);
+            } else {
+                if (removable) {
+                    // probably a USB flash drive
+                    return new UsbStorageDevice(vendor, model, revision,
+                            deviceFile, size, blockSize);
+                } else {
+                    // probably a hard drive
+                    if (includeHarddisks) {
+                        return new Harddisk(vendor, model,
+                                revision, deviceFile, size, blockSize);
+                    }
+                }
+            }
+        }
+        return null;
+    }
+
     private static String readOneLineFile(File file) throws IOException {
         FileReader fileReader = null;
         BufferedReader bufferedReader = null;
@@ -2287,10 +2282,10 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
 
     private void updateNextButton() {
         PartitionState partitionState = null;
-        int selectedIndex = storageDeviceList.getSelectedIndex();
+        int selectedIndex = installStorageDeviceList.getSelectedIndex();
         if (selectedIndex != -1) {
             StorageDevice device =
-                    (StorageDevice) storageDeviceListModel.get(
+                    (StorageDevice) installStorageDeviceListModel.get(
                     selectedIndex);
             partitionState = getPartitionState(device.getSize(), systemSize);
         }
@@ -2545,7 +2540,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
                 }
             });
 
-            int[] selectedIndices = storageDeviceList.getSelectedIndices();
+            int[] selectedIndices = installStorageDeviceList.getSelectedIndices();
             selectionCount = selectedIndices.length;
             fileCopier = new FileCopier();
             try {
@@ -2554,7 +2549,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
                 for (int i = 0; i < selectionCount; i++) {
                     currentDevice = i + 1;
                     StorageDevice storageDevice =
-                            (StorageDevice) storageDeviceListModel.getElementAt(
+                            (StorageDevice) installStorageDeviceListModel.getElementAt(
                             selectedIndices[i]);
                     // update overall progress message
                     String message =
@@ -2567,7 +2562,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
                                 + usbStorageDevice.getModel() + " "
                                 + getDataVolumeString(
                                 usbStorageDevice.getSize(), 1),
-                                "/dev/" + usbStorageDevice.getDevice(),
+                                usbStorageDevice.getDevice(),
                                 currentDevice, selectionCount);
                     } else if (storageDevice instanceof SDStorageDevice) {
                         SDStorageDevice sdStorageDevice =
@@ -2576,7 +2571,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
                                 sdStorageDevice.getSize(), 1);
                         message = MessageFormat.format(message,
                                 sdStorageDevice.getName() + " " + dataVolume,
-                                "/dev/" + sdStorageDevice.getDevice(),
+                                sdStorageDevice.getDevice(),
                                 currentDevice, selectionCount);
                     } else if (storageDevice instanceof Harddisk) {
                         Harddisk harddisk = (Harddisk) storageDevice;
@@ -2585,7 +2580,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
                                 + harddisk.getModel() + " "
                                 + getDataVolumeString(
                                 harddisk.getSize(), 1),
-                                "/dev/" + harddisk.getDevice(),
+                                harddisk.getDevice(),
                                 currentDevice, selectionCount);
                     } else {
                         LOGGER.log(Level.WARNING,
@@ -2709,7 +2704,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
                 throws InterruptedException, IOException {
 
             // determine size and state
-            String device = "/dev/" + storageDevice.getDevice();
+            String device = storageDevice.getDevice();
             long size = storageDevice.getSize();
             Partitions partitions = getPartitions(storageDevice);
             int exchangeMB = partitions.getExchangeMB();
@@ -2760,7 +2755,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
             }
 
             // create all necessary partitions
-            if (!createPartitions(device, partitions, size, exchangeMB,
+            if (!createPartitions(storageDevice, partitions, size, exchangeMB,
                     partitionState, exchangeDevice, systemDevice,
                     persistentDevice, false)) {
                 // On some Corsari Flash Voyager GT drives the first sfdisk try
@@ -2807,9 +2802,9 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
                 // partitions are *NOT* correctly created the first time. Even
                 // more strangely, it always works the second time. Therefore
                 // we automatically retry once more in case of an error.
-                if (!createPartitions(device, partitions, size, exchangeMB,
-                        partitionState, exchangeDevice, systemDevice,
-                        persistentDevice, true)) {
+                if (!createPartitions(storageDevice, partitions, size,
+                        exchangeMB, partitionState, exchangeDevice,
+                        systemDevice, persistentDevice, true)) {
                     return false;
                 }
             }
@@ -2828,13 +2823,15 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
             return makeBootable(device, systemDevice);
         }
 
-        private boolean createPartitions(String device, Partitions partitions,
-                long size, int exchangeMB, final PartitionState partitionState,
-                String exchangeDevice, String systemDevice,
-                String persistentDevice, boolean showErrorMessages)
+        private boolean createPartitions(StorageDevice storageDevice,
+                Partitions partitions, long size, int exchangeMB,
+                final PartitionState partitionState, String exchangeDevice,
+                String systemDevice, String persistentDevice,
+                boolean showErrorMessages)
                 throws InterruptedException, IOException {
 
             // determine exact partition sizes
+            String device = storageDevice.getDevice();
             long overhead = size - systemSize;
             int persistentMB = partitions.getPersistencyMB();
             if (LOGGER.isLoggable(Level.FINEST)) {
@@ -2865,7 +2862,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
 
             // the special size factor is needed e.g. for disks with sector size
             // 4096 instead of the "normal" 512
-            int sizeFactor = getSizeFactor(device);
+            int sizeFactor = getSizeFactor(storageDevice);
 
             // create sfdisk script
             String sfdiskScript = null;
@@ -3314,15 +3311,8 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
             return true;
         }
 
-        private int getSizeFactor(String device) throws IOException {
-            File sectorSizeFile = new File("/sys/block/"
-                    + device.substring(5) + "/queue/hw_sector_size");
-            String sectorSizeString = readOneLineFile(sectorSizeFile);
-            if (LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.log(Level.INFO, "sector size of {0} is {1}",
-                        new Object[]{device, sectorSizeString});
-            }
-            return (Integer.parseInt(sectorSizeString) / 512);
+        private int getSizeFactor(StorageDevice storageDevice) {
+            return (storageDevice.getBlockSize() / 512);
         }
     }
 
@@ -3387,11 +3377,11 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
     private void checkSelection() throws IOException {
 
         // check all selected target USB storage devices
-        int[] selectedIndices = storageDeviceList.getSelectedIndices();
+        int[] selectedIndices = installStorageDeviceList.getSelectedIndices();
         boolean harddiskSelected = false;
         for (int i : selectedIndices) {
             StorageDevice storageDevice =
-                    (StorageDevice) storageDeviceListModel.getElementAt(i);
+                    (StorageDevice) installStorageDeviceListModel.getElementAt(i);
             if (storageDevice instanceof Harddisk) {
                 harddiskSelected = true;
             }
@@ -3425,7 +3415,6 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
             }
         }
 
-        deviceListUpdater.stop();
         setLabelHighlighted(selectionLabel, false);
         setLabelHighlighted(installationLabel, true);
         previousButton.setEnabled(false);
@@ -3547,7 +3536,6 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
         setLabelHighlighted(infoStepLabel, true);
         setLabelHighlighted(selectionLabel, false);
         showCard(cardPanel, "installInfoPanel");
-        deviceListUpdater.stop();
         nextButton.setEnabled(true);
         nextButton.requestFocusInWindow();
         getRootPane().setDefaultButton(nextButton);
@@ -3558,7 +3546,6 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
         setLabelHighlighted(infoStepLabel, true);
         setLabelHighlighted(selectionLabel, false);
         showCard(cardPanel, "upgradeInfoPanel");
-        deviceListUpdater.stop();
         nextButton.setEnabled(true);
         nextButton.requestFocusInWindow();
         getRootPane().setDefaultButton(nextButton);
@@ -3973,6 +3960,7 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
     private javax.swing.JPanel installInfoPanel;
     private javax.swing.JPanel installPanel;
     private javax.swing.JPanel installSelectionPanel;
+    private javax.swing.JList installStorageDeviceList;
     private javax.swing.JLabel installationLabel;
     private javax.swing.JLabel isoDoneLabel;
     private javax.swing.JLabel isoLabelLabel;
@@ -3999,7 +3987,6 @@ public class DLCopy extends javax.swing.JFrame implements DocumentListener {
     private javax.swing.JCheckBox showHarddiskCheckBox;
     private javax.swing.JLabel stepsLabel;
     private javax.swing.JPanel stepsPanel;
-    private javax.swing.JList storageDeviceList;
     private javax.swing.JScrollPane storageDeviceListScrollPane;
     private javax.swing.JLabel tmpDirLabel;
     private javax.swing.JButton tmpDirSelectButton;
