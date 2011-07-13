@@ -31,11 +31,6 @@ import javax.swing.ImageIcon;
  */
 public class StorageDeviceRenderer extends JPanel implements ListCellRenderer {
 
-    public enum State {
-
-        Selection, PartitionCreation,
-        OperatingSystemCopy, DataPartitionCopy, ExchangePartitionCopy
-    }
     private final static Logger LOGGER =
             Logger.getLogger(DLCopy.class.getName());
     private final static int OFFSET = 5;
@@ -45,20 +40,18 @@ public class StorageDeviceRenderer extends JPanel implements ListCellRenderer {
     private final Color LIGHT_BLUE = new Color(170, 170, 255);
     private long maxUsbStorageSize;
     private StorageDevice storageDevice;
-//    private boolean drawSeparator;
     private boolean isSelected;
-    private State state;
     private final int iconInsets;
     private int iconGap;
 
     /** Creates new form UsbRenderer
+     * @param dlCopy the main program
      * @param systemSize the size of the system to be copied in Byte
      */
     public StorageDeviceRenderer(DLCopy dlCopy, long systemSize) {
         this.dlCopy = dlCopy;
         this.systemSize = systemSize;
         initComponents();
-        state = State.Selection;
         GridBagLayout layout = (GridBagLayout) getLayout();
         Insets insets = layout.getConstraints(iconLabel).insets;
         iconInsets = insets.left + insets.right;
@@ -76,17 +69,7 @@ public class StorageDeviceRenderer extends JPanel implements ListCellRenderer {
             }
         }
         this.isSelected = isSelected;
-//        drawSeparator = (index != (list.getModel().getSize() - 1));
-
         return this;
-    }
-
-    /**
-     * sets the current state
-     * @param state the state to set
-     */
-    public void setState(State state) {
-        this.state = state;
     }
 
     @Override
@@ -290,12 +273,10 @@ public class StorageDeviceRenderer extends JPanel implements ListCellRenderer {
                         "unknown partitionState \"{0}\"", partitionState);
         }
 
-//        if (drawSeparator) {
-            graphics2D.setPaint(Color.BLACK);
-            int separatorPosition = height - 1;
-            graphics2D.drawLine(
-                    0, separatorPosition, componentWidth, separatorPosition);
-//        }
+        graphics2D.setPaint(Color.BLACK);
+        int separatorPosition = height - 1;
+        graphics2D.drawLine(
+                0, separatorPosition, componentWidth, separatorPosition);
     }
 
     /**

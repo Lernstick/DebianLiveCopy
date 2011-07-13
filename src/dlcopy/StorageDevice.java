@@ -1,27 +1,25 @@
 package dlcopy;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * A storage device
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
 public class StorageDevice implements Comparable<StorageDevice> {
 
-    /**
-     * the device file path
-     */
-    protected final String device;
-    /**
-     * the revision of this device
-     */
-    protected final String revision;
-    /**
-     * the storage size of the device given in byte
-     */
-    protected final long size;
-    /**
-     * the block size of the device given in byte
-     */
+    private static final Logger LOGGER =
+            Logger.getLogger(StorageDevice.class.getName());
+    private final String device;
+    private final String revision;
+    private final long size;
     private final int blockSize;
+    private List<Partition> partitions;
 
     /**
      * Creates a new StorageDevice
@@ -63,7 +61,7 @@ public class StorageDevice implements Comparable<StorageDevice> {
 
     @Override
     public String toString() {
-        return "/dev/" + device + ", " + DLCopy.getDataVolumeString(size, 1);
+        return device + ", " + DLCopy.getDataVolumeString(size, 1);
     }
 
     /**
@@ -83,9 +81,77 @@ public class StorageDevice implements Comparable<StorageDevice> {
     }
 
     /**
+     * returns the revision of this storage device
+     * @return the revision of this storage device
+     */
+    public String getRevision() {
+        return revision;
+    }
+
+    /**
      * @return the blockSize
      */
     public int getBlockSize() {
         return blockSize;
+    }
+
+    /**
+     * returns the list of partitions of this storage device
+     * @return the list of partitions of this storage device
+     */
+    public synchronized List<Partition> getPartitions() {
+        if (partitions == null) {
+            // create new list
+            partitions = new ArrayList<Partition>();
+            
+            // call sfdisk to get partition info
+            ProcessExecutor processExecutor = new ProcessExecutor();
+            processExecutor.executeProcess("sfdisk", "-uS", "-l", device);
+            List<String> lines = processExecutor.getStdOut();
+
+            /**
+             * parse partition lines, example:
+             * 
+             *    Device Boot    Start       End   #sectors  Id  System
+             * /dev/sda1             1 1241824499 1241824499  83  Linux
+             * /dev/sda2   * 1241824500 1250258624    8434125   c  W95 FAT32 (LBA)
+             * /dev/sda3             0         -          0   0  Empty
+             * /dev/sda4             0         -          0   0  Empty
+             */
+            Pattern bootablePartitionPattern = Pattern.compile("(/dev/\\w+)\\s+"
+                    + "\\*\\s+(\\w+)\\s+(\\w+)\\s+\\w+\\s+(\\w+)\\s+(\\w+)");
+            Pattern nonBootablePartitionPattern = Pattern.compile("(/dev/\\w+)"
+                    + "\\s+(\\w+)\\s+(\\w+)\\s+\\w+\\s+(\\w+)\\s+(\\w+)");
+            for (String line : lines) {
+                Matcher bootableMatcher = 
+                        bootablePartitionPattern.matcher(line);
+                if (bootableMatcher.matches()) {
+                    partitions.add(parsePartition(bootableMatcher, true));
+                }
+                Matcher nonBootableMatcher = 
+                        nonBootablePartitionPattern.matcher(line);
+                if (nonBootableMatcher.matches()) {
+                    partitions.add(parsePartition(nonBootableMatcher, false));
+                }
+            }
+        }
+        return partitions;
+    }
+
+    private Partition parsePartition(Matcher matcher, boolean bootable) {
+        try {
+            String partitionDevice = matcher.group(1);
+            String startString = matcher.group(2);
+            long start = Long.parseLong(startString);
+            String endString = matcher.group(3);
+            long end = Long.parseLong(endString);
+            String id = matcher.group(4);
+            String description = matcher.group(5);
+            return new Partition(partitionDevice,
+                    bootable, start, end, id, description);
+        } catch (NumberFormatException numberFormatException) {
+            LOGGER.log(Level.WARNING, "", numberFormatException);
+        }
+        return null;
     }
 }

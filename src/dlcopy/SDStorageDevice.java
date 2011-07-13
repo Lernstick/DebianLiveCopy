@@ -24,8 +24,8 @@ public class SDStorageDevice extends StorageDevice {
 
     @Override
     public String toString() {
-        return name + " " + ", " + device + ", " +
-                DLCopy.getDataVolumeString(size, 1);
+        return name + " " + ", " + getDevice() + ", "
+                + DLCopy.getDataVolumeString(getSize(), 1);
     }
 
     /**
@@ -40,9 +40,9 @@ public class SDStorageDevice extends StorageDevice {
     public boolean equals(Object other) {
         if (other instanceof SDStorageDevice) {
             SDStorageDevice otherDevice = (SDStorageDevice) other;
-            return otherDevice.getName().equals(name) &&
-                    otherDevice.getDevice().equals(device) &&
-                    otherDevice.getSize() == size;
+            return otherDevice.getName().equals(name)
+                    && otherDevice.getDevice().equals(getDevice())
+                    && otherDevice.getSize() == getSize();
         }
         return false;
     }
@@ -50,9 +50,9 @@ public class SDStorageDevice extends StorageDevice {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 41 * hash + (this.name != null ? this.name.hashCode() : 0);
-        hash = 41 * hash + (this.device != null ? this.device.hashCode() : 0);
-        hash = 41 * hash + (int) (this.size ^ (this.size >>> 32));
+        hash = 41 * hash + (name != null ? name.hashCode() : 0);
+        hash = 41 * hash + (getDevice() != null ? getDevice().hashCode() : 0);
+        hash = 41 * hash + (int) (getSize() ^ (getSize() >>> 32));
         return hash;
     }
 }

@@ -1333,7 +1333,6 @@ public class DLCopy extends JFrame
 
         upgradeInfoPanel.setLayout(new java.awt.GridBagLayout());
 
-        upgradeInfoLabel.setFont(upgradeInfoLabel.getFont().deriveFont(upgradeInfoLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
         upgradeInfoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/usbupgrade.png"))); // NOI18N
         upgradeInfoLabel.setText(bundle.getString("DLCopy.upgradeInfoLabel.text")); // NOI18N
         upgradeInfoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -1669,7 +1668,7 @@ public class DLCopy extends JFrame
 
             case INSTALL_INFORMATION:
                 switchToSelection();
-                return;
+                break;
 
             case ISO_INFORMATION:
                 setLabelHighlighted(infoStepLabel, false);

@@ -27,8 +27,8 @@ public class UsbStorageDevice extends StorageDevice {
 
     @Override
     public String toString() {
-        return vendor + " " + model + ", /dev/" + device + ", " +
-                DLCopy.getDataVolumeString(size, 1);
+        return vendor + " " + model + ", " + getDevice() + ", "
+                + DLCopy.getDataVolumeString(getSize(), 1);
     }
 
     /**
@@ -51,10 +51,10 @@ public class UsbStorageDevice extends StorageDevice {
     public boolean equals(Object other) {
         if (other instanceof UsbStorageDevice) {
             UsbStorageDevice otherDevice = (UsbStorageDevice) other;
-            return otherDevice.getVendor().equals(vendor) &&
-                    otherDevice.getModel().equals(model) &&
-                    otherDevice.getDevice().equals(device) &&
-                    otherDevice.getSize() == size;
+            return otherDevice.getVendor().equals(vendor)
+                    && otherDevice.getModel().equals(model)
+                    && otherDevice.getDevice().equals(getDevice())
+                    && otherDevice.getSize() == getSize();
         }
         return false;
     }
@@ -62,10 +62,10 @@ public class UsbStorageDevice extends StorageDevice {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 41 * hash + (this.vendor != null ? this.vendor.hashCode() : 0);
-        hash = 41 * hash + (this.model != null ? this.model.hashCode() : 0);
-        hash = 41 * hash + (this.device != null ? this.device.hashCode() : 0);
-        hash = 41 * hash + (int) (this.size ^ (this.size >>> 32));
+        hash = 41 * hash + (vendor != null ? vendor.hashCode() : 0);
+        hash = 41 * hash + (model != null ? model.hashCode() : 0);
+        hash = 41 * hash + (getDevice() != null ? getDevice().hashCode() : 0);
+        hash = 41 * hash + (int) (getSize() ^ (getSize() >>> 32));
         return hash;
     }
 }

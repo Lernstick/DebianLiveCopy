@@ -898,11 +898,6 @@
               <SubComponents>
                 <Component class="javax.swing.JLabel" name="upgradeInfoLabel">
                   <Properties>
-                    <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
-                      <FontInfo relative="true">
-                        <Font bold="false" component="upgradeInfoLabel" property="font" relativeSize="true" size="0"/>
-                      </FontInfo>
-                    </Property>
                     <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                       <Image iconType="3" name="/dlcopy/icons/usbupgrade.png"/>
                     </Property>
