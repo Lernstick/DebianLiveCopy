@@ -115,9 +115,9 @@ public class DLCopy extends JFrame
     private final static long MINIMUM_FREE_MEMORY = 300 * MEGA;
     private final static String UDISKS_ADDED = "added:";
     private final static String UDISKS_REMOVED = "removed:";
-    private final DefaultListModel installStorageDeviceListModel =
+    private final DefaultListModel storageDeviceListModel =
             new DefaultListModel();
-    private final StorageDeviceRenderer storageDeviceRenderer;
+    private final InstallStorageDeviceRenderer installStorageDeviceRenderer;
     private long systemSize = -1;
     // some things to change when debugging...
     // SIZE_FACTOR is >1 so that we leave some space for updates, etc...
@@ -289,7 +289,8 @@ public class DLCopy extends JFrame
         String sizeString = getDataVolumeString(systemSize, 1);
         String text = STRINGS.getString("Select_Target_Storage_Media");
         text = MessageFormat.format(text, sizeString);
-        selectionHeaderLabel.setText(text);
+        installSelectionHeaderLabel.setText(text);
+        upgradeSelectionHeaderLabel.setText(text);
 
         // detect if system has an exchange partition
         // - boot device must have more than one partition
@@ -404,9 +405,12 @@ public class DLCopy extends JFrame
                     STRINGS.getString("No_Data_Partition"));
         }
 
-        installStorageDeviceList.setModel(installStorageDeviceListModel);
-        storageDeviceRenderer = new StorageDeviceRenderer(this, systemSize);
-        installStorageDeviceList.setCellRenderer(storageDeviceRenderer);
+        installStorageDeviceList.setModel(storageDeviceListModel);
+        installStorageDeviceRenderer = 
+                new InstallStorageDeviceRenderer(this, systemSize);
+        installStorageDeviceList.setCellRenderer(installStorageDeviceRenderer);
+        
+        upgradeStorageDeviceList.setModel(storageDeviceListModel);
 
         pack();
         setLocationRelativeTo(null);
@@ -463,10 +467,10 @@ public class DLCopy extends JFrame
                             String[] tokens = line.split("/");
                             String device = tokens[tokens.length - 1];
                             System.out.println("removed device: " + device);
-                            for (int i = 0, size = installStorageDeviceListModel.getSize(); i < size; i++) {
-                                StorageDevice storageDevice = (StorageDevice) installStorageDeviceListModel.get(i);
+                            for (int i = 0, size = storageDeviceListModel.getSize(); i < size; i++) {
+                                StorageDevice storageDevice = (StorageDevice) storageDeviceListModel.get(i);
                                 if (storageDevice.getDevice().endsWith(device)) {
-                                    installStorageDeviceListModel.remove(i);
+                                    storageDeviceListModel.remove(i);
                                     updateInstallStorageDeviceList();
                                     break; // for
                                 }
@@ -487,9 +491,9 @@ public class DLCopy extends JFrame
     }
 
     private void updateInstallStorageDeviceList() {
-        int deviceCount = installStorageDeviceListModel.size();
+        int deviceCount = storageDeviceListModel.size();
         if (deviceCount == 0) {
-            showCard(selectionCardPanel, "noStickPanel");
+            showCard(installSelectionCardPanel, "installNoMediaPanel");
             nextButton.setEnabled(false);
             previousButton.requestFocusInWindow();
             getRootPane().setDefaultButton(previousButton);
@@ -497,15 +501,15 @@ public class DLCopy extends JFrame
             long maxSize = 0;
             for (int i = 0; i < deviceCount; i++) {
                 StorageDevice storageDevice =
-                        (StorageDevice) installStorageDeviceListModel.get(i);
+                        (StorageDevice) storageDeviceListModel.get(i);
                 long deviceSize = storageDevice.getSize();
                 if (deviceSize > maxSize) {
                     maxSize = deviceSize;
                 }
             }
-            storageDeviceRenderer.setMaxSize(maxSize);
+            installStorageDeviceRenderer.setMaxSize(maxSize);
 
-            showCard(selectionCardPanel, "listPanel");
+            showCard(installSelectionCardPanel, "listPanel");
             // auto-select single entry
             if (deviceCount == 1) {
                 installStorageDeviceList.setSelectedIndex(0);
@@ -792,10 +796,10 @@ public class DLCopy extends JFrame
         installInfoPanel = new javax.swing.JPanel();
         infoLabel = new javax.swing.JLabel();
         installSelectionPanel = new javax.swing.JPanel();
-        selectionHeaderLabel = new javax.swing.JLabel();
-        showHarddiskCheckBox = new javax.swing.JCheckBox();
-        selectionCardPanel = new javax.swing.JPanel();
-        listPanel = new javax.swing.JPanel();
+        installSelectionHeaderLabel = new javax.swing.JLabel();
+        installShowHarddiskCheckBox = new javax.swing.JCheckBox();
+        installSelectionCardPanel = new javax.swing.JPanel();
+        installListPanel = new javax.swing.JPanel();
         storageDeviceListScrollPane = new javax.swing.JScrollPane();
         installStorageDeviceList = new javax.swing.JList();
         createPartitionPanel = new javax.swing.JPanel();
@@ -811,8 +815,8 @@ public class DLCopy extends JFrame
         exchangeDefinitionLabel = new javax.swing.JLabel();
         dataDefinitionLabel = new javax.swing.JLabel();
         osDefinitionLabel = new javax.swing.JLabel();
-        noStickPanel = new javax.swing.JPanel();
-        noStickLabel = new javax.swing.JLabel();
+        installNoMediaPanel = new javax.swing.JPanel();
+        installNoMediaLabel = new javax.swing.JLabel();
         installPanel = new javax.swing.JPanel();
         currentDeviceLabel = new javax.swing.JLabel();
         installCardPanel = new javax.swing.JPanel();
@@ -831,6 +835,7 @@ public class DLCopy extends JFrame
         upgradeInfoLabel = new javax.swing.JLabel();
         upgradeSelectionPanel = new javax.swing.JPanel();
         upgradeSelectionHeaderLabel = new javax.swing.JLabel();
+        upgradeShowHarddiskCheckBox = new javax.swing.JCheckBox();
         upgradeSelectionCardPanel = new javax.swing.JPanel();
         upgradeListPanel = new javax.swing.JPanel();
         upgradeStorageDeviceListScrollPane = new javax.swing.JScrollPane();
@@ -839,7 +844,7 @@ public class DLCopy extends JFrame
         upgradeDataDefinitionLabel = new javax.swing.JLabel();
         upgradeOsDefinitionLabel = new javax.swing.JLabel();
         upgradeNoMediaPanel = new javax.swing.JPanel();
-        noStickLabel1 = new javax.swing.JLabel();
+        upgradeNoMediaLabel = new javax.swing.JLabel();
         toISOInfoPanel = new javax.swing.JPanel();
         toISOInfoLabel = new javax.swing.JLabel();
         toISOSelectionPanel = new javax.swing.JPanel();
@@ -1028,26 +1033,26 @@ public class DLCopy extends JFrame
 
         installSelectionPanel.setLayout(new java.awt.GridBagLayout());
 
-        selectionHeaderLabel.setFont(selectionHeaderLabel.getFont().deriveFont(selectionHeaderLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-        selectionHeaderLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        selectionHeaderLabel.setText(bundle.getString("Select_Target_Storage_Media")); // NOI18N
+        installSelectionHeaderLabel.setFont(installSelectionHeaderLabel.getFont().deriveFont(installSelectionHeaderLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+        installSelectionHeaderLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        installSelectionHeaderLabel.setText(bundle.getString("Select_Target_Storage_Media")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        installSelectionPanel.add(selectionHeaderLabel, gridBagConstraints);
+        installSelectionPanel.add(installSelectionHeaderLabel, gridBagConstraints);
 
-        showHarddiskCheckBox.setFont(showHarddiskCheckBox.getFont().deriveFont(showHarddiskCheckBox.getFont().getStyle() & ~java.awt.Font.BOLD, showHarddiskCheckBox.getFont().getSize()-1));
-        showHarddiskCheckBox.setText(bundle.getString("DLCopy.showHarddiskCheckBox.text")); // NOI18N
-        showHarddiskCheckBox.addItemListener(new java.awt.event.ItemListener() {
+        installShowHarddiskCheckBox.setFont(installShowHarddiskCheckBox.getFont().deriveFont(installShowHarddiskCheckBox.getFont().getStyle() & ~java.awt.Font.BOLD, installShowHarddiskCheckBox.getFont().getSize()-1));
+        installShowHarddiskCheckBox.setText(bundle.getString("DLCopy.installShowHarddiskCheckBox.text")); // NOI18N
+        installShowHarddiskCheckBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                showHarddiskCheckBoxItemStateChanged(evt);
+                installShowHarddiskCheckBoxItemStateChanged(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        installSelectionPanel.add(showHarddiskCheckBox, gridBagConstraints);
+        installSelectionPanel.add(installShowHarddiskCheckBox, gridBagConstraints);
 
-        selectionCardPanel.setLayout(new java.awt.CardLayout());
+        installSelectionCardPanel.setLayout(new java.awt.CardLayout());
 
         installStorageDeviceList.setName("installStorageDeviceList"); // NOI18N
         installStorageDeviceList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -1169,34 +1174,34 @@ public class DLCopy extends JFrame
         osDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/blue_box.png"))); // NOI18N
         osDefinitionLabel.setText(bundle.getString("DLCopy.osDefinitionLabel.text")); // NOI18N
 
-        javax.swing.GroupLayout listPanelLayout = new javax.swing.GroupLayout(listPanel);
-        listPanel.setLayout(listPanelLayout);
-        listPanelLayout.setHorizontalGroup(
-            listPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout installListPanelLayout = new javax.swing.GroupLayout(installListPanel);
+        installListPanel.setLayout(installListPanelLayout);
+        installListPanelLayout.setHorizontalGroup(
+            installListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 775, Short.MAX_VALUE)
-            .addGroup(listPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(listPanelLayout.createSequentialGroup()
+            .addGroup(installListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(installListPanelLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addGroup(listPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(installListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                         .addComponent(copyPartitionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(createPartitionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGroup(listPanelLayout.createSequentialGroup()
+                        .addGroup(installListPanelLayout.createSequentialGroup()
                             .addComponent(exchangeDefinitionLabel)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 349, Short.MAX_VALUE))
-                        .addGroup(listPanelLayout.createSequentialGroup()
+                        .addGroup(installListPanelLayout.createSequentialGroup()
                             .addComponent(dataDefinitionLabel)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 289, Short.MAX_VALUE))
-                        .addGroup(listPanelLayout.createSequentialGroup()
+                        .addGroup(installListPanelLayout.createSequentialGroup()
                             .addComponent(osDefinitionLabel)
                             .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 636, Short.MAX_VALUE))
                         .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                     .addContainerGap()))
         );
-        listPanelLayout.setVerticalGroup(
-            listPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        installListPanelLayout.setVerticalGroup(
+            installListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 445, Short.MAX_VALUE)
-            .addGroup(listPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(listPanelLayout.createSequentialGroup()
+            .addGroup(installListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(installListPanelLayout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1212,17 +1217,17 @@ public class DLCopy extends JFrame
                     .addContainerGap()))
         );
 
-        selectionCardPanel.add(listPanel, "listPanel");
+        installSelectionCardPanel.add(installListPanel, "listPanel");
 
-        noStickPanel.setLayout(new java.awt.GridBagLayout());
+        installNoMediaPanel.setLayout(new java.awt.GridBagLayout());
 
-        noStickLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/messagebox_info.png"))); // NOI18N
-        noStickLabel.setText(bundle.getString("DLCopy.noStickLabel.text")); // NOI18N
-        noStickLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        noStickLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        noStickPanel.add(noStickLabel, new java.awt.GridBagConstraints());
+        installNoMediaLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/messagebox_info.png"))); // NOI18N
+        installNoMediaLabel.setText(bundle.getString("Insert_Media")); // NOI18N
+        installNoMediaLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        installNoMediaLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        installNoMediaPanel.add(installNoMediaLabel, new java.awt.GridBagConstraints());
 
-        selectionCardPanel.add(noStickPanel, "noStickPanel");
+        installSelectionCardPanel.add(installNoMediaPanel, "installNoMediaPanel");
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -1230,7 +1235,7 @@ public class DLCopy extends JFrame
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        installSelectionPanel.add(selectionCardPanel, gridBagConstraints);
+        installSelectionPanel.add(installSelectionCardPanel, gridBagConstraints);
 
         cardPanel.add(installSelectionPanel, "installSelectionPanel");
 
@@ -1350,12 +1355,22 @@ public class DLCopy extends JFrame
 
         upgradeSelectionHeaderLabel.setFont(upgradeSelectionHeaderLabel.getFont().deriveFont(upgradeSelectionHeaderLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
         upgradeSelectionHeaderLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        upgradeSelectionHeaderLabel.setText(bundle.getString("DLCopy.upgradeSelectionHeaderLabel.text")); // NOI18N
+        upgradeSelectionHeaderLabel.setText(bundle.getString("Select_Target_Storage_Media")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         upgradeSelectionPanel.add(upgradeSelectionHeaderLabel, gridBagConstraints);
+
+        upgradeShowHarddiskCheckBox.setFont(upgradeShowHarddiskCheckBox.getFont().deriveFont(upgradeShowHarddiskCheckBox.getFont().getStyle() & ~java.awt.Font.BOLD, upgradeShowHarddiskCheckBox.getFont().getSize()-1));
+        upgradeShowHarddiskCheckBox.setText(bundle.getString("DLCopy.upgradeShowHarddiskCheckBox.text")); // NOI18N
+        upgradeShowHarddiskCheckBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                upgradeShowHarddiskCheckBoxItemStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        upgradeSelectionPanel.add(upgradeShowHarddiskCheckBox, gridBagConstraints);
 
         upgradeSelectionCardPanel.setLayout(new java.awt.CardLayout());
 
@@ -1396,7 +1411,7 @@ public class DLCopy extends JFrame
             upgradeListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, upgradeListPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 358, Short.MAX_VALUE)
+                .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(upgradeExchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1410,11 +1425,11 @@ public class DLCopy extends JFrame
 
         upgradeNoMediaPanel.setLayout(new java.awt.GridBagLayout());
 
-        noStickLabel1.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/messagebox_info.png"))); // NOI18N
-        noStickLabel1.setText(bundle.getString("DLCopy.noStickLabel1.text")); // NOI18N
-        noStickLabel1.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        noStickLabel1.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        upgradeNoMediaPanel.add(noStickLabel1, new java.awt.GridBagConstraints());
+        upgradeNoMediaLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/messagebox_info.png"))); // NOI18N
+        upgradeNoMediaLabel.setText(bundle.getString("Insert_Media")); // NOI18N
+        upgradeNoMediaLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        upgradeNoMediaLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        upgradeNoMediaPanel.add(upgradeNoMediaLabel, new java.awt.GridBagConstraints());
 
         upgradeSelectionCardPanel.add(upgradeNoMediaPanel, "upgradeNoMediaPanel");
 
@@ -1667,7 +1682,7 @@ public class DLCopy extends JFrame
         switch (state) {
 
             case INSTALL_INFORMATION:
-                switchToSelection();
+                switchToInstallSelection();
                 break;
 
             case ISO_INFORMATION:
@@ -1729,6 +1744,7 @@ public class DLCopy extends JFrame
         switch (state) {
 
             case INSTALL_INFORMATION:
+            case UPGRADE_INFORMATION:
             case ISO_INFORMATION:
                 getRootPane().setDefaultButton(usb2usbButton);
                 usb2usbButton.requestFocusInWindow();
@@ -1758,7 +1774,7 @@ public class DLCopy extends JFrame
                 break;
 
             case INSTALLATION:
-                switchToSelection();
+                switchToInstallSelection();
                 nextButton.setIcon(new ImageIcon(
                         getClass().getResource("/dlcopy/icons/next.png")));
                 nextButton.setText(
@@ -1834,9 +1850,9 @@ public class DLCopy extends JFrame
         getRootPane().setDefaultButton(usb2dvdButton);
     }//GEN-LAST:event_usb2dvdButtonFocusGained
 
-    private void showHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_showHarddiskCheckBoxItemStateChanged
+    private void installShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_installShowHarddiskCheckBoxItemStateChanged
         fillInstallStorageDeviceList();
-    }//GEN-LAST:event_showHarddiskCheckBoxItemStateChanged
+    }//GEN-LAST:event_installShowHarddiskCheckBoxItemStateChanged
 
     private void upgradeButtonFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_upgradeButtonFocusGained
         getRootPane().setDefaultButton(upgradeButton);
@@ -1891,13 +1907,18 @@ public class DLCopy extends JFrame
 
     private void upgradeSelectionPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_upgradeSelectionPanelComponentShown
         try {
-            List<StorageDevice> storageDevices = getStorageDevices(true);
+            List<StorageDevice> storageDevices = getStorageDevices(
+                    upgradeShowHarddiskCheckBox.isSelected());
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         } catch (DBusException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_upgradeSelectionPanelComponentShown
+
+private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_upgradeShowHarddiskCheckBoxItemStateChanged
+// TODO add your handling code here:
+}//GEN-LAST:event_upgradeShowHarddiskCheckBoxItemStateChanged
 
     private String getBootDevice(String path) throws IOException {
         String tmpBootDevice = null;
@@ -1984,7 +2005,7 @@ public class DLCopy extends JFrame
         return exchangeSize;
     }
 
-    private void switchToSelection() {
+    private void switchToInstallSelection() {
         // update label highlights
         setLabelHighlighted(infoStepLabel, false);
         setLabelHighlighted(selectionLabel, true);
@@ -2018,13 +2039,13 @@ public class DLCopy extends JFrame
         // remember selected values so that we can restore the selection
         Object[] selectedValues = installStorageDeviceList.getSelectedValues();
 
-        installStorageDeviceListModel.clear();
+        storageDeviceListModel.clear();
         try {
             List<StorageDevice> storageDevices =
-                    getStorageDevices(showHarddiskCheckBox.isSelected());
+                    getStorageDevices(installShowHarddiskCheckBox.isSelected());
             Collections.sort(storageDevices);
             for (StorageDevice storageDevice : storageDevices) {
-                installStorageDeviceListModel.addElement(storageDevice);
+                storageDeviceListModel.addElement(storageDevice);
             }
 
             // try to restore the previous selection
@@ -2036,6 +2057,35 @@ public class DLCopy extends JFrame
             }
 
             updateInstallStorageDeviceList();
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        } catch (DBusException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private void fillUpgradeStorageDeviceList() {
+        // remember selected values so that we can restore the selection
+        Object[] selectedValues = upgradeStorageDeviceList.getSelectedValues();
+
+        storageDeviceListModel.clear();
+        try {
+            List<StorageDevice> storageDevices =
+                    getStorageDevices(upgradeShowHarddiskCheckBox.isSelected());
+            Collections.sort(storageDevices);
+            for (StorageDevice storageDevice : storageDevices) {
+                storageDeviceListModel.addElement(storageDevice);
+            }
+
+            // try to restore the previous selection
+            for (Object selectedValue : selectedValues) {
+                int index = storageDevices.indexOf(selectedValue);
+                if (index != -1) {
+                    upgradeStorageDeviceList.addSelectionInterval(index, index);
+                }
+            }
+
+            //updateInstallStorageDeviceList();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         } catch (DBusException ex) {
@@ -2061,7 +2111,7 @@ public class DLCopy extends JFrame
         } else {
             for (int i = 0; i < selectionCount; i++) {
                 StorageDevice device =
-                        (StorageDevice) installStorageDeviceListModel.get(
+                        (StorageDevice) storageDeviceListModel.get(
                         selectedIndices[i]);
                 long overhead = device.getSize() - systemSize;
                 minOverhead = Math.min(minOverhead, overhead);
@@ -2284,7 +2334,7 @@ public class DLCopy extends JFrame
         int selectedIndex = installStorageDeviceList.getSelectedIndex();
         if (selectedIndex != -1) {
             StorageDevice device =
-                    (StorageDevice) installStorageDeviceListModel.get(
+                    (StorageDevice) storageDeviceListModel.get(
                     selectedIndex);
             partitionState = getPartitionState(device.getSize(), systemSize);
         }
@@ -2427,7 +2477,7 @@ public class DLCopy extends JFrame
         String persistencyPartition =
                 getHalProperty(persistencyUDI, "block.device");
         if (!mount(persistencyPartition, persistencySourcePath)) {
-            switchToSelection();
+            switchToInstallSelection();
             return null;
         }
         return persistencySourcePath;
@@ -2548,7 +2598,7 @@ public class DLCopy extends JFrame
                 for (int i = 0; i < selectionCount; i++) {
                     currentDevice = i + 1;
                     StorageDevice storageDevice =
-                            (StorageDevice) installStorageDeviceListModel.getElementAt(
+                            (StorageDevice) storageDeviceListModel.getElementAt(
                             selectedIndices[i]);
                     // update overall progress message
                     String message =
@@ -2589,7 +2639,7 @@ public class DLCopy extends JFrame
                     currentDeviceLabel.setText(message);
                     if (!copyToStorageDevice(storageDevice)) {
                         noError = false;
-                        switchToSelection();
+                        switchToInstallSelection();
                         break;
                     }
                 }
@@ -2630,7 +2680,7 @@ public class DLCopy extends JFrame
                 errorMessage = MessageFormat.format(
                         errorMessage, ex.getMessage());
                 showErrorMessage(errorMessage);
-                switchToSelection();
+                switchToInstallSelection();
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, "Installation failed", ex);
                 String errorMessage = STRINGS.getString(
@@ -2638,7 +2688,7 @@ public class DLCopy extends JFrame
                 errorMessage = MessageFormat.format(
                         errorMessage, ex.getMessage());
                 showErrorMessage(errorMessage);
-                switchToSelection();
+                switchToInstallSelection();
             }
         }
 
@@ -3380,7 +3430,7 @@ public class DLCopy extends JFrame
         boolean harddiskSelected = false;
         for (int i : selectedIndices) {
             StorageDevice storageDevice =
-                    (StorageDevice) installStorageDeviceListModel.getElementAt(i);
+                    (StorageDevice) storageDeviceListModel.getElementAt(i);
             if (storageDevice instanceof Harddisk) {
                 harddiskSelected = true;
             }
@@ -3957,8 +4007,14 @@ public class DLCopy extends JFrame
     private javax.swing.JPanel installCardPanel;
     private javax.swing.JPanel installDonePanel;
     private javax.swing.JPanel installInfoPanel;
+    private javax.swing.JPanel installListPanel;
+    private javax.swing.JLabel installNoMediaLabel;
+    private javax.swing.JPanel installNoMediaPanel;
     private javax.swing.JPanel installPanel;
+    private javax.swing.JPanel installSelectionCardPanel;
+    private javax.swing.JLabel installSelectionHeaderLabel;
     private javax.swing.JPanel installSelectionPanel;
+    private javax.swing.JCheckBox installShowHarddiskCheckBox;
     private javax.swing.JList installStorageDeviceList;
     private javax.swing.JLabel installationLabel;
     private javax.swing.JLabel isoDoneLabel;
@@ -3971,19 +4027,12 @@ public class DLCopy extends JFrame
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
-    private javax.swing.JPanel listPanel;
     private javax.swing.JButton nextButton;
-    private javax.swing.JLabel noStickLabel;
-    private javax.swing.JLabel noStickLabel1;
-    private javax.swing.JPanel noStickPanel;
     private javax.swing.JLabel osDefinitionLabel;
     private javax.swing.JButton previousButton;
     private javax.swing.JPanel rsyncPanel;
     private javax.swing.JProgressBar rsyncPogressBar;
-    private javax.swing.JPanel selectionCardPanel;
-    private javax.swing.JLabel selectionHeaderLabel;
     private javax.swing.JLabel selectionLabel;
-    private javax.swing.JCheckBox showHarddiskCheckBox;
     private javax.swing.JLabel stepsLabel;
     private javax.swing.JPanel stepsPanel;
     private javax.swing.JScrollPane storageDeviceListScrollPane;
@@ -4003,11 +4052,13 @@ public class DLCopy extends JFrame
     private javax.swing.JLabel upgradeInfoLabel;
     private javax.swing.JPanel upgradeInfoPanel;
     private javax.swing.JPanel upgradeListPanel;
+    private javax.swing.JLabel upgradeNoMediaLabel;
     private javax.swing.JPanel upgradeNoMediaPanel;
     private javax.swing.JLabel upgradeOsDefinitionLabel;
     private javax.swing.JPanel upgradeSelectionCardPanel;
     private javax.swing.JLabel upgradeSelectionHeaderLabel;
     private javax.swing.JPanel upgradeSelectionPanel;
+    private javax.swing.JCheckBox upgradeShowHarddiskCheckBox;
     private javax.swing.JList upgradeStorageDeviceList;
     private javax.swing.JScrollPane upgradeStorageDeviceListScrollPane;
     private javax.swing.JButton usb2dvdButton;

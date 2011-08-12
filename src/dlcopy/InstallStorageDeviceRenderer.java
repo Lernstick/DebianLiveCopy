@@ -1,5 +1,5 @@
 /*
- * UsbRenderer.java
+ * InstallStorageDeviceRenderer.java
  *
  * Created on 16. April 2008, 13:23
  */
@@ -29,7 +29,8 @@ import javax.swing.ImageIcon;
  * A renderer for storage devices
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
-public class StorageDeviceRenderer extends JPanel implements ListCellRenderer {
+public class InstallStorageDeviceRenderer
+        extends JPanel implements ListCellRenderer {
 
     private final static Logger LOGGER =
             Logger.getLogger(DLCopy.class.getName());
@@ -48,7 +49,7 @@ public class StorageDeviceRenderer extends JPanel implements ListCellRenderer {
      * @param dlCopy the main program
      * @param systemSize the size of the system to be copied in Byte
      */
-    public StorageDeviceRenderer(DLCopy dlCopy, long systemSize) {
+    public InstallStorageDeviceRenderer(DLCopy dlCopy, long systemSize) {
         this.dlCopy = dlCopy;
         this.systemSize = systemSize;
         initComponents();

@@ -1,5 +1,5 @@
 /*
- * UsbRenderer.java
+ * UpgradeStorageDeviceRenderer.java
  *
  * Created on 16. April 2008, 13:23
  */
@@ -18,7 +18,7 @@ import javax.swing.ListCellRenderer;
  * A renderer for storage devices
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
-public class LiveStorageDeviceRenderer extends JPanel implements ListCellRenderer {
+public class UpgradeStorageDeviceRenderer extends JPanel implements ListCellRenderer {
 
     private final static Logger LOGGER =
             Logger.getLogger(DLCopy.class.getName());
@@ -29,7 +29,7 @@ public class LiveStorageDeviceRenderer extends JPanel implements ListCellRendere
     /** Creates new form UsbRenderer
      * @param systemSize the size of the system to be copied in Byte
      */
-    public LiveStorageDeviceRenderer(long systemSize) {
+    public UpgradeStorageDeviceRenderer(long systemSize) {
         this.systemSize = systemSize;
         initComponents();
     }
@@ -124,7 +124,7 @@ public class LiveStorageDeviceRenderer extends JPanel implements ListCellRendere
         rightPanel.setLayout(new java.awt.GridBagLayout());
 
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("dlcopy/Strings"); // NOI18N
-        descriptionLabel.setText(bundle.getString("LiveStorageDeviceRenderer.descriptionLabel.text")); // NOI18N
+        descriptionLabel.setText(bundle.getString("UpgradeStorageDeviceRenderer.descriptionLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
