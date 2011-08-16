@@ -16,8 +16,6 @@ import java.awt.Container;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
@@ -53,7 +51,6 @@ import javax.swing.JOptionPane;
 import javax.swing.JSlider;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
-import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.AbstractDocument;
@@ -62,6 +59,7 @@ import org.freedesktop.DBus;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.UInt64;
 import org.freedesktop.dbus.exceptions.DBusException;
+import org.freedesktop.udisks.Device;
 
 /**
  * Installs Debian Live to a USB flash drive
@@ -147,6 +145,7 @@ public class DLCopy extends JFrame
         Default, lernstick
     }
     private DebianLiveDistribution debianLiveDistribution;
+    private final String systemPartitionLabel;
     private List<UsbStorageDevice> debugUsbStorageDevices;
     private String persistencyUDI;
     private String persistencyDevice;
@@ -243,6 +242,10 @@ public class DLCopy extends JFrame
                 LOGGER.info("using lernstick variant");
             }
         }
+        systemPartitionLabel =
+                debianLiveDistribution == DebianLiveDistribution.lernstick
+                ? "lernstick"
+                : "DEBIAN_LIVE";
 
         initComponents();
         tmpDirTextField.getDocument().addDocumentListener(this);
@@ -406,10 +409,10 @@ public class DLCopy extends JFrame
         }
 
         installStorageDeviceList.setModel(storageDeviceListModel);
-        installStorageDeviceRenderer = 
+        installStorageDeviceRenderer =
                 new InstallStorageDeviceRenderer(this, systemSize);
         installStorageDeviceList.setCellRenderer(installStorageDeviceRenderer);
-        
+
         upgradeStorageDeviceList.setModel(storageDeviceListModel);
 
         pack();
@@ -462,7 +465,7 @@ public class DLCopy extends JFrame
                             fillInstallStorageDeviceList();
                             updateInstallStorageDeviceList();
                         } else if (line.startsWith(UDISKS_REMOVED)) {
-                            // the device was just removed, so we can not use 
+                            // the device was just removed, so we can not use
                             // getStorageDevice() here...
                             String[] tokens = line.split("/");
                             String device = tokens[tokens.length - 1];
@@ -515,6 +518,33 @@ public class DLCopy extends JFrame
                 installStorageDeviceList.setSelectedIndex(0);
             }
             updateNextButton();
+        }
+    }
+
+    private void updateUpgradeStorageDeviceList() {
+        int deviceCount = storageDeviceListModel.size();
+        if (deviceCount == 0) {
+            showCard(upgradeSelectionCardPanel, "upgradeNoMediaPanel");
+            nextButton.setEnabled(false);
+            previousButton.requestFocusInWindow();
+            getRootPane().setDefaultButton(previousButton);
+        } else {
+//            long maxSize = 0;
+//            for (int i = 0; i < deviceCount; i++) {
+//                StorageDevice storageDevice =
+//                        (StorageDevice) storageDeviceListModel.get(i);
+//                long deviceSize = storageDevice.getSize();
+//                if (deviceSize > maxSize) {
+//                    maxSize = deviceSize;
+//                }
+//            }
+//            installStorageDeviceRenderer.setMaxSize(maxSize);
+
+            showCard(upgradeSelectionCardPanel, "listPanel");
+            // auto-select single entry
+            if (deviceCount == 1) {
+                upgradeStorageDeviceList.setSelectedIndex(0);
+            }
         }
     }
 
@@ -1787,7 +1817,7 @@ public class DLCopy extends JFrame
     }//GEN-LAST:event_previousButtonActionPerformed
 
     private void installStorageDeviceListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_installStorageDeviceListValueChanged
-        listSelectionChanged();
+        installListSelectionChanged();
     }//GEN-LAST:event_installStorageDeviceListValueChanged
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -1805,7 +1835,7 @@ public class DLCopy extends JFrame
 }//GEN-LAST:event_exchangePartitionSizeSliderStateChanged
 
     private void exchangePartitionSizeSliderComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_exchangePartitionSizeSliderComponentResized
-        listSelectionChanged();
+        installListSelectionChanged();
     }//GEN-LAST:event_exchangePartitionSizeSliderComponentResized
 
     private void nextButtonFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nextButtonFocusGained
@@ -1906,18 +1936,11 @@ public class DLCopy extends JFrame
     }//GEN-LAST:event_upgradeStorageDeviceListValueChanged
 
     private void upgradeSelectionPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_upgradeSelectionPanelComponentShown
-        try {
-            List<StorageDevice> storageDevices = getStorageDevices(
-                    upgradeShowHarddiskCheckBox.isSelected());
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        } catch (DBusException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        }
+        fillUpgradeStorageDeviceList();
     }//GEN-LAST:event_upgradeSelectionPanelComponentShown
 
 private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_upgradeShowHarddiskCheckBoxItemStateChanged
-// TODO add your handling code here:
+    fillUpgradeStorageDeviceList();
 }//GEN-LAST:event_upgradeShowHarddiskCheckBoxItemStateChanged
 
     private String getBootDevice(String path) throws IOException {
@@ -2030,7 +2053,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 //        deviceListUpdater.setInitialDelay(0);
 //        deviceListUpdater.start();
         previousButton.setEnabled(true);
-        listSelectionChanged();
+        installListSelectionChanged();
         state = State.INSTALL_SELECTION;
         showCard(cardPanel, "installSelectionPanel");
     }
@@ -2070,11 +2093,41 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
         storageDeviceListModel.clear();
         try {
-            List<StorageDevice> storageDevices =
-                    getStorageDevices(upgradeShowHarddiskCheckBox.isSelected());
+            List<StorageDevice> storageDevices = getStorageDevices(
+                    upgradeShowHarddiskCheckBox.isSelected());
             Collections.sort(storageDevices);
             for (StorageDevice storageDevice : storageDevices) {
-                storageDeviceListModel.addElement(storageDevice);
+                // search for an upgradable partition on this device
+                LOGGER.log(Level.FINEST, "checking partitions on device {0}",
+                        storageDevice.getDevice());
+                List<Partition> partitions = storageDevice.getPartitions();
+                for (Partition partition : partitions) {
+                    String partitionDevice = partition.getDevice();
+                    LOGGER.log(Level.FINEST, "checking partition {0}",
+                            partitionDevice);
+                    String partitionLabel = partition.getLabel();
+                    LOGGER.log(Level.FINEST,
+                            "partition label: \"{0}\"", partitionLabel);
+                    if (systemPartitionLabel.equals(partitionLabel)) {
+                        String mountPath = mount(partitionDevice);
+                        LOGGER.log(Level.FINEST,
+                                "checking file structure on partition {0}",
+                                partitionDevice);
+                        File squashFS = new File(
+                                mountPath + "/live/filesystem.squashfs");
+                        if (squashFS.exists()) {
+                            LOGGER.log(Level.INFO,
+                                    "found squashfs on partition {0}",
+                                    partitionDevice);
+                            // ok, now we are pretty sure that this system can
+                            // be upgraded...
+                            storageDeviceListModel.addElement(storageDevice);
+                        } else {
+                            LOGGER.log(Level.INFO,
+                                    "{0} does not exist", squashFS);
+                        }
+                    }
+                }
             }
 
             // try to restore the previous selection
@@ -2093,7 +2146,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         }
     }
 
-    private void listSelectionChanged() {
+    private void installListSelectionChanged() {
 
         // early return
         if (state != State.INSTALL_SELECTION) {
@@ -2206,16 +2259,6 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
     }
 
-    private List<StorageDevice> getLiveDevices() throws IOException, DBusException {
-        List<StorageDevice> liveDevices = new ArrayList<StorageDevice>();
-        List<StorageDevice> storageDevices = getStorageDevices(true);
-        for (StorageDevice storageDevice : storageDevices) {
-            // TODO: check if Debian Live is installed:
-            // two or three partitions?
-        }
-        return liveDevices;
-    }
-
     private List<StorageDevice> getStorageDevices(boolean includeHarddisks)
             throws IOException, DBusException {
         List<StorageDevice> storageDevices = new ArrayList<StorageDevice>();
@@ -2280,17 +2323,17 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             int blockSize = blockSize64.intValue();
             if (deviceFile.startsWith("/dev/mmcblk")) {
                 // an SD card
-                return new SDStorageDevice(
-                        model, revision, deviceFile, size, blockSize);
+                return new SDStorageDevice(dbusSystemConnection, model,
+                        revision, deviceFile, size, blockSize);
             } else {
                 if (removable) {
                     // probably a USB flash drive
-                    return new UsbStorageDevice(vendor, model, revision,
-                            deviceFile, size, blockSize);
+                    return new UsbStorageDevice(dbusSystemConnection, vendor,
+                            model, revision, deviceFile, size, blockSize);
                 } else {
                     // probably a hard drive
                     if (includeHarddisks) {
-                        return new Harddisk(vendor, model,
+                        return new Harddisk(dbusSystemConnection, vendor, model,
                                 revision, deviceFile, size, blockSize);
                     }
                 }
@@ -2481,6 +2524,26 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             return null;
         }
         return persistencySourcePath;
+    }
+
+    private String mount(String partitionDevice) throws DBusException {
+        String dbusPath = "/org/freedesktop/UDisks/devices/" + partitionDevice;
+        DBus.Properties deviceProperties = dbusSystemConnection.getRemoteObject(
+                "org.freedesktop.UDisks", dbusPath, DBus.Properties.class);
+        List<String> mountPaths = deviceProperties.Get(
+                "org.freedesktop.UDisks", "DeviceMountPaths");
+        if (!mountPaths.isEmpty()) {
+            String mountPath = mountPaths.get(0);
+            if (LOGGER.isLoggable(Level.FINEST)) {
+                LOGGER.log(Level.FINEST, "{0} already mounted at {1}",
+                        new Object[]{partitionDevice, mountPath});
+            }
+            return mountPath;
+        } else {
+            Device device = dbusSystemConnection.getRemoteObject(
+                    "org.freedesktop.UDisks", dbusPath, Device.class);
+            return device.FilesystemMount("auto", new ArrayList<String>());
+        }
     }
 
     private boolean mount(String device, String mountPoint) {
@@ -3339,11 +3402,6 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
         private boolean formatSystemPartition(
                 String device, boolean showErrorMessage) {
-            String systemPartitionLabel =
-                    debianLiveDistribution == DebianLiveDistribution.lernstick
-                    ? "lernstick"
-                    : "DEBIAN_LIVE";
-
             // hint: the partition label can be only 11 characters long!
             int exitValue = processExecutor.executeProcess(
                     "mkfs.vfat", "-n", systemPartitionLabel, device);

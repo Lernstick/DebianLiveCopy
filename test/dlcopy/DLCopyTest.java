@@ -25,20 +25,20 @@ public class DLCopyTest {
 
         List<UsbStorageDevice> debugUsbStorageDevices =
                 new ArrayList<UsbStorageDevice>();
-        debugUsbStorageDevices.add(new UsbStorageDevice("vendor 0", "model 0",
-                "rev 0", "device 0", 20L * DLCopy.MEGA, 512));
-        debugUsbStorageDevices.add(new UsbStorageDevice("vendor 1", "model 1", 
-                "rev 0", "device 1", 200L * DLCopy.MEGA, 512));
-        debugUsbStorageDevices.add(new UsbStorageDevice("vendor 2", "model 2", 
-                "rev 0", "device 2", 2000L * DLCopy.MEGA, 512));
-        debugUsbStorageDevices.add(new UsbStorageDevice("vendor 3", "model 3", 
-                "rev 0", "device 3", 2800L * DLCopy.MEGA, 512));
-        debugUsbStorageDevices.add(new UsbStorageDevice("vendor 4", "model 4", 
-                "rev 0", "device 4", 2900L * DLCopy.MEGA, 512));
-        debugUsbStorageDevices.add(new UsbStorageDevice("vendor 5", "model 5", 
-                "rev 0", "device 5", 3100L * DLCopy.MEGA, 512));
-        debugUsbStorageDevices.add(new UsbStorageDevice("vendor 6", "model 6", 
-                "rev 0", "device 6", 8000L * DLCopy.MEGA, 512));
+        debugUsbStorageDevices.add(new UsbStorageDevice(null, "vendor 0",
+                "model 0", "rev 0", "device 0", 20L * DLCopy.MEGA, 512));
+        debugUsbStorageDevices.add(new UsbStorageDevice(null, "vendor 1",
+                "model 1", "rev 0", "device 1", 200L * DLCopy.MEGA, 512));
+        debugUsbStorageDevices.add(new UsbStorageDevice(null, "vendor 2",
+                "model 2", "rev 0", "device 2", 2000L * DLCopy.MEGA, 512));
+        debugUsbStorageDevices.add(new UsbStorageDevice(null, "vendor 3",
+                "model 3", "rev 0", "device 3", 2800L * DLCopy.MEGA, 512));
+        debugUsbStorageDevices.add(new UsbStorageDevice(null, "vendor 4",
+                "model 4", "rev 0", "device 4", 2900L * DLCopy.MEGA, 512));
+        debugUsbStorageDevices.add(new UsbStorageDevice(null, "vendor 5",
+                "model 5", "rev 0", "device 5", 3100L * DLCopy.MEGA, 512));
+        debugUsbStorageDevices.add(new UsbStorageDevice(null, "vendor 6",
+                "model 6", "rev 0", "device 6", 8000L * DLCopy.MEGA, 512));
 
         String[] arguments = new String[]{
             "--variant", "lernstick",

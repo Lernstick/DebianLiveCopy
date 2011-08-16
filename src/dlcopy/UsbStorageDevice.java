@@ -1,5 +1,7 @@
 package dlcopy;
 
+import org.freedesktop.dbus.DBusConnection;
+
 /**
  * A USB storage device
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
@@ -11,6 +13,7 @@ public class UsbStorageDevice extends StorageDevice {
 
     /**
      * Creates a new UsbStorageDevice
+     * @param dbusSystemConnection the dbus system connection
      * @param vendor the vendor
      * @param model the model
      * @param revision the revision of the device
@@ -18,9 +21,10 @@ public class UsbStorageDevice extends StorageDevice {
      * @param size the size in Byte
      * @param blockSize the block size of the device given in byte 
      */
-    public UsbStorageDevice(String vendor, String model, String revision,
-            String device, long size, int blockSize) {
-        super(device, revision, size, blockSize);
+    public UsbStorageDevice(DBusConnection dbusSystemConnection, String vendor,
+            String model, String revision, String device, long size,
+            int blockSize) {
+        super(dbusSystemConnection, device, revision, size, blockSize);
         this.vendor = vendor;
         this.model = model;
     }

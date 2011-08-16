@@ -6,15 +6,19 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import org.freedesktop.DBus;
+import org.freedesktop.dbus.DBusConnection;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 /**
  * A storage device
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
-public class StorageDevice implements Comparable<StorageDevice> {
+public abstract class StorageDevice implements Comparable<StorageDevice> {
 
     private static final Logger LOGGER =
             Logger.getLogger(StorageDevice.class.getName());
+    private final DBusConnection dbusSystemConnection;
     private final String device;
     private final String revision;
     private final long size;
@@ -23,13 +27,15 @@ public class StorageDevice implements Comparable<StorageDevice> {
 
     /**
      * Creates a new StorageDevice
+     * @param dbusSystemConnection the dbus system connection
      * @param device the device node (e.g. /dev/sdb)
      * @param revision the revision of the device
      * @param size the size in Byte
      * @param blockSize the block size of the device given in byte
      */
-    public StorageDevice(String device, String revision, long size,
-            int blockSize) {
+    public StorageDevice(DBusConnection dbusSystemConnection, String device,
+            String revision, long size, int blockSize) {
+        this.dbusSystemConnection = dbusSystemConnection;
         this.device = device;
         this.revision = revision;
         this.size = size;
@@ -103,10 +109,10 @@ public class StorageDevice implements Comparable<StorageDevice> {
         if (partitions == null) {
             // create new list
             partitions = new ArrayList<Partition>();
-            
+
             // call sfdisk to get partition info
             ProcessExecutor processExecutor = new ProcessExecutor();
-            processExecutor.executeProcess("sfdisk", "-uS", "-l", device);
+            processExecutor.executeProcess(true, "sfdisk", "-uS", "-l", device);
             List<String> lines = processExecutor.getStdOut();
 
             /**
@@ -118,17 +124,17 @@ public class StorageDevice implements Comparable<StorageDevice> {
              * /dev/sda3             0         -          0   0  Empty
              * /dev/sda4             0         -          0   0  Empty
              */
-            Pattern bootablePartitionPattern = Pattern.compile("(/dev/\\w+)\\s+"
-                    + "\\*\\s+(\\w+)\\s+(\\w+)\\s+\\w+\\s+(\\w+)\\s+(\\w+)");
-            Pattern nonBootablePartitionPattern = Pattern.compile("(/dev/\\w+)"
-                    + "\\s+(\\w+)\\s+(\\w+)\\s+\\w+\\s+(\\w+)\\s+(\\w+)");
+            Pattern bootablePartitionPattern = Pattern.compile(
+                    "/dev/(\\w+)\\s+\\*\\s+(\\w+)\\s+(\\w+)\\s+\\w+\\s+(\\w+)\\s+(.*)");
+            Pattern nonBootablePartitionPattern = Pattern.compile(
+                    "/dev/(\\w+)\\s+(\\w+)\\s+(\\w+)\\s+\\w+\\s+(\\w+)\\s+(.*)");
             for (String line : lines) {
-                Matcher bootableMatcher = 
+                Matcher bootableMatcher =
                         bootablePartitionPattern.matcher(line);
                 if (bootableMatcher.matches()) {
                     partitions.add(parsePartition(bootableMatcher, true));
                 }
-                Matcher nonBootableMatcher = 
+                Matcher nonBootableMatcher =
                         nonBootablePartitionPattern.matcher(line);
                 if (nonBootableMatcher.matches()) {
                     partitions.add(parsePartition(nonBootableMatcher, false));
@@ -147,10 +153,19 @@ public class StorageDevice implements Comparable<StorageDevice> {
             long end = Long.parseLong(endString);
             String id = matcher.group(4);
             String description = matcher.group(5);
+            DBus.Properties deviceProperties =
+                    dbusSystemConnection.getRemoteObject(
+                    "org.freedesktop.UDisks",
+                    "/org/freedesktop/UDisks/devices/" + partitionDevice,
+                    DBus.Properties.class);
+            String idLabel = deviceProperties.Get(
+                    "org.freedesktop.UDisks", "IdLabel");
             return new Partition(partitionDevice,
-                    bootable, start, end, id, description);
+                    bootable, start, end, id, description, idLabel);
         } catch (NumberFormatException numberFormatException) {
             LOGGER.log(Level.WARNING, "", numberFormatException);
+        } catch (DBusException ex) {
+            LOGGER.log(Level.WARNING, "", ex);
         }
         return null;
     }
