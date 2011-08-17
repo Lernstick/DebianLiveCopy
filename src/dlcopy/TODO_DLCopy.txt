@@ -11,7 +11,7 @@
 
 - Renderer:
     - verschiedene Icons für USB-Sticks, USB-Festplatten, SD-Karten, CF-Karten
-    - Legende anstatt Text im Balken
+    - Legende unter Partitionsbalken anstatt Text im Balken
 
 - Installation:
     - Liste aller ausgewählten USB-Sticks anzeigen

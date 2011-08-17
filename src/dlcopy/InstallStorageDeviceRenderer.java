@@ -39,7 +39,7 @@ public class InstallStorageDeviceRenderer
     private final DLCopy dlCopy;
     private final long systemSize;
     private final Color LIGHT_BLUE = new Color(170, 170, 255);
-    private long maxUsbStorageSize;
+    private long maxStorageDeviceSize;
     private StorageDevice storageDevice;
     private boolean isSelected;
     private final int iconInsets;
@@ -115,7 +115,7 @@ public class InstallStorageDeviceRenderer
         int height = getHeight();
         long overhead = usbStorageSize - systemSize;
         int usbStorageWidth = (int) (((componentWidth - iconGap - 2 * OFFSET)
-                * usbStorageSize) / maxUsbStorageSize);
+                * usbStorageSize) / maxStorageDeviceSize);
         PartitionState partitionState =
                 DLCopy.getPartitionState(usbStorageSize, systemSize);
 
@@ -285,7 +285,7 @@ public class InstallStorageDeviceRenderer
      * @param maxSize the size of the largest USB stick
      */
     public void setMaxSize(long maxSize) {
-        this.maxUsbStorageSize = maxSize;
+        this.maxStorageDeviceSize = maxSize;
     }
 
     /** This method is called from within the constructor to

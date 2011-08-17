@@ -1,13 +1,12 @@
 package dlcopy;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import org.freedesktop.DBus;
-import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 /**
@@ -18,28 +17,32 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
 
     private static final Logger LOGGER =
             Logger.getLogger(StorageDevice.class.getName());
-    private final DBusConnection dbusSystemConnection;
     private final String device;
     private final String revision;
+    private final String serial;
     private final long size;
     private final int blockSize;
+    private final String systemPartitionLabel;
     private List<Partition> partitions;
+    private Boolean isLiveSystem;
 
     /**
      * Creates a new StorageDevice
-     * @param dbusSystemConnection the dbus system connection
      * @param device the device node (e.g. /dev/sdb)
      * @param revision the revision of the device
+     * @param serial the serial of the device
      * @param size the size in Byte
      * @param blockSize the block size of the device given in byte
+     * @param systemPartitionLabel the (expected) system partition label
      */
-    public StorageDevice(DBusConnection dbusSystemConnection, String device,
-            String revision, long size, int blockSize) {
-        this.dbusSystemConnection = dbusSystemConnection;
+    public StorageDevice(String device, String revision, String serial,
+            long size, int blockSize, String systemPartitionLabel) {
         this.device = device;
         this.revision = revision;
+        this.serial = serial;
         this.size = size;
         this.blockSize = blockSize;
+        this.systemPartitionLabel = systemPartitionLabel;
     }
 
     @Override
@@ -95,6 +98,14 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
     }
 
     /**
+     * returns the serial of the storage device
+     * @return the serial of the storage device
+     */
+    public String getSerial() {
+        return serial;
+    }
+
+    /**
      * @return the blockSize
      */
     public int getBlockSize() {
@@ -117,7 +128,7 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
 
             /**
              * parse partition lines, example:
-             * 
+             *
              *    Device Boot    Start       End   #sectors  Id  System
              * /dev/sda1             1 1241824499 1241824499  83  Linux
              * /dev/sda2   * 1241824500 1250258624    8434125   c  W95 FAT32 (LBA)
@@ -144,6 +155,32 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
         return partitions;
     }
 
+    /**
+     * returns <code>true</code>, if this is a Debian Live system,
+     * <code>false</code> otherwise
+     * @return <code>true</code>, if this is a Debian Live system,
+     * <code>false</code> otherwise
+     * @throws DBusException if a dbus exception occurs
+     */
+    public synchronized boolean isLiveSystem() throws DBusException {
+        // lazy initialization of isLiveSystem
+        if (isLiveSystem == null) {
+            isLiveSystem = false;
+            // search for an Debian Live system partition on this storage device
+            LOGGER.log(Level.FINEST,
+                    "checking partitions on device {0}", device);
+            List<Partition> myPartitions = getPartitions();
+            for (Partition partition : myPartitions) {
+                if (partition.isSystemPartition()) {
+                    isLiveSystem = true;
+                    break; // for
+                }
+            }
+
+        }
+        return isLiveSystem;
+    }
+
     private Partition parsePartition(Matcher matcher, boolean bootable) {
         try {
             String partitionDevice = matcher.group(1);
@@ -153,15 +190,10 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
             long end = Long.parseLong(endString);
             String id = matcher.group(4);
             String description = matcher.group(5);
-            DBus.Properties deviceProperties =
-                    dbusSystemConnection.getRemoteObject(
-                    "org.freedesktop.UDisks",
-                    "/org/freedesktop/UDisks/devices/" + partitionDevice,
-                    DBus.Properties.class);
-            String idLabel = deviceProperties.Get(
-                    "org.freedesktop.UDisks", "IdLabel");
-            return new Partition(partitionDevice,
-                    bootable, start, end, id, description, idLabel);
+            String idLabel = DbusTools.getStringProperty(
+                    partitionDevice, "IdLabel");
+            return new Partition(partitionDevice, bootable, start, end, id,
+                    description, idLabel, systemPartitionLabel);
         } catch (NumberFormatException numberFormatException) {
             LOGGER.log(Level.WARNING, "", numberFormatException);
         } catch (DBusException ex) {

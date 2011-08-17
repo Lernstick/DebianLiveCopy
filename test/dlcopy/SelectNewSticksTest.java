@@ -23,8 +23,9 @@ public class SelectNewSticksTest {
 
         List<UsbStorageDevice> debugUsbStorageDevices =
                 new ArrayList<UsbStorageDevice>();
-        debugUsbStorageDevices.add(new UsbStorageDevice(null, "PNY",
-                "ATTACHE OPTIMA", "123", "/dev/sdb", 8000L * DLCopy.MEGA, 512));
+        debugUsbStorageDevices.add(new UsbStorageDevice("PNY", "ATTACHE OPTIMA",
+                "123", "123", "/dev/sdb", 8000L * DLCopy.MEGA, 512,
+                "lernstick"));
 
         String[] arguments = new String[]{
             "--variant", "lernstick",
@@ -55,8 +56,9 @@ public class SelectNewSticksTest {
         assertTrue((selectedIndices.length == 1) && (selectedIndices[0] == 0));
 
         // insert second stick
-        debugUsbStorageDevices.add(new UsbStorageDevice(null, "Corsair",
-                "Voyager Mini", "234", "/dev/sdc", 16000L * DLCopy.MEGA, 512));
+        debugUsbStorageDevices.add(new UsbStorageDevice("Corsair",
+                "Voyager Mini", "234", "567", "/dev/sdc", 16000L * DLCopy.MEGA,
+                512, "lernstick"));
         dlCopy.setDebugUsbStorageDevices(debugUsbStorageDevices);
         Thread.sleep(2000);
         selectedIndices = usbStorageDeviceListOperator.getSelectedIndices();
