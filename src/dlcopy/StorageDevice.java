@@ -1,6 +1,5 @@
 package dlcopy;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -18,6 +17,8 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
     private static final Logger LOGGER =
             Logger.getLogger(StorageDevice.class.getName());
     private final String device;
+    private final String vendor;
+    private final String model;
     private final String revision;
     private final String serial;
     private final long size;
@@ -29,15 +30,20 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
     /**
      * Creates a new StorageDevice
      * @param device the device node (e.g. /dev/sdb)
-     * @param revision the revision of the device
-     * @param serial the serial of the device
-     * @param size the size in Byte
-     * @param blockSize the block size of the device given in byte
+     * @param vendor the storage device vendor
+     * @param model the storage device model
+     * @param revision the revision of the storage device
+     * @param serial the serial of the storage device
+     * @param size the size of the storage device in Byte
+     * @param blockSize the block size of the storage device given in byte
      * @param systemPartitionLabel the (expected) system partition label
      */
-    public StorageDevice(String device, String revision, String serial,
-            long size, int blockSize, String systemPartitionLabel) {
+    public StorageDevice(String device, String vendor, String model,
+            String revision, String serial, long size, int blockSize,
+            String systemPartitionLabel) {
         this.device = device;
+        this.vendor = vendor;
+        this.model = model;
         this.revision = revision;
         this.serial = serial;
         this.size = size;
@@ -82,11 +88,19 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
     }
 
     /**
-     * returns the size of the USB storage device (in Byte)
-     * @return the size of the USB storage device (in Byte)
+     * returns the storage device vendor
+     * @return the storage device vendor
      */
-    public long getSize() {
-        return size;
+    public String getVendor() {
+        return vendor;
+    }
+
+    /**
+     * returns the storage device model
+     * @return the storage device model
+     */
+    public String getModel() {
+        return model;
     }
 
     /**
@@ -103,6 +117,14 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
      */
     public String getSerial() {
         return serial;
+    }
+
+    /**
+     * returns the size of the USB storage device (in Byte)
+     * @return the size of the USB storage device (in Byte)
+     */
+    public long getSize() {
+        return size;
     }
 
     /**
@@ -192,8 +214,10 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
             String description = matcher.group(5);
             String idLabel = DbusTools.getStringProperty(
                     partitionDevice, "IdLabel");
+            String idType = DbusTools.getStringProperty(
+                    partitionDevice, "IdType");
             return new Partition(partitionDevice, bootable, start, end, id,
-                    description, idLabel, systemPartitionLabel);
+                    description, idLabel, idType, systemPartitionLabel);
         } catch (NumberFormatException numberFormatException) {
             LOGGER.log(Level.WARNING, "", numberFormatException);
         } catch (DBusException ex) {

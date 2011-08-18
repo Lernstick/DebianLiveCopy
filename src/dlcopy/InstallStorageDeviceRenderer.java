@@ -100,7 +100,7 @@ public class InstallStorageDeviceRenderer
         } else if (storageDevice instanceof SDStorageDevice) {
             SDStorageDevice sdStorageDevice =
                     (SDStorageDevice) storageDevice;
-            deviceText = sdStorageDevice.getName() + " "
+            deviceText = sdStorageDevice.getModel() + " "
                     + DLCopy.getDataVolumeString(usbStorageSize, 1) + " ("
                     + sdStorageDevice.getDevice() + ")";
             iconLabel.setIcon(new ImageIcon(getClass().getResource(

@@ -6,9 +6,6 @@ package dlcopy;
  */
 public class Harddisk extends StorageDevice {
 
-    private final String vendor;
-    private final String model;
-
     /**
      * Creates a new Harddisk
      * @param vendor the vendor
@@ -23,52 +20,7 @@ public class Harddisk extends StorageDevice {
     public Harddisk(String vendor, String model, String revision, String serial,
             String device, long size, int blockSize,
             String systemPartitionLabel) {
-        super(device, revision, serial, size, blockSize, systemPartitionLabel);
-        this.vendor = vendor;
-        this.model = model;
-    }
-
-    @Override
-    public String toString() {
-        return vendor + " " + model + ", " + getDevice() + ", "
-                + DLCopy.getDataVolumeString(getSize(), 1);
-    }
-
-    /**
-     * returns the vendor of the harddisk
-     * @return the vendor of the harddisk
-     */
-    public String getVendor() {
-        return vendor;
-    }
-
-    /**
-     * returns the model of the harddisk
-     * @return the model of the harddisk
-     */
-    public String getModel() {
-        return model;
-    }
-
-    @Override
-    public boolean equals(Object other) {
-        if (other instanceof Harddisk) {
-            Harddisk otherDevice = (Harddisk) other;
-            return otherDevice.getVendor().equals(vendor)
-                    && otherDevice.getModel().equals(model)
-                    && otherDevice.getDevice().equals(getDevice())
-                    && otherDevice.getSize() == getSize();
-        }
-        return false;
-    }
-
-    @Override
-    public int hashCode() {
-        int hash = 5;
-        hash = 41 * hash + (vendor != null ? vendor.hashCode() : 0);
-        hash = 41 * hash + (model != null ? model.hashCode() : 0);
-        hash = 41 * hash + (getDevice() != null ? getDevice().hashCode() : 0);
-        hash = 41 * hash + (int) (getSize() ^ (getSize() >>> 32));
-        return hash;
+        super(device, vendor, model, revision, serial, size, blockSize,
+                systemPartitionLabel);
     }
 }

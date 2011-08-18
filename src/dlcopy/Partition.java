@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.freedesktop.dbus.exceptions.DBusException;
+import org.freedesktop.dbus.exceptions.DBusExecutionException;
 
 /**
  * A storage device partition
@@ -22,6 +23,7 @@ public class Partition {
     private final String typeID;
     private final String typeDescription;
     private final String label;
+    private final String fileSystem;
     private final String systemPartitionLabel;
     private Boolean isSystemPartition;
 
@@ -34,11 +36,12 @@ public class Partition {
      * @param typeID the partition type ID
      * @param typeDescription the partition type description
      * @param label the label of the partition
+     * @param fileSystem the file system on this partition
      * @param systemPartitionLabel the (expected) system partition label
      */
     public Partition(String device, boolean bootable, long startSector,
             long endSector, String typeID, String typeDescription,
-            String label, String systemPartitionLabel) {
+            String label, String fileSystem, String systemPartitionLabel) {
         this.device = device;
         this.bootable = bootable;
         this.startSector = startSector;
@@ -46,6 +49,7 @@ public class Partition {
         this.typeID = typeID;
         this.typeDescription = typeDescription;
         this.label = label;
+        this.fileSystem = fileSystem;
         this.systemPartitionLabel = systemPartitionLabel;
     }
 
@@ -150,7 +154,6 @@ public class Partition {
      */
     public void umount() throws DBusException {
         DbusTools.getDevice(device).FilesystemUnmount(new ArrayList<String>());
-        return;
     }
 
     /**
@@ -171,7 +174,7 @@ public class Partition {
                 boolean tmpMount = false;
                 List<String> mountPaths = getMountPaths();
                 if (mountPaths.isEmpty()) {
-                    mount();
+                    mountPath = mount();
                     tmpMount = true;
                 } else {
                     mountPath = mountPaths.get(0);
@@ -186,13 +189,6 @@ public class Partition {
                         "checking file structure on partition {0}", device);
                 File squashFS = new File(
                         mountPath + "/live/filesystem.squashfs");
-
-                // cleanup
-                if (tmpMount) {
-                    umount();
-                }
-
-                // return
                 if (squashFS.exists()) {
                     LOGGER.log(Level.INFO,
                             "found squashfs on partition {0}", device);
@@ -202,11 +198,26 @@ public class Partition {
                 } else {
                     LOGGER.log(Level.INFO, "{0} does not exist", squashFS);
                 }
+
+                // cleanup
+                if (tmpMount) {
+                    boolean success = false;
+                    for (int i = 0; !success && (i < 10); i++) {
+                        try {
+                            umount();
+                            success = true;
+                        } catch (DBusExecutionException ex) {
+                            handleUmountException(ex);
+                        } catch (DBusException ex) {
+                            handleUmountException(ex);
+                        }
+                    }
+                }
             }
         }
         return isSystemPartition;
     }
-    
+
     /**
      * returns <code>true</code>, if this partition is a Debian Live persistency
      * partition, <code>false</code> otherwise
@@ -215,5 +226,22 @@ public class Partition {
      */
     public boolean isPersistencyPartition() {
         return label.equals("live-rw");
+    }
+
+    /**
+     * returns the file system on this partition
+     * @return the file system on this partition
+     */
+    public String getFileSystem() {
+        return fileSystem;
+    }
+
+    private void handleUmountException(Exception ex) {
+        LOGGER.log(Level.WARNING, "", ex);
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex2) {
+            LOGGER.log(Level.SEVERE, "", ex2);
+        }
     }
 }

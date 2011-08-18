@@ -59,7 +59,6 @@ import org.freedesktop.DBus;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.UInt64;
 import org.freedesktop.dbus.exceptions.DBusException;
-import org.freedesktop.udisks.Device;
 
 /**
  * Installs Debian Live to a USB flash drive
@@ -284,8 +283,9 @@ public class DLCopy extends JFrame
 
         // determine system size
         File system = new File(DEBIAN_LIVE_SYSTEM_PATH);
+        long systemSpace = 0;
         if (systemSize == -1) {
-            long systemSpace = system.getTotalSpace() - system.getFreeSpace();
+            systemSpace = system.getTotalSpace() - system.getFreeSpace();
             LOGGER.log(Level.FINEST, "systemSpace: {0}", systemSpace);
             systemSize = (long) (systemSpace * SIZE_FACTOR);
             LOGGER.log(Level.FINEST, "systemSize: {0}", systemSize);
@@ -294,6 +294,11 @@ public class DLCopy extends JFrame
         String text = STRINGS.getString("Select_Install_Target_Storage_Media");
         text = MessageFormat.format(text, sizeString);
         installSelectionHeaderLabel.setText(text);
+        
+        sizeString = getDataVolumeString(systemSpace, 1);
+        text = STRINGS.getString("Select_Upgrade_Target_Storage_Media");
+        text = MessageFormat.format(text, sizeString);
+        upgradeSelectionHeaderLabel.setText(text);
 
         // detect if system has an exchange partition
         // - boot device must have more than one partition
@@ -1107,7 +1112,7 @@ public class DLCopy extends JFrame
 
         createPartitionPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopy.createPartitionPanel.border.title"))); // NOI18N
 
-        exchangePartitionSizeLabel.setText(bundle.getString("DLCopy.exchangePartitionSizeLabel.text")); // NOI18N
+        exchangePartitionSizeLabel.setText(bundle.getString("Size")); // NOI18N
         exchangePartitionSizeLabel.setEnabled(false);
 
         exchangePartitionSizeSlider.setMaximum(0);
@@ -1132,7 +1137,7 @@ public class DLCopy extends JFrame
         exchangePartitionSizeUnitLabel.setText(bundle.getString("DLCopy.exchangePartitionSizeUnitLabel.text")); // NOI18N
         exchangePartitionSizeUnitLabel.setEnabled(false);
 
-        exchangePartitionLabel.setText(bundle.getString("DLCopy.exchangePartitionLabel.text")); // NOI18N
+        exchangePartitionLabel.setText(bundle.getString("Label")); // NOI18N
         exchangePartitionLabel.setEnabled(false);
 
         exchangePartitionTextField.setColumns(11);
@@ -2307,8 +2312,8 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             int blockSize = blockSize64.intValue();
             if (deviceFile.startsWith("/dev/mmcblk")) {
                 // an SD card
-                return new SDStorageDevice(model, revision, serial, deviceFile,
-                        size, blockSize, systemPartitionLabel);
+                return new SDStorageDevice(vendor, model, revision, serial,
+                        deviceFile, size, blockSize, systemPartitionLabel);
             } else {
                 if (removable) {
                     // probably a USB flash drive
@@ -2634,39 +2639,13 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                     // update overall progress message
                     String message =
                             STRINGS.getString("Install_Device_Info");
-                    if (storageDevice instanceof UsbStorageDevice) {
-                        UsbStorageDevice usbStorageDevice =
-                                (UsbStorageDevice) storageDevice;
-                        message = MessageFormat.format(message,
-                                usbStorageDevice.getVendor() + " "
-                                + usbStorageDevice.getModel() + " "
-                                + getDataVolumeString(
-                                usbStorageDevice.getSize(), 1),
-                                usbStorageDevice.getDevice(),
-                                currentDevice, selectionCount);
-                    } else if (storageDevice instanceof SDStorageDevice) {
-                        SDStorageDevice sdStorageDevice =
-                                (SDStorageDevice) storageDevice;
-                        String dataVolume = getDataVolumeString(
-                                sdStorageDevice.getSize(), 1);
-                        message = MessageFormat.format(message,
-                                sdStorageDevice.getName() + " " + dataVolume,
-                                sdStorageDevice.getDevice(),
-                                currentDevice, selectionCount);
-                    } else if (storageDevice instanceof Harddisk) {
-                        Harddisk harddisk = (Harddisk) storageDevice;
-                        message = MessageFormat.format(message,
-                                harddisk.getVendor() + " "
-                                + harddisk.getModel() + " "
-                                + getDataVolumeString(
-                                harddisk.getSize(), 1),
-                                harddisk.getDevice(),
-                                currentDevice, selectionCount);
-                    } else {
-                        LOGGER.log(Level.WARNING,
-                                "unsupported storage device instance: {0}",
-                                storageDevice);
-                    }
+                    message = MessageFormat.format(message,
+                            storageDevice.getVendor() + " "
+                            + storageDevice.getModel() + " "
+                            + getDataVolumeString(
+                            storageDevice.getSize(), 1),
+                            storageDevice.getDevice(),
+                            currentDevice, selectionCount);
                     currentDeviceLabel.setText(message);
                     if (!copyToStorageDevice(storageDevice)) {
                         noError = false;
