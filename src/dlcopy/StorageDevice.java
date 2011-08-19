@@ -153,7 +153,7 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
 
             // call sfdisk to get partition info
             ProcessExecutor processExecutor = new ProcessExecutor();
-            processExecutor.executeProcess(true, true, 
+            processExecutor.executeProcess(true, true,
                     "sfdisk", "-uS", "-l", device);
             List<String> lines = processExecutor.getStdOutList();
 
@@ -204,7 +204,15 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
                     systemPartitionFound = true;
                     long partitionSize = blockSize
                             * partition.getSectorCount();
-                    sizeFits = partitionSize > (systemSize / 1.1f);
+                    // wild guess: give file system maximum 2% overhead...
+                    long saveSystemSize = (long) (systemSize * 1.02);
+                    if (LOGGER.isLoggable(Level.INFO)) {
+                        LOGGER.log(Level.INFO,
+                                "systemSize: {0}, saveSystemSize: {1}, size of {2}: {3}",
+                                new Object[]{systemSize, saveSystemSize,
+                                    partition.getDevice(), partitionSize});
+                    }
+                    sizeFits = partitionSize > saveSystemSize;
                     if (sizeFits) {
                         systemPartition = partition;
                         canBeUpgraded = true;

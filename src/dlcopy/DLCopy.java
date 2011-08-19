@@ -3826,13 +3826,14 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                         currentDevice, selectionCount,
                         storageDevice.getVendor() + " "
                         + storageDevice.getModel(),
-                        ", " + DLCopy.STRINGS.getString("Size") + ": "
+                        " (" + DLCopy.STRINGS.getString("Size") + ": "
                         + getDataVolumeString(storageDevice.getSize(), 1) + ", "
                         + DLCopy.STRINGS.getString("Revision") + ": "
                         + storageDevice.getRevision() + ", "
                         + DLCopy.STRINGS.getString("Serial") + ": "
                         + storageDevice.getSerial() + ", "
-                        + storageDevice.getDevice().replace("/", "&#47;"));
+                        + storageDevice.getDevice().replace("/", "&#47;")
+                        + ")");
                 SwingUtilities.invokeLater(new Runnable() {
 
                     @Override
@@ -3843,11 +3844,11 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
                 // upgrade system partition
                 Partition systemPartition = storageDevice.getSystemPartition();
-                LOGGER.log(Level.INFO, 
+                LOGGER.log(Level.INFO,
                         "mounting {0}", systemPartition.getDevice());
                 String systemMountPoint = systemPartition.mount();
                 File systemMountPointFile = new File(systemMountPoint);
-                LOGGER.log(Level.INFO, 
+                LOGGER.log(Level.INFO,
                         "recursively deleting {0}", systemMountPointFile);
                 FileTools.recursiveDelete(systemMountPointFile, false);
                 LOGGER.info("starting copy job");
