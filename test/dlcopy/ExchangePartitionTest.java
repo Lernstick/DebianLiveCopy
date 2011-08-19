@@ -25,7 +25,7 @@ public class ExchangePartitionTest {
                 new ArrayList<UsbStorageDevice>();
         debugUsbStorageDevices.add(new UsbStorageDevice("PNY", "ATTACHE OPTIMA",
                 "123", "123", "/dev/sdb", 16000L * DLCopy.MEGA, 512,
-                "lernstick"));
+                "lernstick", 1234567890));
 
         String[] arguments = new String[]{
             "--variant", "lernstick",

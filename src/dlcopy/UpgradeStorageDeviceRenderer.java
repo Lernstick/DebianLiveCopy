@@ -52,7 +52,6 @@ public class UpgradeStorageDeviceRenderer
     private final static Icon cancelIcon = new ImageIcon(
             UpgradeStorageDeviceRenderer.class.getResource(
             "/dlcopy/icons/16x16/dialog-cancel.png"));
-    private final long systemSize;
     private final Color LIGHT_BLUE = new Color(170, 170, 255);
     private long maxStorageDeviceSize;
     private StorageDevice storageDevice;
@@ -60,8 +59,7 @@ public class UpgradeStorageDeviceRenderer
     /** Creates new form UsbRenderer
      * @param systemSize the size of the system to be copied in Byte
      */
-    public UpgradeStorageDeviceRenderer(long systemSize) {
-        this.systemSize = systemSize;
+    public UpgradeStorageDeviceRenderer() {
         initComponents();
     }
 
@@ -140,42 +138,22 @@ public class UpgradeStorageDeviceRenderer
                 }
                 partitionCaptionPanel.add(label, gridBagConstraints);
             }
-
+            
             // upgrade info text
-            boolean systemPartitionFound = false;
-            boolean sizeFits = false;
-            for (Partition partition : partitions) {
-                try {
-                    if (partition.isSystemPartition()) {
-                        systemPartitionFound = true;
-                        long partitionSize = storageDevice.getBlockSize()
-                                * partition.getSectorCount();
-                        sizeFits = partitionSize > (systemSize / 1.1f);
-                        break; // for
-                    }
-                } catch (DBusException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
-                }
-            }
-            StringBuilder stringBuilder = new StringBuilder();
-            if (systemPartitionFound && sizeFits) {
-                upgradeInfoLabel.setIcon(okIcon);
-                stringBuilder.append(
-                        DLCopy.STRINGS.getString("Upgrading_Possible"));
-            } else {
-                upgradeInfoLabel.setIcon(cancelIcon);
-                stringBuilder.append(
-                        DLCopy.STRINGS.getString("Upgrading_Impossible"));
-                stringBuilder.append(": ");
-                if (systemPartitionFound) {
-                    stringBuilder.append(DLCopy.STRINGS.getString(
-                            "System_Partition_Too_Small"));
+            try {
+                if (storageDevice.canBeUpgraded()) {
+                    upgradeInfoLabel.setIcon(okIcon);
+                    upgradeInfoLabel.setText(
+                            DLCopy.STRINGS.getString("Upgrading_Possible"));
                 } else {
-                    stringBuilder.append(DLCopy.STRINGS.getString(
-                            "No_System_Partition_Found"));
+                    upgradeInfoLabel.setIcon(cancelIcon);
+                    upgradeInfoLabel.setText(
+                            DLCopy.STRINGS.getString("Upgrading_Impossible")
+                            + ": " + storageDevice.getNoUpgradeReason());
                 }
+            } catch (DBusException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
             }
-            upgradeInfoLabel.setText(stringBuilder.toString());
 
             if (isSelected) {
                 setBackground(list.getSelectionBackground());

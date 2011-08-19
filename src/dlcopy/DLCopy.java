@@ -8,6 +8,8 @@ package dlcopy;
 import ch.fhnw.filecopier.CopyJob;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.filecopier.Source;
+import dlcopy.tools.FileTools;
+import dlcopy.tools.ProcessExecutor;
 import java.applet.Applet;
 import java.applet.AudioClip;
 import java.awt.CardLayout;
@@ -117,6 +119,7 @@ public class DLCopy extends JFrame
     private final InstallStorageDeviceRenderer installStorageDeviceRenderer;
     private final UpgradeStorageDeviceRenderer upgradeStorageDeviceRenderer;
     private long systemSize = -1;
+    private long systemSizeEnlarged = -1;
     // some things to change when debugging...
     // SIZE_FACTOR is >1 so that we leave some space for updates, etc...
     private final float SIZE_FACTOR = 1.1f;
@@ -227,8 +230,8 @@ public class DLCopy extends JFrame
 
             if (arguments[i].equals("--systemsize") && (i != length - 1)) {
                 try {
-                    systemSize = Long.parseLong(arguments[i + 1]);
-                    LOGGER.log(Level.INFO, "systemSize = {0}", systemSize);
+                    systemSizeEnlarged = Long.parseLong(arguments[i + 1]);
+                    LOGGER.log(Level.INFO, "systemSize = {0}", systemSizeEnlarged);
                 } catch (NumberFormatException numberFormatException) {
                     LOGGER.log(Level.SEVERE, "can not parse system size",
                             numberFormatException);
@@ -283,19 +286,18 @@ public class DLCopy extends JFrame
 
         // determine system size
         File system = new File(DEBIAN_LIVE_SYSTEM_PATH);
-        long systemSpace = 0;
-        if (systemSize == -1) {
-            systemSpace = system.getTotalSpace() - system.getFreeSpace();
-            LOGGER.log(Level.FINEST, "systemSpace: {0}", systemSpace);
-            systemSize = (long) (systemSpace * SIZE_FACTOR);
-            LOGGER.log(Level.FINEST, "systemSize: {0}", systemSize);
+        if (systemSizeEnlarged == -1) {
+            systemSize = system.getTotalSpace() - system.getFreeSpace();
+            LOGGER.log(Level.FINEST, "systemSpace: {0}", systemSize);
+            systemSizeEnlarged = (long) (systemSize * SIZE_FACTOR);
+            LOGGER.log(Level.FINEST, "systemSize: {0}", systemSizeEnlarged);
         }
-        String sizeString = getDataVolumeString(systemSize, 1);
+        String sizeString = getDataVolumeString(systemSizeEnlarged, 1);
         String text = STRINGS.getString("Select_Install_Target_Storage_Media");
         text = MessageFormat.format(text, sizeString);
         installSelectionHeaderLabel.setText(text);
-        
-        sizeString = getDataVolumeString(systemSpace, 1);
+
+        sizeString = getDataVolumeString(systemSize, 1);
         text = STRINGS.getString("Select_Upgrade_Target_Storage_Media");
         text = MessageFormat.format(text, sizeString);
         upgradeSelectionHeaderLabel.setText(text);
@@ -415,12 +417,11 @@ public class DLCopy extends JFrame
 
         installStorageDeviceList.setModel(storageDeviceListModel);
         installStorageDeviceRenderer =
-                new InstallStorageDeviceRenderer(this, systemSize);
+                new InstallStorageDeviceRenderer(this, systemSizeEnlarged);
         installStorageDeviceList.setCellRenderer(installStorageDeviceRenderer);
 
         upgradeStorageDeviceList.setModel(storageDeviceListModel);
-        upgradeStorageDeviceRenderer =
-                new UpgradeStorageDeviceRenderer(systemSize);
+        upgradeStorageDeviceRenderer = new UpgradeStorageDeviceRenderer();
         upgradeStorageDeviceList.setCellRenderer(upgradeStorageDeviceRenderer);
 
         pack();
@@ -518,9 +519,7 @@ public class DLCopy extends JFrame
         int deviceCount = storageDeviceListModel.size();
         if (deviceCount == 0) {
             showCard(installSelectionCardPanel, "installNoMediaPanel");
-            nextButton.setEnabled(false);
-            previousButton.requestFocusInWindow();
-            getRootPane().setDefaultButton(previousButton);
+            disableNextButton();
         } else {
             installStorageDeviceRenderer.setMaxSize(
                     getMaxStorageDeviceSize(deviceCount));
@@ -534,13 +533,16 @@ public class DLCopy extends JFrame
         }
     }
 
+    /**
+     * must be called whenever the upgrade storage device list changes to
+     * execute some updates (e.g. maximum storage device size) and some sanity
+     * checks
+     */
     private void upgradeStorageDeviceListChanged() {
         int deviceCount = storageDeviceListModel.size();
         if (deviceCount == 0) {
             showCard(upgradeSelectionCardPanel, "upgradeNoMediaPanel");
-            nextButton.setEnabled(false);
-            previousButton.requestFocusInWindow();
-            getRootPane().setDefaultButton(previousButton);
+            disableNextButton();
         } else {
             upgradeStorageDeviceRenderer.setMaxSize(
                     getMaxStorageDeviceSize(deviceCount));
@@ -689,11 +691,11 @@ public class DLCopy extends JFrame
                         "executing \"hal-get-property --udi {0} --key {1}\"",
                         new Object[]{udi, key});
             }
-            int returnValue = processExecutor.executeProcess(true,
+            int returnValue = processExecutor.executeProcess(true, true,
                     "hal-get-property", "--udi", udi, "--key", key);
             LOGGER.log(Level.FINEST, "returnValue = {0}", returnValue);
             if (returnValue == 0) {
-                List<String> stdOut = processExecutor.getStdOut();
+                List<String> stdOut = processExecutor.getStdOutList();
                 if (LOGGER.isLoggable(Level.FINEST)) {
                     StringBuilder stringBuilder = new StringBuilder("stdOut:");
                     for (String string : stdOut) {
@@ -730,11 +732,11 @@ public class DLCopy extends JFrame
                     "executing \"hal-find-by-property --key {0} --string {1}\"",
                     new Object[]{key, value});
         }
-        int returnValue = processExecutor.executeProcess(true,
+        int returnValue = processExecutor.executeProcess(true, true,
                 "hal-find-by-property", "--key", key, "--string", value);
         LOGGER.log(Level.FINEST, "returnValue = {0}", returnValue);
         if (returnValue == 0) {
-            List<String> stdOut = processExecutor.getStdOut();
+            List<String> stdOut = processExecutor.getStdOutList();
             if (LOGGER.isLoggable(Level.FINEST)) {
                 StringBuilder stringBuilder = new StringBuilder("stdOut:");
                 for (String string : stdOut) {
@@ -839,7 +841,7 @@ public class DLCopy extends JFrame
         jSeparator1 = new javax.swing.JSeparator();
         infoStepLabel = new javax.swing.JLabel();
         selectionLabel = new javax.swing.JLabel();
-        installationLabel = new javax.swing.JLabel();
+        executionLabel = new javax.swing.JLabel();
         cardPanel = new javax.swing.JPanel();
         installInfoPanel = new javax.swing.JPanel();
         infoLabel = new javax.swing.JLabel();
@@ -866,18 +868,18 @@ public class DLCopy extends JFrame
         installNoMediaPanel = new javax.swing.JPanel();
         installNoMediaLabel = new javax.swing.JLabel();
         installPanel = new javax.swing.JPanel();
-        currentDeviceLabel = new javax.swing.JLabel();
+        currentlyInstalledDeviceLabel = new javax.swing.JLabel();
+        jSeparator3 = new javax.swing.JSeparator();
         installCardPanel = new javax.swing.JPanel();
-        indeterminateProgressPanel = new javax.swing.JPanel();
-        indeterminateProgressBar = new javax.swing.JProgressBar();
-        copyPanel = new javax.swing.JPanel();
+        installIndeterminateProgressPanel = new javax.swing.JPanel();
+        installIndeterminateProgressBar = new javax.swing.JProgressBar();
+        installCopyPanel = new javax.swing.JPanel();
         jLabel1 = new javax.swing.JLabel();
-        fileCopierPanel = new ch.fhnw.filecopier.FileCopierPanel();
+        installFileCopierPanel = new ch.fhnw.filecopier.FileCopierPanel();
         rsyncPanel = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
         rsyncPogressBar = new javax.swing.JProgressBar();
-        jSeparator3 = new javax.swing.JSeparator();
-        installDonePanel = new javax.swing.JPanel();
+        donePanel = new javax.swing.JPanel();
         doneLabel = new javax.swing.JLabel();
         upgradeInfoPanel = new javax.swing.JPanel();
         upgradeInfoLabel = new javax.swing.JLabel();
@@ -893,6 +895,15 @@ public class DLCopy extends JFrame
         upgradeOsDefinitionLabel = new javax.swing.JLabel();
         upgradeNoMediaPanel = new javax.swing.JPanel();
         upgradeNoMediaLabel = new javax.swing.JLabel();
+        upgradePanel = new javax.swing.JPanel();
+        currentlyUpgradedDeviceLabel = new javax.swing.JLabel();
+        jSeparator4 = new javax.swing.JSeparator();
+        upgradeCardPanel = new javax.swing.JPanel();
+        upgradeIndeterminateProgressPanel = new javax.swing.JPanel();
+        upgradeIndeterminateProgressBar = new javax.swing.JProgressBar();
+        upgradeCopyPanel = new javax.swing.JPanel();
+        jLabel2 = new javax.swing.JLabel();
+        upgradeFileCopierPanel = new ch.fhnw.filecopier.FileCopierPanel();
         toISOInfoPanel = new javax.swing.JPanel();
         toISOInfoLabel = new javax.swing.JLabel();
         toISOSelectionPanel = new javax.swing.JPanel();
@@ -1032,9 +1043,9 @@ public class DLCopy extends JFrame
         selectionLabel.setForeground(java.awt.Color.darkGray);
         selectionLabel.setText(bundle.getString("DLCopy.selectionLabel.text")); // NOI18N
 
-        installationLabel.setFont(installationLabel.getFont().deriveFont(installationLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-        installationLabel.setForeground(java.awt.Color.darkGray);
-        installationLabel.setText(bundle.getString("DLCopy.installationLabel.text")); // NOI18N
+        executionLabel.setFont(executionLabel.getFont().deriveFont(executionLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+        executionLabel.setForeground(java.awt.Color.darkGray);
+        executionLabel.setText(bundle.getString("Installation_Label")); // NOI18N
 
         javax.swing.GroupLayout stepsPanelLayout = new javax.swing.GroupLayout(stepsPanel);
         stepsPanel.setLayout(stepsPanelLayout);
@@ -1048,7 +1059,7 @@ public class DLCopy extends JFrame
                         .addComponent(stepsLabel)
                         .addComponent(infoStepLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addComponent(selectionLabel))
-                    .addComponent(installationLabel))
+                    .addComponent(executionLabel))
                 .addContainerGap())
         );
         stepsPanelLayout.setVerticalGroup(
@@ -1063,7 +1074,7 @@ public class DLCopy extends JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(selectionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(installationLabel)
+                .addComponent(executionLabel)
                 .addContainerGap(397, Short.MAX_VALUE))
         );
 
@@ -1287,33 +1298,33 @@ public class DLCopy extends JFrame
 
         cardPanel.add(installSelectionPanel, "installSelectionPanel");
 
-        currentDeviceLabel.setText(bundle.getString("Install_Device_Info")); // NOI18N
+        currentlyInstalledDeviceLabel.setText(bundle.getString("Install_Device_Info")); // NOI18N
 
         installCardPanel.setLayout(new java.awt.CardLayout());
 
-        indeterminateProgressPanel.setLayout(new java.awt.GridBagLayout());
+        installIndeterminateProgressPanel.setLayout(new java.awt.GridBagLayout());
 
-        indeterminateProgressBar.setIndeterminate(true);
-        indeterminateProgressBar.setPreferredSize(new java.awt.Dimension(250, 25));
-        indeterminateProgressBar.setString(bundle.getString("DLCopy.indeterminateProgressBar.string")); // NOI18N
-        indeterminateProgressBar.setStringPainted(true);
-        indeterminateProgressPanel.add(indeterminateProgressBar, new java.awt.GridBagConstraints());
+        installIndeterminateProgressBar.setIndeterminate(true);
+        installIndeterminateProgressBar.setPreferredSize(new java.awt.Dimension(250, 25));
+        installIndeterminateProgressBar.setString(bundle.getString("DLCopy.installIndeterminateProgressBar.string")); // NOI18N
+        installIndeterminateProgressBar.setStringPainted(true);
+        installIndeterminateProgressPanel.add(installIndeterminateProgressBar, new java.awt.GridBagConstraints());
 
-        installCardPanel.add(indeterminateProgressPanel, "indeterminateProgressPanel");
+        installCardPanel.add(installIndeterminateProgressPanel, "installIndeterminateProgressPanel");
 
-        copyPanel.setLayout(new java.awt.GridBagLayout());
+        installCopyPanel.setLayout(new java.awt.GridBagLayout());
 
         jLabel1.setText(bundle.getString("DLCopy.jLabel1.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        copyPanel.add(jLabel1, gridBagConstraints);
+        installCopyPanel.add(jLabel1, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
-        copyPanel.add(fileCopierPanel, gridBagConstraints);
+        installCopyPanel.add(installFileCopierPanel, gridBagConstraints);
 
-        installCardPanel.add(copyPanel, "copyPanel");
+        installCardPanel.add(installCopyPanel, "installCopyPanel");
 
         rsyncPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -1336,7 +1347,7 @@ public class DLCopy extends JFrame
             installPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(installPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(currentDeviceLabel)
+                .addComponent(currentlyInstalledDeviceLabel)
                 .addContainerGap(527, Short.MAX_VALUE))
             .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 775, Short.MAX_VALUE)
             .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 775, Short.MAX_VALUE)
@@ -1345,7 +1356,7 @@ public class DLCopy extends JFrame
             installPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(installPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(currentDeviceLabel)
+                .addComponent(currentlyInstalledDeviceLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(1, 1, 1)
@@ -1361,28 +1372,28 @@ public class DLCopy extends JFrame
         doneLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         doneLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
-        javax.swing.GroupLayout installDonePanelLayout = new javax.swing.GroupLayout(installDonePanel);
-        installDonePanel.setLayout(installDonePanelLayout);
-        installDonePanelLayout.setHorizontalGroup(
-            installDonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout donePanelLayout = new javax.swing.GroupLayout(donePanel);
+        donePanel.setLayout(donePanelLayout);
+        donePanelLayout.setHorizontalGroup(
+            donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 775, Short.MAX_VALUE)
-            .addGroup(installDonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(installDonePanelLayout.createSequentialGroup()
+            .addGroup(donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(donePanelLayout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(doneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 751, Short.MAX_VALUE)
                     .addContainerGap()))
         );
-        installDonePanelLayout.setVerticalGroup(
-            installDonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        donePanelLayout.setVerticalGroup(
+            donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGap(0, 490, Short.MAX_VALUE)
-            .addGroup(installDonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(installDonePanelLayout.createSequentialGroup()
+            .addGroup(donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(donePanelLayout.createSequentialGroup()
                     .addGap(83, 83, 83)
                     .addComponent(doneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addContainerGap(241, Short.MAX_VALUE)))
         );
 
-        cardPanel.add(installDonePanel, "installDonePanel");
+        cardPanel.add(donePanel, "donePanel");
 
         upgradeInfoPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -1459,7 +1470,7 @@ public class DLCopy extends JFrame
             upgradeListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, upgradeListPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 358, Short.MAX_VALUE)
+                .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(upgradeExchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1490,6 +1501,58 @@ public class DLCopy extends JFrame
         upgradeSelectionPanel.add(upgradeSelectionCardPanel, gridBagConstraints);
 
         cardPanel.add(upgradeSelectionPanel, "upgradeSelectionPanel");
+
+        currentlyUpgradedDeviceLabel.setText(bundle.getString("DLCopy.currentlyUpgradedDeviceLabel.text")); // NOI18N
+
+        upgradeCardPanel.setLayout(new java.awt.CardLayout());
+
+        upgradeIndeterminateProgressPanel.setLayout(new java.awt.GridBagLayout());
+
+        upgradeIndeterminateProgressBar.setIndeterminate(true);
+        upgradeIndeterminateProgressBar.setPreferredSize(new java.awt.Dimension(250, 25));
+        upgradeIndeterminateProgressBar.setString(bundle.getString("DLCopy.upgradeIndeterminateProgressBar.string")); // NOI18N
+        upgradeIndeterminateProgressBar.setStringPainted(true);
+        upgradeIndeterminateProgressPanel.add(upgradeIndeterminateProgressBar, new java.awt.GridBagConstraints());
+
+        upgradeCardPanel.add(upgradeIndeterminateProgressPanel, "upgradeIndeterminateProgressPanel");
+
+        upgradeCopyPanel.setLayout(new java.awt.GridBagLayout());
+
+        jLabel2.setText(bundle.getString("DLCopy.jLabel2.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        upgradeCopyPanel.add(jLabel2, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
+        upgradeCopyPanel.add(upgradeFileCopierPanel, gridBagConstraints);
+
+        upgradeCardPanel.add(upgradeCopyPanel, "upgradeCopyPanel");
+
+        javax.swing.GroupLayout upgradePanelLayout = new javax.swing.GroupLayout(upgradePanel);
+        upgradePanel.setLayout(upgradePanelLayout);
+        upgradePanelLayout.setHorizontalGroup(
+            upgradePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(upgradePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(currentlyUpgradedDeviceLabel)
+                .addContainerGap(527, Short.MAX_VALUE))
+            .addComponent(upgradeCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 775, Short.MAX_VALUE)
+            .addComponent(jSeparator4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 775, Short.MAX_VALUE)
+        );
+        upgradePanelLayout.setVerticalGroup(
+            upgradePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(upgradePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(currentlyUpgradedDeviceLabel)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addGap(1, 1, 1)
+                .addComponent(upgradeCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE))
+        );
+
+        cardPanel.add(upgradePanel, "upgradePanel");
 
         toISOInfoPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -1736,38 +1799,40 @@ public class DLCopy extends JFrame
             case ISO_INFORMATION:
                 setLabelHighlighted(infoStepLabel, false);
                 setLabelHighlighted(selectionLabel, true);
-                setLabelHighlighted(installationLabel, false);
+                setLabelHighlighted(executionLabel, false);
                 showCard(cardPanel, "toISOSelectionPanel");
                 checkFreeSpaceTextField();
-                nextButton.requestFocusInWindow();
-                getRootPane().setDefaultButton(nextButton);
+                enableNextButton();
                 state = State.ISO_SELECTION;
                 break;
 
             case UPGRADE_INFORMATION:
                 setLabelHighlighted(infoStepLabel, false);
                 setLabelHighlighted(selectionLabel, true);
-                setLabelHighlighted(installationLabel, false);
+                setLabelHighlighted(executionLabel, false);
                 showCard(cardPanel, "upgradeSelectionPanel");
-                nextButton.requestFocusInWindow();
-                getRootPane().setDefaultButton(nextButton);
+                enableNextButton();
                 state = State.UPGRADE_SELECTION;
                 break;
 
             case INSTALL_SELECTION:
                 try {
-                    checkSelection();
+                    checkInstallSelection();
                 } catch (IOException ex) {
                     LOGGER.log(Level.SEVERE,
                             "checking the selected usb flash drive failed", ex);
                 }
                 break;
 
+            case UPGRADE_SELECTION:
+                upgrade();
+                break;
+
             case ISO_SELECTION:
                 state = State.ISO_INSTALLATION;
                 setLabelHighlighted(infoStepLabel, false);
                 setLabelHighlighted(selectionLabel, false);
-                setLabelHighlighted(installationLabel, true);
+                setLabelHighlighted(executionLabel, true);
                 showCard(cardPanel, "toISOProgressPanel");
                 previousButton.setEnabled(false);
                 nextButton.setEnabled(false);
@@ -1776,6 +1841,10 @@ public class DLCopy extends JFrame
                 break;
 
             case INSTALLATION:
+                exitProgram();
+                break;
+
+            case UPGRADE:
                 exitProgram();
                 break;
 
@@ -1835,7 +1904,7 @@ public class DLCopy extends JFrame
     }//GEN-LAST:event_previousButtonActionPerformed
 
     private void installStorageDeviceListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_installStorageDeviceListValueChanged
-        installListSelectionChanged();
+        installStorageDeviceListSelectionChanged();
     }//GEN-LAST:event_installStorageDeviceListValueChanged
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -1853,7 +1922,7 @@ public class DLCopy extends JFrame
 }//GEN-LAST:event_exchangePartitionSizeSliderStateChanged
 
     private void exchangePartitionSizeSliderComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_exchangePartitionSizeSliderComponentResized
-        installListSelectionChanged();
+        installStorageDeviceListSelectionChanged();
     }//GEN-LAST:event_exchangePartitionSizeSliderComponentResized
 
     private void nextButtonFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nextButtonFocusGained
@@ -1950,7 +2019,7 @@ public class DLCopy extends JFrame
     }//GEN-LAST:event_upgradeButtonActionPerformed
 
     private void upgradeStorageDeviceListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_upgradeStorageDeviceListValueChanged
-        // TODO add your handling code here:
+        upgradeStorageDeviceListSelectionChanged();
     }//GEN-LAST:event_upgradeStorageDeviceListValueChanged
 
     private void upgradeSelectionPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_upgradeSelectionPanelComponentShown
@@ -2050,7 +2119,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         // update label highlights
         setLabelHighlighted(infoStepLabel, false);
         setLabelHighlighted(selectionLabel, true);
-        setLabelHighlighted(installationLabel, false);
+        setLabelHighlighted(executionLabel, false);
 
         // update storage device list
         fillInstallStorageDeviceList();
@@ -2068,10 +2137,8 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                     "could not update copyExchangeCheckBox", ex);
         }
 
-//        deviceListUpdater.setInitialDelay(0);
-//        deviceListUpdater.start();
         previousButton.setEnabled(true);
-        installListSelectionChanged();
+        installStorageDeviceListSelectionChanged();
         state = State.INSTALL_SELECTION;
         showCard(cardPanel, "installSelectionPanel");
     }
@@ -2128,6 +2195,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             }
 
             upgradeStorageDeviceListChanged();
+            upgradeStorageDeviceListSelectionChanged();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         } catch (DBusException ex) {
@@ -2135,14 +2203,14 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         }
     }
 
-    private void installListSelectionChanged() {
+    private void installStorageDeviceListSelectionChanged() {
 
         // early return
         if (state != State.INSTALL_SELECTION) {
             return;
         }
 
-        // check all selected usb storage devices
+        // check all selected storage devices
         long minOverhead = Long.MAX_VALUE;
         boolean exchange = true;
         int[] selectedIndices = installStorageDeviceList.getSelectedIndices();
@@ -2155,10 +2223,10 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 StorageDevice device =
                         (StorageDevice) storageDeviceListModel.get(
                         selectedIndices[i]);
-                long overhead = device.getSize() - systemSize;
+                long overhead = device.getSize() - systemSizeEnlarged;
                 minOverhead = Math.min(minOverhead, overhead);
                 PartitionState partitionState =
-                        getPartitionState(device.getSize(), systemSize);
+                        getPartitionState(device.getSize(), systemSizeEnlarged);
                 if (partitionState != PartitionState.EXCHANGE) {
                     exchange = false;
                     break; // for
@@ -2187,6 +2255,37 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
         // enable nextButton?
         updateInstallNextButton();
+    }
+
+    private void upgradeStorageDeviceListSelectionChanged() {
+
+        // early return
+        if (state != State.UPGRADE_SELECTION) {
+            return;
+        }
+
+        // check all selected storage devices
+        boolean canUpgrade = true;
+        int[] selectedIndices = upgradeStorageDeviceList.getSelectedIndices();
+        for (int i : selectedIndices) {
+            StorageDevice storageDevice =
+                    (StorageDevice) storageDeviceListModel.get(i);
+            try {
+                if (!storageDevice.canBeUpgraded()) {
+                    canUpgrade = false;
+                    break;
+                }
+            } catch (DBusException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
+            }
+        }
+
+        // update nextButton state
+        if ((selectedIndices.length > 0) && canUpgrade) {
+            enableNextButton();
+        } else {
+            disableNextButton();
+        }
     }
 
     private void setMajorTickSpacing(JSlider slider, int maxValue) {
@@ -2256,13 +2355,13 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             // using libdbus-java here fails on Debian Live
             // therefore we parse the command line output
             int returnValue = processExecutor.executeProcess(
-                    true, "udisks", "--enumerate");
+                    true, true, "udisks", "--enumerate");
             if (returnValue != 0) {
                 throw new IOException("calling \"udisks --enumerate\" failed "
                         + "with the following output: "
                         + processExecutor.getOutput());
             }
-            List<String> udisksObjectPaths = processExecutor.getStdOut();
+            List<String> udisksObjectPaths = processExecutor.getStdOutList();
             for (String path : udisksObjectPaths) {
                 StorageDevice storageDevice = getStorageDevice(
                         path, includeHarddisks);
@@ -2313,18 +2412,20 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             if (deviceFile.startsWith("/dev/mmcblk")) {
                 // an SD card
                 return new SDStorageDevice(vendor, model, revision, serial,
-                        deviceFile, size, blockSize, systemPartitionLabel);
+                        deviceFile, size, blockSize, systemPartitionLabel,
+                        systemSize);
             } else {
                 if (removable) {
                     // probably a USB flash drive
                     return new UsbStorageDevice(vendor, model, revision, serial,
-                            deviceFile, size, blockSize, systemPartitionLabel);
+                            deviceFile, size, blockSize, systemPartitionLabel,
+                            systemSize);
                 } else {
                     // probably a hard drive
                     if (includeHarddisks) {
                         return new Harddisk(vendor, model, revision, serial,
                                 deviceFile, size, blockSize,
-                                systemPartitionLabel);
+                                systemPartitionLabel, systemSize);
                     }
                 }
             }
@@ -2371,18 +2472,18 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             StorageDevice device =
                     (StorageDevice) storageDeviceListModel.get(i);
             PartitionState partitionState =
-                    getPartitionState(device.getSize(), systemSize);
+                    getPartitionState(device.getSize(), systemSizeEnlarged);
             if (partitionState == PartitionState.TOO_SMALL) {
                 // a selected device is too small, disable nextButton
-                if (nextButton.hasFocus()) {
-                    previousButton.requestFocusInWindow();
-                }
-                getRootPane().setDefaultButton(previousButton);
-                nextButton.setEnabled(false);
+                disableNextButton();
                 return;
             }
         }
         // all selected devices are large enough, enable nextButton
+        enableNextButton();
+    }
+
+    private void enableNextButton() {
         if (nextButton.isShowing()) {
             nextButton.setEnabled(true);
             getRootPane().setDefaultButton(nextButton);
@@ -2390,6 +2491,14 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 nextButton.requestFocusInWindow();
             }
         }
+    }
+
+    private void disableNextButton() {
+        if (nextButton.hasFocus()) {
+            previousButton.requestFocusInWindow();
+        }
+        getRootPane().setDefaultButton(previousButton);
+        nextButton.setEnabled(false);
     }
 
     private void umountPartitions(String device) throws IOException {
@@ -2573,9 +2682,9 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
     private Partitions getPartitions(StorageDevice storageDevice) {
         long size = storageDevice.getSize();
-        long overhead = size - systemSize;
+        long overhead = size - systemSizeEnlarged;
         int overheadMB = (int) (overhead / MEGA);
-        PartitionState partitionState = getPartitionState(size, systemSize);
+        PartitionState partitionState = getPartitionState(size, systemSizeEnlarged);
         switch (partitionState) {
             case TOO_SMALL:
                 return null;
@@ -2637,16 +2746,22 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                             (StorageDevice) storageDeviceListModel.getElementAt(
                             selectedIndices[i]);
                     // update overall progress message
-                    String message =
-                            STRINGS.getString("Install_Device_Info");
-                    message = MessageFormat.format(message,
+                    String pattern = STRINGS.getString("Install_Device_Info");
+                    final String message = MessageFormat.format(pattern,
                             storageDevice.getVendor() + " "
                             + storageDevice.getModel() + " "
                             + getDataVolumeString(
                             storageDevice.getSize(), 1),
                             storageDevice.getDevice(),
                             currentDevice, selectionCount);
-                    currentDeviceLabel.setText(message);
+                    SwingUtilities.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            currentlyInstalledDeviceLabel.setText(message);
+                        }
+                    });
+
                     if (!copyToStorageDevice(storageDevice)) {
                         noError = false;
                         switchToInstallSelection();
@@ -2668,7 +2783,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                                 doneLabel.setText(STRINGS.getString(
                                         "Done_Message_From_DVD"));
                             }
-                            showCard(cardPanel, "installDonePanel");
+                            showCard(cardPanel, "donePanel");
                             previousButton.setEnabled(true);
                             nextButton.setText(STRINGS.getString("Done"));
                             nextButton.setIcon(new ImageIcon(
@@ -2767,7 +2882,8 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             long size = storageDevice.getSize();
             Partitions partitions = getPartitions(storageDevice);
             int exchangeMB = partitions.getExchangeMB();
-            PartitionState partitionState = getPartitionState(size, systemSize);
+            PartitionState partitionState =
+                    getPartitionState(size, systemSizeEnlarged);
 
             boolean sdDevice = storageDevice instanceof SDStorageDevice;
 
@@ -2879,6 +2995,16 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             }
 
             // make usb flash drive bootable
+            SwingUtilities.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    showCard(installCardPanel,
+                            "installIndeterminateProgressPanel");
+                    installIndeterminateProgressBar.setString(
+                            STRINGS.getString("Writing_Boot_Sector"));
+                }
+            });
             return makeBootable(device, systemDevice);
         }
 
@@ -2891,7 +3017,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
             // determine exact partition sizes
             String device = storageDevice.getDevice();
-            long overhead = size - systemSize;
+            long overhead = size - systemSizeEnlarged;
             int persistentMB = partitions.getPersistencyMB();
             if (LOGGER.isLoggable(Level.FINEST)) {
                 LOGGER.log(Level.FINEST, "size of {0} = {1} Byte\n"
@@ -2908,11 +3034,12 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
                 @Override
                 public void run() {
-                    showCard(installCardPanel, "indeterminateProgressPanel");
+                    showCard(installCardPanel,
+                            "installIndeterminateProgressPanel");
                     boolean severalPartitions =
                             (partitionState == PartitionState.PERSISTENT)
                             || (partitionState == PartitionState.EXCHANGE);
-                    indeterminateProgressBar.setString(
+                    installIndeterminateProgressBar.setString(
                             STRINGS.getString(severalPartitions
                             ? "Creating_File_Systems"
                             : "Creating_File_System"));
@@ -2992,8 +3119,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             umountPartitions(device);
 
             // repartition device
-            String scriptPath = processExecutor.createScript(sfdiskScript);
-            int exitValue = processExecutor.executeProcess(scriptPath);
+            int exitValue = processExecutor.executeScript(sfdiskScript);
             if (exitValue != 0) {
                 String errorMessage = STRINGS.getString("Error_Repartitioning");
                 errorMessage = MessageFormat.format(errorMessage, device);
@@ -3080,7 +3206,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 return false;
             }
             Thread.sleep(1000);
-            fileCopierPanel.setFileCopier(fileCopier);
+            installFileCopierPanel.setFileCopier(fileCopier);
             fileCopier.addPropertyChangeListener(
                     FileCopier.BYTE_COUNTER_PROPERTY, this);
 
@@ -3088,7 +3214,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
                 @Override
                 public void run() {
-                    showCard(installCardPanel, "copyPanel");
+                    showCard(installCardPanel, "installCopyPanel");
                 }
             });
 
@@ -3152,8 +3278,9 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
                 @Override
                 public void run() {
-                    showCard(installCardPanel, "indeterminateProgressPanel");
-                    indeterminateProgressBar.setString(
+                    showCard(installCardPanel,
+                            "installIndeterminateProgressPanel");
+                    installIndeterminateProgressBar.setString(
                             STRINGS.getString("Unmounting_File_Systems"));
                 }
             });
@@ -3168,36 +3295,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
             // isolinux -> syslinux renaming
             if (!bootDeviceIsUSB) {
-                final String isolinuxPath = MOUNT_POINT + "/isolinux";
-                if (new File(isolinuxPath).exists()) {
-                    LOGGER.info("replacing isolinux with syslinux");
-                    final String syslinuxPath = MOUNT_POINT + "/syslinux";
-                    moveFile(isolinuxPath, syslinuxPath);
-                    moveFile(syslinuxPath + "/isolinux.bin",
-                            syslinuxPath + "/syslinux.bin");
-                    moveFile(syslinuxPath + "/isolinux.cfg",
-                            syslinuxPath + "/syslinux.cfg");
-
-                    // replace "isolinux" with "syslinux" in some files
-                    pattern = Pattern.compile("isolinux");
-                    replaceText(syslinuxPath + "/exithelp.cfg",
-                            pattern, "syslinux");
-                    replaceText(syslinuxPath + "/stdmenu.cfg",
-                            pattern, "syslinux");
-                    replaceText(syslinuxPath + "/syslinux.cfg",
-                            pattern, "syslinux");
-
-                    // remove  boot.cat
-                    String bootCatFileName = syslinuxPath + "/boot.cat";
-                    File bootCatFile = new File(bootCatFileName);
-                    if (!bootCatFile.delete()) {
-                        showErrorMessage("Could not delete " + bootCatFileName);
-                    }
-                } else {
-                    // boot device is probably a hard disk
-                    LOGGER.info(
-                            "isolinux directory does not exist -> no renaming");
-                }
+                isolinuxToSyslinux(MOUNT_POINT);
             }
 
             return true;
@@ -3254,8 +3352,8 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                     @Override
                     public void run() {
                         showCard(installCardPanel,
-                                "indeterminateProgressPanel");
-                        indeterminateProgressBar.setString(
+                                "installIndeterminateProgressPanel");
+                        installIndeterminateProgressBar.setString(
                                 STRINGS.getString("Unmounting_File_Systems"));
                     }
                 });
@@ -3263,48 +3361,6 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 // umount persistency partitions
                 umount(persistencySourcePath);
                 umount(persistencyDestinationPath);
-            }
-
-            return true;
-        }
-
-        private boolean makeBootable(String device, String systemDevice)
-                throws IOException {
-
-            SwingUtilities.invokeLater(new Runnable() {
-
-                @Override
-                public void run() {
-                    showCard(installCardPanel, "indeterminateProgressPanel");
-                    indeterminateProgressBar.setString(
-                            STRINGS.getString("Writing_Boot_Sector"));
-                }
-            });
-            File isoLinuxFile = new File(MOUNT_POINT + "/isolinux.cfg");
-            isoLinuxFile.renameTo(new File(MOUNT_POINT + "/syslinux.cfg"));
-
-            int exitValue = processExecutor.executeProcess(true,
-                    "syslinux", "-d", "syslinux", systemDevice);
-            if (exitValue != 0) {
-                String errorMessage = STRINGS.getString(
-                        "Make_Bootable_Failed");
-                errorMessage = MessageFormat.format(errorMessage,
-                        systemDevice, processExecutor.getOutput());
-                LOGGER.severe(errorMessage);
-                showErrorMessage(errorMessage);
-                return false;
-            }
-            String scriptPath = processExecutor.createScript(
-                    "cat " + SYSLINUX_MBR_PATH + " > " + device + '\n'
-                    + "sync");
-            exitValue = processExecutor.executeProcess(scriptPath);
-            if (exitValue != 0) {
-                String errorMessage = "could not copy syslinux "
-                        + "Master Boot Record to device \""
-                        + device + '\"';
-                LOGGER.severe(errorMessage);
-                showErrorMessage(errorMessage);
-                return false;
             }
 
             return true;
@@ -3370,6 +3426,63 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         }
     }
 
+    private void isolinuxToSyslinux(String mountPoint) throws IOException {
+        final String isolinuxPath = mountPoint + "/isolinux";
+        if (new File(isolinuxPath).exists()) {
+            LOGGER.info("replacing isolinux with syslinux");
+            final String syslinuxPath = mountPoint + "/syslinux";
+            moveFile(isolinuxPath, syslinuxPath);
+            moveFile(syslinuxPath + "/isolinux.bin",
+                    syslinuxPath + "/syslinux.bin");
+            moveFile(syslinuxPath + "/isolinux.cfg",
+                    syslinuxPath + "/syslinux.cfg");
+
+            // replace "isolinux" with "syslinux" in some files
+            Pattern pattern = Pattern.compile("isolinux");
+            replaceText(syslinuxPath + "/exithelp.cfg", pattern, "syslinux");
+            replaceText(syslinuxPath + "/stdmenu.cfg", pattern, "syslinux");
+            replaceText(syslinuxPath + "/syslinux.cfg", pattern, "syslinux");
+
+            // remove  boot.cat
+            String bootCatFileName = syslinuxPath + "/boot.cat";
+            File bootCatFile = new File(bootCatFileName);
+            if (!bootCatFile.delete()) {
+                showErrorMessage("Could not delete " + bootCatFileName);
+            }
+        } else {
+            // boot device is probably a hard disk
+            LOGGER.info(
+                    "isolinux directory does not exist -> no renaming");
+        }
+    }
+
+    private boolean makeBootable(String device, String systemDevice)
+            throws IOException {
+
+        int exitValue = processExecutor.executeProcess(true, true,
+                "syslinux", "-d", "syslinux", systemDevice);
+        if (exitValue != 0) {
+            String errorMessage = STRINGS.getString("Make_Bootable_Failed");
+            errorMessage = MessageFormat.format(errorMessage,
+                    systemDevice, processExecutor.getOutput());
+            LOGGER.severe(errorMessage);
+            showErrorMessage(errorMessage);
+            return false;
+        }
+        exitValue = processExecutor.executeScript(
+                "cat " + SYSLINUX_MBR_PATH + " > " + device + '\n'
+                + "sync");
+        if (exitValue != 0) {
+            String errorMessage = "could not copy syslinux Master Boot Record "
+                    + "to device \"" + device + '\"';
+            LOGGER.severe(errorMessage);
+            showErrorMessage(errorMessage);
+            return false;
+        }
+
+        return true;
+    }
+
     private void playNotifySound() {
         URL url = getClass().getResource("/dlcopy/KDE_Notify.wav");
         AudioClip clip = Applet.newAudioClip(url);
@@ -3428,7 +3541,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         }
     }
 
-    private void checkSelection() throws IOException {
+    private void checkInstallSelection() throws IOException {
 
         // check all selected target USB storage devices
         int[] selectedIndices = installStorageDeviceList.getSelectedIndices();
@@ -3461,7 +3574,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             }
         } else {
             int result = JOptionPane.showConfirmDialog(this,
-                    STRINGS.getString("Final_Warning"),
+                    STRINGS.getString("Final_Installation_Warning"),
                     STRINGS.getString("Warning"),
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
             if (result != JOptionPane.YES_OPTION) {
@@ -3470,12 +3583,31 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         }
 
         setLabelHighlighted(selectionLabel, false);
-        setLabelHighlighted(installationLabel, true);
+        setLabelHighlighted(executionLabel, true);
         previousButton.setEnabled(false);
         nextButton.setEnabled(false);
         state = State.INSTALLATION;
         // let's start...
         new Installer().start();
+    }
+
+    private void upgrade() {
+        int result = JOptionPane.showConfirmDialog(this,
+                STRINGS.getString("Final_Upgrade_Warning"),
+                STRINGS.getString("Warning"),
+                JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+        if (result != JOptionPane.YES_OPTION) {
+            return;
+        }
+
+        setLabelHighlighted(selectionLabel, false);
+        setLabelHighlighted(executionLabel, true);
+        previousButton.setEnabled(false);
+        nextButton.setEnabled(false);
+
+        state = State.UPGRADE;
+        // let's start...
+        new Upgrader().execute();
     }
 
     private boolean checkExchange(Partitions partitions) throws IOException {
@@ -3580,29 +3712,25 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         setLabelHighlighted(infoStepLabel, true);
         setLabelHighlighted(selectionLabel, false);
         showCard(cardPanel, "toISOInfoPanel");
-        nextButton.setEnabled(true);
-        nextButton.requestFocusInWindow();
-        getRootPane().setDefaultButton(nextButton);
+        enableNextButton();
         state = State.ISO_INFORMATION;
     }
 
     private void switchToUSBInformation() {
         setLabelHighlighted(infoStepLabel, true);
         setLabelHighlighted(selectionLabel, false);
+        executionLabel.setText(STRINGS.getString("Installation_Label"));
         showCard(cardPanel, "installInfoPanel");
-        nextButton.setEnabled(true);
-        nextButton.requestFocusInWindow();
-        getRootPane().setDefaultButton(nextButton);
+        enableNextButton();
         state = State.INSTALL_INFORMATION;
     }
 
     private void switchToUpgradeInformation() {
         setLabelHighlighted(infoStepLabel, true);
         setLabelHighlighted(selectionLabel, false);
+        executionLabel.setText(STRINGS.getString("Upgrade_Label"));
         showCard(cardPanel, "upgradeInfoPanel");
-        nextButton.setEnabled(true);
-        nextButton.requestFocusInWindow();
-        getRootPane().setDefaultButton(nextButton);
+        enableNextButton();
         state = State.UPGRADE_INFORMATION;
     }
 
@@ -3640,17 +3768,173 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             if (tmpDir.canWrite()) {
                 writableTextField.setText(STRINGS.getString("Yes"));
                 writableTextField.setForeground(Color.BLACK);
-                nextButton.setEnabled(true);
+                enableNextButton();
             } else {
                 writableTextField.setText(STRINGS.getString("No"));
                 writableTextField.setForeground(Color.RED);
-                nextButton.setEnabled(false);
+                disableNextButton();
             }
         } else {
             writableTextField.setText(
                     STRINGS.getString("Directory_Does_Not_Exist"));
             writableTextField.setForeground(Color.RED);
-            nextButton.setEnabled(false);
+            disableNextButton();
+        }
+    }
+
+    private class Upgrader
+            extends SwingWorker<Void, Void>
+            implements PropertyChangeListener {
+
+        private final FileCopier fileCopier = new FileCopier();
+        private int selectionCount;
+        private int currentDevice;
+
+        @Override
+        protected Void doInBackground() throws Exception {
+
+            SwingUtilities.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    showCard(cardPanel, "upgradePanel");
+                }
+            });
+
+            // upgrade all selected storage devices
+            int[] selectedIndices =
+                    upgradeStorageDeviceList.getSelectedIndices();
+            selectionCount = selectedIndices.length;
+            for (int i : selectedIndices) {
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        showCard(upgradeCardPanel,
+                                "upgradeIndeterminateProgressPanel");
+                        upgradeIndeterminateProgressBar.setString(
+                                STRINGS.getString(
+                                "Resetting_System_Partition"));
+                    }
+                });
+                StorageDevice storageDevice =
+                        (StorageDevice) storageDeviceListModel.get(i);
+
+                // update overall progress message
+                currentDevice++;
+                String pattern = STRINGS.getString("Upgrade_Device_Info");
+                final String message = MessageFormat.format(pattern,
+                        storageDevice.getVendor() + " "
+                        + storageDevice.getModel() + " "
+                        + getDataVolumeString(
+                        storageDevice.getSize(), 1),
+                        storageDevice.getDevice(),
+                        currentDevice, selectionCount);
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        currentlyUpgradedDeviceLabel.setText(message);
+                    }
+                });
+
+                // upgrade system partition
+                Partition systemPartition = storageDevice.getSystemPartition();
+                String systemMountPoint = systemPartition.mount();
+                File systemMountPointFile = new File(systemMountPoint);
+                FileTools.recursiveDelete(systemMountPointFile, false);
+                upgradeFileCopierPanel.setFileCopier(fileCopier);
+                fileCopier.addPropertyChangeListener(
+                        FileCopier.BYTE_COUNTER_PROPERTY, this);
+                CopyJob systemCopyJob = new CopyJob(
+                        new Source[]{new Source(DEBIAN_LIVE_SYSTEM_PATH, ".*")},
+                        new String[]{systemMountPoint});
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        showCard(upgradeCardPanel, "upgradeCopyPanel");
+                    }
+                });
+                fileCopier.copy(systemCopyJob);
+                isolinuxToSyslinux(systemMountPoint);
+                systemPartition.umount();
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        showCard(upgradeCardPanel,
+                                "upgradeIndeterminateProgressPanel");
+                        upgradeIndeterminateProgressBar.setString(
+                                STRINGS.getString("Writing_Boot_Sector"));
+                    }
+                });
+                makeBootable(storageDevice.getDevice(),
+                        "/dev/" + systemPartition.getDevice());
+
+                // reset data partition
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        upgradeIndeterminateProgressBar.setString(
+                                STRINGS.getString("Resetting_Data_Partition"));
+                    }
+                });
+                Partition dataPartition = storageDevice.getDataPartition();
+                String dataMountPoint = dataPartition.mount();
+                ProcessExecutor processExecutor = new ProcessExecutor();
+                processExecutor.executeProcess("find", dataMountPoint,
+                        "!", "-regex", '\'' + dataMountPoint + '\'',
+                        "!", "-regex", '\'' + dataMountPoint + '/' + "lost+found'",
+                        "!", "-regex", '\'' + dataMountPoint + '/' + "home.*'",
+                        "!", "-regex", '\'' + dataMountPoint + '/' + "etc/cups.*'",
+                        "-exec", "rm", "-rf", "{}", ";");
+                dataPartition.umount();
+            }
+
+            return null;
+        }
+
+        @Override
+        public void propertyChange(PropertyChangeEvent evt) {
+            String propertyName = evt.getPropertyName();
+            if (FileCopier.BYTE_COUNTER_PROPERTY.equals(propertyName)) {
+                long byteCount = fileCopier.getByteCount();
+                long copiedBytes = fileCopier.getCopiedBytes();
+                final int progress = (int) ((100 * copiedBytes) / byteCount);
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        setTitle(progress + "% " + STRINGS.getString("Copied")
+                                + " (" + currentDevice + '/' + selectionCount
+                                + ')');
+                    }
+                });
+            }
+        }
+
+        @Override
+        protected void done() {
+            setTitle(STRINGS.getString("DLCopy.title"));
+            if (bootDeviceIsUSB) {
+                doneLabel.setText(STRINGS.getString(
+                        "Upgrade_Done_From_USB_Message"));
+            } else {
+                doneLabel.setText(STRINGS.getString(
+                        "Upgrade_Done_From_DVD_Message"));
+            }
+            showCard(cardPanel, "donePanel");
+            previousButton.setEnabled(true);
+            nextButton.setText(STRINGS.getString("Done"));
+            nextButton.setIcon(new ImageIcon(getClass().getResource(
+                    "/dlcopy/icons/exit.png")));
+            nextButton.setEnabled(true);
+            previousButton.requestFocusInWindow();
+            getRootPane().setDefaultButton(previousButton);
+            playNotifySound();
+            toFront();
         }
     }
 
@@ -3673,8 +3957,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                         + "cd /live/image\n"
                         + "find -not -name filesystem.squashfs | cpio -pvdum "
                         + targetDirectory;
-                String scriptPath = processExecutor.createScript(copyScript);
-                processExecutor.executeProcess(scriptPath);
+                processExecutor.executeScript(copyScript);
 
                 publish(STRINGS.getString("Mounting_Partitions"));
                 File tmpDir = createTempDir("usb2iso");
@@ -3778,8 +4061,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                         + "find . -type f \\! -path './isolinux/isolinux.bin' "
                         + "\\! -path './boot/grub/stage2_eltorito' -print0 | "
                         + "sort -z | xargs -0 md5sum >> md5sum.txt";
-                scriptPath = processExecutor.createScript(md5Script);
-                processExecutor.executeProcess(scriptPath);
+                processExecutor.executeScript(md5Script);
 
                 // create new iso image
                 SwingUtilities.invokeLater(new Runnable() {
@@ -3987,13 +4269,14 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private javax.swing.JLabel choiceLabel;
     private javax.swing.JPanel choicePanel;
     private javax.swing.JCheckBox copyExchangeCheckBox;
-    private javax.swing.JPanel copyPanel;
     private javax.swing.JPanel copyPartitionPanel;
     private javax.swing.JCheckBox copyPersistencyCheckBox;
     private javax.swing.JPanel createPartitionPanel;
-    private javax.swing.JLabel currentDeviceLabel;
+    private javax.swing.JLabel currentlyInstalledDeviceLabel;
+    private javax.swing.JLabel currentlyUpgradedDeviceLabel;
     private javax.swing.JLabel dataDefinitionLabel;
     private javax.swing.JLabel doneLabel;
+    private javax.swing.JPanel donePanel;
     private javax.swing.JLabel exchangeDefinitionLabel;
     private javax.swing.JLabel exchangePartitionLabel;
     private javax.swing.JLabel exchangePartitionSizeLabel;
@@ -4001,16 +4284,17 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private javax.swing.JTextField exchangePartitionSizeTextField;
     private javax.swing.JLabel exchangePartitionSizeUnitLabel;
     private javax.swing.JTextField exchangePartitionTextField;
+    private javax.swing.JLabel executionLabel;
     private javax.swing.JPanel executionPanel;
-    private ch.fhnw.filecopier.FileCopierPanel fileCopierPanel;
     private javax.swing.JLabel freeSpaceLabel;
     private javax.swing.JTextField freeSpaceTextField;
-    private javax.swing.JProgressBar indeterminateProgressBar;
-    private javax.swing.JPanel indeterminateProgressPanel;
     private javax.swing.JLabel infoLabel;
     private javax.swing.JLabel infoStepLabel;
     private javax.swing.JPanel installCardPanel;
-    private javax.swing.JPanel installDonePanel;
+    private javax.swing.JPanel installCopyPanel;
+    private ch.fhnw.filecopier.FileCopierPanel installFileCopierPanel;
+    private javax.swing.JProgressBar installIndeterminateProgressBar;
+    private javax.swing.JPanel installIndeterminateProgressPanel;
     private javax.swing.JPanel installInfoPanel;
     private javax.swing.JPanel installListPanel;
     private javax.swing.JLabel installNoMediaLabel;
@@ -4021,17 +4305,18 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private javax.swing.JPanel installSelectionPanel;
     private javax.swing.JCheckBox installShowHarddiskCheckBox;
     private javax.swing.JList installStorageDeviceList;
-    private javax.swing.JLabel installationLabel;
     private javax.swing.JLabel isoDoneLabel;
     private javax.swing.JLabel isoLabelLabel;
     private javax.swing.JTextField isoLabelTextField;
     private javax.swing.JLabel jLabel1;
+    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JSeparator jSeparator1;
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JSeparator jSeparator4;
     private javax.swing.JButton nextButton;
     private javax.swing.JLabel osDefinitionLabel;
     private javax.swing.JButton previousButton;
@@ -4052,14 +4337,20 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private javax.swing.JPanel toISOProgressPanel;
     private javax.swing.JPanel toISOSelectionPanel;
     private javax.swing.JButton upgradeButton;
+    private javax.swing.JPanel upgradeCardPanel;
+    private javax.swing.JPanel upgradeCopyPanel;
     private javax.swing.JLabel upgradeDataDefinitionLabel;
     private javax.swing.JLabel upgradeExchangeDefinitionLabel;
+    private ch.fhnw.filecopier.FileCopierPanel upgradeFileCopierPanel;
+    private javax.swing.JProgressBar upgradeIndeterminateProgressBar;
+    private javax.swing.JPanel upgradeIndeterminateProgressPanel;
     private javax.swing.JLabel upgradeInfoLabel;
     private javax.swing.JPanel upgradeInfoPanel;
     private javax.swing.JPanel upgradeListPanel;
     private javax.swing.JLabel upgradeNoMediaLabel;
     private javax.swing.JPanel upgradeNoMediaPanel;
     private javax.swing.JLabel upgradeOsDefinitionLabel;
+    private javax.swing.JPanel upgradePanel;
     private javax.swing.JPanel upgradeSelectionCardPanel;
     private javax.swing.JLabel upgradeSelectionHeaderLabel;
     private javax.swing.JPanel upgradeSelectionPanel;

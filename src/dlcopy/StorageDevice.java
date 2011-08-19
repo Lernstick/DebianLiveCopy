@@ -1,5 +1,6 @@
 package dlcopy;
 
+import dlcopy.tools.ProcessExecutor;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -24,8 +25,12 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
     private final long size;
     private final int blockSize;
     private final String systemPartitionLabel;
+    private final long systemSize;
     private List<Partition> partitions;
-    private Boolean isLiveSystem;
+    private Boolean canBeUpgraded;
+    private String noUpgradeReason;
+    private Partition systemPartition;
+    private Partition dataPartition;
 
     /**
      * Creates a new StorageDevice
@@ -37,10 +42,11 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
      * @param size the size of the storage device in Byte
      * @param blockSize the block size of the storage device given in byte
      * @param systemPartitionLabel the (expected) system partition label
+     * @param systemSize the size of the currently running Debian Live system
      */
     public StorageDevice(String device, String vendor, String model,
             String revision, String serial, long size, int blockSize,
-            String systemPartitionLabel) {
+            String systemPartitionLabel, long systemSize) {
         this.device = device;
         this.vendor = vendor;
         this.model = model;
@@ -49,6 +55,7 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
         this.size = size;
         this.blockSize = blockSize;
         this.systemPartitionLabel = systemPartitionLabel;
+        this.systemSize = systemSize;
     }
 
     @Override
@@ -80,8 +87,8 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
     }
 
     /**
-     * returns the device node of the USB storage device
-     * @return the device node of the USB storage device
+     * returns the device node of the storage device
+     * @return the device node of the storage device
      */
     public String getDevice() {
         return device;
@@ -120,8 +127,8 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
     }
 
     /**
-     * returns the size of the USB storage device (in Byte)
-     * @return the size of the USB storage device (in Byte)
+     * returns the size of the storage device (in Byte)
+     * @return the size of the storage device (in Byte)
      */
     public long getSize() {
         return size;
@@ -145,8 +152,9 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
 
             // call sfdisk to get partition info
             ProcessExecutor processExecutor = new ProcessExecutor();
-            processExecutor.executeProcess(true, "sfdisk", "-uS", "-l", device);
-            List<String> lines = processExecutor.getStdOut();
+            processExecutor.executeProcess(true, true, 
+                    "sfdisk", "-uS", "-l", device);
+            List<String> lines = processExecutor.getStdOutList();
 
             /**
              * parse partition lines, example:
@@ -178,29 +186,73 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
     }
 
     /**
-     * returns <code>true</code>, if this is a Debian Live system,
+     * returns <code>true</code>, if this storage device can be upgraded,
      * <code>false</code> otherwise
-     * @return <code>true</code>, if this is a Debian Live system,
+     * @return <code>true</code>, if this storage device can be upgraded,
      * <code>false</code> otherwise
      * @throws DBusException if a dbus exception occurs
      */
-    public synchronized boolean isLiveSystem() throws DBusException {
-        // lazy initialization of isLiveSystem
-        if (isLiveSystem == null) {
-            isLiveSystem = false;
-            // search for an Debian Live system partition on this storage device
-            LOGGER.log(Level.FINEST,
-                    "checking partitions on device {0}", device);
-            List<Partition> myPartitions = getPartitions();
-            for (Partition partition : myPartitions) {
+    public synchronized boolean canBeUpgraded() throws DBusException {
+        // lazy initialization of canBeUpgraded
+        if (canBeUpgraded == null) {
+            canBeUpgraded = false;
+            boolean systemPartitionFound = false;
+            boolean sizeFits = false;
+            for (Partition partition : getPartitions()) {
                 if (partition.isSystemPartition()) {
-                    isLiveSystem = true;
-                    break; // for
+                    systemPartitionFound = true;
+                    long partitionSize = blockSize
+                            * partition.getSectorCount();
+                    sizeFits = partitionSize > (systemSize / 1.1f);
+                    if (sizeFits) {
+                        systemPartition = partition;
+                        canBeUpgraded = true;
+                        break; // for
+                    }
                 }
             }
-
+            if (!sizeFits) {
+                if (systemPartitionFound) {
+                    noUpgradeReason = DLCopy.STRINGS.getString(
+                            "System_Partition_Too_Small");
+                } else {
+                    noUpgradeReason = DLCopy.STRINGS.getString(
+                            "No_System_Partition_Found");
+                }
+            }
         }
-        return isLiveSystem;
+        return canBeUpgraded;
+    }
+
+    /**
+     * returns the reason why this storage device can not be upgraded
+     * @return the noUpgradeReason
+     */
+    public String getNoUpgradeReason() {
+        return noUpgradeReason;
+    }
+
+    /**
+     * returns the system partition of this storage device
+     * @return the system partition of this storage device
+     */
+    public synchronized Partition getSystemPartition() {
+        if (systemPartition == null) {
+            try {
+                canBeUpgraded();
+            } catch (DBusException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
+            }
+        }
+        return systemPartition;
+    }
+
+    /**
+     * returns the data partition of this storage device
+     * @return the data partition of this storage device
+     */
+    public Partition getDataPartition() {
+        return dataPartition;
     }
 
     private Partition parsePartition(Matcher matcher, boolean bootable) {
@@ -216,8 +268,13 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
                     partitionDevice, "IdLabel");
             String idType = DbusTools.getStringProperty(
                     partitionDevice, "IdType");
-            return new Partition(partitionDevice, bootable, start, end, id,
-                    description, idLabel, idType, systemPartitionLabel);
+            Partition partition = new Partition(partitionDevice, bootable,
+                    start, end, id, description, idLabel, idType,
+                    systemPartitionLabel);
+            if ("live-rw".equals(idLabel)) {
+                dataPartition = partition;
+            }
+            return partition;
         } catch (NumberFormatException numberFormatException) {
             LOGGER.log(Level.WARNING, "", numberFormatException);
         } catch (DBusException ex) {

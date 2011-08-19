@@ -16,11 +16,12 @@ public class UsbStorageDevice extends StorageDevice {
      * @param size the size in Byte
      * @param blockSize the block size of the device given in byte
      * @param systemPartitionLabel the (expected) system partition label
+     * @param systemSize the size of the currently running Debian Live system
      */
     public UsbStorageDevice(String vendor, String model, String revision,
             String serial, String device, long size, int blockSize,
-            String systemPartitionLabel) {
+            String systemPartitionLabel, long systemSize) {
         super(device, vendor, model, revision, serial, size, blockSize,
-                systemPartitionLabel);
+                systemPartitionLabel, systemSize);
     }
 }
