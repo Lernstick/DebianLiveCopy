@@ -1,17 +1,16 @@
 - D-Bus verwenden, um Infos über Geräte und Partitionen abzufragen
     kdesudo "java -Djava.library.path=/usr/lib/jni -jar dist/DLCopy_orig.jar --variant lernstick"
 
-- Image erzeugen:
-    - auch von Festplatteninstallation ermöglichen
+- Renderer:
+    - InstallationsRenderer and UpgradeRenderer anpassen
 
 - ISO
     - Schritt x/y anzeigen (Gesamtliste mit Hervorhebung und Häkchen)
     - Zeitanzeige (gesamt)
     - Fortschritt auch im Fenstertitel?
 
-- Renderer:
-    - verschiedene Icons für USB-Sticks, USB-Festplatten, SD-Karten, CF-Karten
-    - Legende unter Partitionsbalken anstatt Text im Balken
+- Upgrade mit Repartitionierung:
+    - Integration von JBackpack
 
 - Installation:
     - Liste aller ausgewählten USB-Sticks anzeigen
@@ -28,6 +27,3 @@
 - Eingabefeld für Name der Datenpartition
     -> Umlaute sind ein Problem
         https://bugs.kde.org/show_bug.cgi?id=169195
-
-- Update eines bereits bespielten USB-Sticks
-    - persönliche Daten automatisch migrieren

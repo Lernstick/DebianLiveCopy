@@ -36,6 +36,7 @@ import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -2362,6 +2363,15 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             }
             List<String> udisksObjectPaths = processExecutor.getStdOutList();
             for (String path : udisksObjectPaths) {
+                // no not add the boot device (something like "/dev/sdb1")
+                String bootDeviceTrail = bootDevice.substring(
+                        bootDevice.lastIndexOf("/") + 1);
+                String pathTrail = path.substring(path.lastIndexOf("/") + 1);
+                if (bootDeviceTrail.startsWith(pathTrail)) {
+                    // this is the boot device, skip it
+                    continue;
+                }
+
                 StorageDevice storageDevice = getStorageDevice(
                         path, includeHarddisks);
                 if (storageDevice != null) {
@@ -3912,6 +3922,22 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                         "!", "-regex", etcPath,
                         "!", "-regex", etcPath + "/cups.*",
                         "-exec", "rm", "-rf", "{}", ";");
+                try {
+                    File propertiesFile = new File(dataMountPoint
+                            + "/home/user/.config/lernstickWelcome");
+                    FileReader reader = new FileReader(propertiesFile);
+                    Properties lernstickWelcomeProperties = new Properties();
+                    lernstickWelcomeProperties.load(reader);
+                    lernstickWelcomeProperties.setProperty(
+                            "ShowAtStartup", "true");
+                    FileWriter writer = new FileWriter(propertiesFile);
+                    lernstickWelcomeProperties.store(
+                            writer, "lernstick Welcome dialog properties");
+                    reader.close();
+                    writer.close();
+                } catch (IOException iOException) {
+                    LOGGER.log(Level.WARNING, "", iOException);
+                }
                 dataPartition.umount();
             }
 
