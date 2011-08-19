@@ -46,6 +46,9 @@ public class UpgradeStorageDeviceRenderer
     private final static Icon grayBox = new ImageIcon(
             UpgradeStorageDeviceRenderer.class.getResource(
             "/dlcopy/icons/gray_box.png"));
+    private final static Icon darkGrayBox = new ImageIcon(
+            UpgradeStorageDeviceRenderer.class.getResource(
+            "/dlcopy/icons/dark_gray_box.png"));
     private final static Icon okIcon = new ImageIcon(
             UpgradeStorageDeviceRenderer.class.getResource(
             "/dlcopy/icons/16x16/dialog-ok-apply.png"));
@@ -107,7 +110,11 @@ public class UpgradeStorageDeviceRenderer
                     } else if (partition.isPersistencyPartition()) {
                         label.setIcon(greenBox);
                     } else if (partition.getTypeID().equals("c")) {
+                        // W95 FAT32 (LBA)
                         label.setIcon(yellowBox);
+                    } else if (partition.getTypeID().equals("5")) {
+                        // Extended
+                        label.setIcon(darkGrayBox);
                     } else {
                         label.setIcon(grayBox);
                     }
@@ -118,13 +125,27 @@ public class UpgradeStorageDeviceRenderer
                 // set text
                 long partitionSize = storageDevice.getBlockSize()
                         * partition.getSectorCount();
-                label.setText("<html><b>&#47;dev&#47;" + partition.getDevice()
-                        + "</b> ("
-                        + DLCopy.getDataVolumeString(partitionSize, 1) + ")<br>"
-                        + DLCopy.STRINGS.getString("Label") + ": "
-                        + partition.getLabel() + "<br>"
-                        + DLCopy.STRINGS.getString("File_System") + ": "
-                        + partition.getFileSystem() + "</html>");
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("<html><b>&#47;dev&#47;");
+                stringBuilder.append(partition.getDevice());
+                stringBuilder.append("</b> (");
+                stringBuilder.append(
+                        DLCopy.getDataVolumeString(partitionSize, 1));
+                stringBuilder.append(")<br>");
+                stringBuilder.append(DLCopy.STRINGS.getString("Label"));
+                stringBuilder.append(": ");
+                stringBuilder.append(partition.getLabel());
+                stringBuilder.append("<br>");
+                stringBuilder.append(DLCopy.STRINGS.getString("File_System"));
+                stringBuilder.append(": ");
+                String fileSystem = partition.getFileSystem();
+                if (fileSystem.isEmpty()) {
+                    stringBuilder.append(partition.getTypeDescription());
+                } else {
+                    stringBuilder.append(fileSystem);
+                }
+                stringBuilder.append("</html>");
+                label.setText(stringBuilder.toString());
 
                 GridBagConstraints gridBagConstraints =
                         new GridBagConstraints();
@@ -138,7 +159,7 @@ public class UpgradeStorageDeviceRenderer
                 }
                 partitionCaptionPanel.add(label, gridBagConstraints);
             }
-            
+
             // upgrade info text
             try {
                 if (storageDevice.canBeUpgraded()) {
@@ -192,13 +213,19 @@ public class UpgradeStorageDeviceRenderer
                     (int) ((width * partitionSize) / maxStorageDeviceSize);
 
             // color
+            boolean extended = false;
             try {
                 if (partition.isSystemPartition()) {
                     graphics2D.setPaint(LIGHT_BLUE);
                 } else if (partition.isPersistencyPartition()) {
                     graphics2D.setPaint(Color.GREEN);
                 } else if (partition.getTypeID().equals("c")) {
+                    // W95 FAT32 (LBA)
                     graphics2D.setPaint(Color.YELLOW);
+                } else if (partition.getTypeID().equals("5")) {
+                    // Extended
+                    graphics2D.setPaint(Color.DARK_GRAY);
+                    extended = true;
                 } else {
                     graphics2D.setPaint(Color.GRAY);
                 }
@@ -206,8 +233,12 @@ public class UpgradeStorageDeviceRenderer
                 LOGGER.log(Level.SEVERE, "", ex);
             }
 
-            graphics2D.fillRect(x, location.y, partitionWidth, height);
-            x += partitionWidth;
+            if (extended) {
+                graphics2D.fillRect(x, location.y - 3, partitionWidth, height + 6);
+            } else {
+                graphics2D.fillRect(x, location.y, partitionWidth, height);
+                x += partitionWidth;
+            }
         }
     }
 
