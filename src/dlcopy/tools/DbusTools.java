@@ -1,4 +1,4 @@
-package dlcopy;
+package dlcopy.tools;
 
 import java.util.List;
 import java.util.logging.Level;

@@ -163,6 +163,7 @@ public class DLCopy extends JFrame
     private String exchangeSourcePartition;
     private String exchangeSourcePartitionUDI;
     private DBusConnection dbusSystemConnection;
+    private UdisksMonitorThread udisksMonitorThread;
 
     /** Creates new form DLCopy
      * @param arguments the command line arguments
@@ -444,15 +445,7 @@ public class DLCopy extends JFrame
         }
 
         // monitor udisks changes
-        Thread udisksMonitorThread = new Thread() {
-
-            @Override
-            public void run() {
-                ProcessExecutor executor = new ProcessExecutor();
-                executor.addPropertyChangeListener(DLCopy.this);
-                executor.executeProcess("udisks", "--monitor");
-            }
-        };
+        udisksMonitorThread = new UdisksMonitorThread();
         udisksMonitorThread.start();
     }
 
@@ -1165,7 +1158,7 @@ public class DLCopy extends JFrame
                     .addGroup(createPartitionPanelLayout.createSequentialGroup()
                         .addComponent(exchangePartitionSizeLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(exchangePartitionSizeSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 559, Short.MAX_VALUE)
+                        .addComponent(exchangePartitionSizeSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(exchangePartitionSizeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1210,7 +1203,7 @@ public class DLCopy extends JFrame
                 .addComponent(copyExchangeCheckBox)
                 .addGap(18, 18, 18)
                 .addComponent(copyPersistencyCheckBox)
-                .addContainerGap(404, Short.MAX_VALUE))
+                .addContainerGap(345, Short.MAX_VALUE))
         );
         copyPartitionPanelLayout.setVerticalGroup(
             copyPartitionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1237,7 +1230,7 @@ public class DLCopy extends JFrame
         installListPanel.setLayout(installListPanelLayout);
         installListPanelLayout.setHorizontalGroup(
             installListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 775, Short.MAX_VALUE)
+            .addGap(0, 716, Short.MAX_VALUE)
             .addGroup(installListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(installListPanelLayout.createSequentialGroup()
                     .addContainerGap()
@@ -1246,13 +1239,13 @@ public class DLCopy extends JFrame
                         .addComponent(createPartitionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(installListPanelLayout.createSequentialGroup()
                             .addComponent(exchangeDefinitionLabel)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 349, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 290, Short.MAX_VALUE))
                         .addGroup(installListPanelLayout.createSequentialGroup()
                             .addComponent(dataDefinitionLabel)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 289, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 230, Short.MAX_VALUE))
                         .addGroup(installListPanelLayout.createSequentialGroup()
                             .addComponent(osDefinitionLabel)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 636, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 577, Short.MAX_VALUE))
                         .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                     .addContainerGap()))
         );
@@ -1348,9 +1341,9 @@ public class DLCopy extends JFrame
             .addGroup(installPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(currentlyInstalledDeviceLabel)
-                .addContainerGap(527, Short.MAX_VALUE))
-            .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 775, Short.MAX_VALUE)
-            .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 775, Short.MAX_VALUE)
+                .addContainerGap(468, Short.MAX_VALUE))
+            .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 716, Short.MAX_VALUE)
+            .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 716, Short.MAX_VALUE)
         );
         installPanelLayout.setVerticalGroup(
             installPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1376,11 +1369,11 @@ public class DLCopy extends JFrame
         donePanel.setLayout(donePanelLayout);
         donePanelLayout.setHorizontalGroup(
             donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 775, Short.MAX_VALUE)
+            .addGap(0, 716, Short.MAX_VALUE)
             .addGroup(donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(donePanelLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(doneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 751, Short.MAX_VALUE)
+                    .addComponent(doneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 692, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         donePanelLayout.setVerticalGroup(
@@ -1460,7 +1453,7 @@ public class DLCopy extends JFrame
             .addGroup(upgradeListPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(upgradeListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 751, Short.MAX_VALUE)
+                    .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 692, Short.MAX_VALUE)
                     .addComponent(upgradeOsDefinitionLabel)
                     .addComponent(upgradeDataDefinitionLabel)
                     .addComponent(upgradeExchangeDefinitionLabel))
@@ -1502,7 +1495,20 @@ public class DLCopy extends JFrame
 
         cardPanel.add(upgradeSelectionPanel, "upgradeSelectionPanel");
 
+        upgradePanel.setLayout(new java.awt.GridBagLayout());
+
+        currentlyUpgradedDeviceLabel.setFont(currentlyUpgradedDeviceLabel.getFont().deriveFont(currentlyUpgradedDeviceLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
         currentlyUpgradedDeviceLabel.setText(bundle.getString("DLCopy.currentlyUpgradedDeviceLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        upgradePanel.add(currentlyUpgradedDeviceLabel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+        upgradePanel.add(jSeparator4, gridBagConstraints);
 
         upgradeCardPanel.setLayout(new java.awt.CardLayout());
 
@@ -1530,27 +1536,11 @@ public class DLCopy extends JFrame
 
         upgradeCardPanel.add(upgradeCopyPanel, "upgradeCopyPanel");
 
-        javax.swing.GroupLayout upgradePanelLayout = new javax.swing.GroupLayout(upgradePanel);
-        upgradePanel.setLayout(upgradePanelLayout);
-        upgradePanelLayout.setHorizontalGroup(
-            upgradePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(upgradePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(currentlyUpgradedDeviceLabel)
-                .addContainerGap(527, Short.MAX_VALUE))
-            .addComponent(upgradeCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 775, Short.MAX_VALUE)
-            .addComponent(jSeparator4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 775, Short.MAX_VALUE)
-        );
-        upgradePanelLayout.setVerticalGroup(
-            upgradePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(upgradePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(currentlyUpgradedDeviceLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator4, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(1, 1, 1)
-                .addComponent(upgradeCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE))
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        upgradePanel.add(upgradeCardPanel, gridBagConstraints);
 
         cardPanel.add(upgradePanel, "upgradePanel");
 
@@ -1605,7 +1595,7 @@ public class DLCopy extends JFrame
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tmpDriveInfoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 751, Short.MAX_VALUE)
+                    .addComponent(tmpDriveInfoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 692, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
@@ -1614,16 +1604,16 @@ public class DLCopy extends JFrame
                                     .addComponent(isoLabelLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(writableTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE)
-                                    .addComponent(isoLabelTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE)))
+                                    .addComponent(writableTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 522, Short.MAX_VALUE)
+                                    .addComponent(isoLabelTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 522, Short.MAX_VALUE)))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(freeSpaceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(freeSpaceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE))
+                                .addComponent(freeSpaceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 522, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(tmpDirLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tmpDirTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 581, Short.MAX_VALUE)))
+                                .addComponent(tmpDirTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 522, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tmpDirSelectButton))
                     .addComponent(autoStartCheckBox))
@@ -1694,11 +1684,11 @@ public class DLCopy extends JFrame
         toISODonePanel.setLayout(toISODonePanelLayout);
         toISODonePanelLayout.setHorizontalGroup(
             toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 775, Short.MAX_VALUE)
+            .addGap(0, 716, Short.MAX_VALUE)
             .addGroup(toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(toISODonePanelLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(isoDoneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 751, Short.MAX_VALUE)
+                    .addComponent(isoDoneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 692, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         toISODonePanelLayout.setVerticalGroup(
@@ -1760,14 +1750,14 @@ public class DLCopy extends JFrame
                     .addGroup(executionPanelLayout.createSequentialGroup()
                         .addComponent(stepsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 775, Short.MAX_VALUE))
+                        .addComponent(cardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 716, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, executionPanelLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(previousButton)
                         .addGap(18, 18, 18)
                         .addComponent(nextButton)))
                 .addContainerGap())
-            .addComponent(jSeparator2, javax.swing.GroupLayout.DEFAULT_SIZE, 925, Short.MAX_VALUE)
+            .addComponent(jSeparator2, javax.swing.GroupLayout.DEFAULT_SIZE, 866, Short.MAX_VALUE)
         );
         executionPanelLayout.setVerticalGroup(
             executionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1892,6 +1882,14 @@ public class DLCopy extends JFrame
 
             case INSTALLATION:
                 switchToInstallSelection();
+                nextButton.setIcon(new ImageIcon(
+                        getClass().getResource("/dlcopy/icons/next.png")));
+                nextButton.setText(
+                        STRINGS.getString("DLCopy.nextButton.text"));
+                break;
+
+            case UPGRADE:
+                switchToUpgradeInformation();
                 nextButton.setIcon(new ImageIcon(
                         getClass().getResource("/dlcopy/icons/next.png")));
                 nextButton.setText(
@@ -2088,6 +2086,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     }
 
     private void exitProgram() {
+        udisksMonitorThread.stopMonitoring();
         System.exit(0);
     }
 
@@ -3824,12 +3823,16 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 currentDevice++;
                 String pattern = STRINGS.getString("Upgrade_Device_Info");
                 final String message = MessageFormat.format(pattern,
+                        currentDevice, selectionCount,
                         storageDevice.getVendor() + " "
-                        + storageDevice.getModel() + " "
-                        + getDataVolumeString(
-                        storageDevice.getSize(), 1),
-                        storageDevice.getDevice(),
-                        currentDevice, selectionCount);
+                        + storageDevice.getModel(),
+                        ", " + DLCopy.STRINGS.getString("Size") + ": "
+                        + getDataVolumeString(storageDevice.getSize(), 1) + ", "
+                        + DLCopy.STRINGS.getString("Revision") + ": "
+                        + storageDevice.getRevision() + ", "
+                        + DLCopy.STRINGS.getString("Serial") + ": "
+                        + storageDevice.getSerial() + ", "
+                        + storageDevice.getDevice().replace("/", "&#47;"));
                 SwingUtilities.invokeLater(new Runnable() {
 
                     @Override
@@ -3840,9 +3843,14 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
                 // upgrade system partition
                 Partition systemPartition = storageDevice.getSystemPartition();
+                LOGGER.log(Level.INFO, 
+                        "mounting {0}", systemPartition.getDevice());
                 String systemMountPoint = systemPartition.mount();
                 File systemMountPointFile = new File(systemMountPoint);
+                LOGGER.log(Level.INFO, 
+                        "recursively deleting {0}", systemMountPointFile);
                 FileTools.recursiveDelete(systemMountPointFile, false);
+                LOGGER.info("starting copy job");
                 upgradeFileCopierPanel.setFileCopier(fileCopier);
                 fileCopier.addPropertyChangeListener(
                         FileCopier.BYTE_COUNTER_PROPERTY, this);
@@ -3885,10 +3893,10 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 String dataMountPoint = dataPartition.mount();
                 ProcessExecutor processExecutor = new ProcessExecutor();
                 processExecutor.executeProcess("find", dataMountPoint,
-                        "!", "-regex", '\'' + dataMountPoint + '\'',
-                        "!", "-regex", '\'' + dataMountPoint + '/' + "lost+found'",
-                        "!", "-regex", '\'' + dataMountPoint + '/' + "home.*'",
-                        "!", "-regex", '\'' + dataMountPoint + '/' + "etc/cups.*'",
+                        "!", "-regex", dataMountPoint,
+                        "!", "-regex", dataMountPoint + '/' + "lost\\+found",
+                        "!", "-regex", dataMountPoint + '/' + "home.*",
+                        "!", "-regex", dataMountPoint + '/' + "etc/cups.*",
                         "-exec", "rm", "-rf", "{}", ";");
                 dataPartition.umount();
             }
@@ -4261,6 +4269,21 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
          */
         public long getRemainingFreeMemory() {
             return remainingFreeMemory;
+        }
+    }
+
+    private class UdisksMonitorThread extends Thread {
+
+        private ProcessExecutor executor = new ProcessExecutor();
+
+        @Override
+        public void run() {
+            executor.addPropertyChangeListener(DLCopy.this);
+            executor.executeProcess("udisks", "--monitor");
+        }
+
+        public void stopMonitoring() {
+            executor.destroy();
         }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
