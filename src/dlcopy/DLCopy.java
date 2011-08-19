@@ -3895,9 +3895,14 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 ProcessExecutor processExecutor = new ProcessExecutor();
                 processExecutor.executeProcess("find", dataMountPoint,
                         "!", "-regex", dataMountPoint,
-                        "!", "-regex", dataMountPoint + '/' + "lost\\+found",
-                        "!", "-regex", dataMountPoint + '/' + "home.*",
-                        "!", "-regex", dataMountPoint + '/' + "etc/cups.*",
+                        "!", "-regex", dataMountPoint + "/lost\\+found",
+                        "!", "-regex", dataMountPoint + "/home.*",
+                        "!", "-regex", dataMountPoint + "/etc.*",
+                        "-exec", "rm", "-rf", "{}", ";");
+                String etcPath = dataMountPoint + "/etc";
+                processExecutor.executeProcess("find", etcPath,
+                        "!", "-regex", etcPath,
+                        "!", "-regex", etcPath + "/cups.*",
                         "-exec", "rm", "-rf", "{}", ";");
                 dataPartition.umount();
             }
