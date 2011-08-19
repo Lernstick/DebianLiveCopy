@@ -204,8 +204,8 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
                     systemPartitionFound = true;
                     long partitionSize = blockSize
                             * partition.getSectorCount();
-                    // wild guess: give file system maximum 2% overhead...
-                    long saveSystemSize = (long) (systemSize * 1.02);
+                    // wild guess: give file system maximum 1% overhead...
+                    long saveSystemSize = (long) (systemSize * 1.01);
                     if (LOGGER.isLoggable(Level.INFO)) {
                         LOGGER.log(Level.INFO,
                                 "systemSize: {0}, saveSystemSize: {1}, size of {2}: {3}",
