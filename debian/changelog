@@ -1,3 +1,15 @@
+dlcopy (201108192114-1) unstable; urgency=low
+
+  * fixed startscript
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 19 Aug 2011 21:14:54 +0200
+
+dlcopy (201108192029-1) unstable; urgency=low
+
+  * added support for upgrading systems
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 19 Aug 2011 20:29:48 +0200
+
 dlcopy (201104291601-1) unstable; urgency=low
 
   * do *not* show errors on first partition trial

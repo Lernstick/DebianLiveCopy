@@ -1,2 +1,2 @@
 #!/bin/sh
-java -Dawt.useSystemAAFontSettings=on -jar /usr/bin/DLCopy.jar --variant lernstick
+java -Djava.library.path=/usr/lib/jni -Dawt.useSystemAAFontSettings=on -jar /usr/bin/DLCopy.jar --variant lernstick
