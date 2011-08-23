@@ -45,6 +45,7 @@ import java.util.logging.SimpleFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.DefaultListModel;
+import javax.swing.Icon;
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
 import javax.swing.JFileChooser;
@@ -273,11 +274,13 @@ public class DLCopy extends JFrame
             bootDeviceIsUSB = isUSBFlashDrive(bootDevice);
             LOGGER.log(Level.FINEST, "bootDeviceIsUSB = {0}", bootDeviceIsUSB);
             if (bootDeviceIsUSB) {
-                infoLabel.setIcon(new ImageIcon(
-                        getClass().getResource("/dlcopy/icons/usb2usb.png")));
+                Icon usb2usbIcon = new ImageIcon(
+                        getClass().getResource("/dlcopy/icons/usb2usb.png"));
+                infoLabel.setIcon(usb2usbIcon);
+                upgradeButton.setIcon(usb2usbIcon);
             }
-            getRootPane().setDefaultButton(usb2usbButton);
-            usb2usbButton.requestFocusInWindow();
+            getRootPane().setDefaultButton(installButton);
+            installButton.requestFocusInWindow();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "can not determine boot device", ex);
             System.exit(-1);
@@ -826,9 +829,9 @@ public class DLCopy extends JFrame
 
         choicePanel = new javax.swing.JPanel();
         choiceLabel = new javax.swing.JLabel();
-        usb2usbButton = new javax.swing.JButton();
+        installButton = new javax.swing.JButton();
         upgradeButton = new javax.swing.JButton();
-        usb2dvdButton = new javax.swing.JButton();
+        imageButton = new javax.swing.JButton();
         executionPanel = new javax.swing.JPanel();
         stepsPanel = new javax.swing.JPanel();
         stepsLabel = new javax.swing.JLabel();
@@ -947,31 +950,31 @@ public class DLCopy extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(30, 0, 0, 0);
         choicePanel.add(choiceLabel, gridBagConstraints);
 
-        usb2usbButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/usb2usb.png"))); // NOI18N
-        usb2usbButton.setText(bundle.getString("DLCopy.usb2usbButton.text")); // NOI18N
-        usb2usbButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        usb2usbButton.setName("usb2usbButton"); // NOI18N
-        usb2usbButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        usb2usbButton.addActionListener(new java.awt.event.ActionListener() {
+        installButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/dvd2usb.png"))); // NOI18N
+        installButton.setText(bundle.getString("DLCopy.installButton.text")); // NOI18N
+        installButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        installButton.setName("installButton"); // NOI18N
+        installButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        installButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                usb2usbButtonActionPerformed(evt);
+                installButtonActionPerformed(evt);
             }
         });
-        usb2usbButton.addFocusListener(new java.awt.event.FocusAdapter() {
+        installButton.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
-                usb2usbButtonFocusGained(evt);
+                installButtonFocusGained(evt);
             }
         });
-        usb2usbButton.addKeyListener(new java.awt.event.KeyAdapter() {
+        installButton.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                usb2usbButtonKeyPressed(evt);
+                installButtonKeyPressed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
-        choicePanel.add(usb2usbButton, gridBagConstraints);
+        choicePanel.add(installButton, gridBagConstraints);
 
         upgradeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/usbupgrade.png"))); // NOI18N
         upgradeButton.setText(bundle.getString("DLCopy.upgradeButton.text")); // NOI18N
@@ -998,30 +1001,30 @@ public class DLCopy extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
         choicePanel.add(upgradeButton, gridBagConstraints);
 
-        usb2dvdButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/usb2dvd.png"))); // NOI18N
-        usb2dvdButton.setText(bundle.getString("DLCopy.usb2dvdButton.text")); // NOI18N
-        usb2dvdButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        usb2dvdButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        usb2dvdButton.addActionListener(new java.awt.event.ActionListener() {
+        imageButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/usb2dvd.png"))); // NOI18N
+        imageButton.setText(bundle.getString("DLCopy.imageButton.text")); // NOI18N
+        imageButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        imageButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        imageButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                usb2dvdButtonActionPerformed(evt);
+                imageButtonActionPerformed(evt);
             }
         });
-        usb2dvdButton.addFocusListener(new java.awt.event.FocusAdapter() {
+        imageButton.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
-                usb2dvdButtonFocusGained(evt);
+                imageButtonFocusGained(evt);
             }
         });
-        usb2dvdButton.addKeyListener(new java.awt.event.KeyAdapter() {
+        imageButton.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                usb2dvdButtonKeyPressed(evt);
+                imageButtonKeyPressed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
-        choicePanel.add(usb2dvdButton, gridBagConstraints);
+        choicePanel.add(imageButton, gridBagConstraints);
 
         getContentPane().add(choicePanel, "choicePanel");
 
@@ -1854,8 +1857,8 @@ public class DLCopy extends JFrame
             case INSTALL_INFORMATION:
             case UPGRADE_INFORMATION:
             case ISO_INFORMATION:
-                getRootPane().setDefaultButton(usb2usbButton);
-                usb2usbButton.requestFocusInWindow();
+                getRootPane().setDefaultButton(installButton);
+                installButton.requestFocusInWindow();
                 globalShow("choicePanel");
                 break;
 
@@ -1876,8 +1879,8 @@ public class DLCopy extends JFrame
                         getClass().getResource("/dlcopy/icons/next.png")));
                 nextButton.setText(
                         STRINGS.getString("DLCopy.nextButton.text"));
-                getRootPane().setDefaultButton(usb2usbButton);
-                usb2usbButton.requestFocusInWindow();
+                getRootPane().setDefaultButton(installButton);
+                installButton.requestFocusInWindow();
                 globalShow("choicePanel");
                 break;
 
@@ -1932,12 +1935,12 @@ public class DLCopy extends JFrame
         getRootPane().setDefaultButton(previousButton);
     }//GEN-LAST:event_previousButtonFocusGained
 
-    private void usb2usbButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usb2usbButtonActionPerformed
+    private void installButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_installButtonActionPerformed
         globalShow("executionPanel");
         switchToUSBInformation();
-    }//GEN-LAST:event_usb2usbButtonActionPerformed
+    }//GEN-LAST:event_installButtonActionPerformed
 
-    private void usb2dvdButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_usb2dvdButtonActionPerformed
+    private void imageButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_imageButtonActionPerformed
         try {
             if (isUnmountedPersistencyAvailable()) {
                 globalShow("executionPanel");
@@ -1946,7 +1949,7 @@ public class DLCopy extends JFrame
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
-    }//GEN-LAST:event_usb2dvdButtonActionPerformed
+    }//GEN-LAST:event_imageButtonActionPerformed
 
     private void tmpDirSelectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tmpDirSelectButtonActionPerformed
         String tmpDir = tmpDirTextField.getText();
@@ -1958,13 +1961,13 @@ public class DLCopy extends JFrame
         }
 }//GEN-LAST:event_tmpDirSelectButtonActionPerformed
 
-    private void usb2usbButtonFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_usb2usbButtonFocusGained
-        getRootPane().setDefaultButton(usb2usbButton);
-    }//GEN-LAST:event_usb2usbButtonFocusGained
+    private void installButtonFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_installButtonFocusGained
+        getRootPane().setDefaultButton(installButton);
+    }//GEN-LAST:event_installButtonFocusGained
 
-    private void usb2dvdButtonFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_usb2dvdButtonFocusGained
-        getRootPane().setDefaultButton(usb2dvdButton);
-    }//GEN-LAST:event_usb2dvdButtonFocusGained
+    private void imageButtonFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_imageButtonFocusGained
+        getRootPane().setDefaultButton(imageButton);
+    }//GEN-LAST:event_imageButtonFocusGained
 
     private void installShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_installShowHarddiskCheckBoxItemStateChanged
         fillInstallStorageDeviceList();
@@ -1974,31 +1977,31 @@ public class DLCopy extends JFrame
         getRootPane().setDefaultButton(upgradeButton);
     }//GEN-LAST:event_upgradeButtonFocusGained
 
-    private void usb2usbButtonKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usb2usbButtonKeyPressed
+    private void installButtonKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_installButtonKeyPressed
         if (KeyEvent.VK_DOWN == evt.getKeyCode()) {
             upgradeButton.requestFocusInWindow();
         }
-    }//GEN-LAST:event_usb2usbButtonKeyPressed
+    }//GEN-LAST:event_installButtonKeyPressed
 
     private void upgradeButtonKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_upgradeButtonKeyPressed
         switch (evt.getKeyCode()) {
             case KeyEvent.VK_UP:
-                usb2usbButton.requestFocusInWindow();
+                installButton.requestFocusInWindow();
                 break;
             case KeyEvent.VK_DOWN:
-                usb2dvdButton.requestFocusInWindow();
+                imageButton.requestFocusInWindow();
         }
     }//GEN-LAST:event_upgradeButtonKeyPressed
 
     private void choicePanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_choicePanelComponentShown
-        usb2usbButton.requestFocusInWindow();
+        installButton.requestFocusInWindow();
     }//GEN-LAST:event_choicePanelComponentShown
 
-    private void usb2dvdButtonKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_usb2dvdButtonKeyPressed
+    private void imageButtonKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_imageButtonKeyPressed
         if (KeyEvent.VK_UP == evt.getKeyCode()) {
             upgradeButton.requestFocusInWindow();
         }
-    }//GEN-LAST:event_usb2dvdButtonKeyPressed
+    }//GEN-LAST:event_imageButtonKeyPressed
 
     private void nextButtonKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_nextButtonKeyPressed
         if (KeyEvent.VK_LEFT == evt.getKeyCode()) {
@@ -4351,8 +4354,10 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private javax.swing.JPanel executionPanel;
     private javax.swing.JLabel freeSpaceLabel;
     private javax.swing.JTextField freeSpaceTextField;
+    private javax.swing.JButton imageButton;
     private javax.swing.JLabel infoLabel;
     private javax.swing.JLabel infoStepLabel;
+    private javax.swing.JButton installButton;
     private javax.swing.JPanel installCardPanel;
     private javax.swing.JPanel installCopyPanel;
     private ch.fhnw.filecopier.FileCopierPanel installFileCopierPanel;
@@ -4420,8 +4425,6 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private javax.swing.JCheckBox upgradeShowHarddiskCheckBox;
     private javax.swing.JList upgradeStorageDeviceList;
     private javax.swing.JScrollPane upgradeStorageDeviceListScrollPane;
-    private javax.swing.JButton usb2dvdButton;
-    private javax.swing.JButton usb2usbButton;
     private javax.swing.JLabel writableLabel;
     private javax.swing.JTextField writableTextField;
     // End of variables declaration//GEN-END:variables
