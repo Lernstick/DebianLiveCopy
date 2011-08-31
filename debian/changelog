@@ -1,3 +1,9 @@
+dlcopy (201108231452-1) unstable; urgency=low
+
+  * fixed icon handling
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Tue, 23 Aug 2011 14:52:48 +0200
+
 dlcopy (201108192325-1) unstable; urgency=low
 
   * do not show boot device, activate lernstickWelcome when upgrading
