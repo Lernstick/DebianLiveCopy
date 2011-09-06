@@ -1,3 +1,9 @@
+dlcopy (201109061015-1) unstable; urgency=low
+
+  * GUI fixes
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Tue, 06 Sep 2011 10:15:38 +0200
+
 dlcopy (201108231452-1) unstable; urgency=low
 
   * fixed icon handling

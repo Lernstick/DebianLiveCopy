@@ -277,7 +277,7 @@ public class DLCopy extends JFrame
                 Icon usb2usbIcon = new ImageIcon(
                         getClass().getResource("/dlcopy/icons/usb2usb.png"));
                 infoLabel.setIcon(usb2usbIcon);
-                upgradeButton.setIcon(usb2usbIcon);
+                installButton.setIcon(usb2usbIcon);
             }
             getRootPane().setDefaultButton(installButton);
             installButton.requestFocusInWindow();
