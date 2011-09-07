@@ -1,3 +1,9 @@
+dlcopy (201109070957-1) unstable; urgency=low
+
+  * added French translation
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Wed, 07 Sep 2011 09:57:02 +0200
+
 dlcopy (201109061015-1) unstable; urgency=low
 
   * GUI fixes
