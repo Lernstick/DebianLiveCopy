@@ -2141,8 +2141,10 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         }
 
         previousButton.setEnabled(true);
-        installStorageDeviceListSelectionChanged();
+        // state must be updated before calling
+        // installStorageDeviceListSelectionChanged()!
         state = State.INSTALL_SELECTION;
+        installStorageDeviceListSelectionChanged();
         showCard(cardPanel, "installSelectionPanel");
     }
 
