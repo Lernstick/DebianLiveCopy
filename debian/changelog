@@ -1,3 +1,9 @@
+dlcopy (201109231906-1) unstable; urgency=low
+
+  * improved error message in case of DVD creation error
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 23 Sep 2011 19:06:26 +0200
+
 dlcopy (201109231829-1) unstable; urgency=low
 
   * added error handling for genisofs
