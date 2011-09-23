@@ -53,6 +53,7 @@ import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JSlider;
+import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
@@ -166,6 +167,7 @@ public class DLCopy extends JFrame
     private String exchangeSourcePartitionUDI;
     private DBusConnection dbusSystemConnection;
     private UdisksMonitorThread udisksMonitorThread;
+    private DefaultListModel separateFileSystemsListModel;
 
     /** Creates new form DLCopy
      * @param arguments the command line arguments
@@ -451,6 +453,9 @@ public class DLCopy extends JFrame
         // monitor udisks changes
         udisksMonitorThread = new UdisksMonitorThread();
         udisksMonitorThread.start();
+
+        separateFileSystemsListModel = new DefaultListModel();
+        separateFileSystemsList.setModel(separateFileSystemsListModel);
     }
 
     @Override
@@ -916,6 +921,12 @@ public class DLCopy extends JFrame
         isoLabelLabel = new javax.swing.JLabel();
         isoLabelTextField = new javax.swing.JTextField();
         autoStartCheckBox = new javax.swing.JCheckBox();
+        separateFileSystemsPanel = new javax.swing.JPanel();
+        separateFileSystemsScrollpane = new javax.swing.JScrollPane();
+        separateFileSystemsList = new javax.swing.JList();
+        separateFileSystemsAddButton = new javax.swing.JButton();
+        separateFileSystemsEditButton = new javax.swing.JButton();
+        separateFileSystemsRemoveButton = new javax.swing.JButton();
         toISOProgressPanel = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         toISOProgressBar = new javax.swing.JProgressBar();
@@ -1072,7 +1083,7 @@ public class DLCopy extends JFrame
                 .addComponent(selectionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(executionLabel)
-                .addContainerGap(397, Short.MAX_VALUE))
+                .addContainerGap(430, Short.MAX_VALUE))
         );
 
         cardPanel.setLayout(new java.awt.CardLayout());
@@ -1162,7 +1173,7 @@ public class DLCopy extends JFrame
                     .addGroup(createPartitionPanelLayout.createSequentialGroup()
                         .addComponent(exchangePartitionSizeLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(exchangePartitionSizeSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
+                        .addComponent(exchangePartitionSizeSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(exchangePartitionSizeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1207,7 +1218,7 @@ public class DLCopy extends JFrame
                 .addComponent(copyExchangeCheckBox)
                 .addGap(18, 18, 18)
                 .addComponent(copyPersistencyCheckBox)
-                .addContainerGap(377, Short.MAX_VALUE))
+                .addContainerGap(322, Short.MAX_VALUE))
         );
         copyPartitionPanelLayout.setVerticalGroup(
             copyPartitionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1243,23 +1254,23 @@ public class DLCopy extends JFrame
                         .addComponent(createPartitionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(installListPanelLayout.createSequentialGroup()
                             .addComponent(exchangeDefinitionLabel)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 322, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 398, Short.MAX_VALUE))
                         .addGroup(installListPanelLayout.createSequentialGroup()
                             .addComponent(dataDefinitionLabel)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 262, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 127, Short.MAX_VALUE))
                         .addGroup(installListPanelLayout.createSequentialGroup()
                             .addComponent(osDefinitionLabel)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 609, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 623, Short.MAX_VALUE))
                         .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                     .addContainerGap()))
         );
         installListPanelLayout.setVerticalGroup(
             installListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 445, Short.MAX_VALUE)
+            .addGap(0, 478, Short.MAX_VALUE)
             .addGroup(installListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(installListPanelLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
+                    .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 206, Short.MAX_VALUE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(exchangeDefinitionLabel)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1345,7 +1356,7 @@ public class DLCopy extends JFrame
             .addGroup(installPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(currentlyInstalledDeviceLabel)
-                .addContainerGap(500, Short.MAX_VALUE))
+                .addContainerGap(483, Short.MAX_VALUE))
             .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 748, Short.MAX_VALUE)
             .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 748, Short.MAX_VALUE)
         );
@@ -1357,7 +1368,7 @@ public class DLCopy extends JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(1, 1, 1)
-                .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 446, Short.MAX_VALUE))
+                .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 479, Short.MAX_VALUE))
         );
 
         cardPanel.add(installPanel, "installPanel");
@@ -1382,12 +1393,12 @@ public class DLCopy extends JFrame
         );
         donePanelLayout.setVerticalGroup(
             donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 490, Short.MAX_VALUE)
+            .addGap(0, 523, Short.MAX_VALUE)
             .addGroup(donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(donePanelLayout.createSequentialGroup()
                     .addGap(83, 83, 83)
                     .addComponent(doneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(241, Short.MAX_VALUE)))
+                    .addContainerGap(274, Short.MAX_VALUE)))
         );
 
         cardPanel.add(donePanel, "donePanel");
@@ -1467,7 +1478,7 @@ public class DLCopy extends JFrame
             upgradeListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, upgradeListPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 343, Short.MAX_VALUE)
+                .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(upgradeExchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1592,6 +1603,74 @@ public class DLCopy extends JFrame
 
         autoStartCheckBox.setText(bundle.getString("DLCopy.autoStartCheckBox.text")); // NOI18N
 
+        separateFileSystemsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopy.separateFileSystemsPanel.border.title"))); // NOI18N
+
+        separateFileSystemsList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                separateFileSystemsListMouseClicked(evt);
+            }
+        });
+        separateFileSystemsList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                separateFileSystemsListValueChanged(evt);
+            }
+        });
+        separateFileSystemsScrollpane.setViewportView(separateFileSystemsList);
+
+        separateFileSystemsAddButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/16x16/list-add.png"))); // NOI18N
+        separateFileSystemsAddButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        separateFileSystemsAddButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                separateFileSystemsAddButtonActionPerformed(evt);
+            }
+        });
+
+        separateFileSystemsEditButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/16x16/document-edit.png"))); // NOI18N
+        separateFileSystemsEditButton.setEnabled(false);
+        separateFileSystemsEditButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        separateFileSystemsEditButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                separateFileSystemsEditButtonActionPerformed(evt);
+            }
+        });
+
+        separateFileSystemsRemoveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/16x16/list-remove.png"))); // NOI18N
+        separateFileSystemsRemoveButton.setEnabled(false);
+        separateFileSystemsRemoveButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        separateFileSystemsRemoveButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                separateFileSystemsRemoveButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout separateFileSystemsPanelLayout = new javax.swing.GroupLayout(separateFileSystemsPanel);
+        separateFileSystemsPanel.setLayout(separateFileSystemsPanelLayout);
+        separateFileSystemsPanelLayout.setHorizontalGroup(
+            separateFileSystemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, separateFileSystemsPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(separateFileSystemsScrollpane, javax.swing.GroupLayout.DEFAULT_SIZE, 658, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(separateFileSystemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(separateFileSystemsAddButton)
+                    .addComponent(separateFileSystemsEditButton)
+                    .addComponent(separateFileSystemsRemoveButton))
+                .addContainerGap())
+        );
+        separateFileSystemsPanelLayout.setVerticalGroup(
+            separateFileSystemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(separateFileSystemsPanelLayout.createSequentialGroup()
+                .addGroup(separateFileSystemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(separateFileSystemsPanelLayout.createSequentialGroup()
+                        .addComponent(separateFileSystemsAddButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(separateFileSystemsEditButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(separateFileSystemsRemoveButton))
+                    .addComponent(separateFileSystemsScrollpane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 129, Short.MAX_VALUE))
+                .addContainerGap())
+        );
+
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -1599,7 +1678,9 @@ public class DLCopy extends JFrame
             .addGroup(jPanel1Layout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(separateFileSystemsPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(tmpDriveInfoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 724, Short.MAX_VALUE)
+                    .addComponent(autoStartCheckBox)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
@@ -1608,19 +1689,18 @@ public class DLCopy extends JFrame
                                     .addComponent(isoLabelLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(writableTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
-                                    .addComponent(isoLabelTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)))
+                                    .addComponent(writableTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)
+                                    .addComponent(isoLabelTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(freeSpaceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(freeSpaceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE))
+                                .addComponent(freeSpaceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(tmpDirLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tmpDirTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)))
+                                .addComponent(tmpDirTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tmpDirSelectButton))
-                    .addComponent(autoStartCheckBox))
+                        .addComponent(tmpDirSelectButton)))
                 .addContainerGap())
         );
 
@@ -1650,6 +1730,8 @@ public class DLCopy extends JFrame
                     .addComponent(isoLabelLabel))
                 .addGap(18, 18, 18)
                 .addComponent(autoStartCheckBox)
+                .addGap(18, 18, 18)
+                .addComponent(separateFileSystemsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
@@ -1697,12 +1779,12 @@ public class DLCopy extends JFrame
         );
         toISODonePanelLayout.setVerticalGroup(
             toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 490, Short.MAX_VALUE)
+            .addGap(0, 523, Short.MAX_VALUE)
             .addGroup(toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(toISODonePanelLayout.createSequentialGroup()
                     .addGap(83, 83, 83)
                     .addComponent(isoDoneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(211, Short.MAX_VALUE)))
+                    .addContainerGap(199, Short.MAX_VALUE)))
         );
 
         cardPanel.add(toISODonePanel, "toISODonePanel");
@@ -1769,7 +1851,7 @@ public class DLCopy extends JFrame
                 .addGroup(executionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(executionPanelLayout.createSequentialGroup()
                         .addGap(12, 12, 12)
-                        .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 490, Short.MAX_VALUE))
+                        .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 523, Short.MAX_VALUE))
                     .addComponent(stepsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -1952,13 +2034,7 @@ public class DLCopy extends JFrame
     }//GEN-LAST:event_imageButtonActionPerformed
 
     private void tmpDirSelectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tmpDirSelectButtonActionPerformed
-        String tmpDir = tmpDirTextField.getText();
-        JFileChooser fileChooser = new JFileChooser(tmpDir);
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            String selectedPath = fileChooser.getSelectedFile().getPath();
-            tmpDirTextField.setText(selectedPath);
-        }
+        selectDirectory(tmpDirTextField);
 }//GEN-LAST:event_tmpDirSelectButtonActionPerformed
 
     private void installButtonFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_installButtonFocusGained
@@ -2031,6 +2107,63 @@ public class DLCopy extends JFrame
 private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_upgradeShowHarddiskCheckBoxItemStateChanged
     fillUpgradeStorageDeviceList();
 }//GEN-LAST:event_upgradeShowHarddiskCheckBoxItemStateChanged
+
+    private void separateFileSystemsAddButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_separateFileSystemsAddButtonActionPerformed
+        JFileChooser fileChooser = new JFileChooser("/");
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            String selectedPath = fileChooser.getSelectedFile().getPath();
+            separateFileSystemsListModel.addElement(selectedPath);
+        }
+    }//GEN-LAST:event_separateFileSystemsAddButtonActionPerformed
+
+    private void separateFileSystemsEditButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_separateFileSystemsEditButtonActionPerformed
+        editSeparateFileSystemListEntry();
+    }//GEN-LAST:event_separateFileSystemsEditButtonActionPerformed
+
+    private void separateFileSystemsRemoveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_separateFileSystemsRemoveButtonActionPerformed
+        int[] selectedIndices = separateFileSystemsList.getSelectedIndices();
+        for (int i = selectedIndices.length - 1; i >= 0; i--) {
+            separateFileSystemsListModel.remove(i);
+        }
+    }//GEN-LAST:event_separateFileSystemsRemoveButtonActionPerformed
+
+    private void separateFileSystemsListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_separateFileSystemsListValueChanged
+        int[] selectedIndices = separateFileSystemsList.getSelectedIndices();
+        separateFileSystemsEditButton.setEnabled(selectedIndices.length == 1);
+        separateFileSystemsRemoveButton.setEnabled(selectedIndices.length > 0);
+    }//GEN-LAST:event_separateFileSystemsListValueChanged
+
+    private void separateFileSystemsListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_separateFileSystemsListMouseClicked
+        if (evt.getClickCount() == 2) {
+            int index = separateFileSystemsList.locationToIndex(evt.getPoint());
+            editSeparateFileSystemListEntry();
+        }
+    }//GEN-LAST:event_separateFileSystemsListMouseClicked
+
+    private void editSeparateFileSystemListEntry() {
+        String oldPath = (String) separateFileSystemsList.getSelectedValue();
+        File oldDirectory = new File(oldPath);
+        JFileChooser fileChooser =
+                new JFileChooser(oldDirectory.getParentFile());
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.setSelectedFile(oldDirectory);
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            String newPath = fileChooser.getSelectedFile().getPath();
+            separateFileSystemsListModel.set(
+                    separateFileSystemsList.getSelectedIndex(), newPath);
+        }
+    }
+
+    private void selectDirectory(JTextField textField) {
+        String path = textField.getText();
+        JFileChooser fileChooser = new JFileChooser(path);
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            String selectedPath = fileChooser.getSelectedFile().getPath();
+            textField.setText(selectedPath);
+        }
+    }
 
     private String getBootDevice(String path) throws IOException {
         String tmpBootDevice = null;
@@ -4059,8 +4192,37 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 });
                 publish(STRINGS.getString("Compressing_Filesystem"));
                 processExecutor.addPropertyChangeListener(this);
-                processExecutor.executeProcess("mksquashfs", cowPath,
-                        targetDirectory + "/live/filesystem.squashfs");
+                List<String> separateFileSystems = getSeparateFileSystems();
+                if (separateFileSystems.isEmpty()) {
+                    // build just one single squash file system
+                    processExecutor.executeProcess("mksquashfs", cowPath,
+                            targetDirectory + "/live/filesystem.squashfs");
+
+                } else {
+                    // build several squash file systems
+
+                    // first file system (excludes all separate file systems)
+                    List<String> commandList = new ArrayList<String>();
+                    commandList.add("mksquashfs");
+                    commandList.add(cowPath);
+                    commandList.add(
+                            targetDirectory + "/live/filesystem1.squashfs");
+                    for (String separateFileSystem: separateFileSystems) {
+                        commandList.add("-e");
+                        commandList.add(separateFileSystem);
+                    }
+                    String[] commandArray = new String[commandList.size()];
+                    commandArray = commandList.toArray(commandArray);
+                    processExecutor.executeProcess(commandArray);
+
+                    // separate file systems (excludes everything but itself)
+                    int i = 2;
+                    for (String separateFileSystem: separateFileSystems) {
+                        processExecutor.executeProcess("mksquashfs", cowPath,
+                                targetDirectory + "/live/filesystem" + (i++) + ".squashfs",
+                                "-wildcards", "-e", "!(" + separateFileSystem + ")");
+                    }
+                }
                 processExecutor.removePropertyChangeListener(this);
                 SwingUtilities.invokeLater(new Runnable() {
 
@@ -4248,6 +4410,17 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 }
             }
         }
+        
+        private List<String> getSeparateFileSystems() {
+            List<String> separateFileSystems = new ArrayList<String>();
+            for (int i = 0, size = separateFileSystemsListModel.size(); i < size; i++) {
+                String separateFileSystem = (String) separateFileSystemsListModel.get(i);
+                // cut off the leading slash
+                separateFileSystem = separateFileSystem.substring(1);
+                separateFileSystems.add(separateFileSystem);
+            }
+            return separateFileSystems;
+        }
     }
 
     private class SwapInfo {
@@ -4393,6 +4566,12 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private javax.swing.JPanel rsyncPanel;
     private javax.swing.JProgressBar rsyncPogressBar;
     private javax.swing.JLabel selectionLabel;
+    private javax.swing.JButton separateFileSystemsAddButton;
+    private javax.swing.JButton separateFileSystemsEditButton;
+    private javax.swing.JList separateFileSystemsList;
+    private javax.swing.JPanel separateFileSystemsPanel;
+    private javax.swing.JButton separateFileSystemsRemoveButton;
+    private javax.swing.JScrollPane separateFileSystemsScrollpane;
     private javax.swing.JLabel stepsLabel;
     private javax.swing.JPanel stepsPanel;
     private javax.swing.JScrollPane storageDeviceListScrollPane;
