@@ -4130,6 +4130,8 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
         private IsoStep step;
         private String isoPath;
+        private int fileSystem;
+        private int fileSystems;
 
         @Override
         protected Void doInBackground() throws Exception {
@@ -4195,19 +4197,23 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 List<String> separateFileSystems = getSeparateFileSystems();
                 if (separateFileSystems.isEmpty()) {
                     // build just one single squash file system
+                    fileSystem = 1;
+                    fileSystems = 1;
                     processExecutor.executeProcess("mksquashfs", cowPath,
                             targetDirectory + "/live/filesystem.squashfs");
 
                 } else {
                     // build several squash file systems
+                    fileSystems = 1 + separateFileSystems.size();
 
                     // first file system (excludes all separate file systems)
+                    fileSystem = 1;
                     List<String> commandList = new ArrayList<String>();
                     commandList.add("mksquashfs");
                     commandList.add(cowPath);
                     commandList.add(
                             targetDirectory + "/live/filesystem1.squashfs");
-                    for (String separateFileSystem: separateFileSystems) {
+                    for (String separateFileSystem : separateFileSystems) {
                         commandList.add("-e");
                         commandList.add(separateFileSystem);
                     }
@@ -4216,11 +4222,11 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                     processExecutor.executeProcess(commandArray);
 
                     // separate file systems (excludes everything but itself)
-                    int i = 2;
-                    for (String separateFileSystem: separateFileSystems) {
+                    for (String separateFileSystem : separateFileSystems) {
                         processExecutor.executeProcess("mksquashfs", cowPath,
-                                targetDirectory + "/live/filesystem" + (i++) + ".squashfs",
-                                "-wildcards", "-e", "!(" + separateFileSystem + ")");
+                                targetDirectory + "/live/filesystem" + 
+                                (++fileSystem) + ".squashfs", "-wildcards",
+                                "-e", "!(" + separateFileSystem + ")");
                     }
                 }
                 processExecutor.removePropertyChangeListener(this);
@@ -4387,8 +4393,9 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                                 final int progress = (doneInt * 100) / maxInt;
                                 String message = STRINGS.getString(
                                         "Compressing_Filesystem_Progress");
-                                message = MessageFormat.format(
-                                        message, progress + "%");
+                                message = MessageFormat.format(message,
+                                        fileSystem, fileSystems,
+                                        progress + "%");
                                 publish(message);
                                 SwingUtilities.invokeLater(new Runnable() {
 
@@ -4410,7 +4417,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 }
             }
         }
-        
+
         private List<String> getSeparateFileSystems() {
             List<String> separateFileSystems = new ArrayList<String>();
             for (int i = 0, size = separateFileSystemsListModel.size(); i < size; i++) {
