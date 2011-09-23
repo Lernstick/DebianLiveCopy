@@ -1,3 +1,9 @@
+dlcopy (201109231829-1) unstable; urgency=low
+
+  * added error handling for genisofs
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 23 Sep 2011 18:29:50 +0200
+
 dlcopy (201109231808-1) unstable; urgency=low
 
   * show file system number in progress message

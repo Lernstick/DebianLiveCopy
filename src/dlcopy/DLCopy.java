@@ -38,6 +38,7 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.concurrent.ExecutionException;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -4125,7 +4126,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     }
 
     private class ISOCreator
-            extends SwingWorker<Void, String>
+            extends SwingWorker<Boolean, String>
             implements PropertyChangeListener {
 
         private IsoStep step;
@@ -4134,7 +4135,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         private int fileSystems;
 
         @Override
-        protected Void doInBackground() throws Exception {
+        protected Boolean doInBackground() throws Exception {
             try {
 
                 // copy base image files
@@ -4224,8 +4225,8 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                     // separate file systems (excludes everything but itself)
                     for (String separateFileSystem : separateFileSystems) {
                         processExecutor.executeProcess("mksquashfs", cowPath,
-                                targetDirectory + "/live/filesystem" + 
-                                (++fileSystem) + ".squashfs", "-wildcards",
+                                targetDirectory + "/live/filesystem"
+                                + (++fileSystem) + ".squashfs", "-wildcards",
                                 "-e", "!(" + separateFileSystem + ")");
                     }
                 }
@@ -4297,27 +4298,32 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 publish(STRINGS.getString("Creating_Image"));
                 processExecutor.addPropertyChangeListener(this);
                 String isoLabel = isoLabelTextField.getText();
-                if (isoLabel.length() == 0) {
-                    processExecutor.executeProcess("genisoimage", "-J", "-l",
-                            "-cache-inodes", "-allow-multidot", "-no-emul-boot",
-                            "-boot-load-size", "4", "-boot-info-table", "-r",
-                            "-b", "isolinux/isolinux.bin", "-c",
-                            "isolinux/boot.cat", "-o", isoPath,
-                            targetDirectory);
-                } else {
-                    processExecutor.executeProcess("genisoimage", "-J", "-V",
-                            isoLabel, "-l", "-cache-inodes", "-allow-multidot",
+                int returnValue = 0;
+                if (isoLabel.isEmpty()) {
+                    returnValue = processExecutor.executeProcess("genisoimage",
+                            "-J", "-l", "-cache-inodes", "-allow-multidot",
                             "-no-emul-boot", "-boot-load-size", "4",
                             "-boot-info-table", "-r", "-b",
                             "isolinux/isolinux.bin", "-c", "isolinux/boot.cat",
                             "-o", isoPath, targetDirectory);
+                } else {
+                    returnValue = processExecutor.executeProcess("genisoimage",
+                            "-J", "-V", isoLabel, "-l", "-cache-inodes",
+                            "-allow-multidot", "-no-emul-boot",
+                            "-boot-load-size", "4", "-boot-info-table", "-r",
+                            "-b", "isolinux/isolinux.bin", "-c",
+                            "isolinux/boot.cat", "-o", isoPath,
+                            targetDirectory);
                 }
                 processExecutor.removePropertyChangeListener(this);
+                if (returnValue != 0) {
+                    return false;
+                }
 
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, null, ex);
             }
-            return null;
+            return true;
         }
 
         @Override
@@ -4327,8 +4333,19 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
         @Override
         protected void done() {
-            String message = STRINGS.getString("DLCopy.isoDoneLabel.text");
-            message = MessageFormat.format(message, isoPath);
+            String message = null;
+            try {
+                if (get()) {
+                    message = STRINGS.getString("DLCopy.isoDoneLabel.text");
+                    message = MessageFormat.format(message, isoPath);
+                } else {
+                    message = STRINGS.getString("Error_ISO_Creation");
+                }
+            } catch (InterruptedException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
             isoDoneLabel.setText(message);
             showCard(cardPanel, "toISODonePanel");
             previousButton.setEnabled(true);
