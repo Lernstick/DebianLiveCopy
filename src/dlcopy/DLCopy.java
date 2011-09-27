@@ -39,6 +39,7 @@ import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
 import java.util.concurrent.ExecutionException;
+import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -174,12 +175,20 @@ public class DLCopy extends JFrame
      * @param arguments the command line arguments
      */
     public DLCopy(String[] arguments) {
-        // log everything...
+        /**
+         * set up logging
+         */
         Logger globalLogger = Logger.getLogger("dlcopy");
         globalLogger.setLevel(Level.ALL);
         Logger fileCopierLogger = Logger.getLogger("ch.fhnw.filecopier");
         fileCopierLogger.setLevel(Level.ALL);
-        // log into a rotating temporaty file of max 5 MB
+        // log to console
+        ConsoleHandler consoleHandler = new ConsoleHandler();
+        consoleHandler.setFormatter(new SimpleFormatter());
+        consoleHandler.setLevel(Level.ALL);
+        globalLogger.addHandler(consoleHandler);
+        fileCopierLogger.addHandler(consoleHandler);
+        // also log into a rotating temporaty file of max 5 MB
         try {
             FileHandler fileHandler =
                     new FileHandler("%t/DebianLiveCopy", 5000000, 2, true);
@@ -187,11 +196,16 @@ public class DLCopy extends JFrame
             fileHandler.setLevel(Level.ALL);
             globalLogger.addHandler(fileHandler);
             fileCopierLogger.addHandler(fileHandler);
+
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "can not create log file", ex);
         } catch (SecurityException ex) {
             LOGGER.log(Level.SEVERE, "can not create log file", ex);
         }
+        // prevent double logs in console
+        globalLogger.setUseParentHandlers(false);
+        fileCopierLogger.setUseParentHandlers(false);
+
         LOGGER.info("*********** Starting dlcopy ***********");
 
 //        try {
@@ -2554,26 +2568,21 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                     "org.freedesktop.UDisks", "DeviceIsRemovable");
             String media = deviceProperties.Get(
                     "org.freedesktop.UDisks", "DriveMedia");
-            UInt64 blockSize64 = deviceProperties.Get(
-                    "org.freedesktop.UDisks", "DeviceBlockSize");
-            int blockSize = blockSize64.intValue();
             if (deviceFile.startsWith("/dev/mmcblk")) {
                 // an SD card
                 return new SDStorageDevice(vendor, model, revision, serial,
-                        deviceFile, size, blockSize, systemPartitionLabel,
-                        systemSize);
+                        deviceFile, size, systemPartitionLabel, systemSize);
             } else {
                 if (removable) {
                     // probably a USB flash drive
                     return new UsbStorageDevice(vendor, model, revision, serial,
-                            deviceFile, size, blockSize, systemPartitionLabel,
-                            systemSize);
+                            deviceFile, size, systemPartitionLabel, systemSize);
                 } else {
                     // probably a hard drive
                     if (includeHarddisks) {
                         return new Harddisk(vendor, model, revision, serial,
-                                deviceFile, size, blockSize,
-                                systemPartitionLabel, systemSize);
+                                deviceFile, size, systemPartitionLabel,
+                                systemSize);
                     }
                 }
             }
@@ -2862,11 +2871,6 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
     private class Installer extends Thread implements PropertyChangeListener {
 
-        // some sfdisk IDs
-        private final static String TYPE_LINUX = "83";
-        private final static char TYPE_W95_FAT32_LBA = 'c';
-        private final static char BOOTABLE = '*';
-        private final static char NOT_BOOTABLE = '-';
         private FileCopier fileCopier;
         private int currentDevice;
         private int selectionCount;
@@ -3163,20 +3167,6 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 boolean showErrorMessages)
                 throws InterruptedException, IOException {
 
-            // determine exact partition sizes
-            String device = storageDevice.getDevice();
-            long overhead = size - systemSizeEnlarged;
-            int persistentMB = partitions.getPersistencyMB();
-            if (LOGGER.isLoggable(Level.FINEST)) {
-                LOGGER.log(Level.FINEST, "size of {0} = {1} Byte\n"
-                        + "overhead = {2} Byte\n"
-                        + "exchangeMB = {3} MiB\n"
-                        + "persistentMB = {4} MiB",
-                        new Object[]{
-                            device, size, overhead, exchangeMB, persistentMB
-                        });
-            }
-
             // update GUI
             SwingUtilities.invokeLater(new Runnable() {
 
@@ -3194,48 +3184,90 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 }
             });
 
-            // the special size factor is needed e.g. for disks with sector size
-            // 4096 instead of the "normal" 512
-            int sizeFactor = getSizeFactor(storageDevice);
+            // determine exact partition sizes
+            String device = storageDevice.getDevice();
+            long overhead = size - systemSizeEnlarged;
+            int persistentMB = partitions.getPersistencyMB();
+            if (LOGGER.isLoggable(Level.FINEST)) {
+                LOGGER.log(Level.FINEST, "size of {0} = {1} Byte\n"
+                        + "overhead = {2} Byte\n"
+                        + "exchangeMB = {3} MiB\n"
+                        + "persistentMB = {4} MiB",
+                        new Object[]{
+                            device, size, overhead, exchangeMB, persistentMB
+                        });
+            }
 
-            // create sfdisk script
-            String sfdiskScript = null;
+            // assemble partition command
+            List<String> partedCommandList = new ArrayList<String>();
+            partedCommandList.add("parted");
+            partedCommandList.add("-s");
+            partedCommandList.add("-a");
+            partedCommandList.add("optimal");
+            partedCommandList.add(device);
+            partedCommandList.add("mklabel");
+            partedCommandList.add("msdos");
+            
+//            // list of "rm" commands must be inversely sorted, otherwise
+//            // removal of already existing partitions will fail when storage
+//            // device has logical partitions in extended partitions (the logical
+//            // partitions are no longer found when the extended partition is
+//            // already removed)
+//            List<String> partitionNumbers = new ArrayList<String>();
+//            for (Partition partition : storageDevice.getPartitions()) {
+//                partitionNumbers.add(String.valueOf(partition.getNumber()));
+//            }
+//            Collections.sort(partitionNumbers);
+//            for (int i = partitionNumbers.size() - 1; i >=0; i--) {
+//                partedCommandList.add("rm");
+//                partedCommandList.add(partitionNumbers.get(i));
+//            }
+
             switch (partitionState) {
                 case ONLY_SYSTEM:
-                    sfdiskScript =
-                            "sfdisk " + device + " << EOF\n"
-                            + "0,," + TYPE_W95_FAT32_LBA + ',' + BOOTABLE + ";\n"
-                            + "EOF\n";
+                    mkpart(partedCommandList, "0%", "100%");
+                    setFlag(partedCommandList, "1", "boot", "on");
+                    setFlag(partedCommandList, "1", "lba", "on");
                     break;
 
                 case PERSISTENT:
-                    sfdiskScript = getPersistentScript(
-                            overhead / sizeFactor, device);
+                    String persistentBorder = persistentMB + "M";
+                    mkpart(partedCommandList, "0%", persistentBorder);
+                    mkpart(partedCommandList, persistentBorder, "100%");
+                    setFlag(partedCommandList, "2", "boot", "on");
+                    setFlag(partedCommandList, "2", "lba", "on");
                     break;
 
                 case EXCHANGE:
                     if (exchangeMB == 0) {
                         // create two partitions:
                         // persistent, system
-                        sfdiskScript = getPersistentScript(
-                                overhead / sizeFactor, device);
+                        persistentBorder = persistentMB + "M";
+                        mkpart(partedCommandList, "0%", persistentBorder);
+                        mkpart(partedCommandList, persistentBorder, "100%");
+                        setFlag(partedCommandList, "2", "boot", "on");
+                        setFlag(partedCommandList, "2", "lba", "on");
 
                     } else {
+                        String exchangeBorder = exchangeMB + "M";
                         if (persistentMB == 0) {
                             // create two partitions:
                             // exchange, system
-                            sfdiskScript = "sfdisk -uM " + device + " << EOF\n"
-                                    + "0," + exchangeMB / sizeFactor + ',' + TYPE_W95_FAT32_LBA + ',' + NOT_BOOTABLE + ",\n"
-                                    + ",," + TYPE_W95_FAT32_LBA + ',' + BOOTABLE + ";\n"
-                                    + "EOF\n";
+                            mkpart(partedCommandList, "0%", exchangeBorder);
+                            mkpart(partedCommandList, exchangeBorder, "100%");
+                            setFlag(partedCommandList, "2", "boot", "on");
+                            setFlag(partedCommandList, "1", "lba", "on");
+                            setFlag(partedCommandList, "2", "lba", "on");
                         } else {
                             // create three partitions:
                             // exchange, persistent, system
-                            sfdiskScript = "sfdisk -uM " + device + " << EOF\n"
-                                    + "0," + exchangeMB / sizeFactor + ',' + TYPE_W95_FAT32_LBA + ',' + NOT_BOOTABLE + ",\n"
-                                    + ',' + persistentMB / sizeFactor + ',' + TYPE_LINUX + ',' + NOT_BOOTABLE + ",\n"
-                                    + ",," + TYPE_W95_FAT32_LBA + ',' + BOOTABLE + ";\n"
-                                    + "EOF\n";
+                            persistentBorder = (exchangeMB + persistentMB) + "M";
+                            mkpart(partedCommandList, "0%", exchangeBorder);
+                            mkpart(partedCommandList, exchangeBorder, persistentBorder);
+                            mkpart(partedCommandList, persistentBorder, "100%");
+                            setFlag(partedCommandList, "3", "boot", "on");
+                            setFlag(partedCommandList, "1", "lba", "on");
+                            setFlag(partedCommandList, "3", "lba", "on");
                         }
                     }
                     break;
@@ -3267,7 +3299,9 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             umountPartitions(device);
 
             // repartition device
-            int exitValue = processExecutor.executeScript(sfdiskScript);
+            String[] commandArray = partedCommandList.toArray(
+                    new String[partedCommandList.size()]);
+            int exitValue = processExecutor.executeProcess(commandArray);
             if (exitValue != 0) {
                 String errorMessage = STRINGS.getString("Error_Repartitioning");
                 errorMessage = MessageFormat.format(errorMessage, device);
@@ -3326,6 +3360,21 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                     return false;
             }
         }
+
+        private void mkpart(List<String> commandList,
+                String start, String end) {
+            commandList.add("mkpart");
+            commandList.add("primary");
+            commandList.add(start);
+            commandList.add(end);
+        }
+        
+        private void setFlag(List<String> commandList, String partition, String flag, String value) {
+            commandList.add("set");
+            commandList.add(partition);
+            commandList.add(flag);
+            commandList.add(value);
+        }        
 
         private boolean copyExchangeAndSystem(
                 String exchangeDevice, String systemDevice)
@@ -3514,14 +3563,6 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             return true;
         }
 
-        private String getPersistentScript(long overhead, String device) {
-            int persistentMB = (int) (overhead / MEGA);
-            return "sfdisk -uM " + device + " << EOF\n"
-                    + "0," + persistentMB + ',' + TYPE_LINUX + ',' + NOT_BOOTABLE + ",\n"
-                    + ",," + TYPE_W95_FAT32_LBA + ',' + BOOTABLE + ";\n"
-                    + "EOF\n";
-        }
-
         private boolean formatPersistentPartition(
                 String device, boolean showErrorMessage) {
             int exitValue = processExecutor.executeProcess(
@@ -3567,10 +3608,6 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 return false;
             }
             return true;
-        }
-
-        private int getSizeFactor(StorageDevice storageDevice) {
-            return (storageDevice.getBlockSize() / 512);
         }
     }
 

@@ -60,7 +60,6 @@ public class UpgradeStorageDeviceRenderer
     private StorageDevice storageDevice;
 
     /** Creates new form UsbRenderer
-     * @param systemSize the size of the system to be copied in Byte
      */
     public UpgradeStorageDeviceRenderer() {
         initComponents();
@@ -103,17 +102,18 @@ public class UpgradeStorageDeviceRenderer
                 label.setFont(font.deriveFont(
                         font.getStyle() & ~Font.BOLD, font.getSize() - 1));
 
+                boolean extended = partition.getPartitionType().equals("0x05")
+                        || partition.getPartitionType().equals("0x0f");
+
                 // set color box
                 try {
                     if (partition.isSystemPartition()) {
                         label.setIcon(blueBox);
                     } else if (partition.isPersistencyPartition()) {
                         label.setIcon(greenBox);
-                    } else if (partition.getTypeID().equals("c")) {
-                        // W95 FAT32 (LBA)
+                    } else if (partition.getIdType().equals("vfat")) {
                         label.setIcon(yellowBox);
-                    } else if (partition.getTypeID().equals("5")) {
-                        // Extended
+                    } else if (extended) {
                         label.setIcon(darkGrayBox);
                     } else {
                         label.setIcon(grayBox);
@@ -123,26 +123,24 @@ public class UpgradeStorageDeviceRenderer
                 }
 
                 // set text
-                long partitionSize = storageDevice.getBlockSize()
-                        * partition.getSectorCount();
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append("<html><b>&#47;dev&#47;");
                 stringBuilder.append(partition.getDevice());
                 stringBuilder.append("</b> (");
-                stringBuilder.append(
-                        DLCopy.getDataVolumeString(partitionSize, 1));
+                stringBuilder.append(DLCopy.getDataVolumeString(
+                        partition.getPartitionSize(), 1));
                 stringBuilder.append(")<br>");
-                stringBuilder.append(DLCopy.STRINGS.getString("Label"));
-                stringBuilder.append(": ");
-                stringBuilder.append(partition.getLabel());
-                stringBuilder.append("<br>");
-                stringBuilder.append(DLCopy.STRINGS.getString("File_System"));
-                stringBuilder.append(": ");
-                String fileSystem = partition.getFileSystem();
-                if (fileSystem.isEmpty()) {
-                    stringBuilder.append(partition.getTypeDescription());
+                if (extended) {
+                    stringBuilder.append(DLCopy.STRINGS.getString("Extended"));
+                    stringBuilder.append("<br>&nbsp;");
                 } else {
-                    stringBuilder.append(fileSystem);
+                    stringBuilder.append(DLCopy.STRINGS.getString("Label"));
+                    stringBuilder.append(": ");
+                    stringBuilder.append(partition.getIdLabel());
+                    stringBuilder.append("<br>");
+                    stringBuilder.append(DLCopy.STRINGS.getString("File_System"));
+                    stringBuilder.append(": ");
+                    stringBuilder.append(partition.getIdType());
                 }
                 stringBuilder.append("</html>");
                 label.setText(stringBuilder.toString());
@@ -190,39 +188,55 @@ public class UpgradeStorageDeviceRenderer
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // paint the partition rectangles
-        // TODO: correct handling of extended partitions
-        // (paint a little bit bigger, do not increase "x")
+        // early return
+        if (maxStorageDeviceSize == 0) {
+            return;
+        }
+        LOGGER.log(Level.FINEST, "maxStorageDeviceSize = {0}", maxStorageDeviceSize);
 
+        // paint the partition rectangles
         Graphics2D graphics2D = (Graphics2D) g;
         int width = partitionGraphicsPanel.getWidth();
         int height = partitionGraphicsPanel.getHeight();
         Point location = rightPanel.getLocation();
-        Point pgLocation = partitionPanel.getLocation();
-        location.translate(pgLocation.x, pgLocation.y);
+        Point ppLocation = partitionPanel.getLocation();
+        location.translate(ppLocation.x, ppLocation.y);
         Point pgpLocation = partitionGraphicsPanel.getLocation();
         location.translate(pgpLocation.x, pgpLocation.y);
 
-        int blockSize = storageDevice.getBlockSize();
-        int x = location.x;
+        // border for storage device
+        int deviceWidth = (int) ((width * storageDevice.getSize()) / maxStorageDeviceSize);
+        graphics2D.setPaint(Color.BLACK);
+        graphics2D.drawRect(location.x, location.y, deviceWidth, height);
+
         for (Partition partition : storageDevice.getPartitions()) {
 
+            LOGGER.log(Level.FINEST, "partition: {0}", partition.getDevice());
+
+            // offset
+            long partitionOffset = partition.getPartitionOffset();
+            int offset = (int) ((width * partitionOffset) / maxStorageDeviceSize);
+            
             // width
-            long partitionSize = blockSize * partition.getSectorCount();
+            long partitionSize = partition.getPartitionSize();
+            LOGGER.log(Level.FINEST, "partitionSize = {0}", partitionSize);
             int partitionWidth =
                     (int) ((width * partitionSize) / maxStorageDeviceSize);
+            LOGGER.log(Level.FINEST, "partitionWidth = {0}", partitionWidth);
 
             // color
+            LOGGER.log(Level.FINEST, "partitionType: {0}", partition.getPartitionType());
             boolean extended = false;
             try {
                 if (partition.isSystemPartition()) {
                     graphics2D.setPaint(LIGHT_BLUE);
                 } else if (partition.isPersistencyPartition()) {
                     graphics2D.setPaint(Color.GREEN);
-                } else if (partition.getTypeID().equals("c")) {
+                } else if (partition.getIdType().equals("vfat")) {
                     // W95 FAT32 (LBA)
                     graphics2D.setPaint(Color.YELLOW);
-                } else if (partition.getTypeID().equals("5")) {
+                } else if (partition.getPartitionType().equals("0x05")
+                        || partition.getPartitionType().equals("0x0f")) {
                     // Extended
                     graphics2D.setPaint(Color.DARK_GRAY);
                     extended = true;
@@ -233,11 +247,17 @@ public class UpgradeStorageDeviceRenderer
                 LOGGER.log(Level.SEVERE, "", ex);
             }
 
+            int x = location.x + offset;
             if (extended) {
                 graphics2D.fillRect(x, location.y - 3, partitionWidth, height + 6);
+                // border
+                graphics2D.setPaint(Color.BLACK);
+                graphics2D.drawRect(x, location.y - 3, partitionWidth, height + 6);
             } else {
                 graphics2D.fillRect(x, location.y, partitionWidth, height);
-                x += partitionWidth;
+                // border
+                graphics2D.setPaint(Color.BLACK);
+                graphics2D.drawRect(x, location.y, partitionWidth, height);
             }
         }
     }

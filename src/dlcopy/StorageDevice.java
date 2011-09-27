@@ -24,7 +24,6 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
     private final String revision;
     private final String serial;
     private final long size;
-    private final int blockSize;
     private final String systemPartitionLabel;
     private final long systemSize;
     private List<Partition> partitions;
@@ -41,12 +40,11 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
      * @param revision the revision of the storage device
      * @param serial the serial of the storage device
      * @param size the size of the storage device in Byte
-     * @param blockSize the block size of the storage device given in byte
      * @param systemPartitionLabel the (expected) system partition label
      * @param systemSize the size of the currently running Debian Live system
      */
     public StorageDevice(String device, String vendor, String model,
-            String revision, String serial, long size, int blockSize,
+            String revision, String serial, long size, 
             String systemPartitionLabel, long systemSize) {
         this.device = device;
         this.vendor = vendor;
@@ -54,7 +52,6 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
         this.revision = revision;
         this.serial = serial;
         this.size = size;
-        this.blockSize = blockSize;
         this.systemPartitionLabel = systemPartitionLabel;
         this.systemSize = systemSize;
     }
@@ -136,13 +133,6 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
     }
 
     /**
-     * @return the blockSize
-     */
-    public int getBlockSize() {
-        return blockSize;
-    }
-
-    /**
      * returns the list of partitions of this storage device
      * @return the list of partitions of this storage device
      */
@@ -151,35 +141,30 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
             // create new list
             partitions = new ArrayList<Partition>();
 
-            // call sfdisk to get partition info
+            // call parted to get partition info
             ProcessExecutor processExecutor = new ProcessExecutor();
             processExecutor.executeProcess(true, true,
-                    "sfdisk", "-uS", "-l", device);
+                    "parted", "-m", device, "print");
             List<String> lines = processExecutor.getStdOutList();
 
             /**
-             * parse partition lines, example:
-             *
-             *    Device Boot    Start       End   #sectors  Id  System
-             * /dev/sda1             1 1241824499 1241824499  83  Linux
-             * /dev/sda2   * 1241824500 1250258624    8434125   c  W95 FAT32 (LBA)
-             * /dev/sda3             0         -          0   0  Empty
-             * /dev/sda4             0         -          0   0  Empty
+             * parse parted output, example:
+             * 
+             * BYT;
+             * /dev/sdb:31326208s:scsi:512:512:msdos:Corsair VoyagerGT;
+             * 1:2048s:780287s:778240s:::;
+             * 2:780288s:1171455s:391168s:::;
+             * 3:1171456s:31326207s:30154752s:::lba;
+             * 5:1173504s:1368063s:194560s:ext2::;
+             * 
              */
-            Pattern bootablePartitionPattern = Pattern.compile(
-                    "/dev/(\\w+)\\s+\\*\\s+(\\w+)\\s+(\\w+)\\s+\\w+\\s+(\\w+)\\s+(.*)");
-            Pattern nonBootablePartitionPattern = Pattern.compile(
-                    "/dev/(\\w+)\\s+(\\w+)\\s+(\\w+)\\s+\\w+\\s+(\\w+)\\s+(.*)");
+            
+            // we only care for the partition numbers...
+            Pattern pattern = Pattern.compile("(\\d+):.*");
             for (String line : lines) {
-                Matcher bootableMatcher =
-                        bootablePartitionPattern.matcher(line);
-                if (bootableMatcher.matches()) {
-                    partitions.add(parsePartition(bootableMatcher, true));
-                }
-                Matcher nonBootableMatcher =
-                        nonBootablePartitionPattern.matcher(line);
-                if (nonBootableMatcher.matches()) {
-                    partitions.add(parsePartition(nonBootableMatcher, false));
+                Matcher matcher = pattern.matcher(line);
+                if (matcher.matches()) {
+                    partitions.add(parsePartition(matcher));
                 }
             }
         }
@@ -202,8 +187,7 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
             for (Partition partition : getPartitions()) {
                 if (partition.isSystemPartition()) {
                     systemPartitionFound = true;
-                    long partitionSize = blockSize
-                            * partition.getSectorCount();
+                    long partitionSize = partition.getPartitionSize();
                     // wild guess: give file system maximum 1% overhead...
                     long saveSystemSize = (long) (systemSize * 1.01);
                     if (LOGGER.isLoggable(Level.INFO)) {
@@ -264,21 +248,23 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
         return dataPartition;
     }
 
-    private Partition parsePartition(Matcher matcher, boolean bootable) {
+    private Partition parsePartition(Matcher matcher) {
         try {
-            String partitionDevice = matcher.group(1);
-            String startString = matcher.group(2);
-            long start = Long.parseLong(startString);
-            String endString = matcher.group(3);
-            long end = Long.parseLong(endString);
-            String id = matcher.group(4);
-            String description = matcher.group(5);
+            String numberString = matcher.group(1);
+            String partitionDevice = device.substring(5) + numberString;
             String idLabel = DbusTools.getStringProperty(
                     partitionDevice, "IdLabel");
             String idType = DbusTools.getStringProperty(
                     partitionDevice, "IdType");
-            Partition partition = new Partition(partitionDevice, bootable,
-                    start, end, id, description, idLabel, idType,
+            long partitionOffset = DbusTools.getLongProperty(
+                    partitionDevice, "PartitionOffset");
+            long partitionSize = DbusTools.getLongProperty(
+                    partitionDevice, "PartitionSize");
+            String partitionType = DbusTools.getStringProperty(
+                    partitionDevice, "PartitionType");
+            Partition partition = new Partition(partitionDevice,
+                    Integer.parseInt(numberString), partitionOffset, 
+                    partitionSize, partitionType, idLabel, idType,
                     systemPartitionLabel);
             if ("live-rw".equals(idLabel)) {
                 dataPartition = partition;

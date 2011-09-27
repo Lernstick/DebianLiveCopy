@@ -5,6 +5,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.freedesktop.DBus;
 import org.freedesktop.dbus.DBusConnection;
+import org.freedesktop.dbus.UInt64;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.udisks.Device;
 
@@ -34,7 +35,7 @@ public class DbusTools {
      * @throws DBusException if a d-bus exception occurs
      */
     public static Device getDevice(String device) throws DBusException {
-        return dbusSystemConnection.getRemoteObject("org.freedesktop.UDisks", 
+        return dbusSystemConnection.getRemoteObject("org.freedesktop.UDisks",
                 "/org/freedesktop/UDisks/devices/" + device, Device.class);
     }
 
@@ -66,5 +67,21 @@ public class DbusTools {
         DBus.Properties deviceProperties = dbusSystemConnection.getRemoteObject(
                 "org.freedesktop.UDisks", dbusPath, DBus.Properties.class);
         return deviceProperties.Get("org.freedesktop.UDisks", property);
+    }
+
+    /**
+     * returns a property of a partition device as a long value
+     * @param device the device to query
+     * @param property the property to query
+     * @return a property of a partition device as a list of strings
+     * @throws DBusException if a d-bus exception occurs
+     */
+    public static long getLongProperty(String device, String property)
+            throws DBusException {
+        String dbusPath = "/org/freedesktop/UDisks/devices/" + device;
+        DBus.Properties deviceProperties = dbusSystemConnection.getRemoteObject(
+                "org.freedesktop.UDisks", dbusPath, DBus.Properties.class);
+        UInt64 value = deviceProperties.Get("org.freedesktop.UDisks", property);
+        return value.longValue();
     }
 }

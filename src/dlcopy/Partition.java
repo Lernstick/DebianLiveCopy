@@ -18,106 +18,94 @@ public class Partition {
     private final static Logger LOGGER =
             Logger.getLogger(Partition.class.getName());
     private final String device;
-    private final boolean bootable;
-    private final long startSector;
-    private final long endSector;
-    private final String typeID;
-    private final String typeDescription;
-    private final String label;
-    private final String fileSystem;
+    private final int number;
+    private final long partitionOffset;
+    private final long partitionSize;
+    private final String idLabel;
+    private final String idType;
+    private final String partitionType;
     private final String systemPartitionLabel;
     private Boolean isSystemPartition;
 
     /**
      * creates a new Partition
-     * @param device the device file of the partition (e.g. sda1)
-     * @param bootable if the partition is bootable
-     * @param startSector the start sector of the partition
-     * @param endSector the end sector of the partition
-     * @param typeID the partition type ID
-     * @param typeDescription the partition type description
-     * @param label the label of the partition
-     * @param fileSystem the file system on this partition
+     * @param device the device of the partition (e.g. "sda1")
+     * @param number the number of the partition (must correspond with
+     * <code>device</code>)
+     * @param partitionOffset the offset (start) of the partition
+     * @param partitionSize the size of the partition
+     * @param partitionType the partition type
+     * @param idLabel the label of the partition
+     * @param idType the ID type (type of the file system)
      * @param systemPartitionLabel the (expected) system partition label
      */
-    public Partition(String device, boolean bootable, long startSector,
-            long endSector, String typeID, String typeDescription,
-            String label, String fileSystem, String systemPartitionLabel) {
+    public Partition(String device, int number, long partitionOffset,
+            long partitionSize, String partitionType, String idLabel,
+            String idType, String systemPartitionLabel) {
         this.device = device;
-        this.bootable = bootable;
-        this.startSector = startSector;
-        this.endSector = endSector;
-        this.typeID = typeID;
-        this.typeDescription = typeDescription;
-        this.label = label;
-        this.fileSystem = fileSystem;
+        this.number = number;
+        this.partitionOffset = partitionOffset;
+        this.partitionSize = partitionSize;
+        this.idLabel = idLabel;
+        this.idType = idType;
+        this.partitionType = partitionType;
         this.systemPartitionLabel = systemPartitionLabel;
     }
 
     /**
-     * returns the device file of the partition
-     * @return the device file of the partition
+     * returns the device of the partition, e.g. "sda1"
+     * @return the device of the partition, e.g. "sda1"
      */
     public String getDevice() {
         return device;
     }
 
     /**
-     * returns <code>true</code>, if the partition is bootable,
-     * <cocde>false</code> otherwise
-     * @return <code>true</code>, if the partition is bootable,
-     * <cocde>false</code> otherwise
+     * returns the partition number
+     * @return the partition number
      */
-    public boolean isBootable() {
-        return bootable;
+    public int getNumber() {
+        return number;
     }
 
     /**
      * returns the start sector of the partition
      * @return the start sector of the partition
      */
-    public long getStartSector() {
-        return startSector;
+    public long getPartitionOffset() {
+        return partitionOffset;
     }
 
     /**
-     * returns the end sector of the partition
-     * @return the end sector of the partition
+     * returns the size of this partition
+     * @return the size of this partition
      */
-    public long getEndSector() {
-        return endSector;
-    }
-
-    /**
-     * returns the number of sectors of this partition
-     * @return the number of sectors of this partition
-     */
-    public long getSectorCount() {
-        return endSector - startSector + 1;
-    }
-
-    /**
-     * returns the partition type ID
-     * @return the partition type ID
-     */
-    public String getTypeID() {
-        return typeID;
-    }
-
-    /**
-     * returns the partition type description
-     * @return the partition type description
-     */
-    public String getTypeDescription() {
-        return typeDescription;
+    public long getPartitionSize() {
+        return partitionSize;
     }
 
     /**
      * returns the label of the partition
      * @return the label of the partition
      */
-    public String getLabel() {
-        return label;
+    public String getIdLabel() {
+        return idLabel;
+    }
+
+    /**
+     * returns the ID type of the partition
+     * @return the ID type of the partition
+     */
+    public String getIdType() {
+        return idType;
+    }
+
+    /**
+     * returns the partition type
+     * @return the partition type
+     */
+    public String getPartitionType() {
+        return partitionType;
     }
 
     /**
@@ -168,8 +156,8 @@ public class Partition {
         if (isSystemPartition == null) {
             isSystemPartition = false;
             LOGGER.log(Level.FINEST, "checking partition {0}", device);
-            LOGGER.log(Level.FINEST, "partition label: \"{0}\"", label);
-            if (systemPartitionLabel.equals(label)) {
+            LOGGER.log(Level.FINEST, "partition label: \"{0}\"", idLabel);
+            if (systemPartitionLabel.equals(idLabel)) {
                 // mount partition if not already mounted
                 String mountPath = null;
                 boolean tmpMount = false;
@@ -226,15 +214,7 @@ public class Partition {
      * partition, <code>false</code> otherwise
      */
     public boolean isPersistencyPartition() {
-        return label.equals("live-rw");
-    }
-
-    /**
-     * returns the file system on this partition
-     * @return the file system on this partition
-     */
-    public String getFileSystem() {
-        return fileSystem;
+        return idLabel.equals("live-rw");
     }
 
     private void handleUmountException(Exception ex) {
