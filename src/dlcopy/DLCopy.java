@@ -3207,7 +3207,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             partedCommandList.add(device);
             partedCommandList.add("mklabel");
             partedCommandList.add("msdos");
-            
+
 //            // list of "rm" commands must be inversely sorted, otherwise
 //            // removal of already existing partitions will fail when storage
 //            // device has logical partitions in extended partitions (the logical
@@ -3368,13 +3368,13 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             commandList.add(start);
             commandList.add(end);
         }
-        
+
         private void setFlag(List<String> commandList, String partition, String flag, String value) {
             commandList.add("set");
             commandList.add(partition);
             commandList.add(flag);
             commandList.add(value);
-        }        
+        }
 
         private boolean copyExchangeAndSystem(
                 String exchangeDevice, String systemDevice)
@@ -3591,24 +3591,24 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             }
             return true;
         }
+    }
 
-        private boolean formatSystemPartition(
-                String device, boolean showErrorMessage) {
-            // hint: the partition label can be only 11 characters long!
-            int exitValue = processExecutor.executeProcess(
-                    "mkfs.vfat", "-n", systemPartitionLabel, device);
-            if (exitValue != 0) {
-                LOGGER.severe(processExecutor.getOutput());
-                String errorMessage =
-                        STRINGS.getString("Error_Create_System_Partition");
-                LOGGER.severe(errorMessage);
-                if (showErrorMessage) {
-                    showErrorMessage(errorMessage);
-                }
-                return false;
+    private boolean formatSystemPartition(
+            String device, boolean showErrorMessage) {
+        // hint: the partition label can be only 11 characters long!
+        int exitValue = processExecutor.executeProcess(
+                "mkfs.vfat", "-n", systemPartitionLabel, device);
+        if (exitValue != 0) {
+            LOGGER.severe(processExecutor.getOutput());
+            String errorMessage =
+                    STRINGS.getString("Error_Create_System_Partition");
+            LOGGER.severe(errorMessage);
+            if (showErrorMessage) {
+                showErrorMessage(errorMessage);
             }
-            return true;
+            return false;
         }
+        return true;
     }
 
     private void isolinuxToSyslinux(String mountPoint) throws IOException {
@@ -4028,8 +4028,84 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                     }
                 });
 
-                // upgrade system partition
+                Partition dataPartition = storageDevice.getDataPartition();
                 Partition systemPartition = storageDevice.getSystemPartition();
+
+                // reset data partition
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        upgradeIndeterminateProgressBar.setString(
+                                STRINGS.getString("Resetting_Data_Partition"));
+                    }
+                });
+                String dataMountPoint = dataPartition.mount();
+                ProcessExecutor processExecutor = new ProcessExecutor();
+                processExecutor.executeProcess("find", dataMountPoint,
+                        "!", "-regex", dataMountPoint,
+                        "!", "-regex", dataMountPoint + "/lost\\+found",
+                        "!", "-regex", dataMountPoint + "/home.*",
+                        "!", "-regex", dataMountPoint + "/etc.*",
+                        "-exec", "rm", "-rf", "{}", ";");
+                String etcPath = dataMountPoint + "/etc";
+                processExecutor.executeProcess("find", etcPath,
+                        "!", "-regex", etcPath,
+                        "!", "-regex", etcPath + "/cups.*",
+                        "-exec", "rm", "-rf", "{}", ";");
+                try {
+                    File propertiesFile = new File(dataMountPoint
+                            + "/home/user/.config/lernstickWelcome");
+                    FileReader reader = new FileReader(propertiesFile);
+                    Properties lernstickWelcomeProperties = new Properties();
+                    lernstickWelcomeProperties.load(reader);
+                    lernstickWelcomeProperties.setProperty(
+                            "ShowAtStartup", "true");
+                    FileWriter writer = new FileWriter(propertiesFile);
+                    lernstickWelcomeProperties.store(
+                            writer, "lernstick Welcome dialog properties");
+                    reader.close();
+                    writer.close();
+                } catch (IOException iOException) {
+                    LOGGER.log(Level.WARNING, "", iOException);
+                }
+                dataPartition.umount();
+
+                if (storageDevice.needsRepartitioning()) {
+                    // TODO: search partition that needs to be shrinked
+                    // (for now we simply assume it's the data partition)
+                    String dataDevPath = "/dev/" + dataPartition.getDevice();
+                    processExecutor.executeProcess(true, true,
+                            "e2fsck", "-f", "-y", "-v", dataDevPath);
+                    processExecutor.executeProcess(true, true,
+                            "resize2fs", "-M", "-p", dataDevPath);
+                    long dataPartitionOffset = dataPartition.getOffset();
+                    long newSystemPartitionOffset = systemPartition.getOffset()
+                            + systemPartition.getSize()
+                            - (long) (systemSize * 1.01);
+                    // align newSystemPartitionOffset
+                    newSystemPartitionOffset = newSystemPartitionOffset
+                            - (newSystemPartitionOffset % MEGA);
+                    processExecutor.executeProcess(true, true,
+                            "parted", "-s", storageDevice.getDevice(),
+                            "rm", String.valueOf(dataPartition.getNumber()),
+                            "rm", String.valueOf(systemPartition.getNumber()),
+                            "mkpart", "primary",
+                            String.valueOf(dataPartitionOffset),
+                            String.valueOf(newSystemPartitionOffset),
+                            "mkpart", "primary",
+                            String.valueOf(newSystemPartitionOffset), "100%");
+                    processExecutor.executeProcess(true, true,
+                            "resize2fs", dataDevPath);
+                    formatSystemPartition(
+                            "/dev/" + systemPartition.getDevice(), true);
+                }
+                
+                if (true) {
+                    return null;
+                }
+
+                // upgrade system partition
                 LOGGER.log(Level.INFO,
                         "mounting {0}", systemPartition.getDevice());
                 String systemMountPoint = systemPartition.mount();
@@ -4074,47 +4150,6 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 });
                 makeBootable(storageDevice.getDevice(),
                         "/dev/" + systemPartition.getDevice());
-
-                // reset data partition
-                SwingUtilities.invokeLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        upgradeIndeterminateProgressBar.setString(
-                                STRINGS.getString("Resetting_Data_Partition"));
-                    }
-                });
-                Partition dataPartition = storageDevice.getDataPartition();
-                String dataMountPoint = dataPartition.mount();
-                ProcessExecutor processExecutor = new ProcessExecutor();
-                processExecutor.executeProcess("find", dataMountPoint,
-                        "!", "-regex", dataMountPoint,
-                        "!", "-regex", dataMountPoint + "/lost\\+found",
-                        "!", "-regex", dataMountPoint + "/home.*",
-                        "!", "-regex", dataMountPoint + "/etc.*",
-                        "-exec", "rm", "-rf", "{}", ";");
-                String etcPath = dataMountPoint + "/etc";
-                processExecutor.executeProcess("find", etcPath,
-                        "!", "-regex", etcPath,
-                        "!", "-regex", etcPath + "/cups.*",
-                        "-exec", "rm", "-rf", "{}", ";");
-                try {
-                    File propertiesFile = new File(dataMountPoint
-                            + "/home/user/.config/lernstickWelcome");
-                    FileReader reader = new FileReader(propertiesFile);
-                    Properties lernstickWelcomeProperties = new Properties();
-                    lernstickWelcomeProperties.load(reader);
-                    lernstickWelcomeProperties.setProperty(
-                            "ShowAtStartup", "true");
-                    FileWriter writer = new FileWriter(propertiesFile);
-                    lernstickWelcomeProperties.store(
-                            writer, "lernstick Welcome dialog properties");
-                    reader.close();
-                    writer.close();
-                } catch (IOException iOException) {
-                    LOGGER.log(Level.WARNING, "", iOException);
-                }
-                dataPartition.umount();
             }
 
             return null;

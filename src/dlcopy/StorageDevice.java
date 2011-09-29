@@ -3,6 +3,7 @@ package dlcopy;
 import dlcopy.tools.DbusTools;
 import dlcopy.tools.ProcessExecutor;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -28,6 +29,7 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
     private final long systemSize;
     private List<Partition> partitions;
     private Boolean canBeUpgraded;
+    private boolean needsRepartitioning;
     private String noUpgradeReason;
     private Partition systemPartition;
     private Partition dataPartition;
@@ -44,7 +46,7 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
      * @param systemSize the size of the currently running Debian Live system
      */
     public StorageDevice(String device, String vendor, String model,
-            String revision, String serial, long size, 
+            String revision, String serial, long size,
             String systemPartitionLabel, long systemSize) {
         this.device = device;
         this.vendor = vendor;
@@ -85,8 +87,8 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
     }
 
     /**
-     * returns the device node of the storage device
-     * @return the device node of the storage device
+     * returns the device node of the storage device (e.g. /dev/sdb)
+     * @return the device node of the storage device (e.g. /dev/sdb)
      */
     public String getDevice() {
         return device;
@@ -141,26 +143,28 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
             // create new list
             partitions = new ArrayList<Partition>();
 
-            // call parted to get partition info
+            // call udisks to get partition info
             ProcessExecutor processExecutor = new ProcessExecutor();
-            processExecutor.executeProcess(true, true,
-                    "parted", "-m", device, "print");
+            processExecutor.executeProcess(true, true, "udisks", "--enumerate");
             List<String> lines = processExecutor.getStdOutList();
+            Collections.sort(lines);
 
             /**
              * parse parted output, example:
-             * 
-             * BYT;
-             * /dev/sdb:31326208s:scsi:512:512:msdos:Corsair VoyagerGT;
-             * 1:2048s:780287s:778240s:::;
-             * 2:780288s:1171455s:391168s:::;
-             * 3:1171456s:31326207s:30154752s:::lba;
-             * 5:1173504s:1368063s:194560s:ext2::;
-             * 
+             * /org/freedesktop/UDisks/devices/sdb
+             * /org/freedesktop/UDisks/devices/sda1
+             * /org/freedesktop/UDisks/devices/sda2
+             * /org/freedesktop/UDisks/devices/sr0
+             * /org/freedesktop/UDisks/devices/sdb2
+             * /org/freedesktop/UDisks/devices/loop0
+             * /org/freedesktop/UDisks/devices/loop1
+             * /org/freedesktop/UDisks/devices/sdb1
+             * /org/freedesktop/UDisks/devices/sda
              */
-            
-            // we only care for the partition numbers...
-            Pattern pattern = Pattern.compile("(\\d+):.*");
+            // we only want to catch the partition numbers...
+            Pattern pattern = Pattern.compile(
+                    "/org/freedesktop/UDisks/devices/(" + device.substring(5)
+                    + "\\d+)");
             for (String line : lines) {
                 Matcher matcher = pattern.matcher(line);
                 if (matcher.matches()) {
@@ -182,12 +186,12 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
         // lazy initialization of canBeUpgraded
         if (canBeUpgraded == null) {
             canBeUpgraded = false;
-            boolean systemPartitionFound = false;
-            boolean sizeFits = false;
+            long remaining = -1;
+            Partition previousPartition = null;
             for (Partition partition : getPartitions()) {
                 if (partition.isSystemPartition()) {
-                    systemPartitionFound = true;
-                    long partitionSize = partition.getPartitionSize();
+                    systemPartition = partition;
+                    long partitionSize = partition.getSize();
                     // wild guess: give file system maximum 1% overhead...
                     long saveSystemSize = (long) (systemSize * 1.01);
                     if (LOGGER.isLoggable(Level.INFO)) {
@@ -196,25 +200,55 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
                                 new Object[]{systemSize, saveSystemSize,
                                     partition.getDevice(), partitionSize});
                     }
-                    sizeFits = partitionSize > saveSystemSize;
-                    if (sizeFits) {
-                        systemPartition = partition;
+                    remaining = partitionSize - saveSystemSize;
+                    LOGGER.log(Level.FINE, "remaining = {0}", remaining);
+                    if (remaining >= 0) {
                         canBeUpgraded = true;
                         break; // for
                     }
+                    /**
+                     * TODO: more sophisticated checks
+                     *  - device with partition gaps
+                     *  - expand in both directions
+                     *  - ...
+                     */
+                    // check if repartitioning is possible
+                    if ((previousPartition != null)
+                            && (!previousPartition.isExtended())) {
+                        // right now we can only resize ext partitions
+                        if (previousPartition.hasExtendedFilesystem()) {
+                            long usableSpace =
+                                    previousPartition.getUsableSpace();
+                            if (usableSpace > Math.abs(remaining)) {
+                                canBeUpgraded = true;
+                                needsRepartitioning = true;
+                                break; // for
+                            }
+                        }
+                    }
                 }
+                previousPartition = partition;
             }
-            if (!sizeFits) {
-                if (systemPartitionFound) {
-                    noUpgradeReason = DLCopy.STRINGS.getString(
-                            "System_Partition_Too_Small");
-                } else {
+            if (remaining < 0) {
+                if (systemPartition == null) {
                     noUpgradeReason = DLCopy.STRINGS.getString(
                             "No_System_Partition_Found");
+                } else {
+                    noUpgradeReason = DLCopy.STRINGS.getString(
+                            "System_Partition_Too_Small");
                 }
             }
         }
         return canBeUpgraded;
+    }
+
+    /**
+     * checks if the storage device must be repartitioned when upgraded
+     * @return <code>true</code>, if the system must be repartitioned when
+     * upgraded, <code>false</code> otherwise
+     */
+    public boolean needsRepartitioning() {
+        return needsRepartitioning;
     }
 
     /**
@@ -263,7 +297,7 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
             String partitionType = DbusTools.getStringProperty(
                     partitionDevice, "PartitionType");
             Partition partition = new Partition(partitionDevice,
-                    Integer.parseInt(numberString), partitionOffset, 
+                    Integer.parseInt(numberString), partitionOffset,
                     partitionSize, partitionType, idLabel, idType,
                     systemPartitionLabel);
             if ("live-rw".equals(idLabel)) {

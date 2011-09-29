@@ -23,6 +23,7 @@ import javax.swing.JList;
 import javax.swing.JPanel;
 import javax.swing.ListCellRenderer;
 import org.freedesktop.dbus.exceptions.DBusException;
+import org.freedesktop.dbus.exceptions.DBusExecutionException;
 
 /**
  * A renderer for storage devices
@@ -52,6 +53,9 @@ public class UpgradeStorageDeviceRenderer
     private final static Icon okIcon = new ImageIcon(
             UpgradeStorageDeviceRenderer.class.getResource(
             "/dlcopy/icons/16x16/dialog-ok-apply.png"));
+    private final static Icon warningIcon = new ImageIcon(
+            UpgradeStorageDeviceRenderer.class.getResource(
+            "/dlcopy/icons/16x16/dialog-warning.png"));
     private final static Icon cancelIcon = new ImageIcon(
             UpgradeStorageDeviceRenderer.class.getResource(
             "/dlcopy/icons/16x16/dialog-cancel.png"));
@@ -102,8 +106,7 @@ public class UpgradeStorageDeviceRenderer
                 label.setFont(font.deriveFont(
                         font.getStyle() & ~Font.BOLD, font.getSize() - 1));
 
-                boolean extended = partition.getPartitionType().equals("0x05")
-                        || partition.getPartitionType().equals("0x0f");
+                boolean extended = partition.isExtended();
 
                 // set color box
                 try {
@@ -128,7 +131,7 @@ public class UpgradeStorageDeviceRenderer
                 stringBuilder.append(partition.getDevice());
                 stringBuilder.append("</b> (");
                 stringBuilder.append(DLCopy.getDataVolumeString(
-                        partition.getPartitionSize(), 1));
+                        partition.getSize(), 1));
                 stringBuilder.append(")<br>");
                 if (extended) {
                     stringBuilder.append(DLCopy.STRINGS.getString("Extended"));
@@ -141,6 +144,19 @@ public class UpgradeStorageDeviceRenderer
                     stringBuilder.append(DLCopy.STRINGS.getString("File_System"));
                     stringBuilder.append(": ");
                     stringBuilder.append(partition.getIdType());
+                    stringBuilder.append("<br>");
+                    stringBuilder.append(DLCopy.STRINGS.getString("Used"));
+                    stringBuilder.append(": ");
+                    try {
+                        long used = partition.getSize()
+                                - partition.getUsableSpace();
+                        stringBuilder.append(
+                                DLCopy.getDataVolumeString(used, 1));
+                    } catch (DBusExecutionException ex) {
+                        LOGGER.log(Level.SEVERE, "", ex);
+                    } catch (DBusException ex) {
+                        LOGGER.log(Level.SEVERE, "", ex);
+                    }
                 }
                 stringBuilder.append("</html>");
                 label.setText(stringBuilder.toString());
@@ -161,9 +177,15 @@ public class UpgradeStorageDeviceRenderer
             // upgrade info text
             try {
                 if (storageDevice.canBeUpgraded()) {
-                    upgradeInfoLabel.setIcon(okIcon);
-                    upgradeInfoLabel.setText(
-                            DLCopy.STRINGS.getString("Upgrading_Possible"));
+                    if (storageDevice.needsRepartitioning()) {
+                        upgradeInfoLabel.setIcon(warningIcon);
+                        upgradeInfoLabel.setText(DLCopy.STRINGS.getString(
+                                "Warning_Repartitioning"));
+                    } else {
+                        upgradeInfoLabel.setIcon(okIcon);
+                        upgradeInfoLabel.setText(DLCopy.STRINGS.getString(
+                                "Upgrading_Possible"));
+                    }
                 } else {
                     upgradeInfoLabel.setIcon(cancelIcon);
                     upgradeInfoLabel.setText(
@@ -213,20 +235,20 @@ public class UpgradeStorageDeviceRenderer
 
             LOGGER.log(Level.FINEST, "partition: {0}", partition.getDevice());
 
-            // offset
-            long partitionOffset = partition.getPartitionOffset();
+            // determine offset
+            long partitionOffset = partition.getOffset();
             int offset = (int) ((width * partitionOffset) / maxStorageDeviceSize);
-            
-            // width
-            long partitionSize = partition.getPartitionSize();
+
+            // determine width
+            long partitionSize = partition.getSize();
             LOGGER.log(Level.FINEST, "partitionSize = {0}", partitionSize);
             int partitionWidth =
                     (int) ((width * partitionSize) / maxStorageDeviceSize);
             LOGGER.log(Level.FINEST, "partitionWidth = {0}", partitionWidth);
 
-            // color
-            LOGGER.log(Level.FINEST, "partitionType: {0}", partition.getPartitionType());
-            boolean extended = false;
+            // determine color
+            LOGGER.log(Level.FINEST, "partitionType: {0}", partition.getType());
+            boolean extended = partition.isExtended();
             try {
                 if (partition.isSystemPartition()) {
                     graphics2D.setPaint(LIGHT_BLUE);
@@ -235,11 +257,8 @@ public class UpgradeStorageDeviceRenderer
                 } else if (partition.getIdType().equals("vfat")) {
                     // W95 FAT32 (LBA)
                     graphics2D.setPaint(Color.YELLOW);
-                } else if (partition.getPartitionType().equals("0x05")
-                        || partition.getPartitionType().equals("0x0f")) {
-                    // Extended
+                } else if (extended) {
                     graphics2D.setPaint(Color.DARK_GRAY);
-                    extended = true;
                 } else {
                     graphics2D.setPaint(Color.GRAY);
                 }
@@ -247,18 +266,34 @@ public class UpgradeStorageDeviceRenderer
                 LOGGER.log(Level.SEVERE, "", ex);
             }
 
+            // paint colored partition rectangle
             int x = location.x + offset;
-            if (extended) {
-                graphics2D.fillRect(x, location.y - 3, partitionWidth, height + 6);
-                // border
-                graphics2D.setPaint(Color.BLACK);
-                graphics2D.drawRect(x, location.y - 3, partitionWidth, height + 6);
-            } else {
-                graphics2D.fillRect(x, location.y, partitionWidth, height);
-                // border
-                graphics2D.setPaint(Color.BLACK);
-                graphics2D.drawRect(x, location.y, partitionWidth, height);
+            int yOffset = extended ? 3 : 0;
+            int y = location.y - yOffset;
+            int partitionHeight = height + (2 * yOffset);
+            graphics2D.fillRect(x, y, partitionWidth, partitionHeight);
+
+            // paint partition storage space usage
+            if (!extended) {
+                try {
+                    long usedSize =
+                            partition.getSize() - partition.getUsableSpace();
+                    int usedWidth =
+                            (int) ((width * usedSize) / maxStorageDeviceSize);
+                    graphics2D.setPaint(Color.LIGHT_GRAY);
+                    int usageOffset = 4;
+                    graphics2D.fillRect(x, y + usageOffset,
+                            usedWidth, partitionHeight - (2 * usageOffset) + 1);
+                } catch (DBusExecutionException ex) {
+                    LOGGER.log(Level.SEVERE, "", ex);
+                } catch (DBusException ex) {
+                    LOGGER.log(Level.SEVERE, "", ex);
+                }
             }
+
+            // paint black border around partition
+            graphics2D.setPaint(Color.BLACK);
+            graphics2D.drawRect(x, y, partitionWidth, partitionHeight);
         }
     }
 
