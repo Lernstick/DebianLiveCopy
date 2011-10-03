@@ -49,6 +49,8 @@ public class DbusTools {
     public static String getStringProperty(String device, String property)
             throws DBusException {
         String dbusPath = "/org/freedesktop/UDisks/devices/" + device;
+        LOGGER.log(Level.INFO, "dbusPath = \"{0}\", property = \"{1}\"",
+                new Object[]{dbusPath, property});
         DBus.Properties deviceProperties = dbusSystemConnection.getRemoteObject(
                 "org.freedesktop.UDisks", dbusPath, DBus.Properties.class);
         return deviceProperties.Get("org.freedesktop.UDisks", property);

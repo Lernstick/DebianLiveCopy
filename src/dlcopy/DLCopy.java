@@ -512,77 +512,19 @@ public class DLCopy extends JFrame
         });
     }
 
-    private void removeStorageDevice(String udisksLine) {
-        // the device was just removed, so we can not use getStorageDevice()
-        // here...
-        String[] tokens = udisksLine.split("/");
-        String device = tokens[tokens.length - 1];
-        System.out.println("removed device: " + device);
-        for (int i = 0, size = storageDeviceListModel.getSize(); i < size; i++) {
-            StorageDevice storageDevice = (StorageDevice) storageDeviceListModel.get(i);
-            if (storageDevice.getDevice().endsWith(device)) {
-                storageDeviceListModel.remove(i);
-                break; // for
-            }
-        }
+    @Override
+    public void insertUpdate(DocumentEvent e) {
+        documentChanged(e);
     }
 
-    /**
-     * must be called whenever the install storage device list changes to
-     * execute some updates (e.g. maximum storage device size) and some sanity
-     * checks
-     */
-    private void installStorageDeviceListChanged() {
-        int deviceCount = storageDeviceListModel.size();
-        if (deviceCount == 0) {
-            showCard(installSelectionCardPanel, "installNoMediaPanel");
-            disableNextButton();
-        } else {
-            installStorageDeviceRenderer.setMaxSize(
-                    getMaxStorageDeviceSize(deviceCount));
-
-            showCard(installSelectionCardPanel, "installListPanel");
-            // auto-select single entry
-            if (deviceCount == 1) {
-                installStorageDeviceList.setSelectedIndex(0);
-            }
-            updateInstallNextButton();
-        }
+    @Override
+    public void removeUpdate(DocumentEvent e) {
+        documentChanged(e);
     }
 
-    /**
-     * must be called whenever the upgrade storage device list changes to
-     * execute some updates (e.g. maximum storage device size) and some sanity
-     * checks
-     */
-    private void upgradeStorageDeviceListChanged() {
-        int deviceCount = storageDeviceListModel.size();
-        if (deviceCount == 0) {
-            showCard(upgradeSelectionCardPanel, "upgradeNoMediaPanel");
-            disableNextButton();
-        } else {
-            upgradeStorageDeviceRenderer.setMaxSize(
-                    getMaxStorageDeviceSize(deviceCount));
-
-            showCard(upgradeSelectionCardPanel, "upgradeListPanel");
-            // auto-select single entry
-            if (deviceCount == 1) {
-                upgradeStorageDeviceList.setSelectedIndex(0);
-            }
-        }
-    }
-
-    private long getMaxStorageDeviceSize(int deviceCount) {
-        long maxSize = 0;
-        for (int i = 0; i < deviceCount; i++) {
-            StorageDevice storageDevice =
-                    (StorageDevice) storageDeviceListModel.get(i);
-            long deviceSize = storageDevice.getSize();
-            if (deviceSize > maxSize) {
-                maxSize = deviceSize;
-            }
-        }
-        return maxSize;
+    @Override
+    public void changedUpdate(DocumentEvent e) {
+        documentChanged(e);
     }
 
     /**
@@ -821,21 +763,6 @@ public class DLCopy extends JFrame
         }
 
         return numberFormat.format(bytes) + " Byte";
-    }
-
-    @Override
-    public void insertUpdate(DocumentEvent e) {
-        documentChanged(e);
-    }
-
-    @Override
-    public void removeUpdate(DocumentEvent e) {
-        documentChanged(e);
-    }
-
-    @Override
-    public void changedUpdate(DocumentEvent e) {
-        documentChanged(e);
     }
 
     /** This method is called from within the constructor to
@@ -2120,7 +2047,7 @@ public class DLCopy extends JFrame
     }//GEN-LAST:event_upgradeSelectionPanelComponentShown
 
 private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_upgradeShowHarddiskCheckBoxItemStateChanged
-    fillUpgradeStorageDeviceList();
+        fillUpgradeStorageDeviceList();
 }//GEN-LAST:event_upgradeShowHarddiskCheckBoxItemStateChanged
 
     private void separateFileSystemsAddButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_separateFileSystemsAddButtonActionPerformed
@@ -2155,6 +2082,79 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             editSeparateFileSystemListEntry();
         }
     }//GEN-LAST:event_separateFileSystemsListMouseClicked
+
+    private void removeStorageDevice(String udisksLine) {
+        // the device was just removed, so we can not use getStorageDevice()
+        // here...
+        String[] tokens = udisksLine.split("/");
+        String device = tokens[tokens.length - 1];
+        System.out.println("removed device: " + device);
+        for (int i = 0, size = storageDeviceListModel.getSize(); i < size; i++) {
+            StorageDevice storageDevice = (StorageDevice) storageDeviceListModel.get(i);
+            if (storageDevice.getDevice().endsWith(device)) {
+                storageDeviceListModel.remove(i);
+                break; // for
+            }
+        }
+    }
+
+    /**
+     * must be called whenever the install storage device list changes to
+     * execute some updates (e.g. maximum storage device size) and some sanity
+     * checks
+     */
+    private void installStorageDeviceListChanged() {
+        int deviceCount = storageDeviceListModel.size();
+        if (deviceCount == 0) {
+            showCard(installSelectionCardPanel, "installNoMediaPanel");
+            disableNextButton();
+        } else {
+            installStorageDeviceRenderer.setMaxSize(
+                    getMaxStorageDeviceSize(deviceCount));
+
+            showCard(installSelectionCardPanel, "installListPanel");
+            // auto-select single entry
+            if (deviceCount == 1) {
+                installStorageDeviceList.setSelectedIndex(0);
+            }
+            updateInstallNextButton();
+        }
+    }
+
+    /**
+     * must be called whenever the upgrade storage device list changes to
+     * execute some updates (e.g. maximum storage device size) and some sanity
+     * checks
+     */
+    private void upgradeStorageDeviceListChanged() {
+        int deviceCount = storageDeviceListModel.size();
+        if (deviceCount == 0) {
+            showCard(upgradeSelectionCardPanel, "upgradeNoMediaPanel");
+            disableNextButton();
+        } else {
+            upgradeStorageDeviceRenderer.setMaxSize(
+                    getMaxStorageDeviceSize(deviceCount));
+
+            showCard(upgradeSelectionCardPanel, "upgradeListPanel");
+            // auto-select single entry
+            if (deviceCount == 1) {
+                upgradeStorageDeviceList.setSelectedIndex(0);
+            }
+        }
+    }
+
+    private long getMaxStorageDeviceSize(int deviceCount) {
+        long maxSize = 0;
+        for (int i = 0; i < deviceCount; i++) {
+            StorageDevice storageDevice =
+                    (StorageDevice) storageDeviceListModel.get(i);
+            long deviceSize = storageDevice.getSize();
+            if (deviceSize > maxSize) {
+                maxSize = deviceSize;
+            }
+        }
+        return maxSize;
+    }
 
     private void editSeparateFileSystemListEntry() {
         String oldPath = (String) separateFileSystemsList.getSelectedValue();
@@ -2318,6 +2318,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             }
 
             installStorageDeviceListChanged();
+            installStorageDeviceListSelectionChanged();
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         } catch (DBusException ex) {
@@ -2625,7 +2626,16 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
      * and [en/dis]ables the "Next" button accordingly
      */
     private void updateInstallNextButton() {
-        for (int i : installStorageDeviceList.getSelectedIndices()) {
+        int[] selectedIndices = installStorageDeviceList.getSelectedIndices();
+
+        // no storage device selected
+        if (selectedIndices.length == 0) {
+            disableNextButton();
+            return;
+        }
+
+        // check selection
+        for (int i : selectedIndices) {
             StorageDevice device =
                     (StorageDevice) storageDeviceListModel.get(i);
             PartitionState partitionState =
@@ -4100,7 +4110,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                     formatSystemPartition(
                             "/dev/" + systemPartition.getDevice(), true);
                 }
-                
+
                 if (true) {
                     return null;
                 }

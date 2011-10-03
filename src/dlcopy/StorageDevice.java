@@ -163,8 +163,8 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
              */
             // we only want to catch the partition numbers...
             Pattern pattern = Pattern.compile(
-                    "/org/freedesktop/UDisks/devices/(" + device.substring(5)
-                    + "\\d+)");
+                    "/org/freedesktop/UDisks/devices/" + device.substring(5)
+                    + "(\\d+)");
             for (String line : lines) {
                 Matcher matcher = pattern.matcher(line);
                 if (matcher.matches()) {

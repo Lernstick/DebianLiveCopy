@@ -76,6 +76,12 @@ public class InstallStorageDeviceRenderer
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
+        
+        // early return
+        if (maxStorageDeviceSize == 0) {
+            return;
+        }
+        LOGGER.log(Level.FINEST, "maxStorageDeviceSize = {0}", maxStorageDeviceSize);
 
         // set device text and icon based on storage type
         String deviceText = null;
