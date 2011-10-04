@@ -145,6 +145,9 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
 
             // call udisks to get partition info
             ProcessExecutor processExecutor = new ProcessExecutor();
+            LOGGER.log(Level.INFO,
+                    "calling \"udisks --enumerate\" to get the partitions of {0}", 
+                    device);
             processExecutor.executeProcess(true, true, "udisks", "--enumerate");
             List<String> lines = processExecutor.getStdOutList();
             Collections.sort(lines);

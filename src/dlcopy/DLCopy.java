@@ -9,6 +9,7 @@ import ch.fhnw.filecopier.CopyJob;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.filecopier.Source;
 import dlcopy.tools.FileTools;
+import dlcopy.tools.ModalDialogHandler;
 import dlcopy.tools.ProcessExecutor;
 import java.applet.Applet;
 import java.applet.AudioClip;
@@ -18,6 +19,7 @@ import java.awt.Container;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.event.ItemEvent;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
@@ -480,36 +482,28 @@ public class DLCopy extends JFrame
             return;
         }
 
-        SwingUtilities.invokeLater(new Runnable() {
-
-            @Override
-            public void run() {
-                String line = (String) evt.getNewValue();
-                switch (state) {
-                    case INSTALL_SELECTION:
-                        if (line.startsWith(UDISKS_ADDED)) {
-                            fillInstallStorageDeviceList();
-                        } else if (line.startsWith(UDISKS_REMOVED)) {
-                            removeStorageDevice(line);
-                            installStorageDeviceListChanged();
-                        }
-                        break;
-
-                    case UPGRADE_SELECTION:
-                        if (line.startsWith(UDISKS_ADDED)) {
-                            fillUpgradeStorageDeviceList();
-                        } else if (line.startsWith(UDISKS_REMOVED)) {
-                            removeStorageDevice(line);
-                            upgradeStorageDeviceListChanged();
-                        }
-                        break;
-
-                    default:
-                        LOGGER.log(Level.INFO,
-                                "device change not handled in state {0}", state);
+        String line = (String) evt.getNewValue();
+        switch (state) {
+            case INSTALL_SELECTION:
+                if (line.startsWith(UDISKS_ADDED)) {
+                    new InstallStorageDeviceAdder(line).execute();
+                } else if (line.startsWith(UDISKS_REMOVED)) {
+                    removeStorageDevice(line);
                 }
-            }
-        });
+                break;
+
+            case UPGRADE_SELECTION:
+                if (line.startsWith(UDISKS_ADDED)) {
+                    fillUpgradeStorageDeviceList();
+                } else if (line.startsWith(UDISKS_REMOVED)) {
+                    removeStorageDevice(line);
+                }
+                break;
+
+            default:
+                LOGGER.log(Level.INFO,
+                        "device change not handled in state {0}", state);
+        }
     }
 
     @Override
@@ -1115,7 +1109,7 @@ public class DLCopy extends JFrame
                     .addGroup(createPartitionPanelLayout.createSequentialGroup()
                         .addComponent(exchangePartitionSizeLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(exchangePartitionSizeSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
+                        .addComponent(exchangePartitionSizeSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(exchangePartitionSizeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1160,7 +1154,7 @@ public class DLCopy extends JFrame
                 .addComponent(copyExchangeCheckBox)
                 .addGap(18, 18, 18)
                 .addComponent(copyPersistencyCheckBox)
-                .addContainerGap(322, Short.MAX_VALUE))
+                .addContainerGap(377, Short.MAX_VALUE))
         );
         copyPartitionPanelLayout.setVerticalGroup(
             copyPartitionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1196,13 +1190,13 @@ public class DLCopy extends JFrame
                         .addComponent(createPartitionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(installListPanelLayout.createSequentialGroup()
                             .addComponent(exchangeDefinitionLabel)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 398, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 322, Short.MAX_VALUE))
                         .addGroup(installListPanelLayout.createSequentialGroup()
                             .addComponent(dataDefinitionLabel)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 127, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 262, Short.MAX_VALUE))
                         .addGroup(installListPanelLayout.createSequentialGroup()
                             .addComponent(osDefinitionLabel)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 623, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 609, Short.MAX_VALUE))
                         .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                     .addContainerGap()))
         );
@@ -1298,7 +1292,7 @@ public class DLCopy extends JFrame
             .addGroup(installPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(currentlyInstalledDeviceLabel)
-                .addContainerGap(483, Short.MAX_VALUE))
+                .addContainerGap(500, Short.MAX_VALUE))
             .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 748, Short.MAX_VALUE)
             .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 748, Short.MAX_VALUE)
         );
@@ -1631,16 +1625,16 @@ public class DLCopy extends JFrame
                                     .addComponent(isoLabelLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(writableTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)
-                                    .addComponent(isoLabelTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)))
+                                    .addComponent(writableTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
+                                    .addComponent(isoLabelTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(freeSpaceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(freeSpaceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE))
+                                .addComponent(freeSpaceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(tmpDirLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tmpDirTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)))
+                                .addComponent(tmpDirTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tmpDirSelectButton)))
                 .addContainerGap())
@@ -1726,7 +1720,7 @@ public class DLCopy extends JFrame
                 .addGroup(toISODonePanelLayout.createSequentialGroup()
                     .addGap(83, 83, 83)
                     .addComponent(isoDoneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(199, Short.MAX_VALUE)))
+                    .addContainerGap(244, Short.MAX_VALUE)))
         );
 
         cardPanel.add(toISODonePanel, "toISODonePanel");
@@ -1988,6 +1982,13 @@ public class DLCopy extends JFrame
     }//GEN-LAST:event_imageButtonFocusGained
 
     private void installShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_installShowHarddiskCheckBoxItemStateChanged
+        switch (evt.getStateChange()) {
+            case ItemEvent.SELECTED:
+                LOGGER.info("selected");
+                break;
+            case ItemEvent.DESELECTED:
+                LOGGER.info("deselected");
+        }
         fillInstallStorageDeviceList();
     }//GEN-LAST:event_installShowHarddiskCheckBoxItemStateChanged
 
@@ -2047,7 +2048,7 @@ public class DLCopy extends JFrame
     }//GEN-LAST:event_upgradeSelectionPanelComponentShown
 
 private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_upgradeShowHarddiskCheckBoxItemStateChanged
-        fillUpgradeStorageDeviceList();
+    fillUpgradeStorageDeviceList();
 }//GEN-LAST:event_upgradeShowHarddiskCheckBoxItemStateChanged
 
     private void separateFileSystemsAddButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_separateFileSystemsAddButtonActionPerformed
@@ -2078,7 +2079,6 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
     private void separateFileSystemsListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_separateFileSystemsListMouseClicked
         if (evt.getClickCount() == 2) {
-            int index = separateFileSystemsList.locationToIndex(evt.getPoint());
             editSeparateFileSystemListEntry();
         }
     }//GEN-LAST:event_separateFileSystemsListMouseClicked
@@ -2087,15 +2087,29 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         // the device was just removed, so we can not use getStorageDevice()
         // here...
         String[] tokens = udisksLine.split("/");
-        String device = tokens[tokens.length - 1];
-        System.out.println("removed device: " + device);
-        for (int i = 0, size = storageDeviceListModel.getSize(); i < size; i++) {
-            StorageDevice storageDevice = (StorageDevice) storageDeviceListModel.get(i);
-            if (storageDevice.getDevice().endsWith(device)) {
-                storageDeviceListModel.remove(i);
-                break; // for
+        final String device = tokens[tokens.length - 1];
+        LOGGER.log(Level.INFO, "removed device: {0}", device);
+        SwingUtilities.invokeLater(new Runnable() {
+
+            @Override
+            public void run() {
+                for (int i = 0, size = storageDeviceListModel.getSize(); i < size; i++) {
+                    StorageDevice storageDevice = (StorageDevice) storageDeviceListModel.get(i);
+                    if (storageDevice.getDevice().endsWith(device)) {
+                        storageDeviceListModel.remove(i);
+                        LOGGER.log(Level.INFO, "removed from storage device list: {0}", device);
+                        switch (state) {
+                            case INSTALL_SELECTION:
+                                installStorageDeviceListChanged();
+                                break;
+                            case UPGRADE_SELECTION:
+                                upgradeStorageDeviceListChanged();
+                        }
+                        break; // for
+                    }
+                }
             }
-        }
+        });
     }
 
     /**
@@ -2117,6 +2131,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             if (deviceCount == 1) {
                 installStorageDeviceList.setSelectedIndex(0);
             }
+            installStorageDeviceList.repaint();
             updateInstallNextButton();
         }
     }
@@ -2153,6 +2168,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 maxSize = deviceSize;
             }
         }
+        LOGGER.log(Level.INFO, "maxSize = {0}", maxSize);
         return maxSize;
     }
 
@@ -2297,33 +2313,12 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     }
 
     private void fillInstallStorageDeviceList() {
-        // remember selected values so that we can restore the selection
-        Object[] selectedValues = installStorageDeviceList.getSelectedValues();
-
-        storageDeviceListModel.clear();
-        try {
-            List<StorageDevice> storageDevices =
-                    getStorageDevices(installShowHarddiskCheckBox.isSelected());
-            Collections.sort(storageDevices);
-            for (StorageDevice storageDevice : storageDevices) {
-                storageDeviceListModel.addElement(storageDevice);
-            }
-
-            // try to restore the previous selection
-            for (Object selectedValue : selectedValues) {
-                int index = storageDevices.indexOf(selectedValue);
-                if (index != -1) {
-                    installStorageDeviceList.addSelectionInterval(index, index);
-                }
-            }
-
-            installStorageDeviceListChanged();
-            installStorageDeviceListSelectionChanged();
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        } catch (DBusException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        }
+        StorageDeviceListUpdateDialog dialog =
+                new StorageDeviceListUpdateDialog(this);
+        ModalDialogHandler dialogHandler = new ModalDialogHandler(dialog);
+        InstallStorageDeviceListUpdater updater =
+                new InstallStorageDeviceListUpdater(dialogHandler);
+        updater.execute();
     }
 
     private void fillUpgradeStorageDeviceList() {
@@ -2517,18 +2512,21 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             }
             List<String> udisksObjectPaths = processExecutor.getStdOutList();
             for (String path : udisksObjectPaths) {
-                // no not add the boot device (something like "/dev/sdb1")
+                // do not add the boot device (something like "/dev/sdb1")
                 String bootDeviceTrail = bootDevice.substring(
                         bootDevice.lastIndexOf("/") + 1);
                 String pathTrail = path.substring(path.lastIndexOf("/") + 1);
                 if (bootDeviceTrail.startsWith(pathTrail)) {
                     // this is the boot device, skip it
+                    LOGGER.log(Level.INFO,
+                            "skipping {0}, it''s the boot device", path);
                     continue;
                 }
 
                 StorageDevice storageDevice = getStorageDevice(
                         path, includeHarddisks);
                 if (storageDevice != null) {
+                    LOGGER.log(Level.INFO, "adding {0}", path);
                     storageDevices.add(storageDevice);
                 }
             }
@@ -2542,9 +2540,10 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
     private StorageDevice getStorageDevice(String path,
             boolean includeHarddisks) throws DBusException {
+
         DBus.Properties deviceProperties = dbusSystemConnection.getRemoteObject(
-                "org.freedesktop.UDisks", path,
-                DBus.Properties.class);
+                "org.freedesktop.UDisks", path, DBus.Properties.class);
+
         Boolean isDrive = deviceProperties.Get(
                 "org.freedesktop.UDisks", "DeviceIsDrive");
         Boolean isLoop = deviceProperties.Get(
@@ -2552,43 +2551,47 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         UInt64 size64 = deviceProperties.Get(
                 "org.freedesktop.UDisks", "DeviceSize");
         long size = size64.longValue();
-        if (isDrive && !isLoop && (size > 0)) {
-            String deviceFile = deviceProperties.Get(
-                    "org.freedesktop.UDisks", "DeviceFile");
-            String vendor = deviceProperties.Get(
-                    "org.freedesktop.UDisks", "DriveVendor");
-            String model = deviceProperties.Get(
-                    "org.freedesktop.UDisks", "DriveModel");
-            String revision = deviceProperties.Get(
-                    "org.freedesktop.UDisks", "DriveRevision");
-            String serial = deviceProperties.Get(
-                    "org.freedesktop.UDisks", "DriveSerial");
-            Boolean isSystemInternal = deviceProperties.Get(
-                    "org.freedesktop.UDisks", "DeviceIsSystemInternal");
-            Boolean removable = deviceProperties.Get(
-                    "org.freedesktop.UDisks", "DeviceIsRemovable");
-            String media = deviceProperties.Get(
-                    "org.freedesktop.UDisks", "DriveMedia");
-            if (deviceFile.startsWith("/dev/mmcblk")) {
-                // an SD card
-                return new SDStorageDevice(vendor, model, revision, serial,
+
+        // early return for non-drives
+        if ((!isDrive) || isLoop || (size <= 0)) {
+            return null;
+        }
+
+        String deviceFile = deviceProperties.Get(
+                "org.freedesktop.UDisks", "DeviceFile");
+        String vendor = deviceProperties.Get(
+                "org.freedesktop.UDisks", "DriveVendor");
+        String model = deviceProperties.Get(
+                "org.freedesktop.UDisks", "DriveModel");
+        String revision = deviceProperties.Get(
+                "org.freedesktop.UDisks", "DriveRevision");
+        String serial = deviceProperties.Get(
+                "org.freedesktop.UDisks", "DriveSerial");
+        Boolean isSystemInternal = deviceProperties.Get(
+                "org.freedesktop.UDisks", "DeviceIsSystemInternal");
+        Boolean removable = deviceProperties.Get(
+                "org.freedesktop.UDisks", "DeviceIsRemovable");
+        String media = deviceProperties.Get(
+                "org.freedesktop.UDisks", "DriveMedia");
+        if (deviceFile.startsWith("/dev/mmcblk")) {
+            // an SD card
+            return new SDStorageDevice(vendor, model, revision, serial,
+                    deviceFile, size, systemPartitionLabel, systemSize);
+        } else {
+            if (removable) {
+                // probably a USB flash drive
+                return new UsbStorageDevice(vendor, model, revision, serial,
                         deviceFile, size, systemPartitionLabel, systemSize);
             } else {
-                if (removable) {
-                    // probably a USB flash drive
-                    return new UsbStorageDevice(vendor, model, revision, serial,
+                // probably a hard drive
+                if (includeHarddisks) {
+                    return new Harddisk(vendor, model, revision, serial,
                             deviceFile, size, systemPartitionLabel, systemSize);
                 } else {
-                    // probably a hard drive
-                    if (includeHarddisks) {
-                        return new Harddisk(vendor, model, revision, serial,
-                                deviceFile, size, systemPartitionLabel,
-                                systemSize);
-                    }
+                    return null;
                 }
             }
         }
-        return null;
     }
 
     private static String readOneLineFile(File file) throws IOException {
@@ -4608,6 +4611,144 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
         public void stopMonitoring() {
             executor.destroy();
+        }
+    }
+
+    private class InstallStorageDeviceAdder extends SwingWorker<Void, Void> {
+
+        private final ModalDialogHandler dialogHandler;
+        private final Object[] selectedValues;
+        private StorageDevice addedDevice;
+
+        public InstallStorageDeviceAdder(String outputLine) {
+            StorageDeviceListUpdateDialog dialog =
+                    new StorageDeviceListUpdateDialog(DLCopy.this);
+            dialogHandler = new ModalDialogHandler(dialog);
+            dialogHandler.show();
+            String addedPath = outputLine.substring(
+                    UDISKS_ADDED.length()).trim();
+            LOGGER.log(Level.INFO, "added path: \"{0}\"", addedPath);
+            // remember selected values so that we can restore the selection
+            selectedValues = installStorageDeviceList.getSelectedValues();
+            try {
+                addedDevice = getStorageDevice(addedPath,
+                        installShowHarddiskCheckBox.isSelected());
+            } catch (DBusException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
+            }
+        }
+
+        @Override
+        protected Void doInBackground() throws Exception {
+            if (addedDevice != null) {
+                // init all infos so that later rendering does not block
+                // in Swing Event Thread
+                addedDevice.canBeUpgraded();
+                for (Partition partition : addedDevice.getPartitions()) {
+                    partition.getUsableSpace();
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            if (addedDevice != null) {
+                List<StorageDevice> deviceList = new ArrayList<StorageDevice>();
+                Object[] entries = storageDeviceListModel.toArray();
+                for (Object entry : entries) {
+                    deviceList.add((StorageDevice) entry);
+                }
+                deviceList.add(addedDevice);
+                Collections.sort(deviceList);
+                synchronized (storageDeviceListModel) {
+                    storageDeviceListModel.clear();
+                    for (StorageDevice device : deviceList) {
+                        storageDeviceListModel.addElement(device);
+                    }
+                }
+                // try to restore the previous selection
+                for (Object selectedValue : selectedValues) {
+                    int index = deviceList.indexOf(selectedValue);
+                    if (index != -1) {
+                        installStorageDeviceList.addSelectionInterval(
+                                index, index);
+                    }
+                }
+                installStorageDeviceListChanged();
+                installStorageDeviceListSelectionChanged();
+            }
+            dialogHandler.hide();
+        }
+    }
+
+    private class InstallStorageDeviceListUpdater
+            extends SwingWorker<Void, Void> {
+
+        private final ModalDialogHandler dialogHandler;
+        private final Object[] selectedValues;
+        private final boolean showHardDisks;
+        private List<StorageDevice> storageDevices;
+
+        public InstallStorageDeviceListUpdater(
+                ModalDialogHandler dialogHandler) {
+            this.dialogHandler = dialogHandler;
+            dialogHandler.show();
+            // remember selected values so that we can restore the selection
+            selectedValues = installStorageDeviceList.getSelectedValues();
+            showHardDisks = installShowHarddiskCheckBox.isSelected();
+        }
+
+        @Override
+        protected Void doInBackground() throws Exception {
+            synchronized (storageDeviceListModel) {
+                storageDeviceListModel.clear();
+                try {
+                    storageDevices = getStorageDevices(showHardDisks);
+                    Collections.sort(storageDevices);
+                    for (StorageDevice device : storageDevices) {
+                        // init all infos so that later rendering does not block
+                        // in Swing Event Thread
+                        device.canBeUpgraded();
+                        for (Partition partition : device.getPartitions()) {
+                            try {
+                                partition.getUsableSpace();
+                            } catch (Exception ignored) {
+                            }
+                        }
+
+                        LOGGER.log(Level.INFO, "trying to add {0} ...", device);
+                        storageDeviceListModel.addElement(device);
+                        LOGGER.log(Level.INFO, "successfully added {0}", device);
+                    }
+                    LOGGER.log(Level.INFO, "added {0} storage devices",
+                            storageDevices.size());
+
+                } catch (IOException ex) {
+                    LOGGER.log(Level.SEVERE, null, ex);
+                } catch (DBusException ex) {
+                    LOGGER.log(Level.SEVERE, null, ex);
+                } catch (Exception ex) {
+                    LOGGER.log(Level.SEVERE, null, ex);
+                    throw ex;
+                }
+            }
+            return null;
+        }
+
+        @Override
+        protected void done() {
+            // try to restore the previous selection
+            for (Object selectedValue : selectedValues) {
+                int index = storageDevices.indexOf(selectedValue);
+                if (index != -1) {
+                    installStorageDeviceList.addSelectionInterval(index, index);
+                }
+            }
+
+            installStorageDeviceListChanged();
+            installStorageDeviceListSelectionChanged();
+            dialogHandler.hide();
         }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables

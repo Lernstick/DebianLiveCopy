@@ -300,6 +300,8 @@ public class Partition {
                         }
                     }
                 }
+            } else {
+                LOGGER.finest("does not match system partition label");
             }
         }
         return isSystemPartition;
