@@ -3,6 +3,7 @@ package dlcopy;
 import dlcopy.tools.DbusTools;
 import dlcopy.tools.ProcessExecutor;
 import java.io.File;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
@@ -274,16 +275,17 @@ public class Partition {
                 // check partition file structure
                 LOGGER.log(Level.FINEST,
                         "checking file structure on partition {0}", device);
-                File squashFS = new File(
-                        mountPath + "/live/filesystem.squashfs");
-                if (squashFS.exists()) {
-                    LOGGER.log(Level.INFO,
-                            "found squashfs on partition {0}", device);
-                    // ok, now we are pretty sure that this partition is a
-                    // Debian Live system partition
-                    isSystemPartition = true;
-                } else {
-                    LOGGER.log(Level.INFO, "{0} does not exist", squashFS);
+                File liveDir = new File(mountPath, "live");
+                if (liveDir.exists()) {
+                    FilenameFilter squashFsFilter = new FilenameFilter() {
+
+                        @Override
+                        public boolean accept(File dir, String name) {
+                            return name.endsWith(".squashfs");
+                        }
+                    };
+                    String[] squashFileSystems = liveDir.list(squashFsFilter);
+                    isSystemPartition = (squashFileSystems.length > 0);
                 }
 
                 // cleanup

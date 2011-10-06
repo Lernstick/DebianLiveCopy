@@ -57,6 +57,7 @@ import javax.swing.JComponent;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JList;
 import javax.swing.JOptionPane;
 import javax.swing.JSlider;
 import javax.swing.JTextField;
@@ -177,6 +178,7 @@ public class DLCopy extends JFrame
     private DBusConnection dbusSystemConnection;
     private UdisksMonitorThread udisksMonitorThread;
     private DefaultListModel separateFileSystemsListModel;
+    private DefaultListModel upgradeOverwriteListModel;
 
     /** Creates new form DLCopy
      * @param arguments the command line arguments
@@ -478,6 +480,9 @@ public class DLCopy extends JFrame
 
         separateFileSystemsListModel = new DefaultListModel();
         separateFileSystemsList.setModel(separateFileSystemsListModel);
+
+        upgradeOverwriteListModel = new DefaultListModel();
+        upgradeOverwriteList.setModel(upgradeOverwriteListModel);
     }
 
     @Override
@@ -834,14 +839,24 @@ public class DLCopy extends JFrame
         upgradeSelectionHeaderLabel = new javax.swing.JLabel();
         upgradeShowHarddiskCheckBox = new javax.swing.JCheckBox();
         upgradeSelectionCardPanel = new javax.swing.JPanel();
-        upgradeListPanel = new javax.swing.JPanel();
+        upgradeNoMediaPanel = new javax.swing.JPanel();
+        upgradeNoMediaLabel = new javax.swing.JLabel();
+        upgradeSelectionSplitPane = new javax.swing.JSplitPane();
+        upgradeSelectionDeviceListPanel = new javax.swing.JPanel();
         upgradeStorageDeviceListScrollPane = new javax.swing.JScrollPane();
         upgradeStorageDeviceList = new javax.swing.JList();
         upgradeExchangeDefinitionLabel = new javax.swing.JLabel();
         upgradeDataDefinitionLabel = new javax.swing.JLabel();
         upgradeOsDefinitionLabel = new javax.swing.JLabel();
-        upgradeNoMediaPanel = new javax.swing.JPanel();
-        upgradeNoMediaLabel = new javax.swing.JLabel();
+        upgradeSelectionConfigPanel = new javax.swing.JPanel();
+        reactivateWelcomeCheckBox = new javax.swing.JCheckBox();
+        keepPrinterSettingsCheckBox = new javax.swing.JCheckBox();
+        upgradeOverwritePanel = new javax.swing.JPanel();
+        upgradeOverwriteScrollPane = new javax.swing.JScrollPane();
+        upgradeOverwriteList = new javax.swing.JList();
+        upgradeOverwriteAddButton = new javax.swing.JButton();
+        upgradeOverwriteEditButton = new javax.swing.JButton();
+        upgradeOverwriteRemoveButton = new javax.swing.JButton();
         upgradePanel = new javax.swing.JPanel();
         currentlyUpgradedDeviceLabel = new javax.swing.JLabel();
         jSeparator4 = new javax.swing.JSeparator();
@@ -1386,6 +1401,20 @@ public class DLCopy extends JFrame
 
         upgradeSelectionCardPanel.setLayout(new java.awt.CardLayout());
 
+        upgradeNoMediaPanel.setLayout(new java.awt.GridBagLayout());
+
+        upgradeNoMediaLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/messagebox_info.png"))); // NOI18N
+        upgradeNoMediaLabel.setText(bundle.getString("Insert_Media")); // NOI18N
+        upgradeNoMediaLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        upgradeNoMediaLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        upgradeNoMediaPanel.add(upgradeNoMediaLabel, new java.awt.GridBagConstraints());
+
+        upgradeSelectionCardPanel.add(upgradeNoMediaPanel, "upgradeNoMediaPanel");
+
+        upgradeSelectionSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
+        upgradeSelectionSplitPane.setResizeWeight(1.0);
+        upgradeSelectionSplitPane.setOneTouchExpandable(true);
+
         upgradeStorageDeviceList.setName("storageDeviceList"); // NOI18N
         upgradeStorageDeviceList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
@@ -1406,25 +1435,25 @@ public class DLCopy extends JFrame
         upgradeOsDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/blue_box.png"))); // NOI18N
         upgradeOsDefinitionLabel.setText(bundle.getString("DLCopy.upgradeOsDefinitionLabel.text")); // NOI18N
 
-        javax.swing.GroupLayout upgradeListPanelLayout = new javax.swing.GroupLayout(upgradeListPanel);
-        upgradeListPanel.setLayout(upgradeListPanelLayout);
-        upgradeListPanelLayout.setHorizontalGroup(
-            upgradeListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(upgradeListPanelLayout.createSequentialGroup()
+        javax.swing.GroupLayout upgradeSelectionDeviceListPanelLayout = new javax.swing.GroupLayout(upgradeSelectionDeviceListPanel);
+        upgradeSelectionDeviceListPanel.setLayout(upgradeSelectionDeviceListPanelLayout);
+        upgradeSelectionDeviceListPanelLayout.setHorizontalGroup(
+            upgradeSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(upgradeSelectionDeviceListPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(upgradeListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 724, Short.MAX_VALUE)
+                .addGroup(upgradeSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 722, Short.MAX_VALUE)
                     .addComponent(upgradeOsDefinitionLabel)
                     .addComponent(upgradeDataDefinitionLabel)
                     .addComponent(upgradeExchangeDefinitionLabel))
                 .addContainerGap())
         );
-        upgradeListPanelLayout.setVerticalGroup(
-            upgradeListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, upgradeListPanelLayout.createSequentialGroup()
+        upgradeSelectionDeviceListPanelLayout.setVerticalGroup(
+            upgradeSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, upgradeSelectionDeviceListPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 376, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
+                .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(upgradeExchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(upgradeDataDefinitionLabel)
@@ -1433,17 +1462,109 @@ public class DLCopy extends JFrame
                 .addContainerGap())
         );
 
-        upgradeSelectionCardPanel.add(upgradeListPanel, "upgradeListPanel");
+        upgradeSelectionSplitPane.setLeftComponent(upgradeSelectionDeviceListPanel);
 
-        upgradeNoMediaPanel.setLayout(new java.awt.GridBagLayout());
+        reactivateWelcomeCheckBox.setSelected(true);
+        reactivateWelcomeCheckBox.setText(bundle.getString("DLCopy.reactivateWelcomeCheckBox.text")); // NOI18N
 
-        upgradeNoMediaLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/messagebox_info.png"))); // NOI18N
-        upgradeNoMediaLabel.setText(bundle.getString("Insert_Media")); // NOI18N
-        upgradeNoMediaLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        upgradeNoMediaLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        upgradeNoMediaPanel.add(upgradeNoMediaLabel, new java.awt.GridBagConstraints());
+        keepPrinterSettingsCheckBox.setSelected(true);
+        keepPrinterSettingsCheckBox.setText(bundle.getString("DLCopy.keepPrinterSettingsCheckBox.text")); // NOI18N
 
-        upgradeSelectionCardPanel.add(upgradeNoMediaPanel, "upgradeNoMediaPanel");
+        upgradeOverwritePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopy.upgradeOverwritePanel.border.title"))); // NOI18N
+
+        upgradeOverwriteList.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                upgradeOverwriteListMouseClicked(evt);
+            }
+        });
+        upgradeOverwriteList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                upgradeOverwriteListValueChanged(evt);
+            }
+        });
+        upgradeOverwriteScrollPane.setViewportView(upgradeOverwriteList);
+
+        upgradeOverwriteAddButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/16x16/list-add.png"))); // NOI18N
+        upgradeOverwriteAddButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        upgradeOverwriteAddButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                upgradeOverwriteAddButtonActionPerformed(evt);
+            }
+        });
+
+        upgradeOverwriteEditButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/16x16/document-edit.png"))); // NOI18N
+        upgradeOverwriteEditButton.setEnabled(false);
+        upgradeOverwriteEditButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        upgradeOverwriteEditButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                upgradeOverwriteEditButtonActionPerformed(evt);
+            }
+        });
+
+        upgradeOverwriteRemoveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/16x16/list-remove.png"))); // NOI18N
+        upgradeOverwriteRemoveButton.setEnabled(false);
+        upgradeOverwriteRemoveButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        upgradeOverwriteRemoveButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                upgradeOverwriteRemoveButtonActionPerformed(evt);
+            }
+        });
+
+        javax.swing.GroupLayout upgradeOverwritePanelLayout = new javax.swing.GroupLayout(upgradeOverwritePanel);
+        upgradeOverwritePanel.setLayout(upgradeOverwritePanelLayout);
+        upgradeOverwritePanelLayout.setHorizontalGroup(
+            upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, upgradeOverwritePanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(upgradeOverwriteScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 656, Short.MAX_VALUE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(upgradeOverwriteAddButton, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(upgradeOverwriteEditButton, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(upgradeOverwriteRemoveButton, javax.swing.GroupLayout.Alignment.TRAILING))
+                .addContainerGap())
+        );
+        upgradeOverwritePanelLayout.setVerticalGroup(
+            upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
+                .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(upgradeOverwriteScrollPane, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
+                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, upgradeOverwritePanelLayout.createSequentialGroup()
+                        .addComponent(upgradeOverwriteAddButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(upgradeOverwriteEditButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(upgradeOverwriteRemoveButton)))
+                .addContainerGap())
+        );
+
+        javax.swing.GroupLayout upgradeSelectionConfigPanelLayout = new javax.swing.GroupLayout(upgradeSelectionConfigPanel);
+        upgradeSelectionConfigPanel.setLayout(upgradeSelectionConfigPanelLayout);
+        upgradeSelectionConfigPanelLayout.setHorizontalGroup(
+            upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(upgradeOverwritePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(keepPrinterSettingsCheckBox)
+                    .addComponent(reactivateWelcomeCheckBox))
+                .addContainerGap())
+        );
+        upgradeSelectionConfigPanelLayout.setVerticalGroup(
+            upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(reactivateWelcomeCheckBox)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(keepPrinterSettingsCheckBox)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(upgradeOverwritePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+
+        upgradeSelectionSplitPane.setRightComponent(upgradeSelectionConfigPanel);
+
+        upgradeSelectionCardPanel.add(upgradeSelectionSplitPane, "upgradeSelectionSplitPane");
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -2054,23 +2175,17 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 }//GEN-LAST:event_upgradeShowHarddiskCheckBoxItemStateChanged
 
     private void separateFileSystemsAddButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_separateFileSystemsAddButtonActionPerformed
-        JFileChooser fileChooser = new JFileChooser("/");
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            String selectedPath = fileChooser.getSelectedFile().getPath();
-            separateFileSystemsListModel.addElement(selectedPath);
-        }
+        addPathToList(JFileChooser.DIRECTORIES_ONLY,
+                separateFileSystemsListModel);
     }//GEN-LAST:event_separateFileSystemsAddButtonActionPerformed
 
     private void separateFileSystemsEditButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_separateFileSystemsEditButtonActionPerformed
-        editSeparateFileSystemListEntry();
+        editPathListEntry(separateFileSystemsList,
+                JFileChooser.DIRECTORIES_ONLY);
     }//GEN-LAST:event_separateFileSystemsEditButtonActionPerformed
 
     private void separateFileSystemsRemoveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_separateFileSystemsRemoveButtonActionPerformed
-        int[] selectedIndices = separateFileSystemsList.getSelectedIndices();
-        for (int i = selectedIndices.length - 1; i >= 0; i--) {
-            separateFileSystemsListModel.remove(i);
-        }
+        removeSelectedListEntries(separateFileSystemsList);
     }//GEN-LAST:event_separateFileSystemsRemoveButtonActionPerformed
 
     private void separateFileSystemsListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_separateFileSystemsListValueChanged
@@ -2081,9 +2196,54 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
     private void separateFileSystemsListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_separateFileSystemsListMouseClicked
         if (evt.getClickCount() == 2) {
-            editSeparateFileSystemListEntry();
+            editPathListEntry(separateFileSystemsList,
+                    JFileChooser.DIRECTORIES_ONLY);
         }
     }//GEN-LAST:event_separateFileSystemsListMouseClicked
+
+    private void upgradeOverwriteAddButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeOverwriteAddButtonActionPerformed
+        addPathToList(JFileChooser.FILES_AND_DIRECTORIES,
+                upgradeOverwriteListModel);
+    }//GEN-LAST:event_upgradeOverwriteAddButtonActionPerformed
+
+    private void upgradeOverwriteEditButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeOverwriteEditButtonActionPerformed
+        editPathListEntry(upgradeOverwriteList,
+                JFileChooser.FILES_AND_DIRECTORIES);
+    }//GEN-LAST:event_upgradeOverwriteEditButtonActionPerformed
+
+    private void upgradeOverwriteRemoveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeOverwriteRemoveButtonActionPerformed
+        removeSelectedListEntries(upgradeOverwriteList);
+    }//GEN-LAST:event_upgradeOverwriteRemoveButtonActionPerformed
+
+    private void upgradeOverwriteListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_upgradeOverwriteListMouseClicked
+        if (evt.getClickCount() == 2) {
+            editPathListEntry(upgradeOverwriteList,
+                    JFileChooser.FILES_AND_DIRECTORIES);
+        }
+    }//GEN-LAST:event_upgradeOverwriteListMouseClicked
+
+    private void upgradeOverwriteListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_upgradeOverwriteListValueChanged
+        int[] selectedIndices = upgradeOverwriteList.getSelectedIndices();
+        upgradeOverwriteEditButton.setEnabled(selectedIndices.length == 1);
+        upgradeOverwriteRemoveButton.setEnabled(selectedIndices.length > 0);
+    }//GEN-LAST:event_upgradeOverwriteListValueChanged
+
+    private void removeSelectedListEntries(JList list) {
+        int[] selectedIndices = list.getSelectedIndices();
+        DefaultListModel model = (DefaultListModel) list.getModel();
+        for (int i = selectedIndices.length - 1; i >= 0; i--) {
+            model.remove(i);
+        }
+    }
+
+    private void addPathToList(int selectionMode, DefaultListModel listModel) {
+        JFileChooser fileChooser = new JFileChooser("/");
+        fileChooser.setFileSelectionMode(selectionMode);
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            String selectedPath = fileChooser.getSelectedFile().getPath();
+            listModel.addElement(selectedPath);
+        }
+    }
 
     private void removeStorageDevice(String udisksLine) {
         // the device was just removed, so we can not use getStorageDevice()
@@ -2161,7 +2321,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             upgradeStorageDeviceRenderer.setMaxSize(
                     getMaxStorageDeviceSize(upgradeStorageDeviceListModel));
 
-            showCard(upgradeSelectionCardPanel, "upgradeListPanel");
+            showCard(upgradeSelectionCardPanel, "upgradeSelectionSplitPane");
             // auto-select single entry
             if (deviceCount == 1) {
                 upgradeStorageDeviceList.setSelectedIndex(0);
@@ -2183,17 +2343,17 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         return maxSize;
     }
 
-    private void editSeparateFileSystemListEntry() {
-        String oldPath = (String) separateFileSystemsList.getSelectedValue();
+    private void editPathListEntry(JList list, int selectionMode) {
+        String oldPath = (String) list.getSelectedValue();
         File oldDirectory = new File(oldPath);
         JFileChooser fileChooser =
                 new JFileChooser(oldDirectory.getParentFile());
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        fileChooser.setFileSelectionMode(selectionMode);
         fileChooser.setSelectedFile(oldDirectory);
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             String newPath = fileChooser.getSelectedFile().getPath();
-            separateFileSystemsListModel.set(
-                    separateFileSystemsList.getSelectedIndex(), newPath);
+            DefaultListModel model = (DefaultListModel) list.getModel();
+            model.set(list.getSelectedIndex(), newPath);
         }
     }
 
@@ -4026,36 +4186,72 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 });
                 String dataMountPoint = dataPartition.mount();
                 ProcessExecutor processExecutor = new ProcessExecutor();
-                processExecutor.executeProcess("find", dataMountPoint,
-                        "!", "-regex", dataMountPoint,
-                        "!", "-regex", dataMountPoint + "/lost\\+found",
-                        "!", "-regex", dataMountPoint + "/home.*",
-                        "!", "-regex", dataMountPoint + "/etc.*",
-                        "-exec", "rm", "-rf", "{}", ";");
-                String etcPath = dataMountPoint + "/etc";
-                processExecutor.executeProcess("find", etcPath,
-                        "!", "-regex", etcPath,
-                        "!", "-regex", etcPath + "/cups.*",
-                        "-exec", "rm", "-rf", "{}", ";");
-                try {
-                    File propertiesFile = new File(dataMountPoint
-                            + "/home/user/.config/lernstickWelcome");
-                    FileReader reader = new FileReader(propertiesFile);
-                    Properties lernstickWelcomeProperties = new Properties();
-                    lernstickWelcomeProperties.load(reader);
-                    lernstickWelcomeProperties.setProperty(
-                            "ShowAtStartup", "true");
-                    FileWriter writer = new FileWriter(propertiesFile);
-                    lernstickWelcomeProperties.store(
-                            writer, "lernstick Welcome dialog properties");
-                    reader.close();
-                    writer.close();
-                } catch (IOException iOException) {
-                    LOGGER.log(Level.WARNING, "", iOException);
+                if (keepPrinterSettingsCheckBox.isSelected()) {
+                    processExecutor.executeProcess("find", dataMountPoint,
+                            "!", "-regex", dataMountPoint,
+                            "!", "-regex", dataMountPoint + "/lost\\+found",
+                            "!", "-regex", dataMountPoint + "/home.*",
+                            "!", "-regex", dataMountPoint + "/etc.*",
+                            "-exec", "rm", "-rf", "{}", ";");
+                    String etcPath = dataMountPoint + "/etc";
+                    processExecutor.executeProcess("find", etcPath,
+                            "!", "-regex", etcPath,
+                            "!", "-regex", etcPath + "/cups.*",
+                            "-exec", "rm", "-rf", "{}", ";");
+                } else {
+                    processExecutor.executeProcess("find", dataMountPoint,
+                            "!", "-regex", dataMountPoint,
+                            "!", "-regex", dataMountPoint + "/lost\\+found",
+                            "!", "-regex", dataMountPoint + "/home.*",
+                            "-exec", "rm", "-rf", "{}", ";");
                 }
+                if (reactivateWelcomeCheckBox.isSelected()) {
+                    try {
+                        File propertiesFile = new File(dataMountPoint
+                                + "/home/user/.config/lernstickWelcome");
+                        FileReader reader = new FileReader(propertiesFile);
+                        Properties lernstickWelcomeProperties = new Properties();
+                        lernstickWelcomeProperties.load(reader);
+                        lernstickWelcomeProperties.setProperty(
+                                "ShowAtStartup", "true");
+                        FileWriter writer = new FileWriter(propertiesFile);
+                        lernstickWelcomeProperties.store(
+                                writer, "lernstick Welcome dialog properties");
+                        reader.close();
+                        writer.close();
+                    } catch (IOException iOException) {
+                        LOGGER.log(Level.WARNING, "", iOException);
+                    }
+                }
+                // process list of files to overwrite
+                for (int j = 0, size = upgradeOverwriteListModel.size(); j < size; j++) {
+                    // remove old version
+                    String path = (String) upgradeOverwriteListModel.get(j);
+                    File fileToDelete = new File(dataMountPoint, path);
+                    FileTools.recursiveDelete(fileToDelete, true);
+
+                    // create target directory
+                    File parentFile = fileToDelete.getParentFile();
+                    parentFile.mkdirs();
+                    
+                    // recursive copy
+                    processExecutor.executeProcess("cp", "-a",
+                            path, parentFile.getPath());
+                }
+
                 dataPartition.umount();
 
                 if (storageDevice.needsRepartitioning()) {
+                    SwingUtilities.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            upgradeIndeterminateProgressBar.setString(
+                                    STRINGS.getString(
+                                    "Changing_Partition_Sizes"));
+                        }
+                    });
+
                     // TODO: search partition that needs to be shrinked
                     // (for now we simply assume it's the data partition)
                     String dataDevPath = "/dev/" + dataPartition.getDevice();
@@ -4068,25 +4264,23 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                             + systemPartition.getSize()
                             - (long) (systemSize * 1.01);
                     // align newSystemPartitionOffset
-                    newSystemPartitionOffset = newSystemPartitionOffset
-                            - (newSystemPartitionOffset % MEGA);
-                    processExecutor.executeProcess(true, true,
-                            "parted", "-s", storageDevice.getDevice(),
+                    newSystemPartitionOffset /= MEGA;
+                    String start = String.valueOf(dataPartitionOffset) + "B";
+                    String border =
+                            String.valueOf(newSystemPartitionOffset) + "MB";
+                    String systemPartitionString =
+                            String.valueOf(systemPartition.getNumber());
+                    processExecutor.executeProcess(true, true, "parted",
+                            "-a", "optimal", "-s", storageDevice.getDevice(),
                             "rm", String.valueOf(dataPartition.getNumber()),
-                            "rm", String.valueOf(systemPartition.getNumber()),
-                            "mkpart", "primary",
-                            String.valueOf(dataPartitionOffset),
-                            String.valueOf(newSystemPartitionOffset),
-                            "mkpart", "primary",
-                            String.valueOf(newSystemPartitionOffset), "100%");
+                            "rm", systemPartitionString,
+                            "mkpart", "primary", start, border,
+                            "mkpart", "primary", border, "100%",
+                            "set", systemPartitionString, "boot", "on");
                     processExecutor.executeProcess(true, true,
                             "resize2fs", dataDevPath);
                     formatSystemPartition(
                             "/dev/" + systemPartition.getDevice(), true);
-                }
-
-                if (true) {
-                    return null;
                 }
 
                 // upgrade system partition
@@ -4952,9 +5146,11 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
+    private javax.swing.JCheckBox keepPrinterSettingsCheckBox;
     private javax.swing.JButton nextButton;
     private javax.swing.JLabel osDefinitionLabel;
     private javax.swing.JButton previousButton;
+    private javax.swing.JCheckBox reactivateWelcomeCheckBox;
     private javax.swing.JPanel rsyncPanel;
     private javax.swing.JProgressBar rsyncPogressBar;
     private javax.swing.JLabel selectionLabel;
@@ -4987,14 +5183,22 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private javax.swing.JPanel upgradeIndeterminateProgressPanel;
     private javax.swing.JLabel upgradeInfoLabel;
     private javax.swing.JPanel upgradeInfoPanel;
-    private javax.swing.JPanel upgradeListPanel;
     private javax.swing.JLabel upgradeNoMediaLabel;
     private javax.swing.JPanel upgradeNoMediaPanel;
     private javax.swing.JLabel upgradeOsDefinitionLabel;
+    private javax.swing.JButton upgradeOverwriteAddButton;
+    private javax.swing.JButton upgradeOverwriteEditButton;
+    private javax.swing.JList upgradeOverwriteList;
+    private javax.swing.JPanel upgradeOverwritePanel;
+    private javax.swing.JButton upgradeOverwriteRemoveButton;
+    private javax.swing.JScrollPane upgradeOverwriteScrollPane;
     private javax.swing.JPanel upgradePanel;
     private javax.swing.JPanel upgradeSelectionCardPanel;
+    private javax.swing.JPanel upgradeSelectionConfigPanel;
+    private javax.swing.JPanel upgradeSelectionDeviceListPanel;
     private javax.swing.JLabel upgradeSelectionHeaderLabel;
     private javax.swing.JPanel upgradeSelectionPanel;
+    private javax.swing.JSplitPane upgradeSelectionSplitPane;
     private javax.swing.JCheckBox upgradeShowHarddiskCheckBox;
     private javax.swing.JList upgradeStorageDeviceList;
     private javax.swing.JScrollPane upgradeStorageDeviceListScrollPane;
