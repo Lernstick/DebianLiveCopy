@@ -143,76 +143,87 @@ public class Partition {
 
     /**
      * returns the free/usable space on this partition
-     * @return the free/usable space on this partition
-     * @throws DBusException if a dbus exception occurs
+     * @return the free/usable space on this partition or "-1" if the usable
+     * space is unknown
      */
-    public long getUsableSpace() throws DBusException {
-        if (usableSpace == null) {
+    public long getUsableSpace() {
+        try {
+            if (usableSpace == null) {
 
-            // mount partition if not already mounted
-            String mountPath = null;
-            boolean tmpMount = false;
-            List<String> mountPaths = getMountPaths();
-            if (mountPaths.isEmpty()) {
-                mountPath = mount();
-                tmpMount = true;
-            } else {
-                mountPath = mountPaths.get(0);
-                if (LOGGER.isLoggable(Level.FINEST)) {
-                    LOGGER.log(Level.FINEST, "{0} already mounted at {1}",
-                            new Object[]{device, mountPath});
+                // mount partition if not already mounted
+                String mountPath = null;
+                boolean tmpMount = false;
+                List<String> mountPaths = getMountPaths();
+                if (mountPaths.isEmpty()) {
+                    mountPath = mount();
+                    tmpMount = true;
+                } else {
+                    mountPath = mountPaths.get(0);
+                    if (LOGGER.isLoggable(Level.FINEST)) {
+                        LOGGER.log(Level.FINEST, "{0} already mounted at {1}",
+                                new Object[]{device, mountPath});
+                    }
                 }
-            }
-
-            if (isPersistencyPartition()) {
-                // in case of an upgrade we would only keep /home/user and
-                // /etc/cups
-                long userSize = 0;
-                long cupsSize = 0;
-                ProcessExecutor processExecutor = new ProcessExecutor();
-                Pattern pattern = Pattern.compile("^(\\d+).*");
-                processExecutor.executeProcess(true, true,
-                        "du", "-sb", "/home/user");
-                String stdOut = processExecutor.getStdOut();
-                LOGGER.log(Level.INFO, "stdOut = \"{0}\"", stdOut);
-                Matcher matcher = pattern.matcher(stdOut);
-                if (matcher.find()) {
-                    String userSizeString = matcher.group(1);
-                    userSize = Long.parseLong(userSizeString);
+                
+                if (isPersistencyPartition()) {
+                    // in case of an upgrade we would only keep /home/user and
+                    // /etc/cups
+                    long userSize = 0;
+                    long cupsSize = 0;
+                    ProcessExecutor processExecutor = new ProcessExecutor();
+                    Pattern pattern = Pattern.compile("^(\\d+).*");
+                    processExecutor.executeProcess(true, true,
+                            "du", "-sb", "/home/user");
+                    String stdOut = processExecutor.getStdOut();
+                    LOGGER.log(Level.INFO, "stdOut = \"{0}\"", stdOut);
+                    Matcher matcher = pattern.matcher(stdOut);
+                    if (matcher.find()) {
+                        String userSizeString = matcher.group(1);
+                        userSize = Long.parseLong(userSizeString);
+                    }
+                    LOGGER.log(Level.INFO, "userSize = {0}", userSize);
+                    
+                    processExecutor.executeProcess(true, true,
+                            "du", "-sb", "/etc/cups");
+                    matcher = pattern.matcher(processExecutor.getStdOut());
+                    if (matcher.find()) {
+                        String userSizeString = matcher.group(1);
+                        cupsSize = Long.parseLong(userSizeString);
+                    }
+                    LOGGER.log(Level.INFO, "cupsSize = {0}", cupsSize);
+                    usableSpace = size - userSize - cupsSize;
+                    
+                } else {
+                    usableSpace = (new File(mountPath)).getUsableSpace();
                 }
-                LOGGER.log(Level.INFO, "userSize = {0}", userSize);
+                LOGGER.log(Level.INFO, "usableSpace = {0}", usableSpace);
 
-                processExecutor.executeProcess(true, true,
-                        "du", "-sb", "/etc/cups");
-                matcher = pattern.matcher(processExecutor.getStdOut());
-                if (matcher.find()) {
-                    String userSizeString = matcher.group(1);
-                    cupsSize = Long.parseLong(userSizeString);
-                }
-                LOGGER.log(Level.INFO, "cupsSize = {0}", cupsSize);
-                usableSpace = size - userSize - cupsSize;
-
-            } else {
-                usableSpace = (new File(mountPath)).getUsableSpace();
-            }
-            LOGGER.log(Level.INFO, "usableSpace = {0}", usableSpace);
-
-            // cleanup
-            if (tmpMount) {
-                boolean success = false;
-                for (int i = 0; !success && (i < 10); i++) {
-                    try {
-                        umount();
-                        success = true;
-                    } catch (DBusExecutionException ex) {
-                        handleUmountException(ex);
-                    } catch (DBusException ex) {
-                        handleUmountException(ex);
+                // cleanup
+                if (tmpMount) {
+                    boolean success = false;
+                    for (int i = 0; !success && (i < 10); i++) {
+                        try {
+                            umount();
+                            success = true;
+                        } catch (DBusExecutionException ex) {
+                            handleUmountException(ex);
+                        } catch (DBusException ex) {
+                            handleUmountException(ex);
+                        }
                     }
                 }
             }
+        } catch (DBusExecutionException ex) {
+            LOGGER.log(Level.WARNING, "", ex);
+            usableSpace = -1l;
+        } catch (DBusException ex) {
+            LOGGER.log(Level.WARNING, "", ex);
+            usableSpace = -1l;
+        } catch (NumberFormatException ex) {
+            LOGGER.log(Level.WARNING, "", ex);
+            usableSpace = -1l;
         }
-
+        
         return usableSpace;
     }
 

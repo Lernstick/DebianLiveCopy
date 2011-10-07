@@ -389,15 +389,15 @@
                                           <Component id="createPartitionPanel" alignment="0" max="32767" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="exchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace pref="322" max="32767" attributes="0"/>
+                                              <EmptySpace pref="398" max="32767" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="dataDefinitionLabel" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace pref="262" max="32767" attributes="0"/>
+                                              <EmptySpace pref="127" max="32767" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="osDefinitionLabel" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace pref="609" max="32767" attributes="0"/>
+                                              <EmptySpace pref="623" max="32767" attributes="0"/>
                                           </Group>
                                           <Component id="storageDeviceListScrollPane" alignment="1" pref="0" max="32767" attributes="0"/>
                                       </Group>
@@ -451,7 +451,7 @@
                           <Properties>
                             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                               <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                                <TitledBorder title="Exchange partition (optional)">
+                                <TitledBorder title="Austauschpartition (optional)">
                                   <ResourceString PropertyName="titleX" bundle="dlcopy/Strings.properties" key="DLCopy.createPartitionPanel.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </TitledBorder>
                               </Border>
@@ -467,7 +467,7 @@
                                           <Group type="102" attributes="0">
                                               <Component id="exchangePartitionSizeLabel" linkSize="1" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="exchangePartitionSizeSlider" pref="532" max="32767" attributes="0"/>
+                                              <Component id="exchangePartitionSizeSlider" pref="486" max="32767" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="exchangePartitionSizeTextField" min="-2" pref="84" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
@@ -562,7 +562,7 @@
                           <Properties>
                             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                               <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                                <TitledBorder title="Copy partitions">
+                                <TitledBorder title="Partitionen kopieren">
                                   <ResourceString PropertyName="titleX" bundle="dlcopy/Strings.properties" key="DLCopy.copyPartitionPanel.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </TitledBorder>
                               </Border>
@@ -577,7 +577,7 @@
                                       <Component id="copyExchangeCheckBox" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
                                       <Component id="copyPersistencyCheckBox" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace pref="377" max="32767" attributes="0"/>
+                                      <EmptySpace pref="322" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                             </DimensionLayout>
@@ -702,7 +702,7 @@
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="currentlyInstalledDeviceLabel" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="500" max="32767" attributes="0"/>
+                          <EmptySpace pref="483" max="32767" attributes="0"/>
                       </Group>
                       <Component id="installCardPanel" alignment="0" pref="748" max="32767" attributes="0"/>
                       <Component id="jSeparator3" alignment="1" pref="748" max="32767" attributes="0"/>
@@ -1002,24 +1002,23 @@
                         </Component>
                       </SubComponents>
                     </Container>
-                    <Container class="javax.swing.JSplitPane" name="upgradeSelectionSplitPane">
-                      <Properties>
-                        <Property name="orientation" type="int" value="0"/>
-                        <Property name="resizeWeight" type="double" value="1.0"/>
-                        <Property name="oneTouchExpandable" type="boolean" value="true"/>
-                      </Properties>
+                    <Container class="javax.swing.JTabbedPane" name="upgradeTabbedPane">
                       <Constraints>
                         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignCardLayout" value="org.netbeans.modules.form.compat2.layouts.DesignCardLayout$CardConstraintsDescription">
-                          <CardConstraints cardName="upgradeSelectionSplitPane"/>
+                          <CardConstraints cardName="upgradeTabbedPane"/>
                         </Constraint>
                       </Constraints>
 
-                      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout"/>
+                      <Layout class="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout"/>
                       <SubComponents>
                         <Container class="javax.swing.JPanel" name="upgradeSelectionDeviceListPanel">
                           <Constraints>
-                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
-                              <JSplitPaneConstraints position="left"/>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="Auswahl">
+                                <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                  <ResourceString bundle="dlcopy/Strings.properties" key="DLCopy.upgradeSelectionDeviceListPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                </Property>
+                              </JTabbedPaneConstraints>
                             </Constraint>
                           </Constraints>
 
@@ -1029,7 +1028,7 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="upgradeStorageDeviceListScrollPane" alignment="0" pref="722" max="32767" attributes="0"/>
+                                          <Component id="upgradeStorageDeviceListScrollPane" alignment="0" pref="719" max="32767" attributes="0"/>
                                           <Component id="upgradeOsDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="upgradeDataDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="upgradeExchangeDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -1042,7 +1041,7 @@
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="1" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="upgradeStorageDeviceListScrollPane" pref="175" max="32767" attributes="0"/>
+                                      <Component id="upgradeStorageDeviceListScrollPane" pref="361" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="upgradeExchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -1121,8 +1120,12 @@
                         </Container>
                         <Container class="javax.swing.JPanel" name="upgradeSelectionConfigPanel">
                           <Constraints>
-                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JSplitPaneSupportLayout$JSplitPaneConstraintsDescription">
-                              <JSplitPaneConstraints position="right"/>
+                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
+                              <JTabbedPaneConstraints tabName="Details">
+                                <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                  <ResourceString bundle="dlcopy/Strings.properties" key="DLCopy.upgradeSelectionConfigPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                </Property>
+                              </JTabbedPaneConstraints>
                             </Constraint>
                           </Constraints>
 
@@ -1135,6 +1138,7 @@
                                           <Component id="upgradeOverwritePanel" alignment="0" max="32767" attributes="0"/>
                                           <Component id="keepPrinterSettingsCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="reactivateWelcomeCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="upgradeSystemPartitionCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -1143,6 +1147,8 @@
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="0" attributes="0">
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="upgradeSystemPartitionCheckBox" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="reactivateWelcomeCheckBox" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -1155,6 +1161,14 @@
                             </DimensionLayout>
                           </Layout>
                           <SubComponents>
+                            <Component class="javax.swing.JCheckBox" name="upgradeSystemPartitionCheckBox">
+                              <Properties>
+                                <Property name="selected" type="boolean" value="true"/>
+                                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                  <ResourceString bundle="dlcopy/Strings.properties" key="DLCopy.upgradeSystemPartitionCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                </Property>
+                              </Properties>
+                            </Component>
                             <Component class="javax.swing.JCheckBox" name="reactivateWelcomeCheckBox">
                               <Properties>
                                 <Property name="selected" type="boolean" value="true"/>
@@ -1175,7 +1189,7 @@
                               <Properties>
                                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                                    <TitledBorder title="Always overwrite">
+                                    <TitledBorder title="Immer &#xfc;berschreiben">
                                       <ResourceString PropertyName="titleX" bundle="dlcopy/Strings.properties" key="DLCopy.upgradeOverwritePanel.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                     </TitledBorder>
                                   </Border>
@@ -1187,7 +1201,7 @@
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" alignment="1" attributes="0">
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="upgradeOverwriteScrollPane" pref="656" max="32767" attributes="0"/>
+                                          <Component id="upgradeOverwriteScrollPane" pref="653" max="32767" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="0" attributes="0">
                                               <Component id="upgradeOverwriteAddButton" alignment="1" min="-2" max="-2" attributes="0"/>
@@ -1449,19 +1463,19 @@
                                               </Group>
                                               <EmptySpace min="-2" max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
-                                                  <Component id="writableTextField" pref="554" max="32767" attributes="0"/>
-                                                  <Component id="isoLabelTextField" alignment="0" pref="554" max="32767" attributes="0"/>
+                                                  <Component id="writableTextField" pref="531" max="32767" attributes="0"/>
+                                                  <Component id="isoLabelTextField" alignment="0" pref="531" max="32767" attributes="0"/>
                                               </Group>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="1">
                                               <Component id="freeSpaceLabel" linkSize="2" min="-2" pref="126" max="-2" attributes="0"/>
                                               <EmptySpace min="-2" max="-2" attributes="0"/>
-                                              <Component id="freeSpaceTextField" pref="554" max="32767" attributes="0"/>
+                                              <Component id="freeSpaceTextField" pref="531" max="32767" attributes="0"/>
                                           </Group>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="tmpDirLabel" linkSize="2" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace min="-2" max="-2" attributes="0"/>
-                                              <Component id="tmpDirTextField" pref="554" max="32767" attributes="0"/>
+                                              <Component id="tmpDirTextField" pref="531" max="32767" attributes="0"/>
                                           </Group>
                                       </Group>
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -1594,7 +1608,7 @@
                       <Properties>
                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                            <TitledBorder title="Separate filesystems for directories">
+                            <TitledBorder title="Separate Dateisysteme f&#xfc;r Verzeichnisse">
                               <ResourceString PropertyName="titleX" bundle="dlcopy/Strings.properties" key="DLCopy.separateFileSystemsPanel.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </TitledBorder>
                           </Border>
@@ -1765,7 +1779,7 @@
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="83" max="-2" attributes="0"/>
                               <Component id="isoDoneLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="244" max="32767" attributes="0"/>
+                              <EmptySpace pref="199" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>

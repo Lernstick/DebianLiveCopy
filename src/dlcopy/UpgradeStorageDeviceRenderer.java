@@ -148,13 +148,15 @@ public class UpgradeStorageDeviceRenderer
                     stringBuilder.append(DLCopy.STRINGS.getString("Used"));
                     stringBuilder.append(": ");
                     try {
-                        long used = partition.getSize()
-                                - partition.getUsableSpace();
-                        stringBuilder.append(
-                                DLCopy.getDataVolumeString(used, 1));
+                        long usableSpace = partition.getUsableSpace();
+                        if (usableSpace == -1) {
+                            stringBuilder.append(DLCopy.STRINGS.getString("Unknown"));
+                        } else {
+                            long used = partition.getSize() - usableSpace;
+                            stringBuilder.append(
+                                    DLCopy.getDataVolumeString(used, 1));
+                        }
                     } catch (DBusExecutionException ex) {
-                        LOGGER.log(Level.SEVERE, "", ex);
-                    } catch (DBusException ex) {
                         LOGGER.log(Level.SEVERE, "", ex);
                     }
                 }
@@ -273,20 +275,21 @@ public class UpgradeStorageDeviceRenderer
             int partitionHeight = height + (2 * yOffset);
             graphics2D.fillRect(x, y, partitionWidth, partitionHeight);
 
-            // paint partition storage space usage
+            // paint partition storage space usage (if known)
             if (!extended) {
                 try {
-                    long usedSize =
-                            partition.getSize() - partition.getUsableSpace();
-                    int usedWidth =
-                            (int) ((width * usedSize) / maxStorageDeviceSize);
-                    graphics2D.setPaint(Color.LIGHT_GRAY);
-                    int usageOffset = 4;
-                    graphics2D.fillRect(x, y + usageOffset,
-                            usedWidth, partitionHeight - (2 * usageOffset) + 1);
+                    long usableSpace = partition.getUsableSpace();
+                    if (usableSpace != -1) {
+                        long usedSize =
+                                partition.getSize() - usableSpace;
+                        int usedWidth = (int) ((width * usedSize)
+                                / maxStorageDeviceSize);
+                        graphics2D.setPaint(Color.LIGHT_GRAY);
+                        int usageOffset = 4;
+                        graphics2D.fillRect(x, y + usageOffset, usedWidth,
+                                partitionHeight - (2 * usageOffset) + 1);
+                    }
                 } catch (DBusExecutionException ex) {
-                    LOGGER.log(Level.SEVERE, "", ex);
-                } catch (DBusException ex) {
                     LOGGER.log(Level.SEVERE, "", ex);
                 }
             }

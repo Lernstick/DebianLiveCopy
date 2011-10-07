@@ -841,7 +841,7 @@ public class DLCopy extends JFrame
         upgradeSelectionCardPanel = new javax.swing.JPanel();
         upgradeNoMediaPanel = new javax.swing.JPanel();
         upgradeNoMediaLabel = new javax.swing.JLabel();
-        upgradeSelectionSplitPane = new javax.swing.JSplitPane();
+        upgradeTabbedPane = new javax.swing.JTabbedPane();
         upgradeSelectionDeviceListPanel = new javax.swing.JPanel();
         upgradeStorageDeviceListScrollPane = new javax.swing.JScrollPane();
         upgradeStorageDeviceList = new javax.swing.JList();
@@ -849,6 +849,7 @@ public class DLCopy extends JFrame
         upgradeDataDefinitionLabel = new javax.swing.JLabel();
         upgradeOsDefinitionLabel = new javax.swing.JLabel();
         upgradeSelectionConfigPanel = new javax.swing.JPanel();
+        upgradeSystemPartitionCheckBox = new javax.swing.JCheckBox();
         reactivateWelcomeCheckBox = new javax.swing.JCheckBox();
         keepPrinterSettingsCheckBox = new javax.swing.JCheckBox();
         upgradeOverwritePanel = new javax.swing.JPanel();
@@ -1133,7 +1134,7 @@ public class DLCopy extends JFrame
                     .addGroup(createPartitionPanelLayout.createSequentialGroup()
                         .addComponent(exchangePartitionSizeLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(exchangePartitionSizeSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
+                        .addComponent(exchangePartitionSizeSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 486, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(exchangePartitionSizeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1178,7 +1179,7 @@ public class DLCopy extends JFrame
                 .addComponent(copyExchangeCheckBox)
                 .addGap(18, 18, 18)
                 .addComponent(copyPersistencyCheckBox)
-                .addContainerGap(377, Short.MAX_VALUE))
+                .addContainerGap(322, Short.MAX_VALUE))
         );
         copyPartitionPanelLayout.setVerticalGroup(
             copyPartitionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1214,13 +1215,13 @@ public class DLCopy extends JFrame
                         .addComponent(createPartitionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                         .addGroup(installListPanelLayout.createSequentialGroup()
                             .addComponent(exchangeDefinitionLabel)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 322, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 398, Short.MAX_VALUE))
                         .addGroup(installListPanelLayout.createSequentialGroup()
                             .addComponent(dataDefinitionLabel)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 262, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 127, Short.MAX_VALUE))
                         .addGroup(installListPanelLayout.createSequentialGroup()
                             .addComponent(osDefinitionLabel)
-                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 609, Short.MAX_VALUE))
+                            .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 623, Short.MAX_VALUE))
                         .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                     .addContainerGap()))
         );
@@ -1316,7 +1317,7 @@ public class DLCopy extends JFrame
             .addGroup(installPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(currentlyInstalledDeviceLabel)
-                .addContainerGap(500, Short.MAX_VALUE))
+                .addContainerGap(483, Short.MAX_VALUE))
             .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 748, Short.MAX_VALUE)
             .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 748, Short.MAX_VALUE)
         );
@@ -1411,10 +1412,6 @@ public class DLCopy extends JFrame
 
         upgradeSelectionCardPanel.add(upgradeNoMediaPanel, "upgradeNoMediaPanel");
 
-        upgradeSelectionSplitPane.setOrientation(javax.swing.JSplitPane.VERTICAL_SPLIT);
-        upgradeSelectionSplitPane.setResizeWeight(1.0);
-        upgradeSelectionSplitPane.setOneTouchExpandable(true);
-
         upgradeStorageDeviceList.setName("storageDeviceList"); // NOI18N
         upgradeStorageDeviceList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
@@ -1442,7 +1439,7 @@ public class DLCopy extends JFrame
             .addGroup(upgradeSelectionDeviceListPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(upgradeSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 722, Short.MAX_VALUE)
+                    .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 719, Short.MAX_VALUE)
                     .addComponent(upgradeOsDefinitionLabel)
                     .addComponent(upgradeDataDefinitionLabel)
                     .addComponent(upgradeExchangeDefinitionLabel))
@@ -1452,7 +1449,7 @@ public class DLCopy extends JFrame
             upgradeSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, upgradeSelectionDeviceListPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 175, Short.MAX_VALUE)
+                .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 361, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(upgradeExchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1462,7 +1459,10 @@ public class DLCopy extends JFrame
                 .addContainerGap())
         );
 
-        upgradeSelectionSplitPane.setLeftComponent(upgradeSelectionDeviceListPanel);
+        upgradeTabbedPane.addTab(bundle.getString("DLCopy.upgradeSelectionDeviceListPanel.TabConstraints.tabTitle"), upgradeSelectionDeviceListPanel); // NOI18N
+
+        upgradeSystemPartitionCheckBox.setSelected(true);
+        upgradeSystemPartitionCheckBox.setText(bundle.getString("DLCopy.upgradeSystemPartitionCheckBox.text")); // NOI18N
 
         reactivateWelcomeCheckBox.setSelected(true);
         reactivateWelcomeCheckBox.setText(bundle.getString("DLCopy.reactivateWelcomeCheckBox.text")); // NOI18N
@@ -1516,7 +1516,7 @@ public class DLCopy extends JFrame
             upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, upgradeOverwritePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(upgradeOverwriteScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 656, Short.MAX_VALUE)
+                .addComponent(upgradeOverwriteScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 653, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(upgradeOverwriteAddButton, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -1547,13 +1547,16 @@ public class DLCopy extends JFrame
                 .addGroup(upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(upgradeOverwritePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(keepPrinterSettingsCheckBox)
-                    .addComponent(reactivateWelcomeCheckBox))
+                    .addComponent(reactivateWelcomeCheckBox)
+                    .addComponent(upgradeSystemPartitionCheckBox))
                 .addContainerGap())
         );
         upgradeSelectionConfigPanelLayout.setVerticalGroup(
             upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
                 .addContainerGap()
+                .addComponent(upgradeSystemPartitionCheckBox)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(reactivateWelcomeCheckBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(keepPrinterSettingsCheckBox)
@@ -1562,9 +1565,9 @@ public class DLCopy extends JFrame
                 .addContainerGap())
         );
 
-        upgradeSelectionSplitPane.setRightComponent(upgradeSelectionConfigPanel);
+        upgradeTabbedPane.addTab(bundle.getString("DLCopy.upgradeSelectionConfigPanel.TabConstraints.tabTitle"), upgradeSelectionConfigPanel); // NOI18N
 
-        upgradeSelectionCardPanel.add(upgradeSelectionSplitPane, "upgradeSelectionSplitPane");
+        upgradeSelectionCardPanel.add(upgradeTabbedPane, "upgradeTabbedPane");
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -1755,16 +1758,16 @@ public class DLCopy extends JFrame
                                     .addComponent(isoLabelLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(writableTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
-                                    .addComponent(isoLabelTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)))
+                                    .addComponent(writableTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)
+                                    .addComponent(isoLabelTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(freeSpaceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(freeSpaceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE))
+                                .addComponent(freeSpaceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(tmpDirLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tmpDirTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)))
+                                .addComponent(tmpDirTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 531, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tmpDirSelectButton)))
                 .addContainerGap())
@@ -1850,7 +1853,7 @@ public class DLCopy extends JFrame
                 .addGroup(toISODonePanelLayout.createSequentialGroup()
                     .addGap(83, 83, 83)
                     .addComponent(isoDoneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(244, Short.MAX_VALUE)))
+                    .addContainerGap(199, Short.MAX_VALUE)))
         );
 
         cardPanel.add(toISODonePanel, "toISODonePanel");
@@ -2321,7 +2324,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             upgradeStorageDeviceRenderer.setMaxSize(
                     getMaxStorageDeviceSize(upgradeStorageDeviceListModel));
 
-            showCard(upgradeSelectionCardPanel, "upgradeSelectionSplitPane");
+            showCard(upgradeSelectionCardPanel, "upgradeTabbedPane");
             // auto-select single entry
             if (deviceCount == 1) {
                 upgradeStorageDeviceList.setSelectedIndex(0);
@@ -4172,162 +4175,11 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                     }
                 });
 
-                Partition dataPartition = storageDevice.getDataPartition();
-                Partition systemPartition = storageDevice.getSystemPartition();
+                upgradeDataPartition(storageDevice);
 
-                // reset data partition
-                SwingUtilities.invokeLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        upgradeIndeterminateProgressBar.setString(
-                                STRINGS.getString("Resetting_Data_Partition"));
-                    }
-                });
-                String dataMountPoint = dataPartition.mount();
-                ProcessExecutor processExecutor = new ProcessExecutor();
-                if (keepPrinterSettingsCheckBox.isSelected()) {
-                    processExecutor.executeProcess("find", dataMountPoint,
-                            "!", "-regex", dataMountPoint,
-                            "!", "-regex", dataMountPoint + "/lost\\+found",
-                            "!", "-regex", dataMountPoint + "/home.*",
-                            "!", "-regex", dataMountPoint + "/etc.*",
-                            "-exec", "rm", "-rf", "{}", ";");
-                    String etcPath = dataMountPoint + "/etc";
-                    processExecutor.executeProcess("find", etcPath,
-                            "!", "-regex", etcPath,
-                            "!", "-regex", etcPath + "/cups.*",
-                            "-exec", "rm", "-rf", "{}", ";");
-                } else {
-                    processExecutor.executeProcess("find", dataMountPoint,
-                            "!", "-regex", dataMountPoint,
-                            "!", "-regex", dataMountPoint + "/lost\\+found",
-                            "!", "-regex", dataMountPoint + "/home.*",
-                            "-exec", "rm", "-rf", "{}", ";");
+                if (upgradeSystemPartitionCheckBox.isSelected()) {
+                    upgradeSystemPartition(storageDevice);
                 }
-                if (reactivateWelcomeCheckBox.isSelected()) {
-                    try {
-                        File propertiesFile = new File(dataMountPoint
-                                + "/home/user/.config/lernstickWelcome");
-                        FileReader reader = new FileReader(propertiesFile);
-                        Properties lernstickWelcomeProperties = new Properties();
-                        lernstickWelcomeProperties.load(reader);
-                        lernstickWelcomeProperties.setProperty(
-                                "ShowAtStartup", "true");
-                        FileWriter writer = new FileWriter(propertiesFile);
-                        lernstickWelcomeProperties.store(
-                                writer, "lernstick Welcome dialog properties");
-                        reader.close();
-                        writer.close();
-                    } catch (IOException iOException) {
-                        LOGGER.log(Level.WARNING, "", iOException);
-                    }
-                }
-                // process list of files to overwrite
-                for (int j = 0, size = upgradeOverwriteListModel.size(); j < size; j++) {
-                    // remove old version
-                    String path = (String) upgradeOverwriteListModel.get(j);
-                    File fileToDelete = new File(dataMountPoint, path);
-                    FileTools.recursiveDelete(fileToDelete, true);
-
-                    // create target directory
-                    File parentFile = fileToDelete.getParentFile();
-                    parentFile.mkdirs();
-                    
-                    // recursive copy
-                    processExecutor.executeProcess("cp", "-a",
-                            path, parentFile.getPath());
-                }
-
-                dataPartition.umount();
-
-                if (storageDevice.needsRepartitioning()) {
-                    SwingUtilities.invokeLater(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            upgradeIndeterminateProgressBar.setString(
-                                    STRINGS.getString(
-                                    "Changing_Partition_Sizes"));
-                        }
-                    });
-
-                    // TODO: search partition that needs to be shrinked
-                    // (for now we simply assume it's the data partition)
-                    String dataDevPath = "/dev/" + dataPartition.getDevice();
-                    processExecutor.executeProcess(true, true,
-                            "e2fsck", "-f", "-y", "-v", dataDevPath);
-                    processExecutor.executeProcess(true, true,
-                            "resize2fs", "-M", "-p", dataDevPath);
-                    long dataPartitionOffset = dataPartition.getOffset();
-                    long newSystemPartitionOffset = systemPartition.getOffset()
-                            + systemPartition.getSize()
-                            - (long) (systemSize * 1.01);
-                    // align newSystemPartitionOffset
-                    newSystemPartitionOffset /= MEGA;
-                    String start = String.valueOf(dataPartitionOffset) + "B";
-                    String border =
-                            String.valueOf(newSystemPartitionOffset) + "MB";
-                    String systemPartitionString =
-                            String.valueOf(systemPartition.getNumber());
-                    processExecutor.executeProcess(true, true, "parted",
-                            "-a", "optimal", "-s", storageDevice.getDevice(),
-                            "rm", String.valueOf(dataPartition.getNumber()),
-                            "rm", systemPartitionString,
-                            "mkpart", "primary", start, border,
-                            "mkpart", "primary", border, "100%",
-                            "set", systemPartitionString, "boot", "on");
-                    processExecutor.executeProcess(true, true,
-                            "resize2fs", dataDevPath);
-                    formatSystemPartition(
-                            "/dev/" + systemPartition.getDevice(), true);
-                }
-
-                // upgrade system partition
-                LOGGER.log(Level.INFO,
-                        "mounting {0}", systemPartition.getDevice());
-                String systemMountPoint = systemPartition.mount();
-                File systemMountPointFile = new File(systemMountPoint);
-                LOGGER.log(Level.INFO,
-                        "recursively deleting {0}", systemMountPointFile);
-                FileTools.recursiveDelete(systemMountPointFile, false);
-                LOGGER.info("starting copy job");
-                upgradeFileCopierPanel.setFileCopier(fileCopier);
-                fileCopier.addPropertyChangeListener(
-                        FileCopier.BYTE_COUNTER_PROPERTY, this);
-                CopyJob systemCopyJob = new CopyJob(
-                        new Source[]{new Source(DEBIAN_LIVE_SYSTEM_PATH, ".*")},
-                        new String[]{systemMountPoint});
-                SwingUtilities.invokeLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        showCard(upgradeCardPanel, "upgradeCopyPanel");
-                    }
-                });
-                fileCopier.copy(systemCopyJob);
-                SwingUtilities.invokeLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        showCard(upgradeCardPanel,
-                                "upgradeIndeterminateProgressPanel");
-                        upgradeIndeterminateProgressBar.setString(
-                                STRINGS.getString("Unmounting_File_Systems"));
-                    }
-                });
-                isolinuxToSyslinux(systemMountPoint);
-                systemPartition.umount();
-                SwingUtilities.invokeLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        upgradeIndeterminateProgressBar.setString(
-                                STRINGS.getString("Writing_Boot_Sector"));
-                    }
-                });
-                makeBootable(storageDevice.getDevice(),
-                        "/dev/" + systemPartition.getDevice());
             }
 
             return null;
@@ -4372,6 +4224,172 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             getRootPane().setDefaultButton(previousButton);
             playNotifySound();
             toFront();
+        }
+
+        private void upgradeDataPartition(StorageDevice storageDevice)
+                throws DBusException, IOException {
+
+            // reset data partition
+            Partition dataPartition = storageDevice.getDataPartition();
+            SwingUtilities.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    upgradeIndeterminateProgressBar.setString(
+                            STRINGS.getString("Resetting_Data_Partition"));
+                }
+            });
+            String dataMountPoint = dataPartition.mount();
+            ProcessExecutor processExecutor = new ProcessExecutor();
+            if (keepPrinterSettingsCheckBox.isSelected()) {
+                processExecutor.executeProcess("find", dataMountPoint,
+                        "!", "-regex", dataMountPoint,
+                        "!", "-regex", dataMountPoint + "/lost\\+found",
+                        "!", "-regex", dataMountPoint + "/home.*",
+                        "!", "-regex", dataMountPoint + "/etc.*",
+                        "-exec", "rm", "-rf", "{}", ";");
+                String etcPath = dataMountPoint + "/etc";
+                processExecutor.executeProcess("find", etcPath,
+                        "!", "-regex", etcPath,
+                        "!", "-regex", etcPath + "/cups.*",
+                        "-exec", "rm", "-rf", "{}", ";");
+            } else {
+                processExecutor.executeProcess("find", dataMountPoint,
+                        "!", "-regex", dataMountPoint,
+                        "!", "-regex", dataMountPoint + "/lost\\+found",
+                        "!", "-regex", dataMountPoint + "/home.*",
+                        "-exec", "rm", "-rf", "{}", ";");
+            }
+            if (reactivateWelcomeCheckBox.isSelected()) {
+                try {
+                    File propertiesFile = new File(dataMountPoint
+                            + "/home/user/.config/lernstickWelcome");
+                    FileReader reader = new FileReader(propertiesFile);
+                    Properties lernstickWelcomeProperties = new Properties();
+                    lernstickWelcomeProperties.load(reader);
+                    lernstickWelcomeProperties.setProperty(
+                            "ShowAtStartup", "true");
+                    FileWriter writer = new FileWriter(propertiesFile);
+                    lernstickWelcomeProperties.store(
+                            writer, "lernstick Welcome dialog properties");
+                    reader.close();
+                    writer.close();
+                } catch (IOException iOException) {
+                    LOGGER.log(Level.WARNING, "", iOException);
+                }
+            }
+            // process list of files to overwrite
+            for (int i = 0, size = upgradeOverwriteListModel.size();
+                    i < size; i++) {
+                // remove old version
+                String path = (String) upgradeOverwriteListModel.get(i);
+                File fileToDelete = new File(dataMountPoint, path);
+                FileTools.recursiveDelete(fileToDelete, true);
+
+                // create target directory
+                File parentFile = fileToDelete.getParentFile();
+                parentFile.mkdirs();
+
+                // recursive copy
+                processExecutor.executeProcess("cp", "-a",
+                        path, parentFile.getPath());
+            }
+
+            dataPartition.umount();
+        }
+
+        private void upgradeSystemPartition(StorageDevice storageDevice)
+                throws DBusException, IOException {
+            Partition dataPartition = storageDevice.getDataPartition();
+            Partition systemPartition = storageDevice.getSystemPartition();
+
+            if (storageDevice.needsRepartitioning()) {
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        upgradeIndeterminateProgressBar.setString(
+                                STRINGS.getString(
+                                "Changing_Partition_Sizes"));
+                    }
+                });
+
+                // TODO: search partition that needs to be shrinked
+                // (for now we simply assume it's the data partition)
+                String dataDevPath = "/dev/" + dataPartition.getDevice();
+                processExecutor.executeProcess(true, true,
+                        "e2fsck", "-f", "-y", "-v", dataDevPath);
+                processExecutor.executeProcess(true, true,
+                        "resize2fs", "-M", "-p", dataDevPath);
+                long dataPartitionOffset = dataPartition.getOffset();
+                long newSystemPartitionOffset = systemPartition.getOffset()
+                        + systemPartition.getSize()
+                        - (long) (systemSize * 1.01);
+                // align newSystemPartitionOffset
+                newSystemPartitionOffset /= MEGA;
+                String start = String.valueOf(dataPartitionOffset) + "B";
+                String border =
+                        String.valueOf(newSystemPartitionOffset) + "MB";
+                String systemPartitionString =
+                        String.valueOf(systemPartition.getNumber());
+                processExecutor.executeProcess(true, true, "parted",
+                        "-a", "optimal", "-s", storageDevice.getDevice(),
+                        "rm", String.valueOf(dataPartition.getNumber()),
+                        "rm", systemPartitionString,
+                        "mkpart", "primary", start, border,
+                        "mkpart", "primary", border, "100%",
+                        "set", systemPartitionString, "boot", "on");
+                processExecutor.executeProcess(true, true,
+                        "resize2fs", dataDevPath);
+                formatSystemPartition(
+                        "/dev/" + systemPartition.getDevice(), true);
+            }
+
+            // upgrade system partition
+            LOGGER.log(Level.INFO,
+                    "mounting {0}", systemPartition.getDevice());
+            String systemMountPoint = systemPartition.mount();
+            File systemMountPointFile = new File(systemMountPoint);
+            LOGGER.log(Level.INFO,
+                    "recursively deleting {0}", systemMountPointFile);
+            FileTools.recursiveDelete(systemMountPointFile, false);
+            LOGGER.info("starting copy job");
+            upgradeFileCopierPanel.setFileCopier(fileCopier);
+            fileCopier.addPropertyChangeListener(
+                    FileCopier.BYTE_COUNTER_PROPERTY, this);
+            CopyJob systemCopyJob = new CopyJob(
+                    new Source[]{new Source(DEBIAN_LIVE_SYSTEM_PATH, ".*")},
+                    new String[]{systemMountPoint});
+            SwingUtilities.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    showCard(upgradeCardPanel, "upgradeCopyPanel");
+                }
+            });
+            fileCopier.copy(systemCopyJob);
+            SwingUtilities.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    showCard(upgradeCardPanel,
+                            "upgradeIndeterminateProgressPanel");
+                    upgradeIndeterminateProgressBar.setString(
+                            STRINGS.getString("Unmounting_File_Systems"));
+                }
+            });
+            isolinuxToSyslinux(systemMountPoint);
+            systemPartition.umount();
+            SwingUtilities.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    upgradeIndeterminateProgressBar.setString(
+                            STRINGS.getString("Writing_Boot_Sector"));
+                }
+            });
+            makeBootable(storageDevice.getDevice(),
+                    "/dev/" + systemPartition.getDevice());
         }
     }
 
@@ -5198,10 +5216,11 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private javax.swing.JPanel upgradeSelectionDeviceListPanel;
     private javax.swing.JLabel upgradeSelectionHeaderLabel;
     private javax.swing.JPanel upgradeSelectionPanel;
-    private javax.swing.JSplitPane upgradeSelectionSplitPane;
     private javax.swing.JCheckBox upgradeShowHarddiskCheckBox;
     private javax.swing.JList upgradeStorageDeviceList;
     private javax.swing.JScrollPane upgradeStorageDeviceListScrollPane;
+    private javax.swing.JCheckBox upgradeSystemPartitionCheckBox;
+    private javax.swing.JTabbedPane upgradeTabbedPane;
     private javax.swing.JLabel writableLabel;
     private javax.swing.JTextField writableTextField;
     // End of variables declaration//GEN-END:variables
