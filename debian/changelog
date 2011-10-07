@@ -1,3 +1,15 @@
+dlcopy (201110071704-1) unstable; urgency=low
+
+  * fixed Swiss German L10n
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 07 Oct 2011 17:04:02 +0200
+
+dlcopy (201110071415-1) unstable; urgency=low
+
+  * improved upgrade feature (better layout, selective system upgrade)
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 07 Oct 2011 14:15:57 +0200
+
 dlcopy (201110061811-1) unstable; urgency=low
 
   * improved upgrade feature (automatic repartitioning, selective overwrites, ...)
