@@ -142,11 +142,20 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
         if (partitions == null) {
             // create new list
             partitions = new ArrayList<Partition>();
-
+            
+            // It has happened that "udisks --enumerate" returns a valid storage
+            // device but not yet its partitions. Therefore we give the system
+            // a little break...
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+            
             // call udisks to get partition info
             ProcessExecutor processExecutor = new ProcessExecutor();
             LOGGER.log(Level.INFO,
-                    "calling \"udisks --enumerate\" to get the partitions of {0}", 
+                    "calling \"udisks --enumerate\" to get the partitions of {0}",
                     device);
             processExecutor.executeProcess(true, true, "udisks", "--enumerate");
             List<String> lines = processExecutor.getStdOutList();
@@ -174,6 +183,8 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
                     partitions.add(parsePartition(matcher));
                 }
             }
+            
+            LOGGER.log(Level.INFO, "found {0} partitions", partitions.size());
         }
         return partitions;
     }
