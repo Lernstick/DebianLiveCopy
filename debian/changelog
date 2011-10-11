@@ -1,3 +1,9 @@
+dlcopy (201110111504-1) unstable; urgency=low
+
+  * bugfix: short sleep before getting list of storage device partitions
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Tue, 11 Oct 2011 15:04:09 +0200
+
 dlcopy (201110071704-1) unstable; urgency=low
 
   * fixed Swiss German L10n
