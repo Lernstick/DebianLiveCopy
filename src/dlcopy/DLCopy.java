@@ -4138,17 +4138,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                     upgradeStorageDeviceList.getSelectedIndices();
             selectionCount = selectedIndices.length;
             for (int i : selectedIndices) {
-                SwingUtilities.invokeLater(new Runnable() {
 
-                    @Override
-                    public void run() {
-                        showCard(upgradeCardPanel,
-                                "upgradeIndeterminateProgressPanel");
-                        upgradeIndeterminateProgressBar.setString(
-                                STRINGS.getString(
-                                "Resetting_System_Partition"));
-                    }
-                });
                 StorageDevice storageDevice =
                         (StorageDevice) upgradeStorageDeviceListModel.get(i);
 
@@ -4174,12 +4164,25 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                         currentlyUpgradedDeviceLabel.setText(message);
                     }
                 });
+                LOGGER.log(Level.INFO,
+                        "upgrading storage device: {0} of {1} ({2})",
+                        new Object[]{
+                            currentDevice, selectionCount, storageDevice
+                        });
 
-                upgradeDataPartition(storageDevice);
+                try {
+                    upgradeDataPartition(storageDevice);
 
-                if (upgradeSystemPartitionCheckBox.isSelected()) {
-                    upgradeSystemPartition(storageDevice);
+                    if (upgradeSystemPartitionCheckBox.isSelected()) {
+                        upgradeSystemPartition(storageDevice);
+                    }
+                } catch (Exception ex) {
+                    LOGGER.log(Level.WARNING, "", ex);
                 }
+                LOGGER.log(Level.INFO, "upgrading of storage device finished: "
+                        + "{0} of {1} ({2})", new Object[]{
+                            currentDevice, selectionCount, storageDevice
+                        });
             }
 
             return null;
@@ -4295,6 +4298,14 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                         path, parentFile.getPath());
             }
 
+            /**
+             * TODO: becaus of the previous copy operation this call very often
+             * results in the following exception:
+             * org.freedesktop.DBus$Error$NoReply: No reply within specified time
+             * at org.freedesktop.dbus.RemoteInvocationHandler.executeRemoteMethod(RemoteInvocationHandler.java:133)
+             * at org.freedesktop.dbus.RemoteInvocationHandler.invoke(RemoteInvocationHandler.java:188)
+             * at $Proxy2.FilesystemUnmount(Unknown Source)
+             */
             dataPartition.umount();
         }
 
@@ -4346,6 +4357,17 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             }
 
             // upgrade system partition
+            SwingUtilities.invokeLater(new Runnable() {
+
+                @Override
+                public void run() {
+                    showCard(upgradeCardPanel,
+                            "upgradeIndeterminateProgressPanel");
+                    upgradeIndeterminateProgressBar.setString(
+                            STRINGS.getString(
+                            "Resetting_System_Partition"));
+                }
+            });
             LOGGER.log(Level.INFO,
                     "mounting {0}", systemPartition.getDevice());
             String systemMountPoint = systemPartition.mount();
