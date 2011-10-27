@@ -66,6 +66,7 @@ import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileFilter;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
 import org.freedesktop.DBus;
@@ -119,6 +120,8 @@ public class DLCopy extends JFrame
     }
     private final static ProcessExecutor processExecutor =
             new ProcessExecutor();
+    private final static FileFilter NO_HIDDEN_FILES_FILTER =
+            NoHiddenFilesSwingFileFilter.getInstance();
     private final static NumberFormat numberFormat = NumberFormat.getInstance();
     private final static Logger LOGGER =
             Logger.getLogger(DLCopy.class.getName());
@@ -2242,12 +2245,30 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private void addPathToList(int selectionMode, DefaultListModel listModel) {
         JFileChooser fileChooser = new JFileChooser("/");
         fileChooser.setFileSelectionMode(selectionMode);
+        addHiddenFilesFilter(fileChooser);
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             String selectedPath = fileChooser.getSelectedFile().getPath();
             listModel.addElement(selectedPath);
         }
     }
 
+    private void addHiddenFilesFilter(final JFileChooser fileChooser) {
+        fileChooser.addPropertyChangeListener(
+                new java.beans.PropertyChangeListener() {
+
+                    @Override
+                    public void propertyChange(
+                            java.beans.PropertyChangeEvent evt) {
+                        fileChooser.setFileHidingEnabled(
+                                fileChooser.getFileFilter()
+                                == NO_HIDDEN_FILES_FILTER);
+                        fileChooser.rescanCurrentDirectory();
+                    }
+                });
+        fileChooser.addChoosableFileFilter(NO_HIDDEN_FILES_FILTER);
+        fileChooser.setFileFilter(NO_HIDDEN_FILES_FILTER);
+    }
+    
     private void removeStorageDevice(String udisksLine) {
         // the device was just removed, so we can not use getStorageDevice()
         // here...
@@ -2353,6 +2374,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 new JFileChooser(oldDirectory.getParentFile());
         fileChooser.setFileSelectionMode(selectionMode);
         fileChooser.setSelectedFile(oldDirectory);
+        addHiddenFilesFilter(fileChooser);
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             String newPath = fileChooser.getSelectedFile().getPath();
             DefaultListModel model = (DefaultListModel) list.getModel();
