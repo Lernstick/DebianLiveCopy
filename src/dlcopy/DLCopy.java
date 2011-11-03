@@ -4487,11 +4487,12 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                         cowPath);
 
                 // move lernstick autostart script temporarily away
-                boolean moveAutostart = !autoStartCheckBox.isSelected();
                 String lernstickAutostart = cowDir
                         + "/etc/xdg/autostart/lernstick-autostart.desktop";
+                File lernstickAutostartFile = new File(lernstickAutostart);
+                boolean moveAutostart = !autoStartCheckBox.isSelected();
                 String tmpFile = "/tmp/lernstick-autostart.desktop";
-                if (moveAutostart) {
+                if (moveAutostart && lernstickAutostartFile.exists()) {
                     processExecutor.executeProcess(
                             "mv", lernstickAutostart, tmpFile);
                 }
@@ -4552,7 +4553,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 });
 
                 // bring back lernstick autostart script
-                if (moveAutostart) {
+                if (moveAutostart && lernstickAutostartFile.exists()) {
                     processExecutor.executeProcess(
                             "mv", tmpFile, lernstickAutostart);
                 }

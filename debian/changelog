@@ -1,3 +1,9 @@
+dlcopy (201111031318-1) unstable; urgency=low
+
+  * check for autostart file existence before trying to move it
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 03 Nov 2011 13:18:18 +0100
+
 dlcopy (201110272121-1) unstable; urgency=low
 
   * allow selection of hidden files and folders
