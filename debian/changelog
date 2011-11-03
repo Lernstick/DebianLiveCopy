@@ -1,3 +1,9 @@
+dlcopy (201111031414-1) unstable; urgency=low
+
+  * support iso creation of system with several squashfs
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 03 Nov 2011 14:14:26 +0100
+
 dlcopy (201111031332-1) unstable; urgency=low
 
   * fixed name filter for copying system partition files when creating image

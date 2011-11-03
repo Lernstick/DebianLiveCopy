@@ -28,6 +28,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileReader;
 import java.io.FileWriter;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
 import java.text.MessageFormat;
@@ -2268,7 +2269,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         fileChooser.addChoosableFileFilter(NO_HIDDEN_FILES_FILTER);
         fileChooser.setFileFilter(NO_HIDDEN_FILES_FILTER);
     }
-    
+
     private void removeStorageDevice(String udisksLine) {
         // the device was just removed, so we can not use getStorageDevice()
         // here...
@@ -4463,15 +4464,30 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 publish(STRINGS.getString("Mounting_Partitions"));
                 File tmpDir = createTempDir("usb2iso");
 
-                // mount base image
-                File roDir = new File(tmpDir, "ro");
-                roDir.mkdirs();
-                String roPath = roDir.getPath();
-                processExecutor.executeProcess("mount", "-t", "squashfs", "-o",
-                        "loop,ro", "/live/image/live/filesystem.squashfs",
-                        roPath);
+                // get a list of all available squashfs
+                FilenameFilter squashFsFilter = new FilenameFilter() {
 
-                // mount persistency on top
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        return name.endsWith(".squashfs");
+                    }
+                };
+                File liveDir = new File("/live/image/live/");
+                File[] squashFileSystems = liveDir.listFiles(squashFsFilter);
+
+                // mount all squashfs read-only in temporary directories
+                List<String> readOnlyMountPoints = new ArrayList<String>();
+                for (int i = 0; i < squashFileSystems.length; i++) {
+                    File roDir = new File(tmpDir, "ro" + (i + 1));
+                    roDir.mkdirs();
+                    String roPath = roDir.getPath();
+                    readOnlyMountPoints.add(roPath);
+                    String filePath = squashFileSystems[i].getPath();
+                    processExecutor.executeProcess("mount", "-t", "squashfs",
+                            "-o", "loop,ro", filePath, roPath);
+                }
+
+                // mount persistency
                 File rwDir = new File(tmpDir, "rw");
                 rwDir.mkdirs();
                 String rwPath = rwDir.getPath();
@@ -4482,9 +4498,18 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 File cowDir = new File(tmpDir, "cow");
                 cowDir.mkdirs();
                 String cowPath = cowDir.getPath();
+                StringBuilder stringBuilder = new StringBuilder();
+                stringBuilder.append("br=");
+                stringBuilder.append(rwPath);
+                stringBuilder.append("=rw");
+                for (String readOnlyMountPoint : readOnlyMountPoints) {
+                    stringBuilder.append(':');
+                    stringBuilder.append(readOnlyMountPoint);
+                    stringBuilder.append("=ro");
+                }
+                String branchDefinition = stringBuilder.toString();
                 processExecutor.executeProcess("mount", "-t", "aufs", "-o",
-                        "br=" + rwPath + "=rw:" + roPath + "=ro", "none",
-                        cowPath);
+                        branchDefinition, "none", cowPath);
 
                 // move lernstick autostart script temporarily away
                 String lernstickAutostart = cowDir
@@ -4561,7 +4586,9 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 // umount all partitions
                 umount(cowPath);
                 umount(rwPath);
-                umount(roPath);
+                for (String readOnlyMountPoint : readOnlyMountPoints) {
+                    umount(readOnlyMountPoint);
+                }
 
                 // syslinux -> isolinux
                 final String ISOLINUX_DIR = targetDirectory + "/isolinux";
