@@ -4456,7 +4456,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 String copyScript = "rm -rf " + targetDirectory + '\n'
                         + "mkdir " + targetDirectory + '\n'
                         + "cd /live/image\n"
-                        + "find -not -name filesystem.squashfs | cpio -pvdum "
+                        + "find -not -name filesystem*.squashfs | cpio -pvdum "
                         + targetDirectory;
                 processExecutor.executeScript(copyScript);
 

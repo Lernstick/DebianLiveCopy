@@ -1,3 +1,10 @@
+dlcopy (201111031332-1) unstable; urgency=low
+
+  * fixed name filter for copying system partition files when creating image
+    (exclude with wildcard to also exclude numbered squashfs files)
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 03 Nov 2011 13:32:10 +0100
+
 dlcopy (201111031318-1) unstable; urgency=low
 
   * check for autostart file existence before trying to move it
