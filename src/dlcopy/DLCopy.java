@@ -74,6 +74,7 @@ import org.freedesktop.DBus;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.UInt64;
 import org.freedesktop.dbus.exceptions.DBusException;
+import org.freedesktop.dbus.exceptions.DBusExecutionException;
 
 /**
  * Installs Debian Live to a USB flash drive
@@ -4202,6 +4203,8 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 } catch (Exception ex) {
                     LOGGER.log(Level.WARNING, "", ex);
                 }
+                
+                
                 LOGGER.log(Level.INFO, "upgrading of storage device finished: "
                         + "{0} of {1} ({2})", new Object[]{
                             currentDevice, selectionCount, storageDevice
@@ -4329,7 +4332,13 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
              * at org.freedesktop.dbus.RemoteInvocationHandler.invoke(RemoteInvocationHandler.java:188)
              * at $Proxy2.FilesystemUnmount(Unknown Source)
              */
-            dataPartition.umount();
+            try {
+                dataPartition.umount();
+            } catch (DBusException ex) {
+                LOGGER.log(Level.WARNING, "", ex);
+            } catch (DBusExecutionException ex) {
+                LOGGER.log(Level.WARNING, "", ex);
+            }
         }
 
         private void upgradeSystemPartition(StorageDevice storageDevice)

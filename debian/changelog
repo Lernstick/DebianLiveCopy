@@ -1,3 +1,9 @@
+dlcopy (201111091757-1) unstable; urgency=low
+
+  * ignore umount exceptions during upgrades
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Wed, 09 Nov 2011 17:57:09 +0100
+
 dlcopy (201111031414-1) unstable; urgency=low
 
   * support iso creation of system with several squashfs
