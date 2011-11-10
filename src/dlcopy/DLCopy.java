@@ -4318,18 +4318,33 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             // process list of files to overwrite
             for (int i = 0, size = upgradeOverwriteListModel.size();
                     i < size; i++) {
-                // remove old version
+                // remove the old destination file
                 String path = (String) upgradeOverwriteListModel.get(i);
-                File fileToDelete = new File(dataMountPoint, path);
-                FileTools.recursiveDelete(fileToDelete, true);
+                File destinationFile = new File(dataMountPoint, path);
+                FileTools.recursiveDelete(destinationFile, true);
 
-                // create target directory
-                File parentFile = fileToDelete.getParentFile();
-                parentFile.mkdirs();
+                // if necessary, recursively create the target directory
+                // (and preserve the original properties of all created
+                //  directories)
+                List<File> parentDirsToCopy = new ArrayList<File>();
+                File sourceParent = new File(path).getParentFile();
+                File destinationParent = destinationFile.getParentFile();
+                while (!destinationParent.exists()) {
+                    parentDirsToCopy.add(sourceParent);
+                    sourceParent = sourceParent.getParentFile();
+                    destinationParent = destinationParent.getParentFile();
+                }
+                for (int j = parentDirsToCopy.size() - 1; j >= 0; j--) {
+                    File parentDirToCopy = parentDirsToCopy.get(j);
+                    String dirCopyScript = "#!/bin/sh\n"
+                            + "echo \"" + parentDirToCopy.getPath() 
+                            + "\" | cpio -p " + dataMountPoint;
+                    processExecutor.executeScript(true, true, dirCopyScript);
+                }
 
                 // recursive copy
-                processExecutor.executeProcess("cp", "-a",
-                        path, parentFile.getPath());
+                processExecutor.executeProcess(true, true, "cp", "-a",
+                        path, destinationFile.getParentFile().getPath());
             }
 
             dataPartition.umount();
