@@ -164,7 +164,7 @@ public class Partition {
                                 new Object[]{device, mountPath});
                     }
                 }
-                
+
                 if (isPersistencyPartition()) {
                     // in case of an upgrade we would only keep /home/user and
                     // /etc/cups
@@ -182,7 +182,7 @@ public class Partition {
                         userSize = Long.parseLong(userSizeString);
                     }
                     LOGGER.log(Level.INFO, "userSize = {0}", userSize);
-                    
+
                     processExecutor.executeProcess(true, true,
                             "du", "-sb", "/etc/cups");
                     matcher = pattern.matcher(processExecutor.getStdOut());
@@ -192,7 +192,7 @@ public class Partition {
                     }
                     LOGGER.log(Level.INFO, "cupsSize = {0}", cupsSize);
                     usableSpace = size - userSize - cupsSize;
-                    
+
                 } else {
                     usableSpace = (new File(mountPath)).getUsableSpace();
                 }
@@ -202,14 +202,7 @@ public class Partition {
                 if (tmpMount) {
                     boolean success = false;
                     for (int i = 0; !success && (i < 10); i++) {
-                        try {
-                            umount();
-                            success = true;
-                        } catch (DBusExecutionException ex) {
-                            handleUmountException(ex);
-                        } catch (DBusException ex) {
-                            handleUmountException(ex);
-                        }
+                        success = umount();
                     }
                 }
             }
@@ -223,7 +216,7 @@ public class Partition {
             LOGGER.log(Level.WARNING, "", ex);
             usableSpace = -1l;
         }
-        
+
         return usableSpace;
     }
 
@@ -249,10 +242,28 @@ public class Partition {
 
     /**
      * umounts this partition via dbus/udisks
-     * @throws DBusException if a dbus exception occurs
      */
-    public void umount() throws DBusException {
-        DbusTools.getDevice(device).FilesystemUnmount(new ArrayList<String>());
+    public boolean umount() {
+        /**
+         * TODO:
+         * when there have been previous copy operations, this call very often
+         * fails with the following exception:
+         * org.freedesktop.DBus$Error$NoReply: No reply within specified time
+         * at org.freedesktop.dbus.RemoteInvocationHandler.executeRemoteMethod(RemoteInvocationHandler.java:133)
+         * at org.freedesktop.dbus.RemoteInvocationHandler.invoke(RemoteInvocationHandler.java:188)
+         * at $Proxy2.FilesystemUnmount(Unknown Source)
+         */
+        //DbusTools.getDevice(device).FilesystemUnmount(new ArrayList<String>());
+        // ... until the bug above is fixed, we use the good old umount call...
+        ProcessExecutor processExecutor = new ProcessExecutor();
+        int returnValue = processExecutor.executeProcess(true, true,
+                "umount", "/dev/" + device);
+        if (returnValue == 0) {
+            return true;
+        } else {
+            LOGGER.log(Level.WARNING, "Could not umount /dev/{0}", device);
+            return false;
+        }
     }
 
     /**
@@ -303,14 +314,7 @@ public class Partition {
                 if (tmpMount) {
                     boolean success = false;
                     for (int i = 0; !success && (i < 10); i++) {
-                        try {
-                            umount();
-                            success = true;
-                        } catch (DBusExecutionException ex) {
-                            handleUmountException(ex);
-                        } catch (DBusException ex) {
-                            handleUmountException(ex);
-                        }
+                        success = umount();
                     }
                 }
             } else {

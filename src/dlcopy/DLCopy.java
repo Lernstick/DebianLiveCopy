@@ -4203,8 +4203,8 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 } catch (Exception ex) {
                     LOGGER.log(Level.WARNING, "", ex);
                 }
-                
-                
+
+
                 LOGGER.log(Level.INFO, "upgrading of storage device finished: "
                         + "{0} of {1} ({2})", new Object[]{
                             currentDevice, selectionCount, storageDevice
@@ -4324,20 +4324,9 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                         path, parentFile.getPath());
             }
 
-            /**
-             * TODO: becaus of the previous copy operation this call very often
-             * results in the following exception:
-             * org.freedesktop.DBus$Error$NoReply: No reply within specified time
-             * at org.freedesktop.dbus.RemoteInvocationHandler.executeRemoteMethod(RemoteInvocationHandler.java:133)
-             * at org.freedesktop.dbus.RemoteInvocationHandler.invoke(RemoteInvocationHandler.java:188)
-             * at $Proxy2.FilesystemUnmount(Unknown Source)
-             */
-            try {
-                dataPartition.umount();
-            } catch (DBusException ex) {
-                LOGGER.log(Level.WARNING, "", ex);
-            } catch (DBusExecutionException ex) {
-                LOGGER.log(Level.WARNING, "", ex);
+            boolean success = false;
+            for (int i = 0; !success && (i < 10); i++) {
+                success = dataPartition.umount();
             }
         }
 
@@ -4433,7 +4422,13 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 }
             });
             isolinuxToSyslinux(systemMountPoint);
-            systemPartition.umount();
+            
+            // umount
+            boolean success = false;
+            for (int i = 0; !success && (i < 10); i++) {
+                success = systemPartition.umount();
+            }
+            
             SwingUtilities.invokeLater(new Runnable() {
 
                 @Override
