@@ -1,3 +1,9 @@
+dlcopy (201111101818-1) unstable; urgency=low
+
+  * fixed line breaks in some Spanish strings
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 10 Nov 2011 18:18:27 +0100
+
 dlcopy (201111101709-1) unstable; urgency=low
 
   * another umount cleanup, improved file chooser
