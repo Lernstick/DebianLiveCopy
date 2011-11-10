@@ -12,6 +12,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
+import org.freedesktop.udisks.Device;
 
 /**
  * A storage device partition
@@ -200,10 +201,7 @@ public class Partition {
 
                 // cleanup
                 if (tmpMount) {
-                    boolean success = false;
-                    for (int i = 0; !success && (i < 10); i++) {
-                        success = umount();
-                    }
+                    umount();
                 }
             }
         } catch (DBusExecutionException ex) {
@@ -243,9 +241,9 @@ public class Partition {
     /**
      * umounts this partition via dbus/udisks
      */
-    public boolean umount() {
+    public void umount() {
         /**
-         * TODO:
+         * TODO: umount timeout problem:
          * when there have been previous copy operations, this call very often
          * fails with the following exception:
          * org.freedesktop.DBus$Error$NoReply: No reply within specified time
@@ -253,16 +251,20 @@ public class Partition {
          * at org.freedesktop.dbus.RemoteInvocationHandler.invoke(RemoteInvocationHandler.java:188)
          * at $Proxy2.FilesystemUnmount(Unknown Source)
          */
-        //DbusTools.getDevice(device).FilesystemUnmount(new ArrayList<String>());
-        // ... until the bug above is fixed, we use the good old umount call...
-        ProcessExecutor processExecutor = new ProcessExecutor();
-        int returnValue = processExecutor.executeProcess(true, true,
-                "umount", "/dev/" + device);
-        if (returnValue == 0) {
-            return true;
-        } else {
-            LOGGER.log(Level.WARNING, "Could not umount /dev/{0}", device);
-            return false;
+        boolean success = false;
+        for (int i = 0; !success && (i < 10); i++) {
+            try {
+                Device dbusDevice = DbusTools.getDevice(device);
+                dbusDevice.FilesystemUnmount(new ArrayList<String>());
+                success = true;
+            } catch (DBusException ex) {
+                handleUmountException(ex);
+            } catch (DBusExecutionException ex) {
+                handleUmountException(ex);
+            }
+        }
+        if (!success) {
+            LOGGER.log(Level.SEVERE, "Could not umount /dev/{0}", device);
         }
     }
 
@@ -312,10 +314,7 @@ public class Partition {
 
                 // cleanup
                 if (tmpMount) {
-                    boolean success = false;
-                    for (int i = 0; !success && (i < 10); i++) {
-                        success = umount();
-                    }
+                    umount();
                 }
             } else {
                 LOGGER.finest("does not match system partition label");

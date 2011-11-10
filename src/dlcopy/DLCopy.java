@@ -184,6 +184,7 @@ public class DLCopy extends JFrame
     private UdisksMonitorThread udisksMonitorThread;
     private DefaultListModel separateFileSystemsListModel;
     private DefaultListModel upgradeOverwriteListModel;
+    private JFileChooser addFileChooser;
 
     /** Creates new form DLCopy
      * @param arguments the command line arguments
@@ -2245,12 +2246,19 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     }
 
     private void addPathToList(int selectionMode, DefaultListModel listModel) {
-        JFileChooser fileChooser = new JFileChooser("/");
-        fileChooser.setFileSelectionMode(selectionMode);
-        addHiddenFilesFilter(fileChooser);
-        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            String selectedPath = fileChooser.getSelectedFile().getPath();
-            listModel.addElement(selectedPath);
+        if (addFileChooser == null) {
+            addFileChooser = new JFileChooser("/");
+            addFileChooser.setFileSelectionMode(selectionMode);
+            addFileChooser.setMultiSelectionEnabled(true);
+            addHiddenFilesFilter(addFileChooser);
+        }
+        if (addFileChooser.showOpenDialog(this)
+                == JFileChooser.APPROVE_OPTION) {
+            File[] selectedFiles = addFileChooser.getSelectedFiles();
+            for (File selectedFile : selectedFiles) {
+                String selectedPath = selectedFile.getPath();
+                listModel.addElement(selectedPath);
+            }
         }
     }
 
@@ -4324,10 +4332,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                         path, parentFile.getPath());
             }
 
-            boolean success = false;
-            for (int i = 0; !success && (i < 10); i++) {
-                success = dataPartition.umount();
-            }
+            dataPartition.umount();
         }
 
         private void upgradeSystemPartition(StorageDevice storageDevice)
@@ -4422,13 +4427,10 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 }
             });
             isolinuxToSyslinux(systemMountPoint);
-            
+
             // umount
-            boolean success = false;
-            for (int i = 0; !success && (i < 10); i++) {
-                success = systemPartition.umount();
-            }
-            
+            systemPartition.umount();
+
             SwingUtilities.invokeLater(new Runnable() {
 
                 @Override
