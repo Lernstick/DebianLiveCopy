@@ -1,3 +1,9 @@
+dlcopy (201111111405-1) unstable; urgency=low
+
+  * simplyfied file overwriting, improved upgrade umount/error handling
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 11 Nov 2011 14:05:25 +0100
+
 dlcopy (201111102114-1) unstable; urgency=low
 
   * preserve parent directory properties when overwriting files

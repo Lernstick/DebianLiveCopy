@@ -1958,12 +1958,7 @@ public class DLCopy extends JFrame
                 break;
 
             case UPGRADE_INFORMATION:
-                setLabelHighlighted(infoStepLabel, false);
-                setLabelHighlighted(selectionLabel, true);
-                setLabelHighlighted(executionLabel, false);
-                showCard(cardPanel, "upgradeSelectionPanel");
-                enableNextButton();
-                state = State.UPGRADE_SELECTION;
+                switchToUpgradeSelection();
                 break;
 
             case INSTALL_SELECTION:
@@ -2913,6 +2908,18 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 LOGGER.severe(errorMessage);
                 throw new IOException(errorMessage);
             }
+        }
+    }
+
+    private boolean umount(Partition partition) {
+        if (partition.umount()) {
+            return true;
+        } else {
+            String errorMessage = STRINGS.getString("Error_Umount");
+            errorMessage = MessageFormat.format(
+                    errorMessage, "/dev/" + partition.getDevice());
+            showErrorMessage(errorMessage);
+            return false;
         }
     }
 
@@ -4098,6 +4105,15 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         state = State.UPGRADE_INFORMATION;
     }
 
+    private void switchToUpgradeSelection() {
+        setLabelHighlighted(infoStepLabel, false);
+        setLabelHighlighted(selectionLabel, true);
+        setLabelHighlighted(executionLabel, false);
+        state = State.UPGRADE_SELECTION;
+        showCard(cardPanel, "upgradeSelectionPanel");
+        enableNextButton();
+    }
+
     private void globalShow(String componentName) {
         Container contentPane = getContentPane();
         CardLayout globalCardLayout = (CardLayout) contentPane.getLayout();
@@ -4147,7 +4163,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     }
 
     private class Upgrader
-            extends SwingWorker<Void, Void>
+            extends SwingWorker<Boolean, Void>
             implements PropertyChangeListener {
 
         private final FileCopier fileCopier = new FileCopier();
@@ -4155,7 +4171,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         private int currentDevice;
 
         @Override
-        protected Void doInBackground() throws Exception {
+        protected Boolean doInBackground() throws Exception {
 
             SwingUtilities.invokeLater(new Runnable() {
 
@@ -4203,15 +4219,18 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                         });
 
                 try {
-                    upgradeDataPartition(storageDevice);
-
-                    if (upgradeSystemPartitionCheckBox.isSelected()) {
-                        upgradeSystemPartition(storageDevice);
+                    if (upgradeDataPartition(storageDevice)) {
+                        if (upgradeSystemPartitionCheckBox.isSelected()
+                                && !upgradeSystemPartition(storageDevice)) {
+                            return false;
+                        }
+                    } else {
+                        return false;
                     }
+
                 } catch (Exception ex) {
                     LOGGER.log(Level.WARNING, "", ex);
                 }
-
 
                 LOGGER.log(Level.INFO, "upgrading of storage device finished: "
                         + "{0} of {1} ({2})", new Object[]{
@@ -4219,7 +4238,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                         });
             }
 
-            return null;
+            return true;
         }
 
         @Override
@@ -4244,30 +4263,38 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         @Override
         protected void done() {
             setTitle(STRINGS.getString("DLCopy.title"));
-            if (bootDeviceIsUSB) {
-                doneLabel.setText(STRINGS.getString(
-                        "Upgrade_Done_From_USB_Message"));
-            } else {
-                doneLabel.setText(STRINGS.getString(
-                        "Upgrade_Done_From_DVD_Message"));
+            try {
+                if (get()) {
+                    if (bootDeviceIsUSB) {
+                        doneLabel.setText(STRINGS.getString(
+                                "Upgrade_Done_From_USB_Message"));
+                    } else {
+                        doneLabel.setText(STRINGS.getString(
+                                "Upgrade_Done_From_DVD_Message"));
+                    }
+                    showCard(cardPanel, "donePanel");
+                    previousButton.setEnabled(true);
+                    nextButton.setText(STRINGS.getString("Done"));
+                    nextButton.setIcon(new ImageIcon(getClass().getResource(
+                            "/dlcopy/icons/exit.png")));
+                    nextButton.setEnabled(true);
+                    previousButton.requestFocusInWindow();
+                    getRootPane().setDefaultButton(previousButton);
+                    playNotifySound();
+                    toFront();
+                } else {
+                    switchToUpgradeSelection();
+                }
+            } catch (InterruptedException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            } catch (ExecutionException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
             }
-            showCard(cardPanel, "donePanel");
-            previousButton.setEnabled(true);
-            nextButton.setText(STRINGS.getString("Done"));
-            nextButton.setIcon(new ImageIcon(getClass().getResource(
-                    "/dlcopy/icons/exit.png")));
-            nextButton.setEnabled(true);
-            previousButton.requestFocusInWindow();
-            getRootPane().setDefaultButton(previousButton);
-            playNotifySound();
-            toFront();
         }
 
-        private void upgradeDataPartition(StorageDevice storageDevice)
+        private boolean upgradeDataPartition(StorageDevice storageDevice)
                 throws DBusException, IOException {
 
-            // reset data partition
-            Partition dataPartition = storageDevice.getDataPartition();
             SwingUtilities.invokeLater(new Runnable() {
 
                 @Override
@@ -4276,8 +4303,11 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                             STRINGS.getString("Resetting_Data_Partition"));
                 }
             });
-            String dataMountPoint = dataPartition.mount();
             ProcessExecutor processExecutor = new ProcessExecutor();
+            Partition dataPartition = storageDevice.getDataPartition();
+            String dataMountPoint = dataPartition.mount();
+
+            // reset data partition
             if (keepPrinterSettingsCheckBox.isSelected()) {
                 processExecutor.executeProcess("find", dataMountPoint,
                         "!", "-regex", dataMountPoint,
@@ -4297,6 +4327,8 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                         "!", "-regex", dataMountPoint + "/home.*",
                         "-exec", "rm", "-rf", "{}", ";");
             }
+
+            // welcome application reactivation
             if (reactivateWelcomeCheckBox.isSelected()) {
                 try {
                     File propertiesFile = new File(dataMountPoint
@@ -4315,45 +4347,33 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                     LOGGER.log(Level.WARNING, "", iOException);
                 }
             }
-            // process list of files to overwrite
+
+            // process list of files (or directories) to overwrite
             for (int i = 0, size = upgradeOverwriteListModel.size();
                     i < size; i++) {
-                // remove the old destination file
-                String path = (String) upgradeOverwriteListModel.get(i);
-                File destinationFile = new File(dataMountPoint, path);
+                // remove the old destination file (or directory)
+                String sourcePath = (String) upgradeOverwriteListModel.get(i);
+                File destinationFile = new File(dataMountPoint, sourcePath);
                 FileTools.recursiveDelete(destinationFile, true);
 
-                // if necessary, recursively create the target directory
-                // (and preserve the original properties of all created
-                //  directories)
-                List<File> parentDirsToCopy = new ArrayList<File>();
-                File sourceParent = new File(path).getParentFile();
-                File destinationParent = destinationFile.getParentFile();
-                while (!destinationParent.exists()) {
-                    parentDirsToCopy.add(sourceParent);
-                    sourceParent = sourceParent.getParentFile();
-                    destinationParent = destinationParent.getParentFile();
-                }
-                for (int j = parentDirsToCopy.size() - 1; j >= 0; j--) {
-                    File parentDirToCopy = parentDirsToCopy.get(j);
-                    String dirCopyScript = "#!/bin/sh\n"
-                            + "echo \"" + parentDirToCopy.getPath() 
-                            + "\" | cpio -p " + dataMountPoint;
-                    processExecutor.executeScript(true, true, dirCopyScript);
-                }
-
                 // recursive copy
-                processExecutor.executeProcess(true, true, "cp", "-a",
-                        path, destinationFile.getParentFile().getPath());
+                processExecutor.executeProcess(true, true,
+                        "cp", "-a", "--parents", sourcePath, dataMountPoint);
             }
 
-            dataPartition.umount();
+            // umount
+            return umount(dataPartition);
         }
 
-        private void upgradeSystemPartition(StorageDevice storageDevice)
+        private boolean upgradeSystemPartition(StorageDevice storageDevice)
                 throws DBusException, IOException {
             Partition dataPartition = storageDevice.getDataPartition();
             Partition systemPartition = storageDevice.getSystemPartition();
+
+            // make sure that systemPartition is unmounted
+            if (!umount(systemPartition)) {
+                return false;
+            }
 
             if (storageDevice.needsRepartitioning()) {
                 SwingUtilities.invokeLater(new Runnable() {
@@ -4443,8 +4463,10 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             });
             isolinuxToSyslinux(systemMountPoint);
 
-            // umount
-            systemPartition.umount();
+            // make sure that systemPartition is unmounted
+            if (!umount(systemPartition)) {
+                return false;
+            }
 
             SwingUtilities.invokeLater(new Runnable() {
 
@@ -4454,7 +4476,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                             STRINGS.getString("Writing_Boot_Sector"));
                 }
             });
-            makeBootable(storageDevice.getDevice(),
+            return makeBootable(storageDevice.getDevice(),
                     "/dev/" + systemPartition.getDevice());
         }
     }

@@ -240,8 +240,10 @@ public class Partition {
 
     /**
      * umounts this partition via dbus/udisks
+     * @return <code>true</code>, if the umount operation succeeded,
+     * <code>false</code> otherwise
      */
-    public void umount() {
+    public boolean umount() {
         /**
          * TODO: umount timeout problem:
          * when there have been previous copy operations, this call very often
@@ -266,6 +268,7 @@ public class Partition {
         if (!success) {
             LOGGER.log(Level.SEVERE, "Could not umount /dev/{0}", device);
         }
+        return success;
     }
 
     /**
