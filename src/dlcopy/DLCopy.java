@@ -49,6 +49,7 @@ import java.util.logging.FileHandler;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
+import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.swing.DefaultListModel;
@@ -74,7 +75,6 @@ import org.freedesktop.DBus;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.UInt64;
 import org.freedesktop.dbus.exceptions.DBusException;
-import org.freedesktop.dbus.exceptions.DBusExecutionException;
 
 /**
  * Installs Debian Live to a USB flash drive
@@ -185,6 +185,11 @@ public class DLCopy extends JFrame
     private DefaultListModel separateFileSystemsListModel;
     private DefaultListModel upgradeOverwriteListModel;
     private JFileChooser addFileChooser;
+    private Preferences preferences;
+    private final static String UPGRADE_SYSTEM_PARTITION = "upgradeSystemPartition";
+    private final static String REACTIVATE_WELCOME = "reactivateWelcome";
+    private final static String KEEP_PRINTER_SETTINGS = "keepPrinterSettings";
+    private final static String UPGRADE_OVERWRITE_LIST = "upgradeOverwriteList";
 
     /** Creates new form DLCopy
      * @param arguments the command line arguments
@@ -489,6 +494,22 @@ public class DLCopy extends JFrame
 
         upgradeOverwriteListModel = new DefaultListModel();
         upgradeOverwriteList.setModel(upgradeOverwriteListModel);
+
+        preferences = Preferences.userNodeForPackage(DLCopy.class);
+        upgradeSystemPartitionCheckBox.setSelected(
+                preferences.getBoolean(UPGRADE_SYSTEM_PARTITION, true));
+        reactivateWelcomeCheckBox.setSelected(
+                preferences.getBoolean(REACTIVATE_WELCOME, true));
+        keepPrinterSettingsCheckBox.setSelected(
+                preferences.getBoolean(KEEP_PRINTER_SETTINGS, true));
+        String upgradeOverWriteList = preferences.get(
+                UPGRADE_OVERWRITE_LIST, "");
+        if (!upgradeOverWriteList.isEmpty()) {
+            String[] upgradeOverWriteTokens = upgradeOverWriteList.split("\n");
+            for (String upgradeOverWriteToken : upgradeOverWriteTokens) {
+                upgradeOverwriteListModel.addElement(upgradeOverWriteToken);
+            }
+        }
     }
 
     @Override
@@ -2373,7 +2394,12 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     }
 
     private void editPathListEntry(JList list, int selectionMode) {
-        String oldPath = (String) list.getSelectedValue();
+        Object selectedValue = list.getSelectedValue();
+        if (selectedValue == null) {
+            // happens when double clicking in an empty list...
+            return;
+        }
+        String oldPath = (String) selectedValue;
         File oldDirectory = new File(oldPath);
         JFileChooser fileChooser =
                 new JFileChooser(oldDirectory.getParentFile());
@@ -2455,7 +2481,28 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     }
 
     private void exitProgram() {
+        // save preferences
+        preferences.putBoolean(UPGRADE_SYSTEM_PARTITION,
+                upgradeSystemPartitionCheckBox.isSelected());
+        preferences.putBoolean(REACTIVATE_WELCOME,
+                reactivateWelcomeCheckBox.isSelected());
+        preferences.putBoolean(KEEP_PRINTER_SETTINGS,
+                keepPrinterSettingsCheckBox.isSelected());
+        StringBuilder stringBuilder = new StringBuilder();
+        for (int i = 0, size = upgradeOverwriteListModel.size();
+                i < size; i++) {
+            String entry = (String) upgradeOverwriteListModel.get(i);
+            stringBuilder.append(entry);
+            if (i != (size - 1)) {
+                stringBuilder.append('\n');
+            }
+        }
+        preferences.put(UPGRADE_OVERWRITE_LIST, stringBuilder.toString());
+
+        // stop monitoring thread
         udisksMonitorThread.stopMonitoring();
+
+        // everything is done, disappear now
         System.exit(0);
     }
 
