@@ -380,51 +380,48 @@
                       <Layout>
                         <DimensionLayout dim="0">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <EmptySpace min="0" pref="748" max="32767" attributes="0"/>
-                              <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="copyPartitionPanel" alignment="0" max="32767" attributes="0"/>
-                                          <Component id="createPartitionPanel" alignment="0" max="32767" attributes="0"/>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="exchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace pref="322" max="32767" attributes="0"/>
-                                          </Group>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="dataDefinitionLabel" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace pref="262" max="32767" attributes="0"/>
-                                          </Group>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="osDefinitionLabel" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace pref="609" max="32767" attributes="0"/>
-                                          </Group>
-                                          <Component id="storageDeviceListScrollPane" alignment="1" pref="0" max="32767" attributes="0"/>
+                              <Group type="102" alignment="0" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Group type="103" groupAlignment="0" attributes="0">
+                                      <Component id="storageDeviceListScrollPane" alignment="1" pref="0" max="32767" attributes="0"/>
+                                      <Component id="copyPartitionPanel" alignment="0" max="32767" attributes="0"/>
+                                      <Component id="createPartitionPanel" alignment="0" max="32767" attributes="0"/>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="exchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace pref="322" max="32767" attributes="0"/>
                                       </Group>
-                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="dataDefinitionLabel" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace pref="262" max="32767" attributes="0"/>
+                                      </Group>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <Component id="osDefinitionLabel" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace pref="609" max="32767" attributes="0"/>
+                                      </Group>
+                                      <Component id="installSelectionCountLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                   </Group>
+                                  <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
                         <DimensionLayout dim="1">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <EmptySpace min="0" pref="478" max="32767" attributes="0"/>
-                              <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
-                                  <Group type="102" alignment="0" attributes="0">
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="storageDeviceListScrollPane" pref="206" max="32767" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="exchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="dataDefinitionLabel" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="osDefinitionLabel" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
-                                      <Component id="createPartitionPanel" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="copyPartitionPanel" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace max="-2" attributes="0"/>
-                                  </Group>
+                              <Group type="102" alignment="1" attributes="0">
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="installSelectionCountLabel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="storageDeviceListScrollPane" pref="185" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="exchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="dataDefinitionLabel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="osDefinitionLabel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" pref="18" max="-2" attributes="0"/>
+                                  <Component id="createPartitionPanel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="copyPartitionPanel" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -652,6 +649,13 @@
                             </Property>
                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                               <ResourceString bundle="dlcopy/Strings.properties" key="DLCopy.osDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                            </Property>
+                          </Properties>
+                        </Component>
+                        <Component class="javax.swing.JLabel" name="installSelectionCountLabel">
+                          <Properties>
+                            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                              <ResourceString bundle="dlcopy/Strings.properties" key="Selection_Count" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
                           </Properties>
                         </Component>
@@ -1032,6 +1036,7 @@
                                           <Component id="upgradeOsDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="upgradeDataDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="upgradeExchangeDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          <Component id="upgradeSelectionCountLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
                                   </Group>
@@ -1041,7 +1046,9 @@
                               <Group type="103" groupAlignment="0" attributes="0">
                                   <Group type="102" alignment="1" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="upgradeStorageDeviceListScrollPane" pref="361" max="32767" attributes="0"/>
+                                      <Component id="upgradeSelectionCountLabel" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="upgradeStorageDeviceListScrollPane" pref="340" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="upgradeExchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -1054,6 +1061,13 @@
                             </DimensionLayout>
                           </Layout>
                           <SubComponents>
+                            <Component class="javax.swing.JLabel" name="upgradeSelectionCountLabel">
+                              <Properties>
+                                <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                  <ResourceString bundle="dlcopy/Strings.properties" key="Selection_Count" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                </Property>
+                              </Properties>
+                            </Component>
                             <Container class="javax.swing.JScrollPane" name="upgradeStorageDeviceListScrollPane">
                               <AuxValues>
                                 <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>

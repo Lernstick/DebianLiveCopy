@@ -1,3 +1,9 @@
+dlcopy (201111181452-1) unstable; urgency=low
+
+  * show selection count
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 18 Nov 2011 14:52:13 +0100
+
 dlcopy (201111181406-1) unstable; urgency=low
 
   * handle unmounting of already unmounted partitions
