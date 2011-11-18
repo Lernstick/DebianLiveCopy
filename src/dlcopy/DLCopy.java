@@ -2958,7 +2958,12 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         }
     }
 
-    private boolean umount(Partition partition) {
+    private boolean umount(Partition partition) throws DBusException {
+        // early return
+        if (!partition.isMounted()) {
+            return true;
+        }
+        
         if (partition.umount()) {
             return true;
         } else {

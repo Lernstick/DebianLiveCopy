@@ -1,3 +1,9 @@
+dlcopy (201111181406-1) unstable; urgency=low
+
+  * handle unmounting of already unmounted partitions
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 18 Nov 2011 14:06:06 +0100
+
 dlcopy (201111111648-1) unstable; urgency=low
 
   * save upgrade preferences between restarts

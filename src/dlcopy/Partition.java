@@ -336,6 +336,18 @@ public class Partition {
         return idLabel.equals("live-rw");
     }
 
+    /**
+     * returns <code>true</code>, if the partition is mounted,
+     * <code>false</code> otherwise
+     * @return <code>true</code>, if the partition is mounted,
+     * <code>false</code> otherwise
+     * @throws DBusException if an dbus exception occurs
+     */
+    public boolean isMounted() throws DBusException {
+        List<String> mountPaths = getMountPaths();
+        return (mountPaths != null) && (!mountPaths.isEmpty());
+    }
+    
     private void handleUmountException(Exception ex) {
         LOGGER.log(Level.WARNING, "", ex);
         try {
