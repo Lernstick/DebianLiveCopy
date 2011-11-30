@@ -1,3 +1,15 @@
+dlcopy (201111301526-1) unstable; urgency=low
+
+  * integrated jbackpack to be able to backup during upgrade
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Wed, 30 Nov 2011 15:26:22 +0100
+
+dlcopy (201111181756-1) unstable; urgency=low
+
+  * another umount fix
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 18 Nov 2011 17:56:27 +0100
+
 dlcopy (201111181452-1) unstable; urgency=low
 
   * show selection count
