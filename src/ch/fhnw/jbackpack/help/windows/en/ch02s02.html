@@ -1,0 +1,170 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>2.2. Destination directory</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="home" href="index.html" title="JBackpack Manual">
+<link rel="up" href="directories.html" title="Chapter 2. Directories">
+<link rel="prev" href="directories.html" title="Chapter 2. Directories">
+<link rel="next" href="backup.html" title="Chapter 3. Backup">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr><th colspan="3" align="center">2.2. Destination directory</th></tr>
+<tr>
+<td width="20%" align="left">
+<a accesskey="p" href="directories.html">Prev</a> </td>
+<th width="60%" align="center">Chapter 2. Directories</th>
+<td width="20%" align="right"> <a accesskey="n" href="backup.html">Next</a>
+</td>
+</tr>
+</table>
+<hr>
+</div>
+<div class="sect1" title="2.2. Destination directory">
+<div class="titlepage"><div><div><h2 class="title" style="clear: both">
+<a name="id1223944"></a>2.2. Destination directory</h2></div></div></div>
+<a class="indexterm" name="id1223939"></a><p>
+                The second directory is the destination directory. This is the
+                location where the backup files and increments are stored. The
+                destination directory can either be:
+                </p>
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p>
+                        local
+                    </p></li>
+<li class="listitem"><p>
+                        <a class="indexterm" name="id1224366"></a>
+                        remote via SSH (more information about SSH can be found
+                        here:
+                        <a class="ulink" href="http://en.wikipedia.org/wiki/Secure_Shell" target="_top">http://en.wikipedia.org/wiki/Secure_Shell</a>)
+                    </p></li>
+<li class="listitem"><p>
+                        <a class="indexterm" name="id1224131"></a>
+                        remote via SMB (more information about SMB can be found
+                        here:
+                        <a class="ulink" href="http://en.wikipedia.org/wiki/Server_Message_Block" target="_top">http://en.wikipedia.org/wiki/Server_Message_Block</a>)
+                    </p></li>
+</ul></div>
+<p>
+            </p>
+<p>
+                When you select a local destination directory you can type the
+                path of your destination directory into the textfield or use the
+                file browser button right of the textfield to browse to your
+                destination directory.
+            </p>
+<p>
+                When you select a remote destination directory via SSH you have
+                to configure some additional settings:
+                </p>
+<div class="figure">
+<a name="id1224297"></a><p class="title"><b>Figure 2.2. SSH settings</b></p>
+<div class="figure-contents"><div><img src="SSH.png" alt="SSH settings"></div></div>
+</div>
+<p><br class="figure-break">
+                Please insert the host name of the server where you want to
+                store the backup data (you must be able to connect via SSH to
+                this server) and your user name on this remote server. Directory
+                browsing on the remote server is based on your home directory on
+                the remote server. If your remote destination directory is not a
+                subdirectory of your home directory on the server you can
+                specify a custom base directory to start remote file browsing
+                somewhere else.
+            </p>
+<p>
+                <a class="indexterm" name="id1224200"></a>
+                You can authenticate at your remote backup server with either a
+                password or a public key. If you choose public key
+                authentication please make sure that everything is correctly set
+                up. Some details about setting up SSH public key authentication
+                can be found here:
+                <a class="ulink" href="http://www.debian-administration.org/article/SSH_with_authentication_key_instead_of_password" target="_top">http://www.debian-administration.org/article/SSH_with_authentication_key_instead_of_password</a>
+            </p>
+<p>
+                After successfully logging in, the remote backup destination
+                directory can be configured:
+                </p>
+<div class="figure">
+<a name="id1223733"></a><p class="title"><b>Figure 2.3. Logged in</b></p>
+<div class="figure-contents"><div><img src="LoggedIn.png" alt="Logged in"></div></div>
+</div>
+<p><br class="figure-break">
+                If you know the path of the directory you can type it directly
+                into the textfield, otherwise you can use the file browser
+                button right of the textfield to browse to your directory.
+            </p>
+<p>
+                When you select a remote destination directory via SMB you have
+                to configure some additional settings:
+                </p>
+<div class="figure">
+<a name="id1224410"></a><p class="title"><b>Figure 2.4. SMB settings</b></p>
+<div class="figure-contents"><div><img src="SMB.png" alt="SMB settings"></div></div>
+</div>
+<p><br class="figure-break">
+                Please insert the host name of the server where you want to
+                store the backup data (you must be able to connect via SMB to
+                this server), the name of the share, your user name and password
+                on this remote server.
+            </p>
+<p>
+                After successfully logging in, the remote backup destination
+                directory can be configured.
+            </p>
+<p>
+                When you have selected a valid (and still unencrypted)
+                destination directory a button for encryption appears:
+                </p>
+<div class="figure">
+<a name="id1224180"></a><p class="title"><b>Figure 2.5. Encryption button</b></p>
+<div class="figure-contents"><div><img src="Encryption.png" alt="Encryption button"></div></div>
+</div>
+<p><br class="figure-break">
+                By clicking on this button you can encrypt your destination
+                directory with a password.
+            </p>
+<p>
+                When your destination directory is encrypted, the encryption
+                control panel appears:
+                </p>
+<div class="figure">
+<a name="id1223800"></a><p class="title"><b>Figure 2.6. Encryption control panel</b></p>
+<div class="figure-contents"><div><img src="EncryptionControl.png" alt="Encryption control panel"></div></div>
+</div>
+<p><br class="figure-break">
+                <a class="indexterm" name="id1224287"></a>
+                <a class="indexterm" name="id1223841"></a>
+                There you can lock and unlock the backup destination directory,
+                change the encryption password and (if you no longer need the
+                additional security provided by encryption) decrypt the
+                destination directory.
+            </p>
+<p>
+                Encrypted directories can only be accessed for backup and
+                restore operations when they are unlocked. Unlocking is only
+                possible with the encryption password. <span class="emphasis"><em>There is no
+                recovery mechanism. You really have to remember the encryption
+                password!</em></span>
+            </p>
+</div>
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left">
+<a accesskey="p" href="directories.html">Prev</a> </td>
+<td width="20%" align="center"><a accesskey="u" href="directories.html">Up</a></td>
+<td width="40%" align="right"> <a accesskey="n" href="backup.html">Next</a>
+</td>
+</tr>
+<tr>
+<td width="40%" align="left" valign="top">Chapter 2. Directories </td>
+<td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td>
+<td width="40%" align="right" valign="top"> Chapter 3. Backup</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

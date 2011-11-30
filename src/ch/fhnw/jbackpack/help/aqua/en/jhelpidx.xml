@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
+<!DOCTYPE index PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp Index Version 1.0//EN" "http://java.sun.com/products/javahelp/index_1_0.dtd">
+<index version="1.0">
+  <indexitem text="EncFS" target="id1230344"/>
+  <indexitem text="SMB" target="id1230639"/>
+  <indexitem text="SSH" target="id1230875"/>
+  <indexitem text="SSHFS" target="id1230481"/>
+  <indexitem text="automatic deletion" target="id1230223"/>
+  <indexitem text="automatic shutdown" target="id1230886"/>
+  <indexitem text="backup summary" target="id1231025"/>
+  <indexitem text="compression" target="id1230134"/>
+  <indexitem text="cumulative size" target="id1231375"/>
+  <indexitem text="destination directory" target="id1230447"/>
+  <indexitem text="device file" target="id1230150"/>
+  <indexitem text="exceptions" target="id1230121"/>
+  <indexitem text="exclusions" target="id1230334"/>
+  <indexitem text="increment" target="id1231080"/>
+  <indexitem text="incremental backup" target="id1230275"/>
+  <indexitem text="lock" target="id1230933"/>
+  <indexitem text="log file" target="id1231604"/>
+  <indexitem text="logging level" target="id1231599"/>
+  <indexitem text="mirror" target="id1230109"/>
+  <indexitem text="named pipe" target="id1231204"/>
+  <indexitem text="profiles" target="id1231417"/>
+  <indexitem text="public key" target="id1230708"/>
+  <indexitem text="rdiff-backup" target="id1230073"/>
+  <indexitem text="reminder" target="id1230395"/>
+  <indexitem text="restore" target="id1230996"/>
+  <indexitem text="socket" target="id1231094"/>
+  <indexitem text="source directory" target="id1230440"/>
+  <indexitem text="symbolic link" target="id1231167"/>
+  <indexitem text="temporary directory" target="id1231468"/>
+  <indexitem text="total size" target="id1230759"/>
+  <indexitem text="unlock" target="id1230798"/>
+  <indexitem text="warning" target="id1231626"/>
+</index>

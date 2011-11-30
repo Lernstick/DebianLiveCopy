@@ -1,3 +1,11 @@
+- Neuer Hauptmenüpunkt: Stick reparieren/zurücksetzen
+    [x] persönlichen Ordner
+    [x] restliche Datenpartition
+
+- Installation:
+    Wenn beim Partitionieren ein Fehler auftritt, muss nach der Fehlermeldung
+    der Fenstertitel wieder zurückgesetzt werden
+
 - D-Bus verwenden, um Infos über Geräte und Partitionen abzufragen
     kdesudo "java -Djava.library.path=/usr/lib/jni -jar dist/DLCopy_orig.jar --variant lernstick"
 

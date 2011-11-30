@@ -1,0 +1,126 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Kapitel 4. Wiederherstellung</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="home" href="index.html" title="JBackpack-Handbuch">
+<link rel="up" href="index.html" title="JBackpack-Handbuch">
+<link rel="prev" href="backup.html" title="Kapitel 3. Datensicherung">
+<link rel="next" href="advanced_settings.html" title="Kapitel 5. Erweiterte Einstellungen">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr><th colspan="3" align="center">Kapitel 4. Wiederherstellung</th></tr>
+<tr>
+<td width="20%" align="left">
+<a accesskey="p" href="backup.html">Zurück</a> </td>
+<th width="60%" align="center"> </th>
+<td width="20%" align="right"> <a accesskey="n" href="advanced_settings.html">Weiter</a>
+</td>
+</tr>
+</table>
+<hr>
+</div>
+<div class="chapter" title="Kapitel 4. Wiederherstellung">
+<div class="titlepage"><div><div><h2 class="title">
+<a name="restore"></a>Kapitel 4. Wiederherstellung</h2></div></div></div>
+<p>
+            <a class="indexterm" name="id1329116"></a>
+            Wenn Sie Dateien wiederherstellen wollen, müssen Sie auf den Reiter
+            <span class="quote">„<span class="quote">Wiederherstellung</span>“</span> wechseln:
+            </p>
+<div class="figure">
+<a name="id1329504"></a><p class="title"><b>Abbildung 4.1. Wiederherstellung</b></p>
+<div class="figure-contents"><div><img src="Wiederherstellung.png" alt="Wiederherstellung"></div></div>
+</div>
+<p><br class="figure-break">
+            <a class="indexterm" name="id1329512"></a>
+            <a class="indexterm" name="id1329517"></a>
+            Auf der linken Seite wird die Liste der verfügbaren Datensicherungen
+            angezeigt. Für jede Datensicherung wird dessen Typ, Zeitstempel und
+            Speicherplatzbedarf angezeigt. Es gibt zwei verschiedene
+            Datensicherungstypen: Die oberste Datensicherung wird
+            <span class="quote">„<span class="quote">Spiegel</span>“</span> genannt. Sie beinhaltet alle Dateien der
+            letzten Datensicherung und wird mit einem Festplattensymbol
+            gekennzeichnet. Alle anderen Datensicherungen werden
+            <span class="quote">„<span class="quote">Inkremente</span>“</span> genannt und speichern nur die Unterschiede
+            relativ zur jüngeren Datensicherung (und benötigen deswegen
+            normalerweise deutlich weniger Speicherplatz als der Spiegel). Sie
+            sind durch ein Pfeilsymbol gekennzeichnet.
+        </p>
+<p>
+            Wenn Sie eine Datensicherung aus der Liste auswählen, wird die
+            Dateistruktur dieser Datensicherung in der Dateiauswahl auf der
+            rechten Seite angezeigt. Mit Hilfe der Pfeilknöpfe unter der Liste
+            der Datensicherungen können Sie einfach zwischen den
+            Datensicherungen wechseln, ohne immer wieder den Mauszeiger bewegen
+            und zielen zu müssen.
+        </p>
+<p>
+            Unter den Pfeilknöpfen werden verschiedene Werte zum
+            Speicherplatzbedarf angezeigt:
+            </p>
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p>
+                    <a class="indexterm" name="id1329598"></a>
+                    die kumulative Grösse (die Summe der Grössen der ausgewählten
+                    Datensicherung und aller älteren Datensicherungen)
+                </p></li>
+<li class="listitem"><p>
+                    <a class="indexterm" name="id1329554"></a>
+                    die Summe der Grössen aller Datensicherungen
+                </p></li>
+<li class="listitem"><p>
+                    die Auslastung des Speicherplatzes des
+                    Datensicherungsverzeichnisses
+                </p></li>
+</ul></div>
+<p>
+            Mit Hilfe dieser Informationen können Sie entscheiden, ob und
+            wie viele Datensicherungen Sie aufheben oder löschen wollen. Sie
+            können das Löschen von alten Datensicherungen auch automatisieren.
+            Weitere Informationen dazu finden Sie im
+            <a class="xref" href="advanced_settings.html#autodeletion" title="5.1. Automatisches Löschen alter Datensicherungen">Abschnitt 5.1, „Automatisches Löschen alter Datensicherungen“</a>.
+        </p>
+<p>
+            Auf der oberen rechten Seite können Sie wählen, ob Sie entweder die
+            gesamte Datensicherung oder nur ausgewählte Dateien wiederherstellen
+            wollen.
+        </p>
+<p>
+            Sie können sich ausgewählte Dateien über den
+            <span class="quote">„<span class="quote">Vorschau</span>“</span>-Knopf unter der Dateiliste ansehen. Die
+            ausgewählten Dateien werden dann in einem temporären Verzeichnis
+            nur-lesbar wiederhergestellt und mit einem passenden Programm zur
+            Vorschau geöffnet.
+        </p>
+<p>
+            Im unteren Fensterbereich können Sie die Wiederherstellung starten.
+            Sie können die ausgewählten Dateien vor der Wiederherstellung zählen
+            lassen. Das ermöglicht die Anzeige eines Fortschrittsbalkens während
+            der Wiederherstellung, kann aber ein paar zusätzliche Sekunden
+            dauern. Sie können ausserdem wählen, wohin die Daten
+            wiederhergestellt werden sollen: entweder in das originale
+            Quellverzeichnis oder in ein anderes Verzeichnis.
+        </p>
+</div>
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left">
+<a accesskey="p" href="backup.html">Zurück</a> </td>
+<td width="20%" align="center"> </td>
+<td width="40%" align="right"> <a accesskey="n" href="advanced_settings.html">Weiter</a>
+</td>
+</tr>
+<tr>
+<td width="40%" align="left" valign="top">Kapitel 3. Datensicherung </td>
+<td width="20%" align="center"><a accesskey="h" href="index.html">Zum Anfang</a></td>
+<td width="40%" align="right" valign="top"> Kapitel 5. Erweiterte Einstellungen</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

@@ -1,0 +1,227 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Kapitel 3. Datensicherung</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="home" href="index.html" title="JBackpack-Handbuch">
+<link rel="up" href="index.html" title="JBackpack-Handbuch">
+<link rel="prev" href="ch02s02.html" title="2.2. Datensicherungsverzeichnis">
+<link rel="next" href="restore.html" title="Kapitel 4. Wiederherstellung">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr><th colspan="3" align="center">Kapitel 3. Datensicherung</th></tr>
+<tr>
+<td width="20%" align="left">
+<a accesskey="p" href="ch02s02.html">Zurück</a> </td>
+<th width="60%" align="center"> </th>
+<td width="20%" align="right"> <a accesskey="n" href="restore.html">Weiter</a>
+</td>
+</tr>
+</table>
+<hr>
+</div>
+<div class="chapter" title="Kapitel 3. Datensicherung">
+<div class="titlepage"><div><div><h2 class="title">
+<a name="backup"></a>Kapitel 3. Datensicherung</h2></div></div></div>
+<p>
+            Wenn Sie alle Verzeichnisse ausgewählt haben, können Sie auf den
+            Reiter <span class="quote">„<span class="quote">Datensicherung</span>“</span> wechseln:
+            </p>
+<div class="figure">
+<a name="id1329066"></a><p class="title"><b>Abbildung 3.1. Datensicherung</b></p>
+<div class="figure-contents"><div><img src="Datensicherung.png" alt="Datensicherung"></div></div>
+</div>
+<p><br class="figure-break">
+            Sie können die Datensicherung durch Betätigen des grossen
+            <span class="quote">„<span class="quote">Daten sichern</span>“</span>-Knopfes starten.
+        </p>
+<p>
+            <a class="indexterm" name="id1328818"></a>
+            Die einzige Option, die standardmässig aktiviert ist, ist
+            <span class="quote">„<span class="quote">Dateien komprimieren</span>“</span>. Die Komprimierung kann
+            erheblich Speicherplatz einsparen, verlangsamt allerdings auch die
+            Datensicherung und Wiederherstellung.
+        </p>
+<p>
+            <a class="indexterm" name="id1328361"></a>
+            Sie können JBackpack auch so einstellen, dass Sie in regelmässigen
+            Abständen daran erinnert werden, Ihre Daten zu sichern.
+        </p>
+<p>
+            <a class="indexterm" name="id1329028"></a>
+            Wenn Sie nicht <span class="emphasis"><em>alle</em></span> Daten aus dem
+            Quellverzeichnis sichern wollen, können Sie das Kästchen
+            <span class="quote">„<span class="quote">Dateien ausschliessen</span>“</span> anwählen. Dies öffnet weitere
+            Optionen:
+            </p>
+<div class="figure">
+<a name="id1329019"></a><p class="title"><b>Abbildung 3.2. Dateien ausschliessen</b></p>
+<div class="figure-contents"><div><img src="DateienAusschliessen.png" alt="Dateien ausschliessen"></div></div>
+</div>
+<p><br class="figure-break">
+        </p>
+<p>
+            Im Dateimuster-Textfeld können Sie Dateien oder Verzeichnissen
+            angeben, die Sie ausschliessen wollen. Die Dateimuster sind reguläre
+            Ausdrücke (siehe
+            <a class="ulink" href="http://de.wikipedia.org/wiki/Regul%C3%A4rer_Ausdruck" target="_top">http://de.wikipedia.org/wiki/Regul%C3%A4rer_Ausdruck</a>).
+            Der Knopf rechts vom Textfeld (mit dem grossen grünen
+            <span class="quote">„<span class="quote">Plus</span>“</span>-Symbol) öffnet eine Dateiauswahl, die die
+            Auswahl und das Hinzufügen von Dateien und Verzeichnissen
+            vereinfacht.
+        </p>
+<p>
+            Unter Windows sind zwei Sonderregeln zu beachten, da dort der
+            Dateitrenner ein umgekehrter Schrägstrich (<span class="quote">„<span class="quote">\</span>“</span>) ist und
+            dieser auch als Maskierungszeichen für die soeben erwähnten
+            regulären Ausdrücke verwendet wird:
+                </p>
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p>
+                        In dem Teil eines Pfades, das dem Quellverzeichnis
+                        entspricht, müssen die umgekehrten Schrägstriche
+                        verdoppelt werden.
+                    </p></li>
+<li class="listitem"><p>
+                        Im verbleibenden Teil müssen die umgekehrten
+                        Schrägstriche durch normale Schrägstriche
+                        (<span class="quote">„<span class="quote">/</span>“</span>) ersetzt werden.
+                    </p></li>
+</ul></div>
+<p>
+        </p>
+<p>
+            <a class="indexterm" name="id1328858"></a>
+            Sie können auch Ausnahmen bei den ausgeschlossenen Dateien und
+            Verzeichnissen machen. Dies ist insbesondere bei komplexeren
+            Datensicherungssituationen interessant. Ein Beispiel soll dies
+            verdeutlichen. Nehmen Sie an, Sie haben folgende
+            Verzeichnisstruktur:
+</p>
+<pre class="screen">
+    C:.
+    └───Dokumente und Einstellungen
+        ├───Anton
+        ├───Barbara
+        ├───Sonstiges1
+        ├───Sonstiges2
+        ├───...
+        └───SonstigesN
+</pre>
+<p>
+            Wenn Sie nur
+            <code class="computeroutput">C:\Dokumente und Einstellungen\Anton\</code>
+            und
+            <code class="computeroutput">C:\Dokumente und Einstellungen\Barbara\</code>
+            sichern wollen, müssen Sie
+            <code class="computeroutput">C:\Dokumente und Einstellungen\</code> als
+            Quellverzeichnis einstellen,
+            <code class="computeroutput">C:\\Dokumente und Einstellungen</code>
+            ausschliessen und
+            <code class="computeroutput">C:\\Dokumente und Einstellungen/Anton</code>
+            und
+            <code class="computeroutput">C:\\Dokumente und Einstellungen/Barbara</code>
+            als Ausnahmen hinzufügen.
+        </p>
+<p>
+            Auf der rechten Seite können Sie Dateien anhand deren Eigenschaften
+            ausschliessen:
+            </p>
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p>
+                    Grösse (Sie können eine minimale und maximale Grösse angeben)
+                </p></li>
+<li class="listitem"><p>
+                    ob sie auf dem Dateisystem des Quellverzeichnisses liegt
+                </p></li>
+<li class="listitem"><p>
+                    <a class="indexterm" name="id1329341"></a>
+                    ob es ein symbolischer Link ist
+                </p></li>
+<li class="listitem"><p>
+                    <a class="indexterm" name="id1328852"></a>
+                    ob es eine Gerätedatei ist
+                </p></li>
+<li class="listitem"><p>
+                    <a class="indexterm" name="id1329276"></a>
+                    ob es ein Socket ist
+                </p></li>
+<li class="listitem"><p>
+                    <a class="indexterm" name="id1329369"></a>
+                    ob es eine benannte Pipe ist
+                </p></li>
+</ul></div>
+<p>
+            Weitere Informationen über symbolische Links, Gerätedateien, Sockets
+            und benannte Pipes können unter folgender Adresse gefunden werden:
+            <a class="ulink" href="http://en.wikipedia.org/wiki/Unix_file_types" target="_top">http://en.wikipedia.org/wiki/Unix_file_types</a>
+        </p>
+<p>
+            Wenn Sie die Datensicherung starten, sehen Sie folgende
+            Fortschrittsinformationen:
+            </p>
+<div class="figure">
+<a name="id1328840"></a><p class="title"><b>Abbildung 3.3. Laufende Datensicherung</b></p>
+<div class="figure-contents"><div><img src="../de/Laufende_Datensicherung.png" alt="Laufende Datensicherung"></div></div>
+</div>
+<p><br class="figure-break">
+            Gezeigt werden:
+            </p>
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p>
+                    die Anzahl der bereits gesicherten Dateien
+                </p></li>
+<li class="listitem"><p>
+                    die aktuell gesicherte Datei
+                </p></li>
+<li class="listitem"><p>
+                    die bereits abgelaufene Zeit
+                </p></li>
+</ul></div>
+<p>
+            <a class="indexterm" name="id1328129"></a>
+            Sie können auch wählen, dass der Computer nach der Datensicherung
+            heruntergefahren wird. Sie müssen dazu über Administratorenrechte
+            verfügen und Ihr Passwort eingeben. Sie können die Datensicherung
+            auch abbrechen.
+        </p>
+<p>
+            <a class="indexterm" name="id1329085"></a>
+            Wenn die Datensicherung beendet ist, wird folgende Zusammenfassung
+            angezeigt:
+            </p>
+<div class="figure">
+<a name="id1329294"></a><p class="title"><b>Abbildung 3.4. Zusammenfassung der Datensicherung</b></p>
+<div class="figure-contents"><div><img src="Datensicherungsstatistik.png" alt="Zusammenfassung der Datensicherung"></div></div>
+</div>
+<p><br class="figure-break">
+            Normalerweise gibt es nach einer erfolgreichen Datensicherung nicht
+            mehr viel zu tun. Deswegen setzt JBackpack hier standardmässig den
+            Fokus auf den Knopf <span class="quote">„<span class="quote">JBackpack beenden</span>“</span>. Sie können
+            einfach <span class="keycap"><strong>Enter</strong></span> betätigen oder den Knopf
+            <span class="quote">„<span class="quote">JBackpack beenden</span>“</span> anklicken. Wenn Sie tatsächlich
+            JBackpack weiterverwenden wollen, betätigen Sie bitte den Knopf
+            <span class="quote">„<span class="quote">JBackpack weiterverwenden</span>“</span>.
+        </p>
+</div>
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left">
+<a accesskey="p" href="ch02s02.html">Zurück</a> </td>
+<td width="20%" align="center"> </td>
+<td width="40%" align="right"> <a accesskey="n" href="restore.html">Weiter</a>
+</td>
+</tr>
+<tr>
+<td width="40%" align="left" valign="top">2.2. Datensicherungsverzeichnis </td>
+<td width="20%" align="center"><a accesskey="h" href="index.html">Zum Anfang</a></td>
+<td width="40%" align="right" valign="top"> Kapitel 4. Wiederherstellung</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

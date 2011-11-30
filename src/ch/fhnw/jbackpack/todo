@@ -1,0 +1,79 @@
+- preview
+    - busy notification or progress dialog
+
+- remote restore
+    - see remote backup just vice versa...
+
+- delete unused classes/methods
+    - is there a tool to automate this???
+
+- SMB support
+    - "-t cifs" instead of "-t smbfs"?
+    - support for domain?
+    - listen on all text fields for document changes
+
+- statical code analysis with findbugs and pmd
+
+- help button near size information elements in rdiffchooserpanel
+
+- improve increment browser
+    - file preview
+        - (optional) filechooser accessory
+        - button: "Preview" (for all selected files, read-only!)
+        - multiple selection: show highlighted file in accessory
+        - directory selection: disable preview button
+    - file search
+        - file name
+        - file type
+        - file size
+            - exact size
+            - size range
+        - modification time
+            - exact timestamp
+            - timestamp range
+        - content
+
+- support for other remote file systems
+    - nfs
+    - curlftpfs
+        rdiff-backup fails on curlftpfs 0.9.2 with the following error message
+        rdiff_backup.log.LoggerError: Unable to open logfile /home/ronny/10.217.2.44/ronny/backup/rdiff-backup-data/backup.log: [Errno 95] Operation not supported: '/home/ronny/10.217.2.44/ronny/backup/rdiff-backup-data/backup.log'
+        see also http://ubuntuforums.org/showthread.php?t=1423640
+    - gmailfs
+    - webdav
+    - wuala (NFS)
+    - dropbox
+
+- sshfs for windows: http://dokan-dev.net/en/
+
+- support more options:
+    --compare*
+
+- still unsure about that ideas:
+    - use "+" and "-" prefixes in one single temporary includes/excludes file
+    - support --max-file-size and --min-file-size options
+
+- make session statistics available
+
+- some things that do not work because of Swing bugs:
+    - MetalFileChooserUI.DirectoryComboBoxModel always uses initial
+      FileSystemView
+      -> impossible to reliably update the FileSystemView on a chooser
+
+- encryption does not work with remote root directories
+  (only works with subdirectories in writable parent directories)
+
+
+------------------------------ Java Bugs ---------------------------------------
+http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6970857
+http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6972078
+
+
+------------------------------ Information -------------------------------------
+command line database access:
+    export DERBY_HOME=/home/archiv/java/derby/db-derby-10.6.1.0-bin/
+    java -jar $DERBY_HOME/lib/derbyrun.jar ij
+    CONNECT 'jdbc:derby:jbackpack;create=true';
+
+release upload:
+    scp jbackpack-0.9.jar* ronnystandtke@dl.sv.nongnu.org:/releases/jbackpack/

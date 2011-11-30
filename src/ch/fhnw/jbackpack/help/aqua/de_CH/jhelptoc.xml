@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="iso-8859-1" standalone="no"?>
+<!DOCTYPE toc PUBLIC "-//Sun Microsystems Inc.//DTD JavaHelp TOC Version 1.0//EN" "http://java.sun.com/products/javahelp/toc_1_0.dtd">
+<toc version="1.0">
+  <tocitem target="JBackpack" text="JBackpack-Handbuch">
+    <tocitem target="overview" text="Übersicht"/>
+    <tocitem target="directories" text="Verzeichnisse">
+      <tocitem target="id1380088" text="Quellverzeichnis"/>
+      <tocitem target="id1380509" text="Datensicherungsverzeichnis"/>
+    </tocitem>
+    <tocitem target="backup" text="Datensicherung"/>
+    <tocitem target="restore" text="Wiederherstellung"/>
+    <tocitem target="advanced_settings" text="Erweiterte Einstellungen">
+      <tocitem target="autodeletion" text="Automatisches Löschen alter Datensicherungen"/>
+      <tocitem target="id1381250" text="Temporäres Verzeichnis"/>
+    </tocitem>
+    <tocitem target="profiles" text="Arbeiten mit Profilen"/>
+    <tocitem target="program_settings" text="Einstellungen"/>
+  </tocitem>
+</toc>

@@ -12,6 +12,9 @@
 
     <target name="bin-jar" depends="init,compile,-pre-pre-jar">
         <jar destfile="dist/DLCopy.jar" basedir="build/classes/">
+            <zipfileset src="${file.reference.javaws.jar}" excludes="META-INF/**"/>
+            <zipfileset src="libs/jh.jar" excludes="META-INF/**"/>
+            <zipfileset src="libs/derby.jar" excludes="META-INF/**"/>
             <zipfileset
                 src="${file.reference.java_file_copy_library-0.9.7.jar}"
                 excludes="META-INF/**"/>
@@ -24,6 +27,9 @@
 
     <target name="full-jar" depends="init,compile,-pre-pre-jar">
         <jar destfile="dist/DLCopy_full.jar" basedir="build/classes/">
+            <zipfileset src="${file.reference.javaws.jar}" excludes="META-INF/**"/>
+            <zipfileset src="libs/jh.jar" excludes="META-INF/**"/>
+            <zipfileset src="libs/derby.jar" excludes="META-INF/**"/>
             <zipfileset
                 src="${file.reference.java_file_copy_library-0.9.7.jar}"
                 excludes="META-INF/**"/>

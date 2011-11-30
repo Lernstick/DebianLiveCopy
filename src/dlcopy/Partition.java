@@ -243,7 +243,7 @@ public class Partition {
      * @return <code>true</code>, if the umount operation succeeded,
      * <code>false</code> otherwise
      */
-    public boolean umount() {
+    public boolean umount() throws DBusException {
         /**
          * TODO: umount timeout problem:
          * when there have been previous copy operations, this call very often
@@ -255,14 +255,22 @@ public class Partition {
          */
         boolean success = false;
         for (int i = 0; !success && (i < 10); i++) {
-            try {
-                Device dbusDevice = DbusTools.getDevice(device);
-                dbusDevice.FilesystemUnmount(new ArrayList<String>());
+            // it already happend that during the timeout
+            // in handleUmountException() the umount call succeeded!
+            // therefore we need to test for the mount status in every round
+            // and act accordingly...
+            if (isMounted()) {
+                try {
+                    Device dbusDevice = DbusTools.getDevice(device);
+                    dbusDevice.FilesystemUnmount(new ArrayList<String>());
+                    success = true;
+                } catch (DBusException ex) {
+                    handleUmountException(ex);
+                } catch (DBusExecutionException ex) {
+                    handleUmountException(ex);
+                }
+            } else {
                 success = true;
-            } catch (DBusException ex) {
-                handleUmountException(ex);
-            } catch (DBusExecutionException ex) {
-                handleUmountException(ex);
             }
         }
         if (!success) {
@@ -347,7 +355,7 @@ public class Partition {
         List<String> mountPaths = getMountPaths();
         return (mountPaths != null) && (!mountPaths.isEmpty());
     }
-    
+
     private void handleUmountException(Exception ex) {
         LOGGER.log(Level.WARNING, "", ex);
         try {

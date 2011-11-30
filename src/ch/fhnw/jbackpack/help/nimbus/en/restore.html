@@ -1,0 +1,116 @@
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Chapter 4. Restore</title>
+<meta name="generator" content="DocBook XSL Stylesheets V1.75.2">
+<link rel="home" href="index.html" title="JBackpack Manual">
+<link rel="up" href="index.html" title="JBackpack Manual">
+<link rel="prev" href="backup.html" title="Chapter 3. Backup">
+<link rel="next" href="advanced_settings.html" title="Chapter 5. Advanced Settings">
+</head>
+<body bgcolor="white" text="black" link="#0000FF" vlink="#840084" alink="#0000FF">
+<div class="navheader">
+<table width="100%" summary="Navigation header">
+<tr><th colspan="3" align="center">Chapter 4. Restore</th></tr>
+<tr>
+<td width="20%" align="left">
+<a accesskey="p" href="backup.html">Prev</a> </td>
+<th width="60%" align="center"> </th>
+<td width="20%" align="right"> <a accesskey="n" href="advanced_settings.html">Next</a>
+</td>
+</tr>
+</table>
+<hr>
+</div>
+<div class="chapter" title="Chapter 4. Restore">
+<div class="titlepage"><div><div><h2 class="title">
+<a name="restore"></a>Chapter 4. Restore</h2></div></div></div>
+<p>
+            <a class="indexterm" name="id1401024"></a>
+            If you want to restore files, you have to select the restore tab:
+            </p>
+<div class="figure">
+<a name="id1401380"></a><p class="title"><b>Figure 4.1. Restore</b></p>
+<div class="figure-contents"><div><img src="Restore.png" alt="Restore"></div></div>
+</div>
+<p><br class="figure-break">
+            <a class="indexterm" name="id1401387"></a>
+            <a class="indexterm" name="id1401393"></a>
+            On the left hand side you have the list of available backups. For
+            every backup you see its type, timestamp and its storage usage.
+            There are two backup types: The top backup is called the
+            <span class="quote">“<span class="quote">mirror</span>”</span>. It contains all files of the last backup and
+            is labeled with a harddisk icon. All other backups are called
+            <span class="quote">“<span class="quote">increments</span>”</span> and only store the differences relatively
+            to the younger backup (and therefore usually need much less storage
+            space than the mirror). They are labeled with an arrow icon.
+        </p>
+<p>
+            If you select a backup from the list, the file hierarchy of this
+            backup is shown in the file chooser on the right hand side. With the
+            help of the two arrow buttons at the bottom of the backups list you
+            can easily navigate through the list of backups without constantly
+            moving and aiming your mouse pointer.
+        </p>
+<p>
+            Below the arrow buttons several storage size values are displayed:
+            </p>
+<div class="itemizedlist"><ul class="itemizedlist" type="disc">
+<li class="listitem"><p>
+                    <a class="indexterm" name="id1401470"></a>
+                    the cumulative size (the size sum of the currently selected
+                    backup and all older backups)
+                </p></li>
+<li class="listitem"><p>
+                    <a class="indexterm" name="id1401022"></a>
+                    the total size of all backups
+                </p></li>
+<li class="listitem"><p>
+                    the storage space usage of the selected destination
+                    directory
+                </p></li>
+</ul></div>
+<p>
+            With this information at hand you can decide if and how many backups
+            you want to keep or delete. You can also automate the deletion of
+            old backups. For more details see <a class="xref" href="advanced_settings.html#autodeletion" title="5.1. Automatic deletion of old backups">Section 5.1, “Automatic deletion of old backups”</a>.
+        </p>
+<p>
+            At the top of the right hand side you can select between either to
+            restore the whole selected backup or just certain files or
+            directories from the selected backup.
+        </p>
+<p>
+            You can preview selected files by clicking the
+            <span class="quote">“<span class="quote">Preview</span>”</span> button below the file chooser. The selected
+            files will then be restored read-only into a temporary directory and
+            will be opened with the associated program for preview.
+        </p>
+<p>
+            At the bottom of the window you can start the restore operation. You
+            can select to count the selected files before starting the restore
+            operation. This makes it possible to display a progress bar during
+            the backup operation but may take some additional seconds. You can
+            also choose where to restore the files, either into the original
+            source directory or another directory.
+        </p>
+</div>
+<div class="navfooter">
+<hr>
+<table width="100%" summary="Navigation footer">
+<tr>
+<td width="40%" align="left">
+<a accesskey="p" href="backup.html">Prev</a> </td>
+<td width="20%" align="center"> </td>
+<td width="40%" align="right"> <a accesskey="n" href="advanced_settings.html">Next</a>
+</td>
+</tr>
+<tr>
+<td width="40%" align="left" valign="top">Chapter 3. Backup </td>
+<td width="20%" align="center"><a accesskey="h" href="index.html">Home</a></td>
+<td width="40%" align="right" valign="top"> Chapter 5. Advanced Settings</td>
+</tr>
+</table>
+</div>
+</body>
+</html>

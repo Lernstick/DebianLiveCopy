@@ -8,6 +8,9 @@ package dlcopy;
 import ch.fhnw.filecopier.CopyJob;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.filecopier.Source;
+import ch.fhnw.jbackpack.JSqueezedLabel;
+import ch.fhnw.jbackpack.RdiffBackupRestore;
+import ch.fhnw.jbackpack.chooser.SelectBackupDirectoryDialog;
 import dlcopy.tools.FileTools;
 import dlcopy.tools.ModalDialogHandler;
 import dlcopy.tools.ProcessExecutor;
@@ -19,6 +22,8 @@ import java.awt.Container;
 import java.awt.Font;
 import java.awt.FontMetrics;
 import java.awt.Graphics;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
@@ -31,15 +36,19 @@ import java.io.FileWriter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.net.URL;
+import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Dictionary;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
 import java.util.ResourceBundle;
+import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -66,6 +75,7 @@ import javax.swing.JTextField;
 import javax.swing.ListModel;
 import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
+import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.filechooser.FileFilter;
@@ -144,6 +154,7 @@ public class DLCopy extends JFrame
     private final String MOUNT_POINT = "/mnt/usbstick";
     private final String DEBIAN_LIVE_SYSTEM_PATH = "/live/image";
     private final String SYSLINUX_MBR_PATH = "/usr/lib/syslinux/mbr.bin";
+    private final DateFormat timeFormat;
 
     private enum State {
 
@@ -185,10 +196,14 @@ public class DLCopy extends JFrame
     private DefaultListModel separateFileSystemsListModel;
     private DefaultListModel upgradeOverwriteListModel;
     private JFileChooser addFileChooser;
+    private RdiffBackupRestore rdiffBackupRestore;
     private Preferences preferences;
     private final static String UPGRADE_SYSTEM_PARTITION = "upgradeSystemPartition";
     private final static String REACTIVATE_WELCOME = "reactivateWelcome";
     private final static String KEEP_PRINTER_SETTINGS = "keepPrinterSettings";
+    private final static String AUTOMATIC_BACKUP = "automaticBackup";
+    private final static String BACKUP_DESTINATION = "backupDestination";
+    private final static String AUTO_REMOVE_BACKUP = "autoRemoveBackup";
     private final static String UPGRADE_OVERWRITE_LIST = "upgradeOverwriteList";
 
     /** Creates new form DLCopy
@@ -225,6 +240,9 @@ public class DLCopy extends JFrame
         // prevent double logs in console
         globalLogger.setUseParentHandlers(false);
         fileCopierLogger.setUseParentHandlers(false);
+
+        timeFormat = new SimpleDateFormat("HH:mm:ss");
+        timeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
         LOGGER.info("*********** Starting dlcopy ***********");
 
@@ -502,6 +520,12 @@ public class DLCopy extends JFrame
                 preferences.getBoolean(REACTIVATE_WELCOME, true));
         keepPrinterSettingsCheckBox.setSelected(
                 preferences.getBoolean(KEEP_PRINTER_SETTINGS, true));
+        automaticBackupCheckBox.setSelected(
+                preferences.getBoolean(AUTOMATIC_BACKUP, false));
+        automaticBackupTextField.setText(
+                preferences.get(BACKUP_DESTINATION, null));
+        automaticBackupRemoveCheckBox.setSelected(
+                preferences.getBoolean(AUTO_REMOVE_BACKUP, false));
         String upgradeOverWriteList = preferences.get(
                 UPGRADE_OVERWRITE_LIST, "");
         if (!upgradeOverWriteList.isEmpty()) {
@@ -887,6 +911,11 @@ public class DLCopy extends JFrame
         upgradeOverwriteAddButton = new javax.swing.JButton();
         upgradeOverwriteEditButton = new javax.swing.JButton();
         upgradeOverwriteRemoveButton = new javax.swing.JButton();
+        automaticBackupCheckBox = new javax.swing.JCheckBox();
+        automaticBackupLabel = new javax.swing.JLabel();
+        automaticBackupTextField = new javax.swing.JTextField();
+        automaticBackupButton = new javax.swing.JButton();
+        automaticBackupRemoveCheckBox = new javax.swing.JCheckBox();
         upgradePanel = new javax.swing.JPanel();
         currentlyUpgradedDeviceLabel = new javax.swing.JLabel();
         jSeparator4 = new javax.swing.JSeparator();
@@ -896,6 +925,12 @@ public class DLCopy extends JFrame
         upgradeCopyPanel = new javax.swing.JPanel();
         jLabel2 = new javax.swing.JLabel();
         upgradeFileCopierPanel = new ch.fhnw.filecopier.FileCopierPanel();
+        upgradeBackupPanel = new javax.swing.JPanel();
+        upgradeBackupLabel = new javax.swing.JLabel();
+        upgradeBackupProgressLabel = new javax.swing.JLabel();
+        upgradeBackupFilenameLabel = new JSqueezedLabel();
+        upgradeBackupProgressBar = new javax.swing.JProgressBar();
+        upgradeBackupTimeLabel = new javax.swing.JLabel();
         toISOInfoPanel = new javax.swing.JPanel();
         toISOInfoLabel = new javax.swing.JLabel();
         toISOSelectionPanel = new javax.swing.JPanel();
@@ -1163,7 +1198,7 @@ public class DLCopy extends JFrame
                     .addGroup(createPartitionPanelLayout.createSequentialGroup()
                         .addComponent(exchangePartitionSizeLabel)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(exchangePartitionSizeSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 532, Short.MAX_VALUE)
+                        .addComponent(exchangePartitionSizeSlider, javax.swing.GroupLayout.DEFAULT_SIZE, 498, Short.MAX_VALUE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(exchangePartitionSizeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, 84, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1208,7 +1243,7 @@ public class DLCopy extends JFrame
                 .addComponent(copyExchangeCheckBox)
                 .addGap(18, 18, 18)
                 .addComponent(copyPersistencyCheckBox)
-                .addContainerGap(377, Short.MAX_VALUE))
+                .addContainerGap(343, Short.MAX_VALUE))
         );
         copyPartitionPanelLayout.setVerticalGroup(
             copyPartitionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1245,13 +1280,13 @@ public class DLCopy extends JFrame
                     .addComponent(createPartitionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(installListPanelLayout.createSequentialGroup()
                         .addComponent(exchangeDefinitionLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 322, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 288, Short.MAX_VALUE))
                     .addGroup(installListPanelLayout.createSequentialGroup()
                         .addComponent(dataDefinitionLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 262, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 228, Short.MAX_VALUE))
                     .addGroup(installListPanelLayout.createSequentialGroup()
                         .addComponent(osDefinitionLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 609, Short.MAX_VALUE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 575, Short.MAX_VALUE))
                     .addComponent(installSelectionCountLabel))
                 .addContainerGap())
         );
@@ -1347,9 +1382,9 @@ public class DLCopy extends JFrame
             .addGroup(installPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(currentlyInstalledDeviceLabel)
-                .addContainerGap(500, Short.MAX_VALUE))
-            .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 748, Short.MAX_VALUE)
-            .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 748, Short.MAX_VALUE)
+                .addContainerGap(466, Short.MAX_VALUE))
+            .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 714, Short.MAX_VALUE)
+            .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 714, Short.MAX_VALUE)
         );
         installPanelLayout.setVerticalGroup(
             installPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1375,11 +1410,11 @@ public class DLCopy extends JFrame
         donePanel.setLayout(donePanelLayout);
         donePanelLayout.setHorizontalGroup(
             donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 748, Short.MAX_VALUE)
+            .addGap(0, 714, Short.MAX_VALUE)
             .addGroup(donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(donePanelLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(doneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 724, Short.MAX_VALUE)
+                    .addComponent(doneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 690, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         donePanelLayout.setVerticalGroup(
@@ -1471,7 +1506,7 @@ public class DLCopy extends JFrame
             .addGroup(upgradeSelectionDeviceListPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(upgradeSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 719, Short.MAX_VALUE)
+                    .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 685, Short.MAX_VALUE)
                     .addComponent(upgradeOsDefinitionLabel)
                     .addComponent(upgradeDataDefinitionLabel)
                     .addComponent(upgradeExchangeDefinitionLabel)
@@ -1551,7 +1586,7 @@ public class DLCopy extends JFrame
             upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, upgradeOverwritePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(upgradeOverwriteScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 653, Short.MAX_VALUE)
+                .addComponent(upgradeOverwriteScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 619, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(upgradeOverwriteAddButton, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -1573,6 +1608,30 @@ public class DLCopy extends JFrame
                 .addContainerGap())
         );
 
+        automaticBackupCheckBox.setText(bundle.getString("DLCopy.automaticBackupCheckBox.text")); // NOI18N
+        automaticBackupCheckBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                automaticBackupCheckBoxItemStateChanged(evt);
+            }
+        });
+
+        automaticBackupLabel.setText(bundle.getString("DLCopy.automaticBackupLabel.text")); // NOI18N
+        automaticBackupLabel.setEnabled(false);
+
+        automaticBackupTextField.setEnabled(false);
+
+        automaticBackupButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/16x16/document-open-folder.png"))); // NOI18N
+        automaticBackupButton.setEnabled(false);
+        automaticBackupButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        automaticBackupButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                automaticBackupButtonActionPerformed(evt);
+            }
+        });
+
+        automaticBackupRemoveCheckBox.setText(bundle.getString("DLCopy.automaticBackupRemoveCheckBox.text")); // NOI18N
+        automaticBackupRemoveCheckBox.setEnabled(false);
+
         javax.swing.GroupLayout upgradeSelectionConfigPanelLayout = new javax.swing.GroupLayout(upgradeSelectionConfigPanel);
         upgradeSelectionConfigPanel.setLayout(upgradeSelectionConfigPanelLayout);
         upgradeSelectionConfigPanelLayout.setHorizontalGroup(
@@ -1580,10 +1639,23 @@ public class DLCopy extends JFrame
             .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(upgradeOverwritePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(keepPrinterSettingsCheckBox)
+                    .addComponent(upgradeSystemPartitionCheckBox)
                     .addComponent(reactivateWelcomeCheckBox)
-                    .addComponent(upgradeSystemPartitionCheckBox))
+                    .addComponent(keepPrinterSettingsCheckBox)
+                    .addComponent(upgradeOverwritePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
+                        .addGroup(upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(automaticBackupCheckBox)
+                            .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
+                                .addGap(21, 21, 21)
+                                .addGroup(upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(automaticBackupRemoveCheckBox)
+                                    .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
+                                        .addComponent(automaticBackupLabel)
+                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                        .addComponent(automaticBackupTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 500, Short.MAX_VALUE)))))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(automaticBackupButton)))
                 .addContainerGap())
         );
         upgradeSelectionConfigPanelLayout.setVerticalGroup(
@@ -1596,6 +1668,15 @@ public class DLCopy extends JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(keepPrinterSettingsCheckBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(automaticBackupCheckBox)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                    .addComponent(automaticBackupLabel)
+                    .addComponent(automaticBackupTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(automaticBackupButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(automaticBackupRemoveCheckBox)
+                .addGap(18, 18, 18)
                 .addComponent(upgradeOverwritePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -1654,6 +1735,46 @@ public class DLCopy extends JFrame
         upgradeCopyPanel.add(upgradeFileCopierPanel, gridBagConstraints);
 
         upgradeCardPanel.add(upgradeCopyPanel, "upgradeCopyPanel");
+
+        upgradeBackupPanel.setLayout(new java.awt.GridBagLayout());
+
+        upgradeBackupLabel.setText(bundle.getString("DLCopy.upgradeBackupLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        upgradeBackupPanel.add(upgradeBackupLabel, gridBagConstraints);
+
+        upgradeBackupProgressLabel.setText(bundle.getString("DLCopy.upgradeBackupProgressLabel.text")); // NOI18N
+        upgradeBackupProgressLabel.setName("upgradeBackupProgressLabel"); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
+        upgradeBackupPanel.add(upgradeBackupProgressLabel, gridBagConstraints);
+
+        upgradeBackupFilenameLabel.setFont(upgradeBackupFilenameLabel.getFont().deriveFont(upgradeBackupFilenameLabel.getFont().getStyle() & ~java.awt.Font.BOLD, upgradeBackupFilenameLabel.getFont().getSize()-1));
+        upgradeBackupFilenameLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        upgradeBackupFilenameLabel.setText(bundle.getString("DLCopy.upgradeBackupFilenameLabel.text")); // NOI18N
+        upgradeBackupFilenameLabel.setName("upgradeBackupFilenameLabel"); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+        upgradeBackupPanel.add(upgradeBackupFilenameLabel, gridBagConstraints);
+
+        upgradeBackupProgressBar.setIndeterminate(true);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+        upgradeBackupPanel.add(upgradeBackupProgressBar, gridBagConstraints);
+
+        upgradeBackupTimeLabel.setText(bundle.getString("DLCopy.upgradeBackupTimeLabel.text")); // NOI18N
+        upgradeBackupTimeLabel.setName("upgradeBackupTimeLabel"); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+        upgradeBackupPanel.add(upgradeBackupTimeLabel, gridBagConstraints);
+
+        upgradeCardPanel.add(upgradeBackupPanel, "upgradeBackupPanel");
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -1753,7 +1874,7 @@ public class DLCopy extends JFrame
             separateFileSystemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, separateFileSystemsPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(separateFileSystemsScrollpane, javax.swing.GroupLayout.DEFAULT_SIZE, 658, Short.MAX_VALUE)
+                .addComponent(separateFileSystemsScrollpane, javax.swing.GroupLayout.DEFAULT_SIZE, 624, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(separateFileSystemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addComponent(separateFileSystemsAddButton)
@@ -1783,7 +1904,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(separateFileSystemsPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(tmpDriveInfoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 724, Short.MAX_VALUE)
+                    .addComponent(tmpDriveInfoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 690, Short.MAX_VALUE)
                     .addComponent(autoStartCheckBox)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel1Layout.createSequentialGroup()
                         .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
@@ -1793,16 +1914,16 @@ public class DLCopy extends JFrame
                                     .addComponent(isoLabelLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(writableTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)
-                                    .addComponent(isoLabelTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)))
+                                    .addComponent(writableTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)
+                                    .addComponent(isoLabelTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(freeSpaceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(freeSpaceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE))
+                                .addComponent(freeSpaceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, jPanel1Layout.createSequentialGroup()
                                 .addComponent(tmpDirLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tmpDirTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 554, Short.MAX_VALUE)))
+                                .addComponent(tmpDirTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 520, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tmpDirSelectButton)))
                 .addContainerGap())
@@ -1874,11 +1995,11 @@ public class DLCopy extends JFrame
         toISODonePanel.setLayout(toISODonePanelLayout);
         toISODonePanelLayout.setHorizontalGroup(
             toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 748, Short.MAX_VALUE)
+            .addGap(0, 714, Short.MAX_VALUE)
             .addGroup(toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(toISODonePanelLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(isoDoneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 724, Short.MAX_VALUE)
+                    .addComponent(isoDoneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 690, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         toISODonePanelLayout.setVerticalGroup(
@@ -1940,14 +2061,14 @@ public class DLCopy extends JFrame
                     .addGroup(executionPanelLayout.createSequentialGroup()
                         .addComponent(stepsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 748, Short.MAX_VALUE))
+                        .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 714, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, executionPanelLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(previousButton)
                         .addGap(18, 18, 18)
                         .addComponent(nextButton)))
                 .addContainerGap())
-            .addComponent(jSeparator2, javax.swing.GroupLayout.DEFAULT_SIZE, 898, Short.MAX_VALUE)
+            .addComponent(jSeparator2, javax.swing.GroupLayout.DEFAULT_SIZE, 864, Short.MAX_VALUE)
         );
         executionPanelLayout.setVerticalGroup(
             executionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2261,6 +2382,23 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         upgradeOverwriteRemoveButton.setEnabled(selectedIndices.length > 0);
     }//GEN-LAST:event_upgradeOverwriteListValueChanged
 
+    private void automaticBackupCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_automaticBackupCheckBoxItemStateChanged
+        boolean automaticBackup = automaticBackupCheckBox.isSelected();
+        automaticBackupLabel.setEnabled(automaticBackup);
+        automaticBackupTextField.setEnabled(automaticBackup);
+        automaticBackupButton.setEnabled(automaticBackup);
+        automaticBackupRemoveCheckBox.setEnabled(automaticBackup);
+    }//GEN-LAST:event_automaticBackupCheckBoxItemStateChanged
+
+    private void automaticBackupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_automaticBackupButtonActionPerformed
+        String selectedPath = automaticBackupTextField.getText();
+        SelectBackupDirectoryDialog dialog = new SelectBackupDirectoryDialog(
+                this, null, selectedPath, false);
+        if (dialog.showDialog() == JOptionPane.OK_OPTION) {
+            automaticBackupTextField.setText(dialog.getSelectedPath());
+        }
+    }//GEN-LAST:event_automaticBackupButtonActionPerformed
+
     private void removeSelectedListEntries(JList list) {
         int[] selectedIndices = list.getSelectedIndices();
         DefaultListModel model = (DefaultListModel) list.getModel();
@@ -2496,6 +2634,12 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 reactivateWelcomeCheckBox.isSelected());
         preferences.putBoolean(KEEP_PRINTER_SETTINGS,
                 keepPrinterSettingsCheckBox.isSelected());
+        preferences.putBoolean(AUTOMATIC_BACKUP,
+                automaticBackupCheckBox.isSelected());
+        preferences.put(BACKUP_DESTINATION,
+                automaticBackupTextField.getText());
+        preferences.putBoolean(AUTO_REMOVE_BACKUP,
+                automaticBackupRemoveCheckBox.isSelected());
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0, size = upgradeOverwriteListModel.size();
                 i < size; i++) {
@@ -2653,7 +2797,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         String countString = STRINGS.getString("Selection_Count");
         countString = MessageFormat.format(countString, selectionCount);
         upgradeSelectionCountLabel.setText(countString);
-        
+
         // update nextButton state
         if ((selectionCount > 0) && canUpgrade) {
             enableNextButton();
@@ -2980,7 +3124,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         if (!partition.isMounted()) {
             return true;
         }
-        
+
         if (partition.umount()) {
             return true;
         } else {
@@ -4032,6 +4176,39 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     }
 
     private void upgrade() {
+        // some backup related sanity checks
+        if (automaticBackupCheckBox.isSelected()) {
+            String destinationPath = automaticBackupTextField.getText();
+            File destinationDirectory = null;
+            if (destinationPath != null) {
+                destinationDirectory = new File(destinationPath);
+            }
+
+            // file checks
+            String errorMessage = null;
+            if (destinationDirectory == null
+                    || destinationDirectory.getPath().length() == 0) {
+                errorMessage = STRINGS.getString(
+                        "Error_No_Automatic_Backup_Directory");
+            } else if (!destinationDirectory.exists()) {
+                errorMessage = STRINGS.getString(
+                        "Error_Automatic_Backup_Directory_Does_Not_Exist");
+            } else if (!destinationDirectory.isDirectory()) {
+                errorMessage = STRINGS.getString(
+                        "Error_Automatic_Backup_Destination_No_Directory");
+            } else if (!destinationDirectory.canRead()) {
+                errorMessage = STRINGS.getString(
+                        "Error_Automatic_Backup_Directory_Unreadable");
+            }
+            if (errorMessage != null) {
+                upgradeTabbedPane.setSelectedComponent(
+                        upgradeSelectionConfigPanel);
+                automaticBackupTextField.requestFocusInWindow();
+                showErrorMessage(errorMessage);
+                return;
+            }
+        }
+
         int result = JOptionPane.showConfirmDialog(this,
                 STRINGS.getString("Final_Upgrade_Warning"),
                 STRINGS.getString("Warning"),
@@ -4287,11 +4464,24 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                             currentDevice, selectionCount, storageDevice
                         });
 
+                // use the device serial number as unique identifier for backups
+                // (but replace all slashes because they are not allowed in
+                //  directory names)
+                String backupUID =
+                        storageDevice.getSerial().replaceAll("/", "-");
+                File backupDestination = new File(
+                        automaticBackupTextField.getText(), backupUID);
+
                 try {
-                    if (upgradeDataPartition(storageDevice)) {
+                    if (upgradeDataPartition(storageDevice, backupDestination)) {
                         if (upgradeSystemPartitionCheckBox.isSelected()
                                 && !upgradeSystemPartition(storageDevice)) {
                             return false;
+                        }
+                        // automatic removal of (temporary) backup
+                        if (automaticBackupCheckBox.isSelected()
+                                && automaticBackupRemoveCheckBox.isSelected()) {
+                            FileTools.recursiveDelete(backupDestination, true);
                         }
                     } else {
                         return false;
@@ -4361,7 +4551,8 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             }
         }
 
-        private boolean upgradeDataPartition(StorageDevice storageDevice)
+        private boolean upgradeDataPartition(StorageDevice storageDevice,
+                File backupDestination)
                 throws DBusException, IOException {
 
             SwingUtilities.invokeLater(new Runnable() {
@@ -4375,6 +4566,46 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             ProcessExecutor processExecutor = new ProcessExecutor();
             Partition dataPartition = storageDevice.getDataPartition();
             String dataMountPoint = dataPartition.mount();
+
+            // backup
+            if (automaticBackupCheckBox.isSelected()) {
+
+                // prepare backup run
+                File backupSource = new File(dataMountPoint + "/home/user/");
+                rdiffBackupRestore = new RdiffBackupRestore();
+                Timer backupTimer = new Timer(1000, new BackupActionListener());
+                backupTimer.setInitialDelay(0);
+                backupTimer.start();
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        upgradeBackupTimeLabel.setText(
+                                timeFormat.format(new Date(0)));
+                        showCard(upgradeCardPanel, "upgradeBackupPanel");
+                    }
+                });
+
+                // run the actual backup process
+                rdiffBackupRestore.backupViaFileSystem(backupSource,
+                        backupDestination, null/*tempDirPath*/,
+                        null/*excludes*/, null/*includes*/, true/*compression*/,
+                        null/*maxFileSize*/, null/*minFileSize*/,
+                        false/*excludeDeviceFiles*/, false/*excludeFifos*/,
+                        false/*excludeOtherFileSystems*/,
+                        false/*excludeSockets*/, false/*excludeSymlinks*/);
+
+                // cleanup
+                backupTimer.stop();
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        showCard(upgradeCardPanel,
+                                "upgradeIndeterminateProgressPanel");
+                    }
+                });
+            }
 
             // reset data partition
             if (keepPrinterSettingsCheckBox.isSelected()) {
@@ -5292,8 +5523,40 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             dialogHandler.hide();
         }
     }
+
+    private class BackupActionListener implements ActionListener {
+
+        private final long start;
+        private final ResourceBundle BUNDLE = ResourceBundle.getBundle(
+                "ch/fhnw/jbackpack/Strings");
+
+        public BackupActionListener() {
+            start = System.currentTimeMillis();
+        }
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            long fileCounter = rdiffBackupRestore.getFileCounter();
+            if (fileCounter > 0) {
+                String string = BUNDLE.getString("Backing_Up_File");
+                string = MessageFormat.format(string, fileCounter);
+                upgradeBackupProgressLabel.setText(string);
+                String currentFile = rdiffBackupRestore.getCurrentFile();
+                upgradeBackupFilenameLabel.setText(currentFile);
+            }
+            // update time information
+            long time = System.currentTimeMillis() - start;
+            String timeString = timeFormat.format(new Date(time));
+            upgradeBackupTimeLabel.setText(timeString);
+        }
+    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JCheckBox autoStartCheckBox;
+    private javax.swing.JButton automaticBackupButton;
+    private javax.swing.JCheckBox automaticBackupCheckBox;
+    private javax.swing.JLabel automaticBackupLabel;
+    private javax.swing.JCheckBox automaticBackupRemoveCheckBox;
+    private javax.swing.JTextField automaticBackupTextField;
     private javax.swing.JPanel cardPanel;
     private javax.swing.JLabel choiceLabel;
     private javax.swing.JPanel choicePanel;
@@ -5376,6 +5639,12 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private javax.swing.JProgressBar toISOProgressBar;
     private javax.swing.JPanel toISOProgressPanel;
     private javax.swing.JPanel toISOSelectionPanel;
+    private javax.swing.JLabel upgradeBackupFilenameLabel;
+    private javax.swing.JLabel upgradeBackupLabel;
+    private javax.swing.JPanel upgradeBackupPanel;
+    private javax.swing.JProgressBar upgradeBackupProgressBar;
+    private javax.swing.JLabel upgradeBackupProgressLabel;
+    private javax.swing.JLabel upgradeBackupTimeLabel;
     private javax.swing.JButton upgradeButton;
     private javax.swing.JPanel upgradeCardPanel;
     private javax.swing.JPanel upgradeCopyPanel;
