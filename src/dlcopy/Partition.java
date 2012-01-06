@@ -260,6 +260,8 @@ public class Partition {
             // therefore we need to test for the mount status in every round
             // and act accordingly...
             if (isMounted()) {
+                LOGGER.log(Level.INFO,
+                        "/dev/{0} is mounted, calling umount...", device);
                 try {
                     Device dbusDevice = DbusTools.getDevice(device);
                     dbusDevice.FilesystemUnmount(new ArrayList<String>());
@@ -270,6 +272,8 @@ public class Partition {
                     handleUmountException(ex);
                 }
             } else {
+                LOGGER.log(Level.INFO,
+                        "/dev/{0} was NOT mounted", device);
                 success = true;
             }
         }
@@ -359,7 +363,17 @@ public class Partition {
     private void handleUmountException(Exception ex) {
         LOGGER.log(Level.WARNING, "", ex);
         try {
-            Thread.sleep(1000);
+            ProcessExecutor processExecutor = new ProcessExecutor();
+            int returnValue = processExecutor.executeProcess(true, true,
+                    "fuser", "-m", "/dev/" + device);
+            while (returnValue == 0) {
+                LOGGER.log(Level.INFO, "/dev/{0} is still being used by the "
+                        + "following processes:\n{1}",
+                        new Object[]{device, processExecutor.getStdOut()});
+                Thread.sleep(1000);
+                returnValue = processExecutor.executeProcess(true, true,
+                        "fuser", "-m", "/dev/" + device);
+            }
         } catch (InterruptedException ex2) {
             LOGGER.log(Level.SEVERE, "", ex2);
         }

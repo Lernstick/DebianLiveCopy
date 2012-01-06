@@ -1079,6 +1079,7 @@ public class DLCopy extends JFrame
 
         repairButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/lernstick_repair.png"))); // NOI18N
         repairButton.setText(bundle.getString("DLCopy.repairButton.text")); // NOI18N
+        repairButton.setEnabled(false);
         repairButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         repairButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         repairButton.addActionListener(new java.awt.event.ActionListener() {
@@ -2055,7 +2056,7 @@ public class DLCopy extends JFrame
                         .addComponent(separateFileSystemsEditButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(separateFileSystemsRemoveButton))
-                    .addComponent(separateFileSystemsScrollpane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 212, Short.MAX_VALUE))
+                    .addComponent(separateFileSystemsScrollpane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 152, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -2338,7 +2339,7 @@ public class DLCopy extends JFrame
             case ISO_SELECTION:
                 switchToISOInformation();
                 break;
-                
+
             case REPAIR_SELECTION:
                 switchToRepairInformation();
                 break;
@@ -3375,10 +3376,14 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private boolean umount(Partition partition) throws DBusException {
         // early return
         if (!partition.isMounted()) {
+            LOGGER.log(Level.INFO,
+                    "{0} was NOT mounted...", partition.getDevice());
             return true;
         }
 
         if (partition.umount()) {
+            LOGGER.log(Level.INFO,
+                    "{0} was successfully umounted", partition.getDevice());
             return true;
         } else {
             String errorMessage = STRINGS.getString("Error_Umount");
@@ -4461,6 +4466,24 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 return;
             }
         }
+        Object[] selectedDevices = upgradeStorageDeviceList.getSelectedValues();
+        int noDataPartitionCounter = 0;
+        for (Object object : selectedDevices) {
+            StorageDevice storageDevice = (StorageDevice) object;
+            if (storageDevice.getDataPartition() == null) {
+                noDataPartitionCounter++;
+            }
+        }
+
+        if (noDataPartitionCounter != 0) {
+            int result = JOptionPane.showConfirmDialog(this,
+                    STRINGS.getString("Warning_Upgrade_Without_Data_Partition"),
+                    STRINGS.getString("Warning"),
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (result != JOptionPane.YES_OPTION) {
+                return;
+            }
+        }
 
         int result = JOptionPane.showConfirmDialog(this,
                 STRINGS.getString("Final_Upgrade_Warning"),
@@ -4840,6 +4863,12 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             });
             ProcessExecutor processExecutor = new ProcessExecutor();
             Partition dataPartition = storageDevice.getDataPartition();
+            if (dataPartition == null) {
+                LOGGER.log(Level.WARNING,
+                        "skipping {0} because it has no data partition",
+                        storageDevice.getDevice());
+                return true;
+            }
             String dataMountPoint = dataPartition.mount();
 
             // backup
@@ -4949,12 +4978,6 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             if (!umount(systemPartition)) {
                 return false;
             }
-            try {
-                // without this umount safety wait we already run into trouble
-                Thread.sleep(5000);
-            } catch (InterruptedException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            }
 
             if (storageDevice.needsRepartitioning()) {
                 SwingUtilities.invokeLater(new Runnable() {
@@ -4972,20 +4995,45 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 String dataDevPath = "/dev/" + dataPartition.getDevice();
                 int returnValue = processExecutor.executeProcess(true, true,
                         "e2fsck", "-f", "-y", "-v", dataDevPath);
-                if (returnValue != 0) {
-                    String errorMessage = 
-                            STRINGS.getString("Error_File_System_Check");
-                    errorMessage = 
-                            MessageFormat.format(errorMessage, dataDevPath);
-                    showErrorMessage(errorMessage);
-                    return false;
+                // e2fsck return values:
+                // 0    - No errors
+                // 1    - File system errors corrected
+                // 2    - File system errors corrected, system should be rebooted
+                // 4    - File system errors left uncorrected
+                // 8    - Operational error
+                // 16   - Usage or syntax error
+                // 32   - E2fsck canceled by user request
+                // 128  - Shared library error
+                //
+                // -> only continue if there were no errors or the errors were
+                // corrected
+                while ((returnValue != 0) && (returnValue != 1)) {
+                    if (returnValue == 8) {
+                        // busy error?
+                        // let's wait some time before retrying
+                        try {
+                            LOGGER.info("waiting for 10 seconds before continuing...");
+                            Thread.sleep(10000);
+                        } catch (InterruptedException ex) {
+                            LOGGER.log(Level.SEVERE, null, ex);
+                        }
+                        returnValue = processExecutor.executeProcess(true, true,
+                                "e2fsck", "-f", "-y", "-v", dataDevPath);
+                    } else {
+                        String errorMessage =
+                                STRINGS.getString("Error_File_System_Check");
+                        errorMessage =
+                                MessageFormat.format(errorMessage, dataDevPath);
+                        showErrorMessage(errorMessage);
+                        return false;
+                    }
                 }
                 returnValue = processExecutor.executeProcess(true, true,
                         "resize2fs", "-M", "-p", dataDevPath);
                 if (returnValue != 0) {
-                    String errorMessage = 
+                    String errorMessage =
                             STRINGS.getString("Error_File_System_Resize");
-                    errorMessage = 
+                    errorMessage =
                             MessageFormat.format(errorMessage, dataDevPath);
                     showErrorMessage(errorMessage);
                     return false;
@@ -5009,9 +5057,9 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                         "mkpart", "primary", border, "100%",
                         "set", systemPartitionString, "boot", "on");
                 if (returnValue != 0) {
-                    String errorMessage = 
+                    String errorMessage =
                             STRINGS.getString("Error_Changing_Partition_Sizes");
-                    errorMessage = 
+                    errorMessage =
                             MessageFormat.format(errorMessage, dataDevPath);
                     showErrorMessage(errorMessage);
                     return false;
@@ -5019,9 +5067,9 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 returnValue = processExecutor.executeProcess(true, true,
                         "resize2fs", dataDevPath);
                 if (returnValue != 0) {
-                    String errorMessage = 
+                    String errorMessage =
                             STRINGS.getString("Error_File_System_Resize");
-                    errorMessage = 
+                    errorMessage =
                             MessageFormat.format(errorMessage, dataDevPath);
                     showErrorMessage(errorMessage);
                     return false;

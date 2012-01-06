@@ -1,3 +1,39 @@
+dlcopy (201201061627-1) unstable; urgency=low
+
+  * improved Spanish translation
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 06 Jan 2012 16:27:37 +0100
+
+dlcopy (201112221832-1) unstable; urgency=low
+
+  * retry e2fsck when file system was busy
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 22 Dec 2011 18:32:56 +0100
+
+dlcopy (201112221748-1) unstable; urgency=low
+
+  * also continue when e2fsck repaired a file system
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 22 Dec 2011 17:48:41 +0100
+
+dlcopy (201112221731-1) unstable; urgency=low
+
+  * use fuser to check for busy partition when umounting
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 22 Dec 2011 17:31:48 +0100
+
+dlcopy (201112221636-1) unstable; urgency=low
+
+  * more umount logging, longer timeout
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 22 Dec 2011 16:36:21 +0100
+
+dlcopy (201112221604-1) unstable; urgency=low
+
+  * some small fixes
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 22 Dec 2011 16:04:35 +0100
+
 dlcopy (201111301526-1) unstable; urgency=low
 
   * integrated jbackpack to be able to backup during upgrade
