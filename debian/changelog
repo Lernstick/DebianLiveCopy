@@ -1,3 +1,9 @@
+dlcopy (201201091943-1) unstable; urgency=low
+
+  * improved overwrite file list handling (moving, sorting)
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Mon, 09 Jan 2012 19:43:14 +0100
+
 dlcopy (201201061627-1) unstable; urgency=low
 
   * improved Spanish translation

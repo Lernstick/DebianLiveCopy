@@ -44,6 +44,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.Dictionary;
+import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Properties;
@@ -78,6 +79,8 @@ import javax.swing.SwingWorker;
 import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.ListDataEvent;
+import javax.swing.event.ListDataListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
@@ -91,7 +94,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
 public class DLCopy extends JFrame
-        implements DocumentListener, PropertyChangeListener {
+        implements DocumentListener, PropertyChangeListener, ListDataListener {
 
     /**
      * 1024 * 1024
@@ -519,6 +522,7 @@ public class DLCopy extends JFrame
         separateFileSystemsList.setModel(separateFileSystemsListModel);
 
         upgradeOverwriteListModel = new DefaultListModel();
+        upgradeOverwriteListModel.addListDataListener(this);
         upgradeOverwriteList.setModel(upgradeOverwriteListModel);
 
         preferences = Preferences.userNodeForPackage(DLCopy.class);
@@ -542,6 +546,21 @@ public class DLCopy extends JFrame
                 upgradeOverwriteListModel.addElement(upgradeOverWriteToken);
             }
         }
+    }
+
+    @Override
+    public void intervalAdded(ListDataEvent e) {
+        handleListDataEvent(e);
+    }
+
+    @Override
+    public void intervalRemoved(ListDataEvent e) {
+        handleListDataEvent(e);
+    }
+
+    @Override
+    public void contentsChanged(ListDataEvent e) {
+        handleListDataEvent(e);
     }
 
     @Override
@@ -841,6 +860,7 @@ public class DLCopy extends JFrame
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        repairButtonGroup = new javax.swing.ButtonGroup();
         choicePanel = new javax.swing.JPanel();
         choiceLabel = new javax.swing.JLabel();
         buttonGridPanel = new javax.swing.JPanel();
@@ -921,6 +941,10 @@ public class DLCopy extends JFrame
         upgradeOverwriteAddButton = new javax.swing.JButton();
         upgradeOverwriteEditButton = new javax.swing.JButton();
         upgradeOverwriteRemoveButton = new javax.swing.JButton();
+        upgradeMoveUpButton = new javax.swing.JButton();
+        upgradeMoveDownButton = new javax.swing.JButton();
+        sortAscendingButton = new javax.swing.JButton();
+        sortDescendingButton = new javax.swing.JButton();
         automaticBackupCheckBox = new javax.swing.JCheckBox();
         automaticBackupLabel = new javax.swing.JLabel();
         automaticBackupTextField = new javax.swing.JTextField();
@@ -956,8 +980,10 @@ public class DLCopy extends JFrame
         repairExchangeDefinitionLabel = new javax.swing.JLabel();
         repairDataDefinitionLabel = new javax.swing.JLabel();
         repairOsDefinitionLabel = new javax.swing.JLabel();
-        resetDataPartitionCheckBox = new javax.swing.JCheckBox();
-        resetHomeDirectoryCheckBox = new javax.swing.JCheckBox();
+        formatDataPartitionRadioButton = new javax.swing.JRadioButton();
+        removeFilesRadioButton = new javax.swing.JRadioButton();
+        systemFilesCheckBox = new javax.swing.JCheckBox();
+        homeDirectoryCheckBox = new javax.swing.JCheckBox();
         toISOInfoPanel = new javax.swing.JPanel();
         toISOInfoLabel = new javax.swing.JLabel();
         toISOSelectionPanel = new javax.swing.JPanel();
@@ -1596,6 +1622,7 @@ public class DLCopy extends JFrame
         upgradeOverwriteScrollPane.setViewportView(upgradeOverwriteList);
 
         upgradeOverwriteAddButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/16x16/list-add.png"))); // NOI18N
+        upgradeOverwriteAddButton.setToolTipText(bundle.getString("DLCopy.upgradeOverwriteAddButton.toolTipText")); // NOI18N
         upgradeOverwriteAddButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         upgradeOverwriteAddButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -1604,6 +1631,7 @@ public class DLCopy extends JFrame
         });
 
         upgradeOverwriteEditButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/16x16/document-edit.png"))); // NOI18N
+        upgradeOverwriteEditButton.setToolTipText(bundle.getString("DLCopy.upgradeOverwriteEditButton.toolTipText")); // NOI18N
         upgradeOverwriteEditButton.setEnabled(false);
         upgradeOverwriteEditButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         upgradeOverwriteEditButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1613,11 +1641,52 @@ public class DLCopy extends JFrame
         });
 
         upgradeOverwriteRemoveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/16x16/list-remove.png"))); // NOI18N
+        upgradeOverwriteRemoveButton.setToolTipText(bundle.getString("DLCopy.upgradeOverwriteRemoveButton.toolTipText")); // NOI18N
         upgradeOverwriteRemoveButton.setEnabled(false);
         upgradeOverwriteRemoveButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         upgradeOverwriteRemoveButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 upgradeOverwriteRemoveButtonActionPerformed(evt);
+            }
+        });
+
+        upgradeMoveUpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/16x16/arrow-up.png"))); // NOI18N
+        upgradeMoveUpButton.setToolTipText(bundle.getString("DLCopy.upgradeMoveUpButton.toolTipText")); // NOI18N
+        upgradeMoveUpButton.setEnabled(false);
+        upgradeMoveUpButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        upgradeMoveUpButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                upgradeMoveUpButtonActionPerformed(evt);
+            }
+        });
+
+        upgradeMoveDownButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/16x16/arrow-down.png"))); // NOI18N
+        upgradeMoveDownButton.setToolTipText(bundle.getString("DLCopy.upgradeMoveDownButton.toolTipText")); // NOI18N
+        upgradeMoveDownButton.setEnabled(false);
+        upgradeMoveDownButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        upgradeMoveDownButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                upgradeMoveDownButtonActionPerformed(evt);
+            }
+        });
+
+        sortAscendingButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/16x16/view-sort-ascending.png"))); // NOI18N
+        sortAscendingButton.setToolTipText(bundle.getString("DLCopy.sortAscendingButton.toolTipText")); // NOI18N
+        sortAscendingButton.setEnabled(false);
+        sortAscendingButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        sortAscendingButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sortAscendingButtonActionPerformed(evt);
+            }
+        });
+
+        sortDescendingButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/16x16/view-sort-descending.png"))); // NOI18N
+        sortDescendingButton.setToolTipText(bundle.getString("DLCopy.sortDescendingButton.toolTipText")); // NOI18N
+        sortDescendingButton.setEnabled(false);
+        sortDescendingButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        sortDescendingButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                sortDescendingButtonActionPerformed(evt);
             }
         });
 
@@ -1627,7 +1696,14 @@ public class DLCopy extends JFrame
             upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, upgradeOverwritePanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(upgradeOverwriteScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 695, Short.MAX_VALUE)
+                .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                        .addComponent(upgradeMoveUpButton)
+                        .addComponent(upgradeMoveDownButton))
+                    .addComponent(sortAscendingButton)
+                    .addComponent(sortDescendingButton))
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(upgradeOverwriteScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 663, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(upgradeOverwriteAddButton, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -1638,14 +1714,22 @@ public class DLCopy extends JFrame
         upgradeOverwritePanelLayout.setVerticalGroup(
             upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
-                .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(upgradeOverwriteScrollPane, javax.swing.GroupLayout.Alignment.LEADING, 0, 0, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.LEADING, upgradeOverwritePanelLayout.createSequentialGroup()
+                .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
                         .addComponent(upgradeOverwriteAddButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(upgradeOverwriteEditButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(upgradeOverwriteRemoveButton)))
+                        .addComponent(upgradeOverwriteRemoveButton))
+                    .addComponent(upgradeOverwriteScrollPane, 0, 0, Short.MAX_VALUE)
+                    .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
+                        .addComponent(upgradeMoveUpButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(upgradeMoveDownButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(sortAscendingButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(sortDescendingButton)))
                 .addContainerGap())
         );
 
@@ -1895,10 +1979,27 @@ public class DLCopy extends JFrame
         repairOsDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/blue_box.png"))); // NOI18N
         repairOsDefinitionLabel.setText(bundle.getString("DLCopy.repairOsDefinitionLabel.text")); // NOI18N
 
-        resetDataPartitionCheckBox.setSelected(true);
-        resetDataPartitionCheckBox.setText(bundle.getString("DLCopy.resetDataPartitionCheckBox.text")); // NOI18N
+        repairButtonGroup.add(formatDataPartitionRadioButton);
+        formatDataPartitionRadioButton.setText(bundle.getString("DLCopy.formatDataPartitionRadioButton.text")); // NOI18N
+        formatDataPartitionRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                formatDataPartitionRadioButtonActionPerformed(evt);
+            }
+        });
 
-        resetHomeDirectoryCheckBox.setText(bundle.getString("DLCopy.resetHomeDirectoryCheckBox.text")); // NOI18N
+        repairButtonGroup.add(removeFilesRadioButton);
+        removeFilesRadioButton.setSelected(true);
+        removeFilesRadioButton.setText(bundle.getString("DLCopy.removeFilesRadioButton.text")); // NOI18N
+        removeFilesRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeFilesRadioButtonActionPerformed(evt);
+            }
+        });
+
+        systemFilesCheckBox.setSelected(true);
+        systemFilesCheckBox.setText(bundle.getString("DLCopy.systemFilesCheckBox.text")); // NOI18N
+
+        homeDirectoryCheckBox.setText(bundle.getString("DLCopy.homeDirectoryCheckBox.text")); // NOI18N
 
         javax.swing.GroupLayout repairSelectionDeviceListPanelLayout = new javax.swing.GroupLayout(repairSelectionDeviceListPanel);
         repairSelectionDeviceListPanel.setLayout(repairSelectionDeviceListPanelLayout);
@@ -1912,10 +2013,13 @@ public class DLCopy extends JFrame
                     .addComponent(repairDataDefinitionLabel)
                     .addComponent(repairExchangeDefinitionLabel)
                     .addComponent(repairOsDefinitionLabel)
+                    .addComponent(formatDataPartitionRadioButton)
+                    .addComponent(removeFilesRadioButton)
                     .addGroup(repairSelectionDeviceListPanelLayout.createSequentialGroup()
-                        .addComponent(resetDataPartitionCheckBox)
+                        .addGap(21, 21, 21)
+                        .addComponent(systemFilesCheckBox)
                         .addGap(18, 18, 18)
-                        .addComponent(resetHomeDirectoryCheckBox)))
+                        .addComponent(homeDirectoryCheckBox)))
                 .addContainerGap())
         );
         repairSelectionDeviceListPanelLayout.setVerticalGroup(
@@ -1924,7 +2028,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(repairSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 345, Short.MAX_VALUE)
+                .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(repairExchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1932,10 +2036,14 @@ public class DLCopy extends JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(repairOsDefinitionLabel)
                 .addGap(18, 18, 18)
+                .addComponent(formatDataPartitionRadioButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(removeFilesRadioButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(repairSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(resetDataPartitionCheckBox)
-                    .addComponent(resetHomeDirectoryCheckBox))
-                .addContainerGap())
+                    .addComponent(systemFilesCheckBox)
+                    .addComponent(homeDirectoryCheckBox))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         repairSelectionCardPanel.add(repairSelectionDeviceListPanel, "repairSelectionDeviceListPanel");
@@ -2534,6 +2642,9 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private void upgradeOverwriteAddButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeOverwriteAddButtonActionPerformed
         addPathToList(JFileChooser.FILES_AND_DIRECTORIES,
                 upgradeOverwriteListModel);
+        // adding elements could enable the "move down" button
+        // therefore we trigger a "spurious" selection update event here
+        upgradeOverwriteListValueChanged(null);
     }//GEN-LAST:event_upgradeOverwriteAddButtonActionPerformed
 
     private void upgradeOverwriteEditButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeOverwriteEditButtonActionPerformed
@@ -2554,8 +2665,17 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
     private void upgradeOverwriteListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_upgradeOverwriteListValueChanged
         int[] selectedIndices = upgradeOverwriteList.getSelectedIndices();
+        boolean selected = selectedIndices.length > 0;
+        upgradeMoveUpButton.setEnabled(selected && (selectedIndices[0] != 0));
+        if (selected) {
+            int lastSelectionIndex = selectedIndices[selectedIndices.length - 1];
+            int lastListIndex = upgradeOverwriteListModel.getSize() - 1;
+            upgradeMoveDownButton.setEnabled(lastSelectionIndex != lastListIndex);
+        } else {
+            upgradeMoveDownButton.setEnabled(false);
+        }
         upgradeOverwriteEditButton.setEnabled(selectedIndices.length == 1);
-        upgradeOverwriteRemoveButton.setEnabled(selectedIndices.length > 0);
+        upgradeOverwriteRemoveButton.setEnabled(selected);
     }//GEN-LAST:event_upgradeOverwriteListValueChanged
 
     private void automaticBackupCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_automaticBackupCheckBoxItemStateChanged
@@ -2605,6 +2725,94 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private void repairSelectionPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_repairSelectionPanelComponentShown
         new RepairStorageDeviceListUpdater().execute();
     }//GEN-LAST:event_repairSelectionPanelComponentShown
+
+    private void formatDataPartitionRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_formatDataPartitionRadioButtonActionPerformed
+        updateRepairButtonState();
+    }//GEN-LAST:event_formatDataPartitionRadioButtonActionPerformed
+
+    private void removeFilesRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeFilesRadioButtonActionPerformed
+        updateRepairButtonState();
+    }//GEN-LAST:event_removeFilesRadioButtonActionPerformed
+
+    private void upgradeMoveUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeMoveUpButtonActionPerformed
+        int selectedIndices[] = upgradeOverwriteList.getSelectedIndices();
+        upgradeOverwriteList.clearSelection();
+        for (int selectedIndex : selectedIndices) {
+            // swap values with previous index
+            int previousIndex = selectedIndex - 1;
+            Object previousValue = upgradeOverwriteListModel.get(previousIndex);
+            Object value = upgradeOverwriteListModel.get(selectedIndex);
+            upgradeOverwriteListModel.set(previousIndex, value);
+            upgradeOverwriteListModel.set(selectedIndex, previousValue);
+            upgradeOverwriteList.addSelectionInterval(previousIndex, previousIndex);
+        }
+    }//GEN-LAST:event_upgradeMoveUpButtonActionPerformed
+
+    private void upgradeMoveDownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeMoveDownButtonActionPerformed
+        int selectedIndices[] = upgradeOverwriteList.getSelectedIndices();
+        upgradeOverwriteList.clearSelection();
+        for (int i = selectedIndices.length - 1; i >= 0; i--) {
+            // swap values with next index
+            int selectedIndex = selectedIndices[i];
+            int nextIndex = selectedIndex + 1;
+            Object nextValue = upgradeOverwriteListModel.get(nextIndex);
+            Object value = upgradeOverwriteListModel.get(selectedIndex);
+            upgradeOverwriteListModel.set(nextIndex, value);
+            upgradeOverwriteListModel.set(selectedIndex, nextValue);
+            upgradeOverwriteList.addSelectionInterval(nextIndex, nextIndex);
+        }
+    }//GEN-LAST:event_upgradeMoveDownButtonActionPerformed
+
+    private void sortAscendingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sortAscendingButtonActionPerformed
+        sortList(true);
+    }//GEN-LAST:event_sortAscendingButtonActionPerformed
+
+    private void sortDescendingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sortDescendingButtonActionPerformed
+        sortList(false);
+    }//GEN-LAST:event_sortDescendingButtonActionPerformed
+
+    private void sortList(boolean ascending) {
+        // remember selection before sorting
+        Object[] selectedValues = upgradeOverwriteList.getSelectedValues();
+
+        // sort
+        List<String> list = new ArrayList<String>();
+        Enumeration enumeration = upgradeOverwriteListModel.elements();
+        while (enumeration.hasMoreElements()) {
+            list.add((String) enumeration.nextElement());
+        }
+        if (ascending) {
+            Collections.sort(list);
+        } else {
+            Collections.sort(list, Collections.reverseOrder());
+        }
+
+        // refill list with sorted values
+        upgradeOverwriteListModel.removeAllElements();
+        for (Object object : list) {
+            upgradeOverwriteListModel.addElement(object);
+        }
+
+        // restore original selection
+        for (Object selectedValue : selectedValues) {
+            int selectedIndex = upgradeOverwriteListModel.indexOf(selectedValue);
+            upgradeOverwriteList.addSelectionInterval(selectedIndex, selectedIndex);
+        }
+    }
+
+    private void handleListDataEvent(ListDataEvent e) {
+        if (e.getSource() == upgradeOverwriteListModel) {
+            boolean sortable = upgradeOverwriteListModel.getSize() > 1;
+            sortAscendingButton.setEnabled(sortable);
+            sortDescendingButton.setEnabled(sortable);
+        }
+    }
+
+    private void updateRepairButtonState() {
+        boolean selected = removeFilesRadioButton.isSelected();
+        systemFilesCheckBox.setEnabled(selected);
+        homeDirectoryCheckBox.setEnabled(selected);
+    }
 
     private void removeSelectedListEntries(JList list) {
         int[] selectedIndices = list.getSelectedIndices();
@@ -6106,8 +6314,10 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private javax.swing.JTextField exchangePartitionTextField;
     private javax.swing.JLabel executionLabel;
     private javax.swing.JPanel executionPanel;
+    private javax.swing.JRadioButton formatDataPartitionRadioButton;
     private javax.swing.JLabel freeSpaceLabel;
     private javax.swing.JTextField freeSpaceTextField;
+    private javax.swing.JCheckBox homeDirectoryCheckBox;
     private javax.swing.JLabel infoLabel;
     private javax.swing.JLabel infoStepLabel;
     private javax.swing.JButton installButton;
@@ -6143,7 +6353,9 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private javax.swing.JLabel osDefinitionLabel;
     private javax.swing.JButton previousButton;
     private javax.swing.JCheckBox reactivateWelcomeCheckBox;
+    private javax.swing.JRadioButton removeFilesRadioButton;
     private javax.swing.JButton repairButton;
+    private javax.swing.ButtonGroup repairButtonGroup;
     private javax.swing.JLabel repairDataDefinitionLabel;
     private javax.swing.JLabel repairExchangeDefinitionLabel;
     private javax.swing.JLabel repairInfoLabel;
@@ -6159,8 +6371,6 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private javax.swing.JCheckBox repairShowHarddiskCheckBox;
     private javax.swing.JList repairStorageDeviceList;
     private javax.swing.JScrollPane repairStorageDeviceListScrollPane;
-    private javax.swing.JCheckBox resetDataPartitionCheckBox;
-    private javax.swing.JCheckBox resetHomeDirectoryCheckBox;
     private javax.swing.JPanel rsyncPanel;
     private javax.swing.JProgressBar rsyncPogressBar;
     private javax.swing.JLabel selectionLabel;
@@ -6170,9 +6380,12 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private javax.swing.JPanel separateFileSystemsPanel;
     private javax.swing.JButton separateFileSystemsRemoveButton;
     private javax.swing.JScrollPane separateFileSystemsScrollpane;
+    private javax.swing.JButton sortAscendingButton;
+    private javax.swing.JButton sortDescendingButton;
     private javax.swing.JLabel stepsLabel;
     private javax.swing.JPanel stepsPanel;
     private javax.swing.JScrollPane storageDeviceListScrollPane;
+    private javax.swing.JCheckBox systemFilesCheckBox;
     private javax.swing.JLabel tmpDirLabel;
     private javax.swing.JButton tmpDirSelectButton;
     private javax.swing.JTextField tmpDirTextField;
@@ -6200,6 +6413,8 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     private javax.swing.JPanel upgradeIndeterminateProgressPanel;
     private javax.swing.JLabel upgradeInfoLabel;
     private javax.swing.JPanel upgradeInfoPanel;
+    private javax.swing.JButton upgradeMoveDownButton;
+    private javax.swing.JButton upgradeMoveUpButton;
     private javax.swing.JLabel upgradeNoMediaLabel;
     private javax.swing.JPanel upgradeNoMediaPanel;
     private javax.swing.JLabel upgradeOsDefinitionLabel;

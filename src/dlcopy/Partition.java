@@ -174,7 +174,7 @@ public class Partition {
                     ProcessExecutor processExecutor = new ProcessExecutor();
                     Pattern pattern = Pattern.compile("^(\\d+).*");
                     processExecutor.executeProcess(true, true,
-                            "du", "-sb", "/home/user");
+                            "du", "-sb", mountPath + "/home/user");
                     String stdOut = processExecutor.getStdOut();
                     LOGGER.log(Level.INFO, "stdOut = \"{0}\"", stdOut);
                     Matcher matcher = pattern.matcher(stdOut);
@@ -185,7 +185,7 @@ public class Partition {
                     LOGGER.log(Level.INFO, "userSize = {0}", userSize);
 
                     processExecutor.executeProcess(true, true,
-                            "du", "-sb", "/etc/cups");
+                            "du", "-sb", mountPath + "/etc/cups");
                     matcher = pattern.matcher(processExecutor.getStdOut());
                     if (matcher.find()) {
                         String userSizeString = matcher.group(1);
