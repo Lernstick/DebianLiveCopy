@@ -232,7 +232,8 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
                         // right now we can only resize ext partitions
                         if (previousPartition.hasExtendedFilesystem()) {
                             long usableSpace =
-                                    previousPartition.getUsableSpace();
+                                    previousPartition.getSize() - 
+                                    previousPartition.getUsedSpace(true);
                             if (usableSpace > Math.abs(remaining)) {
                                 canBeUpgraded = true;
                                 needsRepartitioning = true;

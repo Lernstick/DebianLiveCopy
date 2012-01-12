@@ -1,5 +1,5 @@
 /*
- * UpgradeStorageDeviceRenderer.java
+ * RepairStorageDeviceRenderer.java
  *
  * Created on 16. April 2008, 13:23
  */
@@ -14,46 +14,47 @@ import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 
 /**
- * A renderer for storage devices
+ * A renderer for storage devices to be repaired
+ *
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
-public class UpgradeStorageDeviceRenderer
-        extends JPanel
-        implements ListCellRenderer {
+public class RepairStorageDeviceRenderer
+        extends JPanel implements ListCellRenderer {
 
     private final static Logger LOGGER =
             Logger.getLogger(DLCopy.class.getName());
     private final static Icon blueBox = new ImageIcon(
-            UpgradeStorageDeviceRenderer.class.getResource(
+            RepairStorageDeviceRenderer.class.getResource(
             "/dlcopy/icons/blue_box.png"));
     private final static Icon greenBox = new ImageIcon(
-            UpgradeStorageDeviceRenderer.class.getResource(
+            RepairStorageDeviceRenderer.class.getResource(
             "/dlcopy/icons/green_box.png"));
     private final static Icon yellowBox = new ImageIcon(
-            UpgradeStorageDeviceRenderer.class.getResource(
+            RepairStorageDeviceRenderer.class.getResource(
             "/dlcopy/icons/yellow_box.png"));
     private final static Icon grayBox = new ImageIcon(
-            UpgradeStorageDeviceRenderer.class.getResource(
+            RepairStorageDeviceRenderer.class.getResource(
             "/dlcopy/icons/gray_box.png"));
     private final static Icon darkGrayBox = new ImageIcon(
-            UpgradeStorageDeviceRenderer.class.getResource(
+            RepairStorageDeviceRenderer.class.getResource(
             "/dlcopy/icons/dark_gray_box.png"));
     private final static Icon okIcon = new ImageIcon(
-            UpgradeStorageDeviceRenderer.class.getResource(
+            RepairStorageDeviceRenderer.class.getResource(
             "/dlcopy/icons/16x16/dialog-ok-apply.png"));
     private final static Icon warningIcon = new ImageIcon(
-            UpgradeStorageDeviceRenderer.class.getResource(
+            RepairStorageDeviceRenderer.class.getResource(
             "/dlcopy/icons/16x16/dialog-warning.png"));
     private final static Icon cancelIcon = new ImageIcon(
-            UpgradeStorageDeviceRenderer.class.getResource(
+            RepairStorageDeviceRenderer.class.getResource(
             "/dlcopy/icons/16x16/dialog-cancel.png"));
     private final Color LIGHT_BLUE = new Color(170, 170, 255);
     private long maxStorageDeviceSize;
     private StorageDevice storageDevice;
 
-    /** Creates new form UsbRenderer
+    /**
+     * Creates new form UsbRenderer
      */
-    public UpgradeStorageDeviceRenderer() {
+    public RepairStorageDeviceRenderer() {
         initComponents();
     }
 
@@ -136,7 +137,7 @@ public class UpgradeStorageDeviceRenderer
                     stringBuilder.append(DLCopy.STRINGS.getString("Used"));
                     stringBuilder.append(": ");
                     try {
-                        long usedSpace = partition.getUsedSpace(true);
+                        long usedSpace = partition.getUsedSpace(false);
                         if (usedSpace == -1) {
                             stringBuilder.append(DLCopy.STRINGS.getString("Unknown"));
                         } else {
@@ -164,25 +165,14 @@ public class UpgradeStorageDeviceRenderer
             }
 
             // upgrade info text
-            try {
-                if (storageDevice.canBeUpgraded()) {
-                    if (storageDevice.needsRepartitioning()) {
-                        upgradeInfoLabel.setIcon(warningIcon);
-                        upgradeInfoLabel.setText(DLCopy.STRINGS.getString(
-                                "Warning_Repartitioning"));
-                    } else {
-                        upgradeInfoLabel.setIcon(okIcon);
-                        upgradeInfoLabel.setText(DLCopy.STRINGS.getString(
-                                "Upgrading_Possible"));
-                    }
-                } else {
-                    upgradeInfoLabel.setIcon(cancelIcon);
-                    upgradeInfoLabel.setText(
-                            DLCopy.STRINGS.getString("Upgrading_Impossible")
-                            + ": " + storageDevice.getNoUpgradeReason());
-                }
-            } catch (DBusException ex) {
-                LOGGER.log(Level.SEVERE, "", ex);
+            if (storageDevice.getDataPartition() == null) {
+                upgradeInfoLabel.setIcon(cancelIcon);
+                upgradeInfoLabel.setText(
+                        DLCopy.STRINGS.getString("Repairing_Impossible"));
+            } else {
+                upgradeInfoLabel.setIcon(okIcon);
+                upgradeInfoLabel.setText(
+                        DLCopy.STRINGS.getString("Repairing_Possible"));
             }
 
             if (isSelected) {
@@ -199,11 +189,13 @@ public class UpgradeStorageDeviceRenderer
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
+        LOGGER.log(Level.INFO,
+                "maxStorageDeviceSize = {0}", maxStorageDeviceSize);
+
         // early return
         if (maxStorageDeviceSize == 0) {
             return;
         }
-        LOGGER.log(Level.FINEST, "maxStorageDeviceSize = {0}", maxStorageDeviceSize);
 
         // paint the partition rectangles
         Graphics2D graphics2D = (Graphics2D) g;
@@ -222,7 +214,7 @@ public class UpgradeStorageDeviceRenderer
 
         for (Partition partition : storageDevice.getPartitions()) {
 
-            LOGGER.log(Level.FINEST, "partition: {0}", partition.getDevice());
+            LOGGER.log(Level.INFO, "partition: {0}", partition.getDevice());
 
             // determine offset
             long partitionOffset = partition.getOffset();
@@ -230,13 +222,13 @@ public class UpgradeStorageDeviceRenderer
 
             // determine width
             long partitionSize = partition.getSize();
-            LOGGER.log(Level.FINEST, "partitionSize = {0}", partitionSize);
+            LOGGER.log(Level.INFO, "partitionSize = {0}", partitionSize);
             int partitionWidth =
                     (int) ((width * partitionSize) / maxStorageDeviceSize);
-            LOGGER.log(Level.FINEST, "partitionWidth = {0}", partitionWidth);
+            LOGGER.log(Level.INFO, "partitionWidth = {0}", partitionWidth);
 
             // determine color
-            LOGGER.log(Level.FINEST, "partitionType: {0}", partition.getType());
+            LOGGER.log(Level.INFO, "partitionType: {0}", partition.getType());
             boolean extended = partition.isExtended();
             try {
                 if (partition.isSystemPartition()) {
@@ -265,9 +257,9 @@ public class UpgradeStorageDeviceRenderer
             // paint partition storage space usage (if known)
             if (!extended) {
                 try {
-                    long usedSpace = partition.getUsedSpace(true);
-                    if (usedSpace != -1) {
-                        int usedWidth = (int) ((width * usedSpace)
+                    long usableSpace = partition.getUsedSpace(false);
+                    if (usableSpace != -1) {
+                        int usedWidth = (int) ((width * usableSpace)
                                 / maxStorageDeviceSize);
                         graphics2D.setPaint(Color.LIGHT_GRAY);
                         int usageOffset = 4;
@@ -287,16 +279,17 @@ public class UpgradeStorageDeviceRenderer
 
     /**
      * sets the size of the largest USB stick
+     *
      * @param maxSize the size of the largest USB stick
      */
     public void setMaxSize(long maxSize) {
         this.maxStorageDeviceSize = maxSize;
     }
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -325,14 +318,14 @@ public class UpgradeStorageDeviceRenderer
 
         descriptionLabel.setFont(descriptionLabel.getFont().deriveFont(descriptionLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("dlcopy/Strings"); // NOI18N
-        descriptionLabel.setText(bundle.getString("UpgradeStorageDeviceRenderer.descriptionLabel.text")); // NOI18N
+        descriptionLabel.setText(bundle.getString("RepairStorageDeviceRenderer.descriptionLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         rightPanel.add(descriptionLabel, gridBagConstraints);
 
-        partitionPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true), bundle.getString("UpgradeStorageDeviceRenderer.partitionPanel.border.title"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 12))); // NOI18N
+        partitionPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true), bundle.getString("RepairStorageDeviceRenderer.partitionPanel.border.title"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 12))); // NOI18N
         partitionPanel.setOpaque(false);
         partitionPanel.setLayout(new java.awt.GridBagLayout());
 

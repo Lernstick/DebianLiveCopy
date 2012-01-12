@@ -16,6 +16,7 @@ import org.freedesktop.udisks.Device;
 
 /**
  * A storage device partition
+ *
  * @author Ronny Standtke <ronny.standtke@fhnw.ch>
  */
 public class Partition {
@@ -31,10 +32,11 @@ public class Partition {
     private final String idType;
     private final String systemPartitionLabel;
     private Boolean isSystemPartition;
-    private Long usableSpace;
+    private Long usedSpace;
 
     /**
      * creates a new Partition
+     *
      * @param device the device of the partition (e.g. "sda1")
      * @param number the device number
      * @param offset the offset (start) of the partition
@@ -59,6 +61,7 @@ public class Partition {
 
     /**
      * returns the device of the partition, e.g. "sda1"
+     *
      * @return the device of the partition, e.g. "sda1"
      */
     public String getDevice() {
@@ -67,6 +70,7 @@ public class Partition {
 
     /**
      * returns the partition number
+     *
      * @return the partition number
      */
     public int getNumber() {
@@ -75,6 +79,7 @@ public class Partition {
 
     /**
      * returns the start sector of the partition
+     *
      * @return the start sector of the partition
      */
     public long getOffset() {
@@ -83,6 +88,7 @@ public class Partition {
 
     /**
      * returns the size of this partition
+     *
      * @return the size of this partition
      */
     public long getSize() {
@@ -91,6 +97,7 @@ public class Partition {
 
     /**
      * returns the label of the partition
+     *
      * @return the label of the partition
      */
     public String getIdLabel() {
@@ -99,6 +106,7 @@ public class Partition {
 
     /**
      * returns the ID type of the partition
+     *
      * @return the ID type of the partition
      */
     public String getIdType() {
@@ -107,6 +115,7 @@ public class Partition {
 
     /**
      * returns the partition type
+     *
      * @return the partition type
      */
     public String getType() {
@@ -115,6 +124,7 @@ public class Partition {
 
     /**
      * returns a list of mount paths of this partition
+     *
      * @return a list of mount paths of this partition
      * @throws DBusException if a dbus exception occurs
      */
@@ -124,7 +134,9 @@ public class Partition {
 
     /**
      * checks if the partition is an extended partition
-     * @return <code>true</code>, if the partition is an extended partition,
+     *
+     * @return
+     * <code>true</code>, if the partition is an extended partition,
      * <code>false</code> otherwise
      */
     public boolean isExtended() {
@@ -133,8 +145,10 @@ public class Partition {
 
     /**
      * checks if the file system on the partition is ext[2|3|4]
-     * @return <code>true</code>, if the file system on the partition is
-     * ext[2|3|4], <code>false</code> otherwise
+     *
+     * @return
+     * <code>true</code>, if the file system on the partition is ext[2|3|4],
+     * <code>false</code> otherwise
      */
     public boolean hasExtendedFilesystem() {
         return idType.equals("ext2")
@@ -143,18 +157,19 @@ public class Partition {
     }
 
     /**
-     * returns the free/usable space on this partition
+     * returns the used space on this partition
+     *
      * @return the free/usable space on this partition or "-1" if the usable
      * space is unknown
      */
-    public long getUsableSpace() {
+    public long getUsedSpace(boolean onlyHomeAndCups) {
         try {
-            if (usableSpace == null) {
+            if (usedSpace == null) {
 
                 // mount partition if not already mounted
-                String mountPath = null;
                 boolean tmpMount = false;
                 List<String> mountPaths = getMountPaths();
+                String mountPath;
                 if (mountPaths.isEmpty()) {
                     mountPath = mount();
                     tmpMount = true;
@@ -166,7 +181,7 @@ public class Partition {
                     }
                 }
 
-                if (isPersistencyPartition()) {
+                if (onlyHomeAndCups) {
                     // in case of an upgrade we would only keep /home/user and
                     // /etc/cups
                     long userSize = 0;
@@ -192,12 +207,13 @@ public class Partition {
                         cupsSize = Long.parseLong(userSizeString);
                     }
                     LOGGER.log(Level.INFO, "cupsSize = {0}", cupsSize);
-                    usableSpace = size - userSize - cupsSize;
+                    usedSpace = userSize + cupsSize;
 
                 } else {
-                    usableSpace = (new File(mountPath)).getUsableSpace();
+                    usedSpace = size - (new File(mountPath)).getUsableSpace();
                 }
-                LOGGER.log(Level.INFO, "usableSpace = {0}", usableSpace);
+
+                LOGGER.log(Level.INFO, "usedSpace = {0}", usedSpace);
 
                 // cleanup
                 if (tmpMount) {
@@ -206,20 +222,21 @@ public class Partition {
             }
         } catch (DBusExecutionException ex) {
             LOGGER.log(Level.WARNING, "", ex);
-            usableSpace = -1l;
+            usedSpace = -1l;
         } catch (DBusException ex) {
             LOGGER.log(Level.WARNING, "", ex);
-            usableSpace = -1l;
+            usedSpace = -1l;
         } catch (NumberFormatException ex) {
             LOGGER.log(Level.WARNING, "", ex);
-            usableSpace = -1l;
+            usedSpace = -1l;
         }
 
-        return usableSpace;
+        return usedSpace;
     }
 
     /**
      * mounts this partition via dbus/udisks
+     *
      * @return the mount point
      * @throws DBusException if a dbus exception occurs
      */
@@ -240,17 +257,19 @@ public class Partition {
 
     /**
      * umounts this partition via dbus/udisks
-     * @return <code>true</code>, if the umount operation succeeded,
+     *
+     * @return
+     * <code>true</code>, if the umount operation succeeded,
      * <code>false</code> otherwise
      */
     public boolean umount() throws DBusException {
         /**
-         * TODO: umount timeout problem:
-         * when there have been previous copy operations, this call very often
-         * fails with the following exception:
-         * org.freedesktop.DBus$Error$NoReply: No reply within specified time
-         * at org.freedesktop.dbus.RemoteInvocationHandler.executeRemoteMethod(RemoteInvocationHandler.java:133)
-         * at org.freedesktop.dbus.RemoteInvocationHandler.invoke(RemoteInvocationHandler.java:188)
+         * TODO: umount timeout problem: when there have been previous copy
+         * operations, this call very often fails with the following exception:
+         * org.freedesktop.DBus$Error$NoReply: No reply within specified time at
+         * org.freedesktop.dbus.RemoteInvocationHandler.executeRemoteMethod(RemoteInvocationHandler.java:133)
+         * at
+         * org.freedesktop.dbus.RemoteInvocationHandler.invoke(RemoteInvocationHandler.java:188)
          * at $Proxy2.FilesystemUnmount(Unknown Source)
          */
         boolean success = false;
@@ -284,10 +303,13 @@ public class Partition {
     }
 
     /**
-     * returns <code>true</code>, if this partition is a Debian Live system
-     * partition, <code>false</code> otherwise
-     * @return <code>true</code>, if this partition is a Debian Live system
-     * partition, <code>false</code> otherwise
+     * returns
+     * <code>true</code>, if this partition is a Debian Live system partition,
+     * <code>false</code> otherwise
+     *
+     * @return
+     * <code>true</code>, if this partition is a Debian Live system partition,
+     * <code>false</code> otherwise
      * @throws DBusException if a dbus exception occurs
      */
     public boolean isSystemPartition() throws DBusException {
@@ -297,9 +319,9 @@ public class Partition {
             LOGGER.log(Level.FINEST, "partition label: \"{0}\"", idLabel);
             if (systemPartitionLabel.equals(idLabel)) {
                 // mount partition if not already mounted
-                String mountPath = null;
                 boolean tmpMount = false;
                 List<String> mountPaths = getMountPaths();
+                String mountPath;
                 if (mountPaths.isEmpty()) {
                     mountPath = mount();
                     tmpMount = true;
@@ -339,19 +361,27 @@ public class Partition {
     }
 
     /**
-     * returns <code>true</code>, if this partition is a Debian Live persistency
-     * partition, <code>false</code> otherwise
-     * @return <code>true</code>, if this partition is a Debian Live persistency
-     * partition, <code>false</code> otherwise
+     * returns
+     * <code>true</code>, if this partition is a Debian Live persistency
+     * partition,
+     * <code>false</code> otherwise
+     *
+     * @return
+     * <code>true</code>, if this partition is a Debian Live persistency
+     * partition,
+     * <code>false</code> otherwise
      */
     public boolean isPersistencyPartition() {
         return idLabel.equals("live-rw");
     }
 
     /**
-     * returns <code>true</code>, if the partition is mounted,
+     * returns
+     * <code>true</code>, if the partition is mounted,
      * <code>false</code> otherwise
-     * @return <code>true</code>, if the partition is mounted,
+     *
+     * @return
+     * <code>true</code>, if the partition is mounted,
      * <code>false</code> otherwise
      * @throws DBusException if an dbus exception occurs
      */

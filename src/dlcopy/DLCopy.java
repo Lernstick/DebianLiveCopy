@@ -16,66 +16,30 @@ import dlcopy.tools.ModalDialogHandler;
 import dlcopy.tools.ProcessExecutor;
 import java.applet.Applet;
 import java.applet.AudioClip;
-import java.awt.CardLayout;
-import java.awt.Color;
-import java.awt.Container;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.FilenameFilter;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.List;
-import java.util.Properties;
-import java.util.ResourceBundle;
-import java.util.TimeZone;
+import java.util.*;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.ConsoleHandler;
-import java.util.logging.FileHandler;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import java.util.logging.SimpleFormatter;
+import java.util.logging.*;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.DefaultListModel;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
-import javax.swing.JComponent;
-import javax.swing.JFileChooser;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JList;
-import javax.swing.JOptionPane;
-import javax.swing.JSlider;
-import javax.swing.JTextField;
-import javax.swing.ListModel;
-import javax.swing.SwingUtilities;
-import javax.swing.SwingWorker;
+import javax.swing.*;
 import javax.swing.Timer;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -91,6 +55,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
 
 /**
  * Installs Debian Live to a USB flash drive
+ *
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
 public class DLCopy extends JFrame
@@ -151,6 +116,7 @@ public class DLCopy extends JFrame
             new DefaultListModel();
     private final InstallStorageDeviceRenderer installStorageDeviceRenderer;
     private final UpgradeStorageDeviceRenderer upgradeStorageDeviceRenderer;
+    private final RepairStorageDeviceRenderer repairStorageDeviceRenderer;
     private long systemSize = -1;
     private long systemSizeEnlarged = -1;
     // some things to change when debugging...
@@ -212,7 +178,9 @@ public class DLCopy extends JFrame
     private final static String AUTO_REMOVE_BACKUP = "autoRemoveBackup";
     private final static String UPGRADE_OVERWRITE_LIST = "upgradeOverwriteList";
 
-    /** Creates new form DLCopy
+    /**
+     * Creates new form DLCopy
+     *
      * @param arguments the command line arguments
      */
     public DLCopy(String[] arguments) {
@@ -491,9 +459,8 @@ public class DLCopy extends JFrame
         upgradeStorageDeviceList.setCellRenderer(upgradeStorageDeviceRenderer);
 
         repairStorageDeviceList.setModel(repairStorageDeviceListModel);
-        // TODO: RepairStorageDeviceRenderer
-        //repairStorageDeviceRenderer = new UpgradeStorageDeviceRenderer();
-        repairStorageDeviceList.setCellRenderer(upgradeStorageDeviceRenderer);
+        repairStorageDeviceRenderer = new RepairStorageDeviceRenderer();
+        repairStorageDeviceList.setCellRenderer(repairStorageDeviceRenderer);
 
         pack();
         setLocationRelativeTo(null);
@@ -592,6 +559,14 @@ public class DLCopy extends JFrame
                 }
                 break;
 
+            case REPAIR_SELECTION:
+                if (line.startsWith(UDISKS_ADDED)) {
+                    new RepairStorageDeviceAdder(line).execute();
+                } else if (line.startsWith(UDISKS_REMOVED)) {
+                    removeStorageDevice(line);
+                }
+                break;
+
             default:
                 LOGGER.log(Level.INFO,
                         "device change not handled in state {0}", state);
@@ -615,6 +590,7 @@ public class DLCopy extends JFrame
 
     /**
      * sets the debug list of USB storage devices
+     *
      * @param debugUsbStorageDevices the debug list of USB storage devices
      */
     public void setDebugUsbStorageDevices(
@@ -624,6 +600,7 @@ public class DLCopy extends JFrame
 
     /**
      * returns the PartitionState for a given storage and system size
+     *
      * @param storageSize the storage size
      * @param systemSize the system size
      * @return the PartitionState for a given storage and system size
@@ -643,6 +620,7 @@ public class DLCopy extends JFrame
 
     /**
      * returns the exchange partition size slider
+     *
      * @return the exchange partition size slider
      */
     public JSlider getExchangePartitionSizeSlider() {
@@ -651,6 +629,7 @@ public class DLCopy extends JFrame
 
     /**
      * returns true, if the given device is a USB flash drive, false otherwise
+     *
      * @param device the device
      * @return true, if the given device is a USB flash drive, false otherwise
      * @throws IOException if an I/O error occurs
@@ -723,10 +702,11 @@ public class DLCopy extends JFrame
 
     /**
      * returns a hal property for a given device
+     *
      * @param udi the universal device identifier of the device
      * @param key the property key
-     * @return the requested hal property or <code>null</code>, if the property
-     * is not fount
+     * @return the requested hal property or
+     * <code>null</code>, if the property is not fount
      */
     public static String getHalProperty(String udi, String key) {
         // hal seems to be very unreliable these days, try three times...
@@ -767,6 +747,7 @@ public class DLCopy extends JFrame
 
     /**
      * returns the HAL UDI for a given property
+     *
      * @param key the key of the property
      * @param value the value of the property
      * @return
@@ -800,6 +781,7 @@ public class DLCopy extends JFrame
 
     /**
      * returns the HAL UDI for a given property
+     *
      * @param key the key of the property
      * @param value the value of the property
      * @return
@@ -827,6 +809,7 @@ public class DLCopy extends JFrame
 
     /**
      * returns the string representation of a given data volume
+     *
      * @param bytes the datavolume given in Byte
      * @param fractionDigits the number of fraction digits to display
      * @return the string representation of a given data volume
@@ -851,10 +834,10 @@ public class DLCopy extends JFrame
         return numberFormat.format(bytes) + " Byte";
     }
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
      */
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
@@ -1105,7 +1088,6 @@ public class DLCopy extends JFrame
 
         repairButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/dlcopy/icons/lernstick_repair.png"))); // NOI18N
         repairButton.setText(bundle.getString("DLCopy.repairButton.text")); // NOI18N
-        repairButton.setEnabled(false);
         repairButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         repairButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         repairButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1346,15 +1328,12 @@ public class DLCopy extends JFrame
                     .addComponent(copyPartitionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(createPartitionPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(installListPanelLayout.createSequentialGroup()
-                        .addComponent(exchangeDefinitionLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 364, Short.MAX_VALUE))
-                    .addGroup(installListPanelLayout.createSequentialGroup()
-                        .addComponent(dataDefinitionLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 304, Short.MAX_VALUE))
-                    .addGroup(installListPanelLayout.createSequentialGroup()
-                        .addComponent(osDefinitionLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 651, Short.MAX_VALUE))
-                    .addComponent(installSelectionCountLabel))
+                        .addGroup(installListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(exchangeDefinitionLabel)
+                            .addComponent(dataDefinitionLabel)
+                            .addComponent(osDefinitionLabel)
+                            .addComponent(installSelectionCountLabel))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 292, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         installListPanelLayout.setVerticalGroup(
@@ -1721,7 +1700,7 @@ public class DLCopy extends JFrame
                         .addComponent(upgradeOverwriteEditButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(upgradeOverwriteRemoveButton))
-                    .addComponent(upgradeOverwriteScrollPane, 0, 0, Short.MAX_VALUE)
+                    .addComponent(upgradeOverwriteScrollPane, 0, 231, Short.MAX_VALUE)
                     .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
                         .addComponent(upgradeMoveUpButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2028,7 +2007,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(repairSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 272, Short.MAX_VALUE)
+                .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 285, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(repairExchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2043,7 +2022,7 @@ public class DLCopy extends JFrame
                 .addGroup(repairSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(systemFilesCheckBox)
                     .addComponent(homeDirectoryCheckBox))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         repairSelectionCardPanel.add(repairSelectionDeviceListPanel, "repairSelectionDeviceListPanel");
@@ -2343,7 +2322,7 @@ public class DLCopy extends JFrame
                 .addGroup(executionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                     .addGroup(executionPanelLayout.createSequentialGroup()
                         .addGap(12, 12, 12)
-                        .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 523, Short.MAX_VALUE))
+                        .addComponent(cardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
                     .addComponent(stepsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -2866,13 +2845,21 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
             @Override
             public void run() {
-                DefaultListModel listModel = null;
+                DefaultListModel listModel;
                 switch (state) {
                     case INSTALL_SELECTION:
                         listModel = installStorageDeviceListModel;
                         break;
                     case UPGRADE_SELECTION:
                         listModel = upgradeStorageDeviceListModel;
+                        break;
+                    case REPAIR_SELECTION:
+                        listModel = repairStorageDeviceListModel;
+                        break;
+                    default:
+                        LOGGER.log(Level.WARNING, 
+                                "Unsupported state: {0}", state);
+                        return;
                 }
 
                 for (int i = 0, size = listModel.getSize(); i < size; i++) {
@@ -2946,6 +2933,9 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             showCard(repairSelectionCardPanel, "repairNoMediaPanel");
             disableNextButton();
         } else {
+            repairStorageDeviceRenderer.setMaxSize(
+                    getMaxStorageDeviceSize(repairStorageDeviceListModel));
+
             showCard(repairSelectionCardPanel,
                     "repairSelectionDeviceListPanel");
             // auto-select single entry
@@ -3089,10 +3079,10 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     }
 
     private long getExchangePartitionSize() throws IOException {
-        String exchangeSourcePath = null;
         boolean exchangeSourceTempMounted = false;
         String mountPoint = getHalProperty(
                 exchangeSourcePartitionUDI, "volume.mount_point");
+        String exchangeSourcePath;
         if (mountPoint.length() > 0) {
             // the exchange partition is mounted
             exchangeSourcePath = mountPoint;
@@ -3655,7 +3645,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
     }
 
     private boolean mount(String device, String mountPoint, String options) {
-        int exitValue = 0;
+        int exitValue;
         if (options == null) {
             exitValue = processExecutor.executeProcess(
                     "mount", device, mountPoint);
@@ -3687,6 +3677,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
         /**
          * returns the size of the exchange partition (in MiB)
+         *
          * @return the size of the exchange partition (in MiB)
          */
         public int getExchangeMB() {
@@ -3695,6 +3686,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
         /**
          * returns the size of the persistency partition (in MiB)
+         *
          * @return the size of the persistency partition (in MiB)
          */
         public int getPersistencyMB() {
@@ -3907,7 +3899,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
             // determine devices
             String exchangeDevice = device + (sdDevice ? "p1" : '1');
             String persistentDevice = null;
-            String systemDevice = null;
+            String systemDevice;
             switch (partitionState) {
                 case ONLY_SYSTEM:
                     systemDevice = device + (sdDevice ? "p1" : '1');
@@ -5100,12 +5092,34 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
                 // run the actual backup process
                 rdiffBackupRestore.backupViaFileSystem(backupSource,
-                        backupDestination, null/*tempDirPath*/,
-                        null/*excludes*/, null/*includes*/, true/*compression*/,
-                        null/*maxFileSize*/, null/*minFileSize*/,
-                        false/*excludeDeviceFiles*/, false/*excludeFifos*/,
-                        false/*excludeOtherFileSystems*/,
-                        false/*excludeSockets*/, false/*excludeSymlinks*/);
+                        backupDestination, null/*
+                         * tempDirPath
+                         */,
+                        null/*
+                         * excludes
+                         */, null/*
+                         * includes
+                         */, true/*
+                         * compression
+                         */,
+                        null/*
+                         * maxFileSize
+                         */, null/*
+                         * minFileSize
+                         */,
+                        false/*
+                         * excludeDeviceFiles
+                         */, false/*
+                         * excludeFifos
+                         */,
+                        false/*
+                         * excludeOtherFileSystems
+                         */,
+                        false/*
+                         * excludeSockets
+                         */, false/*
+                         * excludeSymlinks
+                         */);
 
                 // cleanup
                 backupTimer.stop();
@@ -5550,7 +5564,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                 publish(STRINGS.getString("Creating_Image"));
                 processExecutor.addPropertyChangeListener(this);
                 String isoLabel = isoLabelTextField.getText();
-                int returnValue = 0;
+                int returnValue;
                 if (isoLabel.isEmpty()) {
                     returnValue = processExecutor.executeProcess("genisoimage",
                             "-J", "-l", "-cache-inodes", "-allow-multidot",
@@ -5749,6 +5763,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
 
         /**
          * returns the swap file/partition
+         *
          * @return the swap file/partition
          */
         public String getFile() {
@@ -5758,6 +5773,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
         /**
          * returns the remaining free memory when this swap file/partition would
          * be switched off
+         *
          * @return the remaining free memory when this swap file/partition would
          * be switched off
          */
@@ -5983,7 +5999,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                     addedDevice.canBeUpgraded();
                     for (Partition partition : addedDevice.getPartitions()) {
                         try {
-                            partition.getUsableSpace();
+                            partition.getUsedSpace(true);
                         } catch (Exception ignored) {
                         }
                     }
@@ -6055,7 +6071,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                     device.canBeUpgraded();
                     for (Partition partition : device.getPartitions()) {
                         try {
-                            partition.getUsableSpace();
+                            partition.getUsedSpace(true);
                         } catch (Exception ignored) {
                         }
                     }
@@ -6149,7 +6165,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                     addedDevice.canBeUpgraded();
                     for (Partition partition : addedDevice.getPartitions()) {
                         try {
-                            partition.getUsableSpace();
+                            partition.getUsedSpace(false);
                         } catch (Exception ignored) {
                         }
                     }
@@ -6221,7 +6237,7 @@ private void upgradeShowHarddiskCheckBoxItemStateChanged(java.awt.event.ItemEven
                     //device.canBeUpgraded();
                     for (Partition partition : device.getPartitions()) {
                         try {
-                            partition.getUsableSpace();
+                            partition.getUsedSpace(false);
                         } catch (Exception ignored) {
                         }
                     }

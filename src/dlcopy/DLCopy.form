@@ -1,4 +1,4 @@
-<?xml version="1.1" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8" ?>
 
 <Form version="1.5" maxVersion="1.5" type="org.netbeans.modules.form.forminfo.JFrameFormInfo">
   <NonVisualComponents>
@@ -71,10 +71,10 @@
           </Constraints>
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
-            <Property name="horizontalGap" type="int" value="10"/>
             <Property name="columns" type="int" value="0"/>
-            <Property name="verticalGap" type="int" value="10"/>
+            <Property name="horizontalGap" type="int" value="10"/>
             <Property name="rows" type="int" value="2"/>
+            <Property name="verticalGap" type="int" value="10"/>
           </Layout>
           <SubComponents>
             <Component class="javax.swing.JButton" name="installButton">
@@ -137,7 +137,6 @@
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="dlcopy/Strings.properties" key="DLCopy.repairButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
-                <Property name="enabled" type="boolean" value="false"/>
                 <Property name="horizontalTextPosition" type="int" value="0"/>
                 <Property name="verticalTextPosition" type="int" value="3"/>
               </Properties>
@@ -186,7 +185,7 @@
                   <Group type="103" groupAlignment="1" attributes="0">
                       <Group type="102" attributes="0">
                           <EmptySpace min="12" pref="12" max="12" attributes="0"/>
-                          <Component id="cardPanel" pref="523" max="32767" attributes="0"/>
+                          <Component id="cardPanel" pref="0" max="32767" attributes="0"/>
                       </Group>
                       <Component id="stepsPanel" max="32767" attributes="0"/>
                   </Group>
@@ -246,7 +245,7 @@
                       <Component id="selectionLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="executionLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="430" max="32767" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -409,19 +408,15 @@
                                       <Component id="storageDeviceListScrollPane" alignment="1" pref="0" max="32767" attributes="0"/>
                                       <Component id="copyPartitionPanel" alignment="0" max="32767" attributes="0"/>
                                       <Component id="createPartitionPanel" alignment="0" max="32767" attributes="0"/>
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="exchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace pref="364" max="32767" attributes="0"/>
+                                      <Group type="102" attributes="0">
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="exchangeDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="dataDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="osDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Component id="installSelectionCountLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace pref="292" max="32767" attributes="0"/>
                                       </Group>
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="dataDefinitionLabel" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace pref="304" max="32767" attributes="0"/>
-                                      </Group>
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <Component id="osDefinitionLabel" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace pref="651" max="32767" attributes="0"/>
-                                      </Group>
-                                      <Component id="installSelectionCountLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
@@ -1297,7 +1292,7 @@
                                                   <EmptySpace max="-2" attributes="0"/>
                                                   <Component id="upgradeOverwriteRemoveButton" min="-2" max="-2" attributes="0"/>
                                               </Group>
-                                              <Component id="upgradeOverwriteScrollPane" alignment="0" min="0" pref="0" max="32767" attributes="2"/>
+                                              <Component id="upgradeOverwriteScrollPane" alignment="0" min="0" pref="231" max="32767" attributes="2"/>
                                               <Group type="102" alignment="0" attributes="0">
                                                   <Component id="upgradeMoveUpButton" min="-2" max="-2" attributes="0"/>
                                                   <EmptySpace max="-2" attributes="0"/>
@@ -1835,11 +1830,11 @@
                         </DimensionLayout>
                         <DimensionLayout dim="1">
                           <Group type="103" groupAlignment="0" attributes="0">
-                              <Group type="102" max="-2" attributes="0">
+                              <Group type="102" attributes="0">
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="repairSelectionCountLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
-                                  <Component id="repairStorageDeviceListScrollPane" pref="272" max="32767" attributes="0"/>
+                                  <Component id="repairStorageDeviceListScrollPane" pref="285" max="32767" attributes="0"/>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="repairExchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -1855,7 +1850,7 @@
                                       <Component id="systemFilesCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="homeDirectoryCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace max="32767" attributes="0"/>
+                                  <EmptySpace pref="22" max="32767" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -2210,7 +2205,7 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="separateFileSystemsRemoveButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="separateFileSystemsScrollpane" alignment="1" pref="152" max="32767" attributes="0"/>
+                                  <Component id="separateFileSystemsScrollpane" alignment="1" pref="212" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
