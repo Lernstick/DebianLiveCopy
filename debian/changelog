@@ -1,3 +1,9 @@
+dlcopy (201201131925-1) unstable; urgency=low
+
+  * finished work on repair feature
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 13 Jan 2012 19:25:54 +0100
+
 dlcopy (201201091943-1) unstable; urgency=low
 
   * improved overwrite file list handling (moving, sorting)
