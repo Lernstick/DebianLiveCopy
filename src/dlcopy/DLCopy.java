@@ -5833,10 +5833,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     });
 
                     String mountPoint = dataPartition.mount();
-                    if (systemFilesCheckBox.isSelected()
-                            && homeDirectoryCheckBox.isSelected()) {
+                    boolean resetHome = homeDirectoryCheckBox.isSelected();
+                    if (systemFilesCheckBox.isSelected() && resetHome) {
                         // remove all files
-                        // but keep "/lost+found"
+                        // but keep "/lost+found/"
                         processExecutor.executeProcess("find", mountPoint,
                                 "!", "-regex", mountPoint,
                                 "!", "-regex", mountPoint + "/lost\\+found",
@@ -5844,18 +5844,27 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     } else {
                         if (systemFilesCheckBox.isSelected()) {
                             // remove all files
-                            // but keep "/lost+found" and "/home"
+                            // but keep "/lost+found/" and "/home/"
                             processExecutor.executeProcess("find", mountPoint,
                                     "!", "-regex", mountPoint,
                                     "!", "-regex", mountPoint + "/lost\\+found",
                                     "!", "-regex", mountPoint + "/home.*",
                                     "-exec", "rm", "-rf", "{}", ";");
                         }
-                        if (homeDirectoryCheckBox.isSelected()) {
-                            // remove /home
+                        if (resetHome) {
+                            // only remove "/home/user/"
                             processExecutor.executeProcess(
-                                    "rm", "-rf", mountPoint + "/home/");
+                                    "rm", "-rf", mountPoint + "/home/user/");
                         }
+                    }
+                    if (resetHome) {
+                        // restore "/home/user/" from "/etc/skel/"
+                        processExecutor.executeProcess("mkdir",
+                                mountPoint + "/home/");
+                        processExecutor.executeProcess("cp", "-a",
+                                "/etc/skel/", mountPoint + "/home/user/");
+                        processExecutor.executeProcess("chown", "-R",
+                                "user.user", mountPoint + "/home/user/");
                     }
                     umount(dataPartition);
                 }
