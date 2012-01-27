@@ -28,7 +28,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,56,0,0,3,-125"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,14,0,0,3,3"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignCardLayout"/>
@@ -71,10 +71,10 @@
           </Constraints>
 
           <Layout class="org.netbeans.modules.form.compat2.layouts.DesignGridLayout">
-            <Property name="columns" type="int" value="0"/>
             <Property name="horizontalGap" type="int" value="10"/>
-            <Property name="rows" type="int" value="2"/>
+            <Property name="columns" type="int" value="0"/>
             <Property name="verticalGap" type="int" value="10"/>
+            <Property name="rows" type="int" value="2"/>
           </Layout>
           <SubComponents>
             <Component class="javax.swing.JButton" name="installButton">
@@ -165,7 +165,7 @@
                       <Group type="102" attributes="0">
                           <Component id="stepsPanel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="cardPanel" pref="749" max="32767" attributes="0"/>
+                          <Component id="cardPanel" max="32767" attributes="0"/>
                       </Group>
                       <Group type="102" alignment="1" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
@@ -176,7 +176,7 @@
                   </Group>
                   <EmptySpace max="-2" attributes="0"/>
               </Group>
-              <Component id="jSeparator2" alignment="0" pref="899" max="32767" attributes="0"/>
+              <Component id="jSeparator2" alignment="0" max="32767" attributes="0"/>
           </Group>
         </DimensionLayout>
         <DimensionLayout dim="1">
@@ -245,7 +245,7 @@
                       <Component id="selectionLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="executionLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="411" max="32767" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -363,19 +363,19 @@
                     </Constraint>
                   </Constraints>
                 </Component>
-                <Component class="javax.swing.JCheckBox" name="installShowHarddiskCheckBox">
+                <Component class="javax.swing.JCheckBox" name="installShowHarddisksCheckBox">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
                       <FontInfo relative="true">
-                        <Font bold="false" component="installShowHarddiskCheckBox" property="font" relativeSize="true" size="-1"/>
+                        <Font bold="false" component="installShowHarddisksCheckBox" property="font" relativeSize="true" size="-1"/>
                       </FontInfo>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="dlcopy/Strings.properties" key="DLCopy.installShowHarddiskCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="dlcopy/Strings.properties" key="DLCopy.installShowHarddisksCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
-                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="installShowHarddiskCheckBoxItemStateChanged"/>
+                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="installShowHarddisksCheckBoxItemStateChanged"/>
                   </Events>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -415,7 +415,7 @@
                                               <Component id="osDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                               <Component id="installSelectionCountLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <EmptySpace pref="251" max="32767" attributes="0"/>
+                                          <EmptySpace pref="123" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -428,7 +428,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="installSelectionCountLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="storageDeviceListScrollPane" pref="166" max="32767" attributes="0"/>
+                                  <Component id="storageDeviceListScrollPane" pref="124" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="exchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -482,7 +482,7 @@
                                           <Group type="102" attributes="0">
                                               <Component id="exchangePartitionSizeLabel" linkSize="1" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="exchangePartitionSizeSlider" pref="521" max="32767" attributes="0"/>
+                                              <Component id="exchangePartitionSizeSlider" pref="393" max="32767" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="exchangePartitionSizeTextField" min="-2" pref="84" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
@@ -592,7 +592,7 @@
                                       <Component id="copyExchangeCheckBox" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace type="separate" max="-2" attributes="0"/>
                                       <Component id="copyPersistencyCheckBox" min="-2" max="-2" attributes="0"/>
-                                      <EmptySpace pref="366" max="32767" attributes="0"/>
+                                      <EmptySpace pref="238" max="32767" attributes="0"/>
                                   </Group>
                               </Group>
                             </DimensionLayout>
@@ -724,10 +724,10 @@
                       <Group type="102" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="currentlyInstalledDeviceLabel" min="-2" max="-2" attributes="0"/>
-                          <EmptySpace pref="501" max="32767" attributes="0"/>
+                          <EmptySpace pref="373" max="32767" attributes="0"/>
                       </Group>
-                      <Component id="installCardPanel" alignment="0" pref="749" max="32767" attributes="0"/>
-                      <Component id="jSeparator3" alignment="1" pref="749" max="32767" attributes="0"/>
+                      <Component id="installCardPanel" alignment="0" pref="621" max="32767" attributes="0"/>
+                      <Component id="jSeparator3" alignment="1" pref="621" max="32767" attributes="0"/>
                   </Group>
                 </DimensionLayout>
                 <DimensionLayout dim="1">
@@ -738,7 +738,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jSeparator3" min="-2" pref="10" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
-                          <Component id="installCardPanel" pref="460" max="32767" attributes="0"/>
+                          <Component id="installCardPanel" pref="418" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -865,11 +865,11 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="749" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="621" max="32767" attributes="0"/>
                       <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="doneLabel" pref="725" max="32767" attributes="0"/>
+                              <Component id="doneLabel" pref="597" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -877,12 +877,12 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="504" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="462" max="32767" attributes="0"/>
                       <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="83" max="-2" attributes="0"/>
                               <Component id="doneLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="255" max="32767" attributes="0"/>
+                              <EmptySpace pref="213" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -967,19 +967,19 @@
                     </Constraint>
                   </Constraints>
                 </Component>
-                <Component class="javax.swing.JCheckBox" name="upgradeShowHarddiskCheckBox">
+                <Component class="javax.swing.JCheckBox" name="upgradeShowHarddisksCheckBox">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
                       <FontInfo relative="true">
-                        <Font bold="false" component="upgradeShowHarddiskCheckBox" property="font" relativeSize="true" size="-1"/>
+                        <Font bold="false" component="upgradeShowHarddisksCheckBox" property="font" relativeSize="true" size="-1"/>
                       </FontInfo>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="dlcopy/Strings.properties" key="DLCopy.upgradeShowHarddiskCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="dlcopy/Strings.properties" key="DLCopy.upgradeShowHarddisksCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
-                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="upgradeShowHarddiskCheckBoxItemStateChanged"/>
+                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="upgradeShowHarddisksCheckBoxItemStateChanged"/>
                   </Events>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -1050,7 +1050,7 @@
                                   <Group type="102" alignment="0" attributes="0">
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
-                                          <Component id="upgradeStorageDeviceListScrollPane" alignment="0" pref="720" max="32767" attributes="0"/>
+                                          <Component id="upgradeStorageDeviceListScrollPane" alignment="0" pref="592" max="32767" attributes="0"/>
                                           <Component id="upgradeOsDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="upgradeDataDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                           <Component id="upgradeExchangeDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -1066,7 +1066,7 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="upgradeSelectionCountLabel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="upgradeStorageDeviceListScrollPane" pref="321" max="32767" attributes="0"/>
+                                      <Component id="upgradeStorageDeviceListScrollPane" pref="279" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="upgradeExchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -1181,7 +1181,7 @@
                                                           <Group type="102" alignment="0" attributes="0">
                                                               <Component id="automaticBackupLabel" min="-2" max="-2" attributes="0"/>
                                                               <EmptySpace max="-2" attributes="0"/>
-                                                              <Component id="automaticBackupTextField" pref="535" max="32767" attributes="0"/>
+                                                              <Component id="automaticBackupTextField" pref="407" max="32767" attributes="0"/>
                                                           </Group>
                                                       </Group>
                                                   </Group>
@@ -1270,7 +1270,7 @@
                                               <Component id="sortDescendingButton" min="-2" max="-2" attributes="0"/>
                                           </Group>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="upgradeOverwriteScrollPane" pref="622" max="32767" attributes="0"/>
+                                          <Component id="upgradeOverwriteScrollPane" pref="494" max="32767" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="0" attributes="0">
                                               <Component id="upgradeOverwriteAddButton" alignment="1" min="-2" max="-2" attributes="0"/>
@@ -1292,7 +1292,7 @@
                                                   <EmptySpace max="-2" attributes="0"/>
                                                   <Component id="upgradeOverwriteRemoveButton" min="-2" max="-2" attributes="0"/>
                                               </Group>
-                                              <Component id="upgradeOverwriteScrollPane" alignment="0" min="0" pref="212" max="32767" attributes="2"/>
+                                              <Component id="upgradeOverwriteScrollPane" alignment="0" min="0" pref="170" max="32767" attributes="2"/>
                                               <Group type="102" alignment="0" attributes="0">
                                                   <Component id="upgradeMoveUpButton" min="-2" max="-2" attributes="0"/>
                                                   <EmptySpace max="-2" attributes="0"/>
@@ -1740,19 +1740,19 @@
                     </Constraint>
                   </Constraints>
                 </Component>
-                <Component class="javax.swing.JCheckBox" name="repairShowHarddiskCheckBox">
+                <Component class="javax.swing.JCheckBox" name="repairShowHarddisksCheckBox">
                   <Properties>
                     <Property name="font" type="java.awt.Font" editor="org.netbeans.modules.form.editors2.FontEditor">
                       <FontInfo relative="true">
-                        <Font bold="false" component="repairShowHarddiskCheckBox" property="font" relativeSize="true" size="-1"/>
+                        <Font bold="false" component="repairShowHarddisksCheckBox" property="font" relativeSize="true" size="-1"/>
                       </FontInfo>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="dlcopy/Strings.properties" key="DLCopy.repairShowHarddiskCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="dlcopy/Strings.properties" key="DLCopy.repairShowHarddisksCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
-                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="repairShowHarddiskCheckBoxItemStateChanged"/>
+                    <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="repairShowHarddisksCheckBoxItemStateChanged"/>
                   </Events>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
@@ -1810,7 +1810,7 @@
                               <Group type="102" attributes="0">
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
-                                      <Component id="repairStorageDeviceListScrollPane" alignment="0" pref="725" max="32767" attributes="0"/>
+                                      <Component id="repairStorageDeviceListScrollPane" alignment="0" pref="597" max="32767" attributes="0"/>
                                       <Component id="repairSelectionCountLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="repairDataDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                       <Component id="repairExchangeDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
@@ -1833,9 +1833,9 @@
                               <Group type="102" attributes="0">
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="repairSelectionCountLabel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" max="-2" attributes="0"/>
-                                  <Component id="repairStorageDeviceListScrollPane" pref="238" max="32767" attributes="0"/>
-                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="repairStorageDeviceListScrollPane" pref="226" max="32767" attributes="0"/>
+                                  <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="repairExchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="repairDataDefinitionLabel" min="-2" max="-2" attributes="0"/>
@@ -1850,7 +1850,7 @@
                                       <Component id="systemFilesCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
                                       <Component id="homeDirectoryCheckBox" alignment="3" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace pref="50" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                               </Group>
                           </Group>
                         </DimensionLayout>
@@ -2064,7 +2064,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Component id="separateFileSystemsPanel" alignment="1" max="32767" attributes="0"/>
-                              <Component id="tmpDriveInfoLabel" alignment="0" pref="725" max="32767" attributes="0"/>
+                              <Component id="tmpDriveInfoLabel" alignment="0" pref="597" max="32767" attributes="0"/>
                               <Component id="autoStartCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
                               <Group type="102" alignment="1" attributes="0">
                                   <Group type="103" groupAlignment="1" attributes="0">
@@ -2075,19 +2075,19 @@
                                           </Group>
                                           <EmptySpace min="-2" max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="0" attributes="0">
-                                              <Component id="writableTextField" pref="555" max="32767" attributes="0"/>
-                                              <Component id="isoLabelTextField" alignment="0" pref="555" max="32767" attributes="0"/>
+                                              <Component id="writableTextField" pref="427" max="32767" attributes="0"/>
+                                              <Component id="isoLabelTextField" alignment="0" pref="427" max="32767" attributes="0"/>
                                           </Group>
                                       </Group>
                                       <Group type="102" alignment="0" attributes="1">
                                           <Component id="freeSpaceLabel" linkSize="2" min="-2" pref="126" max="-2" attributes="0"/>
                                           <EmptySpace min="-2" max="-2" attributes="0"/>
-                                          <Component id="freeSpaceTextField" pref="555" max="32767" attributes="0"/>
+                                          <Component id="freeSpaceTextField" pref="427" max="32767" attributes="0"/>
                                       </Group>
                                       <Group type="102" alignment="0" attributes="0">
                                           <Component id="tmpDirLabel" linkSize="2" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace min="-2" max="-2" attributes="0"/>
-                                          <Component id="tmpDirTextField" pref="555" max="32767" attributes="0"/>
+                                          <Component id="tmpDirTextField" pref="427" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -2232,7 +2232,7 @@
                       <Group type="103" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="1" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="separateFileSystemsScrollpane" pref="659" max="32767" attributes="0"/>
+                              <Component id="separateFileSystemsScrollpane" pref="531" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                               <Group type="103" groupAlignment="1" attributes="0">
                                   <Component id="separateFileSystemsAddButton" min="-2" max="-2" attributes="0"/>
@@ -2254,7 +2254,7 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="separateFileSystemsRemoveButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="separateFileSystemsScrollpane" alignment="1" pref="133" max="32767" attributes="0"/>
+                                  <Component id="separateFileSystemsScrollpane" alignment="1" pref="151" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -2372,11 +2372,11 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="749" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="621" max="32767" attributes="0"/>
                       <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="isoDoneLabel" pref="725" max="32767" attributes="0"/>
+                              <Component id="isoDoneLabel" pref="597" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -2384,12 +2384,12 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="504" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="462" max="32767" attributes="0"/>
                       <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="83" max="-2" attributes="0"/>
                               <Component id="isoDoneLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="225" max="32767" attributes="0"/>
+                              <EmptySpace pref="183" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>

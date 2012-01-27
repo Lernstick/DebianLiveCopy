@@ -41,9 +41,6 @@ public class RepairStorageDeviceRenderer
     private final static Icon okIcon = new ImageIcon(
             RepairStorageDeviceRenderer.class.getResource(
             "/dlcopy/icons/16x16/dialog-ok-apply.png"));
-    private final static Icon warningIcon = new ImageIcon(
-            RepairStorageDeviceRenderer.class.getResource(
-            "/dlcopy/icons/16x16/dialog-warning.png"));
     private final static Icon cancelIcon = new ImageIcon(
             RepairStorageDeviceRenderer.class.getResource(
             "/dlcopy/icons/16x16/dialog-cancel.png"));
@@ -165,14 +162,25 @@ public class RepairStorageDeviceRenderer
             }
 
             // upgrade info text
-            if (storageDevice.getDataPartition() == null) {
+            Partition dataPartition = storageDevice.getDataPartition();
+            if (dataPartition == null) {
                 upgradeInfoLabel.setIcon(cancelIcon);
-                upgradeInfoLabel.setText(
-                        DLCopy.STRINGS.getString("Repairing_Impossible"));
+                upgradeInfoLabel.setText(DLCopy.STRINGS.getString(
+                        "Repairing_Impossible_No_Data_Partition"));
             } else {
-                upgradeInfoLabel.setIcon(okIcon);
-                upgradeInfoLabel.setText(
-                        DLCopy.STRINGS.getString("Repairing_Possible"));
+                try {
+                    if (dataPartition.isActivePersistencyPartition()) {
+                        upgradeInfoLabel.setIcon(cancelIcon);
+                        upgradeInfoLabel.setText(DLCopy.STRINGS.getString(
+                                "Repairing_Impossible_Active_Data_Partition"));
+                    } else {
+                        upgradeInfoLabel.setIcon(okIcon);
+                        upgradeInfoLabel.setText(
+                                DLCopy.STRINGS.getString("Repairing_Possible"));
+                    }
+                } catch (DBusException ex) {
+                    LOGGER.log(Level.SEVERE, "", ex);
+                }
             }
 
             if (isSelected) {

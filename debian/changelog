@@ -1,3 +1,9 @@
+dlcopy (201201271452-1) unstable; urgency=low
+
+  * added self-repair
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 27 Jan 2012 14:52:40 +0100
+
 dlcopy (201201131925-1) unstable; urgency=low
 
   * finished work on repair feature

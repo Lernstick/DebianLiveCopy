@@ -374,6 +374,18 @@ public class Partition {
     public boolean isPersistencyPartition() {
         return idLabel.equals("live-rw");
     }
+    
+    public boolean isActivePersistencyPartition() throws DBusException {
+        if (isPersistencyPartition()) {
+            List<String> mountPaths = getMountPaths();
+            for (String mountPath : mountPaths) {
+                if (mountPath.equals("/live/cow")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
 
     /**
      * returns
