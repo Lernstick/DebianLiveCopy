@@ -1,3 +1,9 @@
+dlcopy (201202061110-1) unstable; urgency=low
+
+  * small usability fix
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Mon, 06 Feb 2012 11:10:11 +0100
+
 dlcopy (201201271541-1) unstable; urgency=low
 
   * restore "/home/user/" from "/etc/skel/"
