@@ -15,9 +15,6 @@
     - Zeitanzeige (gesamt)
     - Fortschritt auch im Fenstertitel?
 
-- Upgrade mit Repartitionierung:
-    - Integration von JBackpack
-
 - Installation:
     - Liste aller ausgewählten USB-Sticks anzeigen
     - Partitionen und Dateisysteme parallel erzeugen

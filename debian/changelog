@@ -1,3 +1,9 @@
+dlcopy (201202091219-1) unstable; urgency=low
+
+  * added support for [ex/im]port of overwrite file list
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 09 Feb 2012 12:19:14 +0100
+
 dlcopy (201202061110-1) unstable; urgency=low
 
   * small usability fix
