@@ -12,7 +12,7 @@
 
     <target name="bin-jar" depends="init,compile,-pre-pre-jar">
         <jar destfile="dist/DLCopy.jar" basedir="build/classes/">
-            <zipfileset src="${file.reference.javaws.jar}" excludes="META-INF/**"/>
+            <zipfileset src="${reference.JBackpack.jar}" excludes="META-INF/**"/>
             <zipfileset src="libs/jh.jar" excludes="META-INF/**"/>
             <zipfileset src="libs/derby.jar" excludes="META-INF/**"/>
             <zipfileset
@@ -20,14 +20,14 @@
                 excludes="META-INF/**"/>
             <manifest>
                 <attribute name="Class-Path" value="/usr/share/java/dbus.jar /usr/share/java/unix.jar /usr/share/java/hexdump.jar"/>
-                <attribute name="Main-Class" value="dlcopy.DLCopy"/>
+                <attribute name="Main-Class" value="ch.fhnw.dlcopy.DLCopy"/>
             </manifest>
         </jar>
     </target>
 
     <target name="full-jar" depends="init,compile,-pre-pre-jar">
         <jar destfile="dist/DLCopy_full.jar" basedir="build/classes/">
-            <zipfileset src="${file.reference.javaws.jar}" excludes="META-INF/**"/>
+            <zipfileset src="${reference.JBackpack.jar}" excludes="META-INF/**"/>
             <zipfileset src="libs/jh.jar" excludes="META-INF/**"/>
             <zipfileset src="libs/derby.jar" excludes="META-INF/**"/>
             <zipfileset
@@ -35,7 +35,7 @@
                 excludes="META-INF/**"/>
             <manifest>
                 <attribute name="Class-Path" value="/usr/share/java/dbus.jar /usr/share/java/unix.jar /usr/share/java/hexdump.jar"/>
-                <attribute name="Main-Class" value="dlcopy.DLCopy"/>
+                <attribute name="Main-Class" value="ch.fhnw.dlcopy.DLCopy"/>
             </manifest>
         </jar>
         <jar destfile="dist/DLCopy_full.jar" basedir="src" update="true"/>

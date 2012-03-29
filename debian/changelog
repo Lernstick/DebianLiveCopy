@@ -1,3 +1,9 @@
+dlcopy (201202091219-5) unstable; urgency=low
+
+  * code cleanup
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 29 Mar 2012 13:24:07 +0200
+
 dlcopy (201202091219-1) unstable; urgency=low
 
   * added support for [ex/im]port of overwrite file list
