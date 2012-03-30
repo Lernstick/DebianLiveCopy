@@ -1,7 +1,7 @@
 package ch.fhnw.dlcopy;
 
-import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.dlcopy.tools.DbusTools;
+import ch.fhnw.util.ProcessExecutor;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;

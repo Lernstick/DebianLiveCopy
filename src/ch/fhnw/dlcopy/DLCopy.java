@@ -4836,8 +4836,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                                 "mkfs.vfat", "-n", exchangePartitionLabel,
                                 exchangeDevice);
                         if (exitValue != 0) {
-                            String errorMessage =
-                                    "Can not create exchange partition!";
+                            String errorMessage = STRINGS.getString(
+                                    "Error_Create_Exchange_Partition");
+                            errorMessage = MessageFormat.format(
+                                    errorMessage, exchangeDevice);
                             LOGGER.severe(errorMessage);
                             if (showErrorMessages) {
                                 showErrorMessage(errorMessage);

@@ -1,3 +1,9 @@
+dlcopy (201203301446-1) unstable; urgency=low
+
+  * some more i18n
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 30 Mar 2012 14:45:30 +0200
+
 dlcopy (201202091219-5) unstable; urgency=low
 
   * code cleanup
