@@ -1,3 +1,9 @@
+dlcopy (201204032227-1) unstable; urgency=low
+
+  * fixed desktop file
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Tue, 03 Apr 2012 22:27:38 +0200
+
 dlcopy (201203301446-1) unstable; urgency=low
 
   * some more i18n

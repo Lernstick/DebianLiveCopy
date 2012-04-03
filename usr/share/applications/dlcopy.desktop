@@ -2,7 +2,7 @@
 Categories=X-lernstick;
 Comment=Install system to USB flash drives or to a DVD image
 Comment[de]=Das System auf USB-Sticks oder in ein DVD-Abbild installieren
-Exec[$e]=su-to-root -X -c /usr/bin/dlcopy
+Exec=su-to-root -X -c /usr/bin/dlcopy
 Icon=/usr/share/icons/dlcopy.png
 Name=Storage media management
 Name[de]=Speichermedienverwaltung
