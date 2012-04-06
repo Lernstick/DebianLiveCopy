@@ -28,7 +28,7 @@
     <AuxValue name="FormSettings_listenerGenerationStyle" type="java.lang.Integer" value="0"/>
     <AuxValue name="FormSettings_variablesLocal" type="java.lang.Boolean" value="false"/>
     <AuxValue name="FormSettings_variablesModifier" type="java.lang.Integer" value="2"/>
-    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,1,0,0,2,-9"/>
+    <AuxValue name="designerSize" type="java.awt.Dimension" value="-84,-19,0,5,115,114,0,18,106,97,118,97,46,97,119,116,46,68,105,109,101,110,115,105,111,110,65,-114,-39,-41,-84,95,68,20,2,0,2,73,0,6,104,101,105,103,104,116,73,0,5,119,105,100,116,104,120,112,0,0,2,26,0,0,2,-9"/>
   </AuxValues>
 
   <Layout class="org.netbeans.modules.form.compat2.layouts.DesignCardLayout"/>
@@ -245,7 +245,7 @@
                       <Component id="selectionLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="executionLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="356" max="32767" attributes="0"/>
+                      <EmptySpace pref="381" max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -428,7 +428,7 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="installSelectionCountLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="storageDeviceListScrollPane" pref="111" max="32767" attributes="0"/>
+                                  <Component id="storageDeviceListScrollPane" pref="136" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="exchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -738,7 +738,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="jSeparator3" min="-2" pref="10" max="-2" attributes="0"/>
                           <EmptySpace min="-2" pref="1" max="-2" attributes="0"/>
-                          <Component id="installCardPanel" pref="405" max="32767" attributes="0"/>
+                          <Component id="installCardPanel" pref="430" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -877,12 +877,12 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="449" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="474" max="32767" attributes="0"/>
                       <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="83" max="-2" attributes="0"/>
                               <Component id="doneLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="200" max="32767" attributes="0"/>
+                              <EmptySpace pref="225" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -1037,13 +1037,13 @@
                             </DimensionLayout>
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <EmptySpace min="0" pref="377" max="32767" attributes="0"/>
+                                  <EmptySpace min="0" pref="402" max="32767" attributes="0"/>
                                   <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                                       <Group type="102" attributes="0">
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="upgradeSelectionCountLabel" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="upgradeStorageDeviceListScrollPane" pref="266" max="32767" attributes="0"/>
+                                          <Component id="upgradeStorageDeviceListScrollPane" pref="291" max="32767" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Component id="upgradeExchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
@@ -1351,7 +1351,7 @@
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="upgradeOverwriteImportButton" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <Component id="upgradeOverwriteScrollPane" alignment="0" min="0" pref="157" max="32767" attributes="2"/>
+                                          <Component id="upgradeOverwriteScrollPane" alignment="0" min="0" pref="182" max="32767" attributes="2"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="upgradeMoveUpButton" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
@@ -1878,7 +1878,7 @@
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="repairSelectionCountLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="repairStorageDeviceListScrollPane" pref="213" max="32767" attributes="0"/>
+                                  <Component id="repairStorageDeviceListScrollPane" pref="238" max="32767" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="repairExchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -2298,7 +2298,7 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="separateFileSystemsRemoveButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="separateFileSystemsScrollpane" alignment="1" pref="138" max="32767" attributes="0"/>
+                                  <Component id="separateFileSystemsScrollpane" alignment="1" pref="0" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
@@ -2428,12 +2428,12 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="449" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="474" max="32767" attributes="0"/>
                       <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="83" max="-2" attributes="0"/>
                               <Component id="isoDoneLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="170" max="32767" attributes="0"/>
+                              <EmptySpace pref="195" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>

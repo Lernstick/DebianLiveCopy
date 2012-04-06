@@ -1159,7 +1159,7 @@ public class DLCopy extends JFrame
                 .addComponent(selectionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(executionLabel)
-                .addContainerGap(356, Short.MAX_VALUE))
+                .addContainerGap(381, Short.MAX_VALUE))
         );
 
         cardPanel.setLayout(new java.awt.CardLayout());
@@ -1344,7 +1344,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(installSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 111, Short.MAX_VALUE)
+                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 136, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(exchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1442,7 +1442,7 @@ public class DLCopy extends JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(1, 1, 1)
-                .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 405, Short.MAX_VALUE))
+                .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE))
         );
 
         cardPanel.add(installPanel, "installPanel");
@@ -1467,12 +1467,12 @@ public class DLCopy extends JFrame
         );
         donePanelLayout.setVerticalGroup(
             donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 449, Short.MAX_VALUE)
+            .addGap(0, 474, Short.MAX_VALUE)
             .addGroup(donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(donePanelLayout.createSequentialGroup()
                     .addGap(83, 83, 83)
                     .addComponent(doneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(200, Short.MAX_VALUE)))
+                    .addContainerGap(225, Short.MAX_VALUE)))
         );
 
         cardPanel.add(donePanel, "donePanel");
@@ -1555,13 +1555,13 @@ public class DLCopy extends JFrame
         );
         upgradeSelectionDeviceListPanelLayout.setVerticalGroup(
             upgradeSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 377, Short.MAX_VALUE)
+            .addGap(0, 402, Short.MAX_VALUE)
             .addGroup(upgradeSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(upgradeSelectionDeviceListPanelLayout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(upgradeSelectionCountLabel)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 266, Short.MAX_VALUE)
+                    .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(upgradeExchangeDefinitionLabel)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1756,7 +1756,7 @@ public class DLCopy extends JFrame
                         .addComponent(upgradeOverwriteExportButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(upgradeOverwriteImportButton))
-                    .addComponent(upgradeOverwriteScrollPane, 0, 157, Short.MAX_VALUE)
+                    .addComponent(upgradeOverwriteScrollPane, 0, 182, Short.MAX_VALUE)
                     .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
                         .addComponent(upgradeMoveUpButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2036,7 +2036,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(repairSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 213, Short.MAX_VALUE)
+                .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(repairExchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2303,12 +2303,12 @@ public class DLCopy extends JFrame
         );
         toISODonePanelLayout.setVerticalGroup(
             toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 449, Short.MAX_VALUE)
+            .addGap(0, 474, Short.MAX_VALUE)
             .addGroup(toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(toISODonePanelLayout.createSequentialGroup()
                     .addGap(83, 83, 83)
                     .addComponent(isoDoneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(170, Short.MAX_VALUE)))
+                    .addContainerGap(195, Short.MAX_VALUE)))
         );
 
         cardPanel.add(toISODonePanel, "toISODonePanel");
@@ -2360,7 +2360,7 @@ public class DLCopy extends JFrame
                     .addGroup(executionPanelLayout.createSequentialGroup()
                         .addComponent(stepsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 609, Short.MAX_VALUE))
+                        .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, executionPanelLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(previousButton)
@@ -5515,10 +5515,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 publish(STRINGS.getString("Copying_Files"));
                 String targetDirectory = tmpDirTextField.getText();
                 String copyScript = "rm -rf " + targetDirectory + '\n'
-                        + "mkdir " + targetDirectory + '\n'
+                        + "mkdir \"" + targetDirectory + "\"\n"
                         + "cd /live/image\n"
-                        + "find -not -name filesystem*.squashfs | cpio -pvdum "
-                        + targetDirectory;
+                        + "find -not -name filesystem*.squashfs | cpio -pvdum \""
+                        + targetDirectory + "\"";
                 processExecutor.executeScript(copyScript);
 
                 publish(STRINGS.getString("Mounting_Partitions"));
@@ -5679,7 +5679,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         new FileWriter(targetDirectory + "/md5sum.txt");
                 fileWriter.write(md5header);
                 fileWriter.close();
-                String md5Script = "cd " + targetDirectory + "\n"
+                String md5Script = "cd \"" + targetDirectory + "\"\n"
                         + "find . -type f \\! -path './isolinux/isolinux.bin' "
                         + "\\! -path './boot/grub/stage2_eltorito' -print0 | "
                         + "sort -z | xargs -0 md5sum >> md5sum.txt";
