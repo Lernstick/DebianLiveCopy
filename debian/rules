@@ -38,7 +38,6 @@ install: build
 	dh_installdirs
 
 	cp -r usr $(DESTDIR)
-	find $(DESTDIR) -name ".svn" -type d | xargs rm -rf
 	cp dist/DLCopy.jar $(DESTDIR)/usr/bin
 
 # Build architecture-independent files here.

@@ -1,5 +1,5 @@
 #!/bin/sh
-for i in src/dlcopy/Strings*
+for i in src/ch/fhnw/dlcopy/Strings*
 do
 	sort $i>tmp
 	mv tmp $i

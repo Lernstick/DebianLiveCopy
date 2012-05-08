@@ -1,3 +1,9 @@
+dlcopy (201205081832-1) unstable; urgency=low
+
+  * use udev instead of hal
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Tue, 08 May 2012 18:32:25 +0200
+
 dlcopy (201204121908-1) unstable; urgency=low
 
   * tolerate whitespaces in target directory for iso creation

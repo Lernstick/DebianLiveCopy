@@ -1,10 +1,13 @@
 package ch.fhnw.dlcopy;
 
+import ch.fhnw.util.DbusTools;
+import ch.fhnw.util.FileTools;
 import ch.fhnw.util.ProcessExecutor;
-import ch.fhnw.dlcopy.tools.DbusTools;
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -21,51 +24,151 @@ import org.freedesktop.udisks.Device;
  */
 public class Partition {
 
+    /**
+     * the label used for persistency partitions
+     */
+    public final static String PERSISTENCY_LABEL = "live-rw";
     private final static Logger LOGGER =
             Logger.getLogger(Partition.class.getName());
+    private final static Pattern deviceAndNumberPattern =
+            Pattern.compile("(.*)(\\d+)");
     private final String device;
     private final int number;
+    private final String deviceAndNumber;
     private final long offset;
     private final long size;
     private final String type;
     private final String idLabel;
     private final String idType;
     private final String systemPartitionLabel;
+    private final long systemSize;
     private Boolean isSystemPartition;
     private Long usedSpace;
+    private StorageDevice storageDevice;
 
     /**
      * creates a new Partition
      *
-     * @param device the device of the partition (e.g. "sda1")
-     * @param number the device number
-     * @param offset the offset (start) of the partition
-     * @param size the size of the partition
-     * @param type the partition type
-     * @param idLabel the label of the partition
-     * @param idType the ID type (type of the file system)
+     * @param deviceAndNumber the device of the partition including the number
+     * (e.g. "sda1")
      * @param systemPartitionLabel the (expected) system partition label
+     * @param systemSize the on-disk-size of the operating system
+     * @return a new Partition
+     * @throws DBusException if getting the partition properties via dbus fails
      */
-    public Partition(String device, int number, long offset, long size,
-            String type, String idLabel, String idType,
-            String systemPartitionLabel) {
-        this.device = device;
-        this.number = number;
-        this.offset = offset;
-        this.size = size;
-        this.idLabel = idLabel;
-        this.idType = idType;
-        this.type = type;
-        this.systemPartitionLabel = systemPartitionLabel;
+    public static Partition getPartitionFromDeviceAndNumber(
+            String deviceAndNumber, String systemPartitionLabel,
+            long systemSize) throws DBusException {
+        Matcher matcher = deviceAndNumberPattern.matcher(deviceAndNumber);
+        if (matcher.matches()) {
+            return getPartitionFromDevice(matcher.group(1), matcher.group(2),
+                    systemPartitionLabel, systemSize);
+        }
+        return null;
     }
 
     /**
-     * returns the device of the partition, e.g. "sda1"
+     * creates a new Partition
      *
-     * @return the device of the partition, e.g. "sda1"
+     * @param mountPoint the mount point of the partition
+     * @param systemPartitionLabel the (expected) system partition label
+     * @param systemSize the on-disk-size of the operating system
+     * @return a new Partition
+     * @throws DBusException if getting the partition properties via dbus fails
+     * @throws IOException if reading "/proc/mounts" fails
      */
-    public String getDevice() {
-        return device;
+    public static Partition getPartitionFromMountPoint(String mountPoint,
+            String systemPartitionLabel, long systemSize)
+            throws DBusException, IOException {
+        LOGGER.log(Level.FINE, "mountPoint: \"{0}\"", mountPoint);
+        List<String> mounts = FileTools.readFile(new File("/proc/mounts"));
+        for (String mount : mounts) {
+            String[] tokens = mount.split(" ");
+            if (tokens[0].startsWith("/dev/") && tokens[1].equals(mountPoint)) {
+                return getPartitionFromDeviceAndNumber(tokens[0].substring(5),
+                        systemPartitionLabel, systemSize);
+            }
+        }
+        return null;
+    }
+
+    /**
+     * creates a new Partition
+     *
+     * @param device the device of the partition (e.g. "sda")
+     * @param numberString the number of the partition
+     * @param systemPartitionLabel the (expected) system partition label
+     * @param systemSize the on-disk-size of the operating system
+     * @return a String representation of the partition number
+     * @throws DBusException if getting the partition properties via dbus fails
+     */
+    public static Partition getPartitionFromDevice(String device,
+            String numberString, String systemPartitionLabel, long systemSize)
+            throws DBusException {
+        LOGGER.log(Level.FINE, "device: \"{0}\", numberString: \"{1}\"",
+                new Object[]{device, numberString});
+        return new Partition(device, Integer.parseInt(numberString),
+                systemPartitionLabel, systemSize);
+    }
+
+    private Partition(String device, int number, String systemPartitionLabel,
+            long systemSize) throws DBusException {
+        LOGGER.log(Level.FINE, "device: \"{0}\", number = {1}",
+                new Object[]{device, number});
+        this.device = device;
+        this.number = number;
+        this.deviceAndNumber = device + number;
+        this.systemPartitionLabel = systemPartitionLabel;
+        this.systemSize = systemSize;
+        this.offset = DbusTools.getLongProperty(
+                deviceAndNumber, "PartitionOffset");
+        this.size = DbusTools.getLongProperty(deviceAndNumber, "PartitionSize");
+        this.idLabel = DbusTools.getStringProperty(deviceAndNumber, "IdLabel");
+        this.idType = DbusTools.getStringProperty(deviceAndNumber, "IdType");
+        this.type = DbusTools.getStringProperty(
+                deviceAndNumber, "PartitionType");
+    }
+
+    @Override
+    public String toString() {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("/dev/");
+        stringBuilder.append(deviceAndNumber);
+        stringBuilder.append(", offset: ");
+        stringBuilder.append(offset);
+        stringBuilder.append(", size: ");
+        stringBuilder.append(size);
+        if ((idLabel != null) && !idLabel.isEmpty()) {
+            stringBuilder.append(", idLabel: \"");
+            stringBuilder.append(idLabel);
+            stringBuilder.append('\"');
+        }
+        if ((idType != null) && !idType.isEmpty()) {
+            stringBuilder.append(", idType: \"");
+            stringBuilder.append(idType);
+            stringBuilder.append('\"');
+        }
+        if ((type != null) && !type.isEmpty()) {
+            stringBuilder.append(", type: \"");
+            stringBuilder.append(type);
+            stringBuilder.append('\"');
+        }
+        return stringBuilder.toString();
+    }
+
+    /**
+     * returns the StorageDevice of this Partition
+     *
+     * @return the StorageDevice of this Partition
+     * @throws DBusException if getting the StorageDevice properties via d-bus
+     * fails
+     */
+    public synchronized StorageDevice getStorageDevice() throws DBusException {
+        if (storageDevice == null) {
+            storageDevice = new StorageDevice(
+                    device, systemPartitionLabel, systemSize);
+        }
+        return storageDevice;
     }
 
     /**
@@ -78,9 +181,18 @@ public class Partition {
     }
 
     /**
-     * returns the start sector of the partition
+     * returns the device and number of this partition, e.g. "sda1"
      *
-     * @return the start sector of the partition
+     * @return the device and number of this partition, e.g. "sda1"
+     */
+    public String getDeviceAndNumber() {
+        return deviceAndNumber;
+    }
+
+    /**
+     * returns the offset (start) of the partition
+     *
+     * @return the offset (start) of the partition
      */
     public long getOffset() {
         return offset;
@@ -105,18 +217,18 @@ public class Partition {
     }
 
     /**
-     * returns the ID type of the partition
+     * returns the ID type of the partition, e.g. "vfat"
      *
-     * @return the ID type of the partition
+     * @return the ID type of the partition, e.g. "vfat"
      */
     public String getIdType() {
         return idType;
     }
 
     /**
-     * returns the partition type
+     * returns the partition type, e.g. "0x83" for vfat partitions
      *
-     * @return the partition type
+     * @return the partition type, e.g. "0x83" for vfat partitions
      */
     public String getType() {
         return type;
@@ -129,7 +241,8 @@ public class Partition {
      * @throws DBusException if a dbus exception occurs
      */
     public List<String> getMountPaths() throws DBusException {
-        return DbusTools.getStringListProperty(device, "DeviceMountPaths");
+        return DbusTools.getStringListProperty(
+                deviceAndNumber, "DeviceMountPaths");
     }
 
     /**
@@ -179,7 +292,7 @@ public class Partition {
                     mountPath = mountPaths.get(0);
                     if (LOGGER.isLoggable(Level.FINEST)) {
                         LOGGER.log(Level.FINEST, "{0} already mounted at {1}",
-                                new Object[]{device, mountPath});
+                                new Object[]{deviceAndNumber, mountPath});
                     }
                 }
 
@@ -239,19 +352,20 @@ public class Partition {
     /**
      * mounts this partition via dbus/udisks
      *
+     * @param options the mount options
      * @return the mount point
      * @throws DBusException if a dbus exception occurs
      */
-    public String mount() throws DBusException {
+    public String mount(String... options) throws DBusException {
         List<String> mountPaths = getMountPaths();
         if (mountPaths.isEmpty()) {
-            return DbusTools.getDevice(device).FilesystemMount(
-                    "auto", new ArrayList<String>());
+            return DbusTools.getDevice(deviceAndNumber).FilesystemMount(
+                    "auto", Arrays.asList(options));
         } else {
             String mountPath = mountPaths.get(0);
             if (LOGGER.isLoggable(Level.FINEST)) {
                 LOGGER.log(Level.FINEST, "{0} already mounted at {1}",
-                        new Object[]{device, mountPath});
+                        new Object[]{deviceAndNumber, mountPath});
             }
             return mountPath;
         }
@@ -276,16 +390,16 @@ public class Partition {
          * at $Proxy2.FilesystemUnmount(Unknown Source)
          */
         boolean success = false;
-        for (int i = 0; !success && (i < 10); i++) {
+        for (int i = 0; !success && (i < 60); i++) {
             // it already happend that during the timeout
             // in handleUmountException() the umount call succeeded!
             // therefore we need to test for the mount status in every round
             // and act accordingly...
             if (isMounted()) {
-                LOGGER.log(Level.INFO,
-                        "/dev/{0} is mounted, calling umount...", device);
+                LOGGER.log(Level.INFO, "/dev/{0} is mounted, calling umount...",
+                        deviceAndNumber);
                 try {
-                    Device dbusDevice = DbusTools.getDevice(device);
+                    Device dbusDevice = DbusTools.getDevice(deviceAndNumber);
                     dbusDevice.FilesystemUnmount(new ArrayList<String>());
                     success = true;
                 } catch (DBusException ex) {
@@ -295,12 +409,13 @@ public class Partition {
                 }
             } else {
                 LOGGER.log(Level.INFO,
-                        "/dev/{0} was NOT mounted", device);
+                        "/dev/{0} was NOT mounted", deviceAndNumber);
                 success = true;
             }
         }
         if (!success) {
-            LOGGER.log(Level.SEVERE, "Could not umount /dev/{0}", device);
+            LOGGER.log(Level.SEVERE,
+                    "Could not umount /dev/{0}", deviceAndNumber);
         }
         return success;
     }
@@ -318,7 +433,7 @@ public class Partition {
     public boolean isSystemPartition() throws DBusException {
         if (isSystemPartition == null) {
             isSystemPartition = false;
-            LOGGER.log(Level.FINEST, "checking partition {0}", device);
+            LOGGER.log(Level.FINEST, "checking partition {0}", deviceAndNumber);
             LOGGER.log(Level.FINEST, "partition label: \"{0}\"", idLabel);
             if (systemPartitionLabel.equals(idLabel)) {
                 // mount partition if not already mounted
@@ -332,13 +447,14 @@ public class Partition {
                     mountPath = mountPaths.get(0);
                     if (LOGGER.isLoggable(Level.FINEST)) {
                         LOGGER.log(Level.FINEST, "{0} already mounted at {1}",
-                                new Object[]{device, mountPath});
+                                new Object[]{deviceAndNumber, mountPath});
                     }
                 }
 
                 // check partition file structure
                 LOGGER.log(Level.FINEST,
-                        "checking file structure on partition {0}", device);
+                        "checking file structure on partition {0}",
+                        deviceAndNumber);
                 File liveDir = new File(mountPath, "live");
                 if (liveDir.exists()) {
                     FilenameFilter squashFsFilter = new FilenameFilter() {
@@ -375,7 +491,20 @@ public class Partition {
      * <code>false</code> otherwise
      */
     public boolean isPersistencyPartition() {
-        return idLabel.equals("live-rw");
+        return idLabel.equals(PERSISTENCY_LABEL);
+    }
+
+    /**
+     * returns
+     * <code>true</code> if this partition is the exchange partition,
+     * <code>false</code> otherwise
+     *
+     * @return
+     * <code>true</code> if this partition is the exchange partition,
+     * <code>false</code> otherwise
+     */
+    public boolean isExchangePartition() {
+        return (number == 1) && idType.equals("vfat");
     }
 
     /**
@@ -420,14 +549,17 @@ public class Partition {
         try {
             ProcessExecutor processExecutor = new ProcessExecutor();
             int returnValue = processExecutor.executeProcess(true, true,
-                    "fuser", "-m", "/dev/" + device);
+                    "fuser", "-m", "/dev/" + deviceAndNumber);
             while (returnValue == 0) {
                 LOGGER.log(Level.INFO, "/dev/{0} is still being used by the "
                         + "following processes:\n{1}",
-                        new Object[]{device, processExecutor.getStdOut()});
+                        new Object[]{
+                            deviceAndNumber,
+                            processExecutor.getStdOut()
+                        });
                 Thread.sleep(1000);
                 returnValue = processExecutor.executeProcess(true, true,
-                        "fuser", "-m", "/dev/" + device);
+                        "fuser", "-m", "/dev/" + deviceAndNumber);
             }
         } catch (InterruptedException ex2) {
             LOGGER.log(Level.SEVERE, "", ex2);

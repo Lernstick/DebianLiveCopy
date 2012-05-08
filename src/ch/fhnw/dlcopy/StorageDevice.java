@@ -1,6 +1,6 @@
 package ch.fhnw.dlcopy;
 
-import ch.fhnw.dlcopy.tools.DbusTools;
+import ch.fhnw.util.DbusTools;
 import ch.fhnw.util.ProcessExecutor;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -13,10 +13,33 @@ import org.freedesktop.dbus.exceptions.DBusException;
 
 /**
  * A storage device
+ *
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
-public abstract class StorageDevice implements Comparable<StorageDevice> {
+public class StorageDevice implements Comparable<StorageDevice> {
 
+    /**
+     * all known types of storage devices
+     */
+    public enum Type {
+
+        /**
+         * a CD or DVD
+         */
+        OpticalDisc,
+        /**
+         * a hard drive
+         */
+        HardDrive,
+        /**
+         * a usb flash drive
+         */
+        USBFlashDrive,
+        /**
+         * a secure digital memory card
+         */
+        SDMemoryCard
+    }
     private static final Logger LOGGER =
             Logger.getLogger(StorageDevice.class.getName());
     private final String device;
@@ -27,35 +50,55 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
     private final long size;
     private final String systemPartitionLabel;
     private final long systemSize;
+    private final boolean removable;
+    private final boolean systemInternal;
+    private final Type type;
     private List<Partition> partitions;
     private Boolean canBeUpgraded;
     private boolean needsRepartitioning;
     private String noUpgradeReason;
     private Partition systemPartition;
     private Partition dataPartition;
+    private Partition exchangePartition;
 
     /**
-     * Creates a new StorageDevice
-     * @param device the device node (e.g. /dev/sdb)
-     * @param vendor the storage device vendor
-     * @param model the storage device model
-     * @param revision the revision of the storage device
-     * @param serial the serial of the storage device
-     * @param size the size of the storage device in Byte
+     * creates a new StorageDevice
+     *
+     * @param device the unix device name, e.g. "sda"
      * @param systemPartitionLabel the (expected) system partition label
      * @param systemSize the size of the currently running Debian Live system
+     * @throws DBusException if getting the device properties via d-bus fails
      */
-    public StorageDevice(String device, String vendor, String model,
-            String revision, String serial, long size,
-            String systemPartitionLabel, long systemSize) {
+    public StorageDevice(String device, String systemPartitionLabel,
+            long systemSize) throws DBusException {
         this.device = device;
-        this.vendor = vendor;
-        this.model = model;
-        this.revision = revision;
-        this.serial = serial;
-        this.size = size;
         this.systemPartitionLabel = systemPartitionLabel;
         this.systemSize = systemSize;
+        vendor = DbusTools.getStringProperty(device, "DriveVendor");
+        model = DbusTools.getStringProperty(device, "DriveModel");
+        revision = DbusTools.getStringProperty(device, "DriveRevision");
+        serial = DbusTools.getStringProperty(device, "DriveSerial");
+        size = DbusTools.getLongProperty(device, "DeviceSize");
+        removable = DbusTools.getBooleanProperty(device, "DeviceIsRemovable");
+        systemInternal = DbusTools.getBooleanProperty(
+                device, "DeviceIsSystemInternal");
+        boolean isOpticalDisc = DbusTools.getBooleanProperty(
+                device, "DeviceIsOpticalDisc");
+
+        // little stupid heuristic to determine storage device type
+        if (isOpticalDisc) {
+            type = Type.OpticalDisc;
+        } else {
+            if (device.equals("mmcblk")) {
+                type = Type.SDMemoryCard;
+            } else {
+                if (removable) {
+                    type = Type.USBFlashDrive;
+                } else {
+                    type = Type.HardDrive;
+                }
+            }
+        }
     }
 
     @Override
@@ -87,8 +130,18 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
     }
 
     /**
-     * returns the device node of the storage device (e.g. /dev/sdb)
-     * @return the device node of the storage device (e.g. /dev/sdb)
+     * returns the type of this storage device
+     *
+     * @return the type of this storage device
+     */
+    public Type getType() {
+        return type;
+    }
+
+    /**
+     * returns the device node of the storage device (e.g. sda)
+     *
+     * @return the device node of the storage device (e.g. sda)
      */
     public String getDevice() {
         return device;
@@ -96,6 +149,7 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
 
     /**
      * returns the storage device vendor
+     *
      * @return the storage device vendor
      */
     public String getVendor() {
@@ -104,6 +158,7 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
 
     /**
      * returns the storage device model
+     *
      * @return the storage device model
      */
     public String getModel() {
@@ -112,6 +167,7 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
 
     /**
      * returns the revision of this storage device
+     *
      * @return the revision of this storage device
      */
     public String getRevision() {
@@ -120,6 +176,7 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
 
     /**
      * returns the serial of the storage device
+     *
      * @return the serial of the storage device
      */
     public String getSerial() {
@@ -128,6 +185,7 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
 
     /**
      * returns the size of the storage device (in Byte)
+     *
      * @return the size of the storage device (in Byte)
      */
     public long getSize() {
@@ -135,23 +193,41 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
     }
 
     /**
+     * returns
+     * <code>true</code>, if this device is system internal,
+     * <code>false</code> otherwise
+     *
+     * @return
+     * <code>true</code>, if this device is system internal,
+     * <code>false</code> otherwise
+     */
+    public boolean isSystemInternal() {
+        return systemInternal;
+    }
+
+    /**
+     * returns
+     * <code>true</code> if this device is removable,
+     * <code>false</code> otherwise
+     *
+     * @return
+     * <code>true</code> if this device is removable,
+     * <code>false</code> otherwise
+     */
+    public boolean isRemovable() {
+        return removable;
+    }
+
+    /**
      * returns the list of partitions of this storage device
+     *
      * @return the list of partitions of this storage device
      */
     public synchronized List<Partition> getPartitions() {
         if (partitions == null) {
             // create new list
             partitions = new ArrayList<Partition>();
-            
-            // It has happened that "udisks --enumerate" returns a valid storage
-            // device but not yet its partitions. Therefore we give the system
-            // a little break...
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            }
-            
+
             // call udisks to get partition info
             ProcessExecutor processExecutor = new ProcessExecutor();
             LOGGER.log(Level.INFO,
@@ -161,38 +237,39 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
             List<String> lines = processExecutor.getStdOutList();
             Collections.sort(lines);
 
-            /**
-             * parse parted output, example:
-             * /org/freedesktop/UDisks/devices/sdb
-             * /org/freedesktop/UDisks/devices/sda1
-             * /org/freedesktop/UDisks/devices/sda2
-             * /org/freedesktop/UDisks/devices/sr0
-             * /org/freedesktop/UDisks/devices/sdb2
-             * /org/freedesktop/UDisks/devices/loop0
-             * /org/freedesktop/UDisks/devices/loop1
-             * /org/freedesktop/UDisks/devices/sdb1
-             * /org/freedesktop/UDisks/devices/sda
-             */
+            // parse udisks output, example:
+            //      /org/freedesktop/UDisks/devices/sdb
+            //      /org/freedesktop/UDisks/devices/sda1
+            //      /org/freedesktop/UDisks/devices/sda2
+            //      /org/freedesktop/UDisks/devices/sr0
+            //      /org/freedesktop/UDisks/devices/sdb2
+            //      /org/freedesktop/UDisks/devices/loop0
+            //      /org/freedesktop/UDisks/devices/loop1
+            //      /org/freedesktop/UDisks/devices/sdb1
+            //      /org/freedesktop/UDisks/devices/sda
+
             // we only want to catch the partition numbers...
             Pattern pattern = Pattern.compile(
-                    "/org/freedesktop/UDisks/devices/" + device.substring(5)
-                    + "(\\d+)");
+                    "/org/freedesktop/UDisks/devices/" + device + "(\\d+)");
             for (String line : lines) {
                 Matcher matcher = pattern.matcher(line);
                 if (matcher.matches()) {
                     partitions.add(parsePartition(matcher));
                 }
             }
-            
+
             LOGGER.log(Level.INFO, "found {0} partitions", partitions.size());
         }
         return partitions;
     }
 
     /**
-     * returns <code>true</code>, if this storage device can be upgraded,
+     * returns
+     * <code>true</code>, if this storage device can be upgraded,
      * <code>false</code> otherwise
-     * @return <code>true</code>, if this storage device can be upgraded,
+     *
+     * @return
+     * <code>true</code>, if this storage device can be upgraded,
      * <code>false</code> otherwise
      * @throws DBusException if a dbus exception occurs
      */
@@ -204,15 +281,17 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
             Partition previousPartition = null;
             for (Partition partition : getPartitions()) {
                 if (partition.isSystemPartition()) {
-                    systemPartition = partition;
                     long partitionSize = partition.getSize();
                     // wild guess: give file system maximum 1% overhead...
                     long saveSystemSize = (long) (systemSize * 1.01);
                     if (LOGGER.isLoggable(Level.INFO)) {
                         LOGGER.log(Level.INFO,
                                 "systemSize: {0}, saveSystemSize: {1}, size of {2}: {3}",
-                                new Object[]{systemSize, saveSystemSize,
-                                    partition.getDevice(), partitionSize});
+                                new Object[]{
+                                    systemSize, saveSystemSize,
+                                    partition.getDeviceAndNumber(),
+                                    partitionSize
+                                });
                     }
                     remaining = partitionSize - saveSystemSize;
                     LOGGER.log(Level.FINE, "remaining = {0}", remaining);
@@ -220,20 +299,20 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
                         canBeUpgraded = true;
                         break; // for
                     }
-                    /**
-                     * TODO: more sophisticated checks
-                     *  - device with partition gaps
-                     *  - expand in both directions
-                     *  - ...
-                     */
+
+                    // TODO: more sophisticated checks
+                    //  - device with partition gaps
+                    //  - expand in both directions
+                    //  - ...
+
                     // check if repartitioning is possible
                     if ((previousPartition != null)
                             && (!previousPartition.isExtended())) {
                         // right now we can only resize ext partitions
                         if (previousPartition.hasExtendedFilesystem()) {
                             long usableSpace =
-                                    previousPartition.getSize() - 
-                                    previousPartition.getUsedSpace(true);
+                                    previousPartition.getSize()
+                                    - previousPartition.getUsedSpace(true);
                             if (usableSpace > Math.abs(remaining)) {
                                 canBeUpgraded = true;
                                 needsRepartitioning = true;
@@ -259,8 +338,10 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
 
     /**
      * checks if the storage device must be repartitioned when upgraded
-     * @return <code>true</code>, if the system must be repartitioned when
-     * upgraded, <code>false</code> otherwise
+     *
+     * @return
+     * <code>true</code>, if the system must be repartitioned when upgraded,
+     * <code>false</code> otherwise
      */
     public boolean needsRepartitioning() {
         return needsRepartitioning;
@@ -268,6 +349,7 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
 
     /**
      * returns the reason why this storage device can not be upgraded
+     *
      * @return the noUpgradeReason
      */
     public String getNoUpgradeReason() {
@@ -276,47 +358,45 @@ public abstract class StorageDevice implements Comparable<StorageDevice> {
 
     /**
      * returns the system partition of this storage device
+     *
      * @return the system partition of this storage device
      */
     public synchronized Partition getSystemPartition() {
-        if (systemPartition == null) {
-            try {
-                canBeUpgraded();
-            } catch (DBusException ex) {
-                LOGGER.log(Level.SEVERE, "", ex);
-            }
-        }
+        getPartitions();
         return systemPartition;
     }
 
     /**
      * returns the data partition of this storage device
+     *
      * @return the data partition of this storage device
      */
     public Partition getDataPartition() {
+        getPartitions();
         return dataPartition;
+    }
+
+    /**
+     * returns the exchange partition of this storage device
+     *
+     * @return the exchange partition of this storage device
+     */
+    public Partition getExchangePartition() {
+        getPartitions();
+        return exchangePartition;
     }
 
     private Partition parsePartition(Matcher matcher) {
         try {
             String numberString = matcher.group(1);
-            String partitionDevice = device.substring(5) + numberString;
-            String idLabel = DbusTools.getStringProperty(
-                    partitionDevice, "IdLabel");
-            String idType = DbusTools.getStringProperty(
-                    partitionDevice, "IdType");
-            long partitionOffset = DbusTools.getLongProperty(
-                    partitionDevice, "PartitionOffset");
-            long partitionSize = DbusTools.getLongProperty(
-                    partitionDevice, "PartitionSize");
-            String partitionType = DbusTools.getStringProperty(
-                    partitionDevice, "PartitionType");
-            Partition partition = new Partition(partitionDevice,
-                    Integer.parseInt(numberString), partitionOffset,
-                    partitionSize, partitionType, idLabel, idType,
-                    systemPartitionLabel);
-            if ("live-rw".equals(idLabel)) {
+            Partition partition = Partition.getPartitionFromDevice(
+                    device, numberString, systemPartitionLabel, systemSize);
+            if (partition.isPersistencyPartition()) {
                 dataPartition = partition;
+            } else if (partition.isExchangePartition()) {
+                exchangePartition = partition;
+            } else if (partition.isSystemPartition()) {
+                systemPartition = partition;
             }
             return partition;
         } catch (NumberFormatException numberFormatException) {

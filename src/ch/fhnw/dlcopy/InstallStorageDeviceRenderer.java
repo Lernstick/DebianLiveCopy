@@ -27,6 +27,7 @@ import javax.swing.ImageIcon;
 
 /**
  * A renderer for storage devices
+ *
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
 public class InstallStorageDeviceRenderer
@@ -45,7 +46,9 @@ public class InstallStorageDeviceRenderer
     private final int iconInsets;
     private int iconGap;
 
-    /** Creates new form UsbRenderer
+    /**
+     * Creates new form UsbRenderer
+     *
      * @param dlCopy the main program
      * @param systemSize the size of the system to be copied in Byte
      */
@@ -76,7 +79,7 @@ public class InstallStorageDeviceRenderer
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
-        
+
         // early return
         if (maxStorageDeviceSize == 0) {
             return;
@@ -85,51 +88,50 @@ public class InstallStorageDeviceRenderer
 
         // set device text and icon based on storage type
         String deviceText = null;
-        long usbStorageSize = storageDevice.getSize();
-        if (storageDevice instanceof UsbStorageDevice) {
-            UsbStorageDevice usbStorageDevice =
-                    (UsbStorageDevice) storageDevice;
-            deviceText = usbStorageDevice.getVendor() + " "
-                    + usbStorageDevice.getModel() + ", "
-                    + DLCopy.getDataVolumeString(usbStorageSize, 1) + " ("
-                    + usbStorageDevice.getDevice() + ")";
-            iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                    "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media-usb-pendrive.png")));
-        } else if (storageDevice instanceof Harddisk) {
-            Harddisk harddisk = (Harddisk) storageDevice;
-            deviceText = harddisk.getVendor() + " "
-                    + harddisk.getModel() + ", "
-                    + DLCopy.getDataVolumeString(usbStorageSize, 1) + " ("
-                    + harddisk.getDevice() + ")";
-            iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                    "/ch/fhnw/dlcopy/icons/32x32/drive-harddisk.png")));
-        } else if (storageDevice instanceof SDStorageDevice) {
-            SDStorageDevice sdStorageDevice =
-                    (SDStorageDevice) storageDevice;
-            deviceText = sdStorageDevice.getModel() + " "
-                    + DLCopy.getDataVolumeString(usbStorageSize, 1) + " ("
-                    + sdStorageDevice.getDevice() + ")";
-            iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                    "/ch/fhnw/dlcopy/icons/32x32/media-flash-sd-mmc.png")));
-        } else {
-            LOGGER.log(Level.WARNING,
-                    "unsupported storage device: {0}", storageDevice);
+        long storageSize = storageDevice.getSize();
+        switch (storageDevice.getType()) {
+            case HardDrive:
+            case USBFlashDrive:
+                deviceText = storageDevice.getVendor() + " "
+                        + storageDevice.getModel() + ", "
+                        + DLCopy.getDataVolumeString(storageSize, 1) + " ("
+                        + "/dev/" + storageDevice.getDevice() + ")";
+                break;
+            case SDMemoryCard:
+                deviceText = storageDevice.getModel() + " "
+                        + DLCopy.getDataVolumeString(storageSize, 1) + " ("
+                        + "/dev/" + storageDevice.getDevice() + ")";
         }
+
+        switch (storageDevice.getType()) {
+            case HardDrive:
+                iconLabel.setIcon(new ImageIcon(getClass().getResource(
+                        "/ch/fhnw/dlcopy/icons/32x32/drive-harddisk.png")));
+                break;
+            case SDMemoryCard:
+                iconLabel.setIcon(new ImageIcon(getClass().getResource(
+                        "/ch/fhnw/dlcopy/icons/32x32/media-flash-sd-mmc.png")));
+                break;
+            case USBFlashDrive:
+                iconLabel.setIcon(new ImageIcon(getClass().getResource(
+                        "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media-usb-pendrive.png")));
+        }
+
         iconGap = iconLabel.getWidth() + iconInsets;
         Graphics2D graphics2D = (Graphics2D) g;
         int componentWidth = getWidth();
         int height = getHeight();
-        long overhead = usbStorageSize - systemSize;
+        long overhead = storageSize - systemSize;
         int usbStorageWidth = (int) (((componentWidth - iconGap - 2 * OFFSET)
-                * usbStorageSize) / maxStorageDeviceSize);
+                * storageSize) / maxStorageDeviceSize);
         PartitionState partitionState =
-                DLCopy.getPartitionState(usbStorageSize, systemSize);
+                DLCopy.getPartitionState(storageSize, systemSize);
 
         // set painter for text
         graphics2D.setPaint(Color.BLACK);
+
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-
         // draw top text
         int rectangleTop = 0;
         if (partitionState == PartitionState.TOO_SMALL) {
@@ -139,21 +141,21 @@ public class InstallStorageDeviceRenderer
             text = MessageFormat.format(text, deviceText);
             rectangleTop = drawTopText(graphics2D, text);
         }
-
         // paint usb stick rectangle
         if (partitionState == PartitionState.TOO_SMALL) {
             graphics2D.setPaint(Color.GRAY);
         } else {
             graphics2D.setPaint(LIGHT_BLUE);
         }
-        graphics2D.fill3DRect(iconGap + OFFSET, rectangleTop,
+
+        graphics2D.fill3DRect(iconGap
+                + OFFSET, rectangleTop,
                 usbStorageWidth, BAR_HEIGHT, true);
 
         // do not paint exchange partition when not selected
         if ((partitionState == PartitionState.EXCHANGE) && !isSelected) {
             partitionState = PartitionState.PERSISTENT;
         }
-
         // paint additional blocks and texts
         switch (partitionState) {
             case TOO_SMALL:
@@ -166,7 +168,7 @@ public class InstallStorageDeviceRenderer
             case ONLY_SYSTEM:
                 // paint OS text
                 String usbStorageSizeText =
-                        DLCopy.getDataVolumeString(usbStorageSize, 1) + " ";
+                        DLCopy.getDataVolumeString(storageSize, 1) + " ";
                 String text = usbStorageSizeText
                         + DLCopy.STRINGS.getString("Operating_System");
                 String shortText = usbStorageSizeText
@@ -178,7 +180,7 @@ public class InstallStorageDeviceRenderer
             case PERSISTENT:
                 // block widths
                 int persistentWidth =
-                        (int) ((usbStorageWidth * overhead) / usbStorageSize);
+                        (int) ((usbStorageWidth * overhead) / storageSize);
                 int systemWidth = usbStorageWidth - persistentWidth;
                 // texts
                 String persistentText = DLCopy.getDataVolumeString(
@@ -204,14 +206,14 @@ public class InstallStorageDeviceRenderer
             case EXCHANGE:
                 // block widths
                 systemWidth = (int) ((usbStorageWidth * systemSize)
-                        / usbStorageSize);
+                        / storageSize);
                 JSlider getExchangePartitionSizeSlider =
                         dlCopy.getExchangePartitionSizeSlider();
                 long exchangeSize =
                         (long) getExchangePartitionSizeSlider.getValue()
                         * DLCopy.MEGA;
                 int exchangeWidth = (int) ((usbStorageWidth * exchangeSize)
-                        / usbStorageSize);
+                        / storageSize);
                 int maximumExchangeSizeMega =
                         getExchangePartitionSizeSlider.getMaximum();
                 long maximumExchangeSize =
@@ -224,7 +226,7 @@ public class InstallStorageDeviceRenderer
                 long overheadMega = overhead / DLCopy.MEGA;
                 if ((overheadMega != maximumExchangeSizeMega)
                         || (exchangeSize != maximumExchangeSize)) {
-                    persistentSize = usbStorageSize - systemSize - exchangeSize;
+                    persistentSize = storageSize - systemSize - exchangeSize;
                     persistentWidth =
                             usbStorageWidth - exchangeWidth - systemWidth;
                 }
@@ -282,22 +284,24 @@ public class InstallStorageDeviceRenderer
 
         graphics2D.setPaint(Color.BLACK);
         int separatorPosition = height - 1;
+
         graphics2D.drawLine(
                 0, separatorPosition, componentWidth, separatorPosition);
     }
 
     /**
      * sets the size of the largest USB stick
+     *
      * @param maxSize the size of the largest USB stick
      */
     public void setMaxSize(long maxSize) {
         this.maxStorageDeviceSize = maxSize;
     }
 
-    /** This method is called from within the constructor to
-     * initialize the form.
-     * WARNING: Do NOT modify this code. The content of this method is
-     * always regenerated by the Form Editor.
+    /**
+     * This method is called from within the constructor to initialize the form.
+     * WARNING: Do NOT modify this code. The content of this method is always
+     * regenerated by the Form Editor.
      */
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents

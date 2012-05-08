@@ -63,18 +63,18 @@ public class RepairStorageDeviceRenderer
             storageDevice = (StorageDevice) value;
 
             // set icon based on storage type
-            if (storageDevice instanceof UsbStorageDevice) {
-                iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                        "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media-usb-pendrive.png")));
-            } else if (storageDevice instanceof Harddisk) {
-                iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                        "/ch/fhnw/dlcopy/icons/32x32/drive-harddisk.png")));
-            } else if (storageDevice instanceof SDStorageDevice) {
-                iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                        "/ch/fhnw/dlcopy/icons/32x32/media-flash-sd-mmc.png")));
-            } else {
-                LOGGER.log(Level.WARNING,
-                        "unsupported storage device: {0}", storageDevice);
+            switch (storageDevice.getType()) {
+                case HardDrive:
+                    iconLabel.setIcon(new ImageIcon(getClass().getResource(
+                            "/ch/fhnw/dlcopy/icons/32x32/drive-harddisk.png")));
+                    break;
+                case SDMemoryCard:
+                    iconLabel.setIcon(new ImageIcon(getClass().getResource(
+                            "/ch/fhnw/dlcopy/icons/32x32/media-flash-sd-mmc.png")));
+                    break;
+                case USBFlashDrive:
+                    iconLabel.setIcon(new ImageIcon(getClass().getResource(
+                            "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media-usb-pendrive.png")));
             }
 
             // set device text
@@ -114,7 +114,7 @@ public class RepairStorageDeviceRenderer
                 // set text
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append("<html><b>&#47;dev&#47;");
-                stringBuilder.append(partition.getDevice());
+                stringBuilder.append(partition.getDeviceAndNumber());
                 stringBuilder.append("</b> (");
                 stringBuilder.append(DLCopy.getDataVolumeString(
                         partition.getSize(), 1));
@@ -222,7 +222,8 @@ public class RepairStorageDeviceRenderer
 
         for (Partition partition : storageDevice.getPartitions()) {
 
-            LOGGER.log(Level.INFO, "partition: {0}", partition.getDevice());
+            LOGGER.log(Level.INFO,
+                    "partition: {0}", partition.getDeviceAndNumber());
 
             // determine offset
             long partitionOffset = partition.getOffset();
@@ -414,7 +415,7 @@ public class RepairStorageDeviceRenderer
         stringBuilder.append(DLCopy.STRINGS.getString("Serial"));
         stringBuilder.append(": ");
         stringBuilder.append(storageDevice.getSerial());
-        stringBuilder.append(", ");
+        stringBuilder.append(", &#47;dev&#47;");
         stringBuilder.append(storageDevice.getDevice());
         stringBuilder.append("</html>");
         label.setText(stringBuilder.toString());
