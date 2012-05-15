@@ -1,3 +1,9 @@
+dlcopy (201205151849-1) unstable; urgency=low
+
+  * fixed umounting before isolinux -> syslinux renaming
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Tue, 15 May 2012 18:49:37 +0200
+
 dlcopy (201205151754-1) unstable; urgency=low
 
   * fixed notification sound playback

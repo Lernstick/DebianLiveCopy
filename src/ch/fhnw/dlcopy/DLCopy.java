@@ -4659,12 +4659,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             if (destinationExchangePath != null) {
                 destinationExchangePartition.umount();
             }
-            destinationSystemPartition.umount();
 
             // isolinux -> syslinux renaming
             if (bootStorageDevice.getType() == StorageDevice.Type.OpticalDisc) {
                 isolinuxToSyslinux(destinationSystemPath);
             }
+            
+            // !!! do not umount system before isolinux -> syslinux renaming !!!
+            destinationSystemPartition.umount();
 
             return true;
         }

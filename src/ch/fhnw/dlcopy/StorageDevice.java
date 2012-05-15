@@ -119,14 +119,15 @@ public class StorageDevice implements Comparable<StorageDevice> {
     @Override
     public int hashCode() {
         int hash = 5;
-        hash = 41 * hash + (this.device != null ? this.device.hashCode() : 0);
-        hash = 41 * hash + (int) (this.size ^ (this.size >>> 32));
+        hash = 41 * hash + (device != null ? device.hashCode() : 0);
+        hash = 41 * hash + (int) (size ^ (size >>> 32));
         return hash;
     }
 
     @Override
     public String toString() {
-        return device + ", " + DLCopy.getDataVolumeString(size, 1);
+        return device + ", " + type + ", "
+                + DLCopy.getDataVolumeString(size, 1);
     }
 
     /**
