@@ -1,3 +1,9 @@
+dlcopy (201205151754-1) unstable; urgency=low
+
+  * fixed notification sound playback
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Tue, 15 May 2012 17:54:16 +0200
+
 dlcopy (201205151707-1) unstable; urgency=low
 
   * fixed determination of StorageDevice from Partition

@@ -3629,7 +3629,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }
 
     private void playNotifySound() {
-        URL url = getClass().getResource("/dlcopy/KDE_Notify.wav");
+        URL url = getClass().getResource("/ch/fhnw/dlcopy/KDE_Notify.wav");
         AudioClip clip = Applet.newAudioClip(url);
         clip.play();
     }
