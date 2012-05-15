@@ -1,3 +1,9 @@
+dlcopy (201205151707-1) unstable; urgency=low
+
+  * fixed determination of StorageDevice from Partition
+
+ -- Ronny Standtke <user@localhost>  Tue, 15 May 2012 17:07:49 +0200
+
 dlcopy (201205081832-1) unstable; urgency=low
 
   * use udev instead of hal

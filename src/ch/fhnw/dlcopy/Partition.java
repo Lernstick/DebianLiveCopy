@@ -42,6 +42,7 @@ public class Partition {
     private final String idType;
     private final String systemPartitionLabel;
     private final long systemSize;
+    private final boolean isDrive;
     private Boolean isSystemPartition;
     private Long usedSpace;
     private StorageDevice storageDevice;
@@ -117,16 +118,16 @@ public class Partition {
                 new Object[]{device, number});
         this.device = device;
         this.number = number;
-        this.deviceAndNumber = device + number;
         this.systemPartitionLabel = systemPartitionLabel;
         this.systemSize = systemSize;
-        this.offset = DbusTools.getLongProperty(
-                deviceAndNumber, "PartitionOffset");
-        this.size = DbusTools.getLongProperty(deviceAndNumber, "PartitionSize");
-        this.idLabel = DbusTools.getStringProperty(deviceAndNumber, "IdLabel");
-        this.idType = DbusTools.getStringProperty(deviceAndNumber, "IdType");
-        this.type = DbusTools.getStringProperty(
-                deviceAndNumber, "PartitionType");
+        deviceAndNumber = device + number;
+        offset = DbusTools.getLongProperty(deviceAndNumber, "PartitionOffset");
+        size = DbusTools.getLongProperty(deviceAndNumber, "PartitionSize");
+        idLabel = DbusTools.getStringProperty(deviceAndNumber, "IdLabel");
+        idType = DbusTools.getStringProperty(deviceAndNumber, "IdType");
+        type = DbusTools.getStringProperty(deviceAndNumber, "PartitionType");
+        isDrive = DbusTools.getBooleanProperty(
+                deviceAndNumber, "DeviceIsDrive");
     }
 
     @Override
@@ -166,7 +167,8 @@ public class Partition {
     public synchronized StorageDevice getStorageDevice() throws DBusException {
         if (storageDevice == null) {
             storageDevice = new StorageDevice(
-                    device, systemPartitionLabel, systemSize);
+                    isDrive ? deviceAndNumber : device, 
+                    systemPartitionLabel, systemSize);
         }
         return storageDevice;
     }
