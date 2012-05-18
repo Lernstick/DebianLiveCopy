@@ -1,3 +1,9 @@
+dlcopy (201205181413-1) unstable; urgency=low
+
+  * added Italian L10N
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 18 May 2012 14:13:05 +0200
+
 dlcopy (201205151849-1) unstable; urgency=low
 
   * fixed umounting before isolinux -> syslinux renaming
