@@ -3232,7 +3232,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 }
             }
 
-            StorageDevice storageDevice = 
+            StorageDevice storageDevice =
                     getStorageDevice(path, includeHarddisks);
             if (storageDevice != null) {
                 LOGGER.log(Level.INFO, "adding {0}", path);
@@ -4245,7 +4245,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     if (exchangeMB == 0) {
                         // create two partitions:
                         // persistent, system
-                        destinationDataDevice = device 
+                        destinationDataDevice = device
                                 + (sdDevice ? "p1" : '1');
                         destinationSystemDevice = device
                                 + (sdDevice ? "p2" : '2');
@@ -4258,7 +4258,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         } else {
                             // create three partitions:
                             // exchange, persistent, system
-                            destinationDataDevice = device 
+                            destinationDataDevice = device
                                     + (sdDevice ? "p2" : '2');
                             destinationSystemDevice = device
                                     + (sdDevice ? "p3" : '3');
@@ -4335,10 +4335,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     Partition.getPartitionFromDeviceAndNumber(
                     destinationExchangeDevice.substring(5),
                     systemPartitionLabel, systemSize);
+
             Partition destinationDataPartition =
-                    Partition.getPartitionFromDeviceAndNumber(
+                    (destinationDataDevice == null)
+                    ? null
+                    : Partition.getPartitionFromDeviceAndNumber(
                     destinationDataDevice.substring(5),
                     systemPartitionLabel, systemSize);
+
             Partition destinationSystemPartition =
                     Partition.getPartitionFromDeviceAndNumber(
                     destinationSystemDevice.substring(5),
@@ -4351,7 +4355,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
 
             // copy persistency layer
-            if (!copyPersistency(destinationDataPartition)) {
+            if ((destinationDataPartition != null)
+                    && !copyPersistency(destinationDataPartition)) {
                 return false;
             }
 
@@ -4625,7 +4630,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                                 });
                     }
                 }
-                
+
                 destinationExchangePath = destinationExchangePartition.mount();
 
                 exchangeCopyJob = new CopyJob(
@@ -4634,7 +4639,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
 
             String destinationSystemPath = destinationSystemPartition.mount();
-            
+
             CopyJob systemCopyJob = new CopyJob(
                     new Source[]{new Source(DEBIAN_LIVE_SYSTEM_PATH, ".*")},
                     new String[]{destinationSystemPath});
@@ -4664,7 +4669,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             if (bootStorageDevice.getType() == StorageDevice.Type.OpticalDisc) {
                 isolinuxToSyslinux(destinationSystemPath);
             }
-            
+
             // !!! do not umount system before isolinux -> syslinux renaming !!!
             destinationSystemPartition.umount();
 
@@ -4684,7 +4689,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 }
 
                 // mount persistency destination
-                String persistencyDestinationPath = 
+                String persistencyDestinationPath =
                         destinationDataPartition.mount();
                 if (persistencyDestinationPath == null) {
                     // TODO: error message
