@@ -1,3 +1,9 @@
+dlcopy (201205311719-1) unstable; urgency=low
+
+  * use "/usr/" as default entry in list of directories for separate file systems
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 31 May 2012 17:19:25 +0200
+
 dlcopy (201205211811-1) unstable; urgency=low
 
   * fixed install with full exchange partition

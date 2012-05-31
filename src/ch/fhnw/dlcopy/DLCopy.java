@@ -382,6 +382,7 @@ public class DLCopy extends JFrame
         udisksMonitorThread.start();
 
         separateFileSystemsListModel = new DefaultListModel();
+        separateFileSystemsListModel.addElement("/usr/");
         separateFileSystemsList.setModel(separateFileSystemsListModel);
 
         upgradeOverwriteListModel = new DefaultListModel();
