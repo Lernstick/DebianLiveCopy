@@ -1,3 +1,9 @@
+dlcopy (201206051200-1) unstable; urgency=low
+
+  * translation and layout fixes
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Tue, 05 Jun 2012 12:00:13 +0200
+
 dlcopy (201206011526-1) unstable; urgency=low
 
   * fixed Italian L10n
