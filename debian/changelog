@@ -1,3 +1,9 @@
+dlcopy (201206071734-1) unstable; urgency=low
+
+  * do not wait endlessly for a clean fuser return on umount
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 07 Jun 2012 17:34:52 +0200
+
 dlcopy (201206051200-1) unstable; urgency=low
 
   * translation and layout fixes

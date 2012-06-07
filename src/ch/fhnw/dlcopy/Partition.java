@@ -167,7 +167,7 @@ public class Partition {
     public synchronized StorageDevice getStorageDevice() throws DBusException {
         if (storageDevice == null) {
             storageDevice = new StorageDevice(
-                    isDrive ? deviceAndNumber : device, 
+                    isDrive ? deviceAndNumber : device,
                     systemPartitionLabel, systemSize);
         }
         return storageDevice;
@@ -551,8 +551,9 @@ public class Partition {
         try {
             ProcessExecutor processExecutor = new ProcessExecutor();
             int returnValue = processExecutor.executeProcess(true, true,
-                    "fuser", "-m", "/dev/" + deviceAndNumber);
-            while (returnValue == 0) {
+                    "fuser", "-v", "-m", "/dev/" + deviceAndNumber);
+            if (returnValue == 0) {
+                //while (returnValue == 0) {
                 LOGGER.log(Level.INFO, "/dev/{0} is still being used by the "
                         + "following processes:\n{1}",
                         new Object[]{
@@ -560,8 +561,8 @@ public class Partition {
                             processExecutor.getStdOut()
                         });
                 Thread.sleep(1000);
-                returnValue = processExecutor.executeProcess(true, true,
-                        "fuser", "-m", "/dev/" + deviceAndNumber);
+//                returnValue = processExecutor.executeProcess(true, true,
+//                        "fuser", "-v", "-m", "/dev/" + deviceAndNumber);
             }
         } catch (InterruptedException ex2) {
             LOGGER.log(Level.SEVERE, "", ex2);

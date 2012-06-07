@@ -2,6 +2,8 @@
 kdesudo "java -Djava.library.path=/usr/lib/jni -jar dist/DLCopy_orig.jar --variant lernstick"
 ********************************************************************************
 
+- fuser -m <file> zeigt unter wheezy *immer* etwas an!
+
 - Icons DVD->USB und USB->USB sind nicht allgemein genug
 
 - Installation:
