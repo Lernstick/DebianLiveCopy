@@ -406,8 +406,9 @@ public class DLCopy extends JFrame
                 UPGRADE_OVERWRITE_LIST, "");
         fillUpgradeOverwriteList(upgradeOverWriteList);
 
-        pack();
-        //setSize(910, 550);
+        // TODO: pack() does not work reliably!?
+        //pack();
+        setSize(950, 550);
         setLocationRelativeTo(null);
     }
 
