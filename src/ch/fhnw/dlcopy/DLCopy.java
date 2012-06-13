@@ -299,6 +299,13 @@ public class DLCopy extends JFrame
         }
 
         initComponents();
+
+        // do not show initial "{0}" placeholder
+        String countString = STRINGS.getString("Selection_Count");
+        countString = MessageFormat.format(countString, 0);
+        installSelectionCountLabel.setText(countString);
+        repairSelectionCountLabel.setText(countString);
+
         tmpDirTextField.getDocument().addDocumentListener(this);
         if (bootStorageDevice.getType() == StorageDevice.Type.USBFlashDrive) {
             Icon usb2usbIcon = new ImageIcon(

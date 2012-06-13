@@ -1,3 +1,9 @@
+dlcopy (201206131134-1) unstable; urgency=low
+
+  * do not show initial message format placeholders
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Wed, 13 Jun 2012 11:34:28 +0200
+
 dlcopy (201206071849-1) unstable; urgency=low
 
   * use hardcoded window size instead of the (unreliable) pack()
