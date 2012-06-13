@@ -304,6 +304,7 @@ public class DLCopy extends JFrame
         String countString = STRINGS.getString("Selection_Count");
         countString = MessageFormat.format(countString, 0);
         installSelectionCountLabel.setText(countString);
+        upgradeSelectionCountLabel.setText(countString);
         repairSelectionCountLabel.setText(countString);
 
         tmpDirTextField.getDocument().addDocumentListener(this);
