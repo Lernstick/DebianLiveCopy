@@ -3538,7 +3538,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         long size = storageDevice.getSize();
         long overhead = size - systemSizeEnlarged;
         int overheadMB = (int) (overhead / MEGA);
-        PartitionState partitionState = getPartitionState(size, systemSizeEnlarged);
+        PartitionState partitionState = 
+                getPartitionState(size, systemSizeEnlarged);
         switch (partitionState) {
             case TOO_SMALL:
                 return null;
@@ -4458,7 +4459,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     break;
 
                 case PERSISTENT:
-                    String persistentBorder = persistentMB + "M";
+                    String persistentBorder = persistentMB + "MiB";
                     mkpart(partedCommandList, "0%", persistentBorder);
                     mkpart(partedCommandList, persistentBorder, "100%");
                     setFlag(partedCommandList, "2", "boot", "on");
@@ -4469,14 +4470,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     if (exchangeMB == 0) {
                         // create two partitions:
                         // persistent, system
-                        persistentBorder = persistentMB + "M";
+                        persistentBorder = persistentMB + "MiB";
                         mkpart(partedCommandList, "0%", persistentBorder);
                         mkpart(partedCommandList, persistentBorder, "100%");
                         setFlag(partedCommandList, "2", "boot", "on");
                         setFlag(partedCommandList, "2", "lba", "on");
 
                     } else {
-                        String exchangeBorder = exchangeMB + "M";
+                        String exchangeBorder = exchangeMB + "MiB";
                         if (persistentMB == 0) {
                             // create two partitions:
                             // exchange, system
@@ -4488,7 +4489,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         } else {
                             // create three partitions:
                             // exchange, persistent, system
-                            persistentBorder = (exchangeMB + persistentMB) + "M";
+                            persistentBorder = (exchangeMB + persistentMB) + "MiB";
                             mkpart(partedCommandList, "0%", exchangeBorder);
                             mkpart(partedCommandList, exchangeBorder, persistentBorder);
                             mkpart(partedCommandList, persistentBorder, "100%");
@@ -5169,7 +5170,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 newSystemPartitionOffset /= MEGA;
                 String start = String.valueOf(dataPartitionOffset) + "B";
                 String border =
-                        String.valueOf(newSystemPartitionOffset) + "MB";
+                        String.valueOf(newSystemPartitionOffset) + "MiB";
                 String systemPartitionString =
                         String.valueOf(systemPartition.getNumber());
                 returnValue = processExecutor.executeProcess(true, true,

@@ -1,3 +1,9 @@
+dlcopy (201206201420-1) unstable; urgency=low
+
+  * use correct size unit ("MiB" instead of "M") in parted
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Wed, 20 Jun 2012 14:20:23 +0200
+
 dlcopy (201206131200-1) unstable; urgency=low
 
   * do not show initial message format placeholders
