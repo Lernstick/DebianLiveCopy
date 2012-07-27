@@ -1,3 +1,15 @@
+dlcopy (201207272257-1) unstable; urgency=low
+
+  * do not show optical disks in list of storage devices
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 27 Jul 2012 22:57:23 +0200
+
+dlcopy (201207272240-1) unstable; urgency=low
+
+  * more robust painter classes
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 27 Jul 2012 22:40:53 +0200
+
 dlcopy (201206201420-1) unstable; urgency=low
 
   * use correct size unit ("MiB" instead of "M") in parted

@@ -79,6 +79,10 @@ public class UpgradeStorageDeviceRenderer
                 case USBFlashDrive:
                     iconLabel.setIcon(new ImageIcon(getClass().getResource(
                             "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media-usb-pendrive.png")));
+                    break;
+                default:
+                    LOGGER.log(Level.WARNING, "unsupported device type: {0}", 
+                            storageDevice.getType());
             }
 
             // set device text

@@ -3248,8 +3248,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             StorageDevice storageDevice =
                     getStorageDevice(path, includeHarddisks);
             if (storageDevice != null) {
-                LOGGER.log(Level.INFO, "adding {0}", path);
-                storageDevices.add(storageDevice);
+                if (storageDevice.getType() == StorageDevice.Type.OpticalDisc) {
+                    LOGGER.log(Level.INFO,
+                            "skipping optical disk {0}", storageDevice);
+                } else {
+                    LOGGER.log(Level.INFO, "adding {0}", path);
+                    storageDevices.add(storageDevice);
+                }
             }
         }
 
@@ -3538,7 +3543,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         long size = storageDevice.getSize();
         long overhead = size - systemSizeEnlarged;
         int overheadMB = (int) (overhead / MEGA);
-        PartitionState partitionState = 
+        PartitionState partitionState =
                 getPartitionState(size, systemSizeEnlarged);
         switch (partitionState) {
             case TOO_SMALL:

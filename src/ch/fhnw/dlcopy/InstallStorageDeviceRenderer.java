@@ -5,25 +5,13 @@
  */
 package ch.fhnw.dlcopy;
 
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import ch.fhnw.dlcopy.DLCopy.PartitionState;
+import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.text.MessageFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.JList;
-import javax.swing.JPanel;
-import javax.swing.JSlider;
-import javax.swing.ListCellRenderer;
-import ch.fhnw.dlcopy.DLCopy.PartitionState;
-import java.awt.GridBagLayout;
-import java.awt.Insets;
-import javax.swing.ImageIcon;
+import javax.swing.*;
 
 /**
  * A renderer for storage devices
@@ -87,23 +75,23 @@ public class InstallStorageDeviceRenderer
         LOGGER.log(Level.FINEST, "maxStorageDeviceSize = {0}", maxStorageDeviceSize);
 
         // set device text and icon based on storage type
-        String deviceText = null;
+        String deviceText;
         long storageSize = storageDevice.getSize();
-        switch (storageDevice.getType()) {
-            case HardDrive:
-            case USBFlashDrive:
-                deviceText = storageDevice.getVendor() + " "
-                        + storageDevice.getModel() + ", "
-                        + DLCopy.getDataVolumeString(storageSize, 1) + " ("
-                        + "/dev/" + storageDevice.getDevice() + ")";
-                break;
+        StorageDevice.Type deviceType = storageDevice.getType();
+        switch (deviceType) {
             case SDMemoryCard:
                 deviceText = storageDevice.getModel() + " "
                         + DLCopy.getDataVolumeString(storageSize, 1) + " ("
                         + "/dev/" + storageDevice.getDevice() + ")";
+                break;
+            default:
+                deviceText = storageDevice.getVendor() + " "
+                        + storageDevice.getModel() + ", "
+                        + DLCopy.getDataVolumeString(storageSize, 1) + " ("
+                        + "/dev/" + storageDevice.getDevice() + ")";
         }
 
-        switch (storageDevice.getType()) {
+        switch (deviceType) {
             case HardDrive:
                 iconLabel.setIcon(new ImageIcon(getClass().getResource(
                         "/ch/fhnw/dlcopy/icons/32x32/drive-harddisk.png")));
@@ -115,6 +103,12 @@ public class InstallStorageDeviceRenderer
             case USBFlashDrive:
                 iconLabel.setIcon(new ImageIcon(getClass().getResource(
                         "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media-usb-pendrive.png")));
+                break;
+            default:
+                iconLabel.setIcon(new ImageIcon(getClass().getResource(
+                        "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media.png")));
+                LOGGER.log(Level.WARNING,
+                        "unsupported deviceType:{0}", deviceType);
         }
 
         iconGap = iconLabel.getWidth() + iconInsets;
@@ -133,7 +127,7 @@ public class InstallStorageDeviceRenderer
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
         // draw top text
-        int rectangleTop = 0;
+        int rectangleTop;
         if (partitionState == PartitionState.TOO_SMALL) {
             rectangleTop = drawTopText(graphics2D, deviceText);
         } else {
