@@ -1,3 +1,9 @@
+dlcopy (201208161024-1) unstable; urgency=low
+
+  * added dependency on policykit-1
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 16 Aug 2012 10:24:02 +0200
+
 dlcopy (201207272257-1) unstable; urgency=low
 
   * do not show optical disks in list of storage devices
