@@ -538,7 +538,6 @@ public class DLCopy extends JFrame
      */
     public static void main(final String args[]) {
         java.awt.EventQueue.invokeLater(new Runnable() {
-
             @Override
             public void run() {
                 new DLCopy(args).setVisible(true);
@@ -2751,7 +2750,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private void addHiddenFilesFilter(final JFileChooser fileChooser) {
         fileChooser.addPropertyChangeListener(
                 new java.beans.PropertyChangeListener() {
-
                     @Override
                     public void propertyChange(
                             java.beans.PropertyChangeEvent evt) {
@@ -2772,7 +2770,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         final String device = tokens[tokens.length - 1];
         LOGGER.log(Level.INFO, "removed device: {0}", device);
         SwingUtilities.invokeLater(new Runnable() {
-
             @Override
             public void run() {
                 DefaultListModel listModel;
@@ -4071,7 +4068,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         @Override
         public void run() {
             SwingUtilities.invokeLater(new Runnable() {
-
                 @Override
                 public void run() {
                     showCard(cardPanel, "installPanel");
@@ -4099,7 +4095,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             "/dev/" + storageDevice.getDevice(),
                             currentDevice, selectionCount);
                     SwingUtilities.invokeLater(new Runnable() {
-
                         @Override
                         public void run() {
                             currentlyInstalledDeviceLabel.setText(message);
@@ -4116,7 +4111,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 if (noError) {
                     // done
                     SwingUtilities.invokeLater(new Runnable() {
-
                         @Override
                         public void run() {
                             setTitle(STRINGS.getString("DLCopy.title"));
@@ -4178,7 +4172,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 long copiedBytes = fileCopier.getCopiedBytes();
                 final int progress = (int) ((100 * copiedBytes) / byteCount);
                 SwingUtilities.invokeLater(new Runnable() {
-
                     @Override
                     public void run() {
                         setTitle(progress + "% " + STRINGS.getString("Copied")
@@ -4381,7 +4374,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             // make storage device bootable
             SwingUtilities.invokeLater(new Runnable() {
-
                 @Override
                 public void run() {
                     showCard(installCardPanel,
@@ -4402,7 +4394,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             // update GUI
             SwingUtilities.invokeLater(new Runnable() {
-
                 @Override
                 public void run() {
                     showCard(installCardPanel,
@@ -4622,7 +4613,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     FileCopier.BYTE_COUNTER_PROPERTY, this);
 
             SwingUtilities.invokeLater(new Runnable() {
-
                 @Override
                 public void run() {
                     showCard(installCardPanel, "installCopyPanel");
@@ -4666,7 +4656,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             // update GUI
             SwingUtilities.invokeLater(new Runnable() {
-
                 @Override
                 public void run() {
                     showCard(installCardPanel,
@@ -4727,7 +4716,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
                 // update GUI
                 SwingUtilities.invokeLater(new Runnable() {
-
                     @Override
                     public void run() {
                         showCard(installCardPanel,
@@ -4753,7 +4741,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             rsyncTimer.setInitialDelay(0);
             rsyncTimer.start();
             SwingUtilities.invokeLater(new Runnable() {
-
                 @Override
                 public void run() {
                     rsyncPogressBar.setValue(0);
@@ -4790,7 +4777,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             cpTimer.setInitialDelay(0);
             cpTimer.start();
             SwingUtilities.invokeLater(new Runnable() {
-
                 @Override
                 public void run() {
                     cpFilenameLabel.setText(" ");
@@ -4833,7 +4819,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         protected Boolean doInBackground() throws Exception {
 
             SwingUtilities.invokeLater(new Runnable() {
-
                 @Override
                 public void run() {
                     showCard(cardPanel, "upgradePanel");
@@ -4865,7 +4850,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         + "&#47;dev&#47;" + storageDevice.getDevice()
                         + ")");
                 SwingUtilities.invokeLater(new Runnable() {
-
                     @Override
                     public void run() {
                         currentlyUpgradedDeviceLabel.setText(message);
@@ -4921,7 +4905,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 long copiedBytes = fileCopier.getCopiedBytes();
                 final int progress = (int) ((100 * copiedBytes) / byteCount);
                 SwingUtilities.invokeLater(new Runnable() {
-
                     @Override
                     public void run() {
                         setTitle(progress + "% " + STRINGS.getString("Copied")
@@ -4970,7 +4953,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 throws DBusException, IOException {
 
             SwingUtilities.invokeLater(new Runnable() {
-
                 @Override
                 public void run() {
                     upgradeIndeterminateProgressBar.setString(
@@ -4996,7 +4978,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 backupTimer.setInitialDelay(0);
                 backupTimer.start();
                 SwingUtilities.invokeLater(new Runnable() {
-
                     @Override
                     public void run() {
                         upgradeBackupTimeLabel.setText(
@@ -5013,7 +4994,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // cleanup
                 backupTimer.stop();
                 SwingUtilities.invokeLater(new Runnable() {
-
                     @Override
                     public void run() {
                         showCard(upgradeCardPanel,
@@ -5092,7 +5072,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             if (storageDevice.needsRepartitioning()) {
                 SwingUtilities.invokeLater(new Runnable() {
-
                     @Override
                     public void run() {
                         upgradeIndeterminateProgressBar.setString(
@@ -5209,7 +5188,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             // upgrade system partition
             SwingUtilities.invokeLater(new Runnable() {
-
                 @Override
                 public void run() {
                     showCard(upgradeCardPanel,
@@ -5234,7 +5212,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     new Source[]{new Source(DEBIAN_LIVE_SYSTEM_PATH, ".*")},
                     new String[]{systemMountPoint});
             SwingUtilities.invokeLater(new Runnable() {
-
                 @Override
                 public void run() {
                     showCard(upgradeCardPanel, "upgradeCopyPanel");
@@ -5242,7 +5219,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             });
             fileCopier.copy(systemCopyJob);
             SwingUtilities.invokeLater(new Runnable() {
-
                 @Override
                 public void run() {
                     showCard(upgradeCardPanel,
@@ -5259,7 +5235,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
 
             SwingUtilities.invokeLater(new Runnable() {
-
                 @Override
                 public void run() {
                     upgradeIndeterminateProgressBar.setString(
@@ -5299,7 +5274,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
                 // get a list of all available squashfs
                 FilenameFilter squashFsFilter = new FilenameFilter() {
-
                     @Override
                     public boolean accept(File dir, String name) {
                         return name.endsWith(".squashfs");
@@ -5354,7 +5328,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // create new squashfs image
                 step = IsoStep.MKSQUASHFS;
                 SwingUtilities.invokeLater(new Runnable() {
-
                     @Override
                     public void run() {
                         toISOProgressBar.setIndeterminate(false);
@@ -5391,15 +5364,41 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
                     // separate file systems (excludes everything but itself)
                     for (String separateFileSystem : separateFileSystems) {
-                        processExecutor.executeProcess("mksquashfs", cowPath,
-                                targetDirectory + "/live/filesystem"
-                                + (++fileSystem) + ".squashfs", "-wildcards",
-                                "-e", "!(" + separateFileSystem + ")");
+                        commandList = new ArrayList<String>();
+                        commandList.add("mksquashfs");
+                        commandList.add(cowPath);
+                        commandList.add(targetDirectory + "/live/filesystem"
+                                + (++fileSystem) + ".squashfs");
+                        commandList.add("-wildcards");
+                        // subdirectories need special handling...
+                        // to only get /usr/share/, mksquashfs must be called
+                        // with -e !(usr) -e usr/!(share)
+                        String[] directories = separateFileSystem.split("/");
+                        for (int i = 0, length = directories.length; i < length; i++) {
+                            commandList.add("-e");
+                            StringBuilder builder = new StringBuilder();
+                            for (int j = 0; j <= i; j++) {
+                                String directory = directories[j];
+                                if (j == i) {
+                                    // exclude directory
+                                    builder.append("!(");
+                                    builder.append(directory);
+                                    builder.append(')');
+                                } else {
+                                    // directory is part of path
+                                    builder.append(directory);
+                                    builder.append('/');
+                                }
+                            }
+                            commandList.add(builder.toString());
+                        }
+                        commandArray = new String[commandList.size()];
+                        commandArray = commandList.toArray(commandArray);
+                        processExecutor.executeProcess(commandArray);
                     }
                 }
                 processExecutor.removePropertyChangeListener(this);
                 SwingUtilities.invokeLater(new Runnable() {
-
                     @Override
                     public void run() {
                         toISOProgressBar.setIndeterminate(true);
@@ -5456,7 +5455,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
                 // create new iso image
                 SwingUtilities.invokeLater(new Runnable() {
-
                     @Override
                     public void run() {
                         toISOProgressBar.setIndeterminate(false);
@@ -5550,7 +5548,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                                         message, progress + "%");
                                 publish(message);
                                 SwingUtilities.invokeLater(new Runnable() {
-
                                     @Override
                                     public void run() {
                                         toISOProgressBar.setValue(progress);
@@ -5584,7 +5581,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                                         progress + "%");
                                 publish(message);
                                 SwingUtilities.invokeLater(new Runnable() {
-
                                     @Override
                                     public void run() {
                                         toISOProgressBar.setValue(progress);
@@ -5610,7 +5606,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 String separateFileSystem = (String) separateFileSystemsListModel.get(i);
                 // cut off the leading slash
                 separateFileSystem = separateFileSystem.substring(1);
-                separateFileSystems.add(separateFileSystem);
+                separateFileSystems.add(separateFileSystem.trim());
             }
             return separateFileSystems;
         }
@@ -5625,7 +5621,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         protected Boolean doInBackground() throws Exception {
 
             SwingUtilities.invokeLater(new Runnable() {
-
                 @Override
                 public void run() {
                     showCard(cardPanel, "repairPanel");
@@ -5657,7 +5652,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         + "&#47;dev&#47;" + storageDevice.getDevice()
                         + ")");
                 SwingUtilities.invokeLater(new Runnable() {
-
                     @Override
                     public void run() {
                         currentlyRepairedDeviceLabel.setText(message);
@@ -5674,7 +5668,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 if (formatDataPartitionRadioButton.isSelected()) {
                     // format data partition
                     SwingUtilities.invokeLater(new Runnable() {
-
                         @Override
                         public void run() {
                             repairProgressBar.setString(STRINGS.getString(
@@ -5687,7 +5680,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 } else {
                     // remove files from data partition
                     SwingUtilities.invokeLater(new Runnable() {
-
                         @Override
                         public void run() {
                             repairProgressBar.setString(STRINGS.getString(
@@ -5869,7 +5861,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     UDISKS_ADDED.length()).trim();
             LOGGER.log(Level.INFO, "added path: \"{0}\"", addedPath);
             SwingUtilities.invokeLater(new Runnable() {
-
                 @Override
                 public void run() {
                     lock.lock();
@@ -6015,7 +6006,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     UDISKS_ADDED.length()).trim();
             LOGGER.log(Level.INFO, "added path: \"{0}\"", addedPath);
             SwingUtilities.invokeLater(new Runnable() {
-
                 @Override
                 public void run() {
                     lock.lock();
@@ -6181,7 +6171,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     UDISKS_ADDED.length()).trim();
             LOGGER.log(Level.INFO, "added path: \"{0}\"", addedPath);
             SwingUtilities.invokeLater(new Runnable() {
-
                 @Override
                 public void run() {
                     lock.lock();
