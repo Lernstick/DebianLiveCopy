@@ -1,3 +1,10 @@
+dlcopy (201209251915-1) unstable; urgency=low
+
+  * fixed boot device detection to also support boot devices without partitions
+    e.g. when dd'ing an isohybrid image directly onto a usb flash drive
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Tue, 25 Sep 2012 19:15:06 +0200
+
 dlcopy (201209171916-1) unstable; urgency=low
 
   * added support for subdirectories in separate file systems

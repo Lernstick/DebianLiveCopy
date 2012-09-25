@@ -60,6 +60,7 @@ public class Partition {
     public static Partition getPartitionFromDeviceAndNumber(
             String deviceAndNumber, String systemPartitionLabel,
             long systemSize) throws DBusException {
+        LOGGER.log(Level.FINE, "deviceAndNumber: \"{0}\"", deviceAndNumber);
         Matcher matcher = deviceAndNumberPattern.matcher(deviceAndNumber);
         if (matcher.matches()) {
             return getPartitionFromDevice(matcher.group(1), matcher.group(2),

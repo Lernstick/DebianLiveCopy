@@ -1,7 +1,10 @@
 package ch.fhnw.dlcopy;
 
 import ch.fhnw.util.DbusTools;
+import ch.fhnw.util.FileTools;
 import ch.fhnw.util.ProcessExecutor;
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -101,6 +104,31 @@ public class StorageDevice implements Comparable<StorageDevice> {
         }
     }
 
+    /**
+     * creates a new StorageDevice
+     *
+     * @param mountPoint the mount point of the storage device
+     * @param systemPartitionLabel the (expected) system partition label
+     * @param systemSize the on-disk-size of the operating system
+     * @return a new StorageDevice
+     * @throws DBusException if getting the device properties via d-bus fails
+     * @throws IOException if reading "/proc/mounts" fails
+     */
+    public static StorageDevice getStorageDeviceFromMountPoint(
+            String mountPoint, String systemPartitionLabel, long systemSize)
+            throws DBusException, IOException {
+        LOGGER.log(Level.FINE, "mountPoint: \"{0}\"", mountPoint);
+        List<String> mounts = FileTools.readFile(new File("/proc/mounts"));
+        for (String mount : mounts) {
+            String[] tokens = mount.split(" ");
+            if (tokens[0].startsWith("/dev/") && tokens[1].equals(mountPoint)) {
+                return new StorageDevice(tokens[0].substring(5),
+                        systemPartitionLabel, systemSize);
+            }
+        }
+        return null;
+    }
+
     @Override
     public int compareTo(StorageDevice other) {
         return device.compareTo(other.getDevice());
@@ -198,8 +226,7 @@ public class StorageDevice implements Comparable<StorageDevice> {
      * <code>true</code>, if this device is system internal,
      * <code>false</code> otherwise
      *
-     * @return
-     * <code>true</code>, if this device is system internal,
+     * @return <code>true</code>, if this device is system internal,
      * <code>false</code> otherwise
      */
     public boolean isSystemInternal() {
@@ -211,9 +238,8 @@ public class StorageDevice implements Comparable<StorageDevice> {
      * <code>true</code> if this device is removable,
      * <code>false</code> otherwise
      *
-     * @return
-     * <code>true</code> if this device is removable,
-     * <code>false</code> otherwise
+     * @return <code>true</code> if this device is removable, <code>false</code>
+     * otherwise
      */
     public boolean isRemovable() {
         return removable;
@@ -269,8 +295,7 @@ public class StorageDevice implements Comparable<StorageDevice> {
      * <code>true</code>, if this storage device can be upgraded,
      * <code>false</code> otherwise
      *
-     * @return
-     * <code>true</code>, if this storage device can be upgraded,
+     * @return <code>true</code>, if this storage device can be upgraded,
      * <code>false</code> otherwise
      * @throws DBusException if a dbus exception occurs
      */
@@ -340,9 +365,8 @@ public class StorageDevice implements Comparable<StorageDevice> {
     /**
      * checks if the storage device must be repartitioned when upgraded
      *
-     * @return
-     * <code>true</code>, if the system must be repartitioned when upgraded,
-     * <code>false</code> otherwise
+     * @return <code>true</code>, if the system must be repartitioned when
+     * upgraded, <code>false</code> otherwise
      */
     public boolean needsRepartitioning() {
         return needsRepartitioning;

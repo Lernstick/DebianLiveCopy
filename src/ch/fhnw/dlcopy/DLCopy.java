@@ -142,7 +142,6 @@ public class DLCopy extends JFrame
     private StorageDevice bootStorageDevice;
     private Partition bootExchangePartition;
     private Partition bootDataPartition;
-    private Partition bootSystemPartition;
     private boolean persistencyBoot;
     private boolean textFieldTriggeredSliderChange;
 
@@ -277,11 +276,21 @@ public class DLCopy extends JFrame
         }
 
         try {
-            bootSystemPartition = Partition.getPartitionFromMountPoint(
+            Partition bootSystemPartition =
+                    Partition.getPartitionFromMountPoint(
                     DEBIAN_LIVE_SYSTEM_PATH, systemPartitionLabel, systemSize);
             LOGGER.log(Level.INFO, "boot partition: {0}", bootSystemPartition);
 
-            bootStorageDevice = bootSystemPartition.getStorageDevice();
+            if (bootSystemPartition == null) {
+                // booted from a device, e.g. isohybrid on a usb flash drive
+                bootStorageDevice =
+                        StorageDevice.getStorageDeviceFromMountPoint(
+                        DEBIAN_LIVE_SYSTEM_PATH, systemPartitionLabel,
+                        systemSize);
+            } else {
+                bootStorageDevice = bootSystemPartition.getStorageDevice();
+            }
+
             LOGGER.log(Level.INFO,
                     "boot storage device: {0}", bootStorageDevice);
 
@@ -4674,9 +4683,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
 
             // isolinux -> syslinux renaming
-            if (bootStorageDevice.getType() == StorageDevice.Type.OpticalDisc) {
-                isolinuxToSyslinux(destinationSystemPath);
-            }
+            // !!! don't check here for boot storage device type !!!
+            // (usb flash drives with an isohybrid image also contain the
+            //  isolinux directory)
+            isolinuxToSyslinux(destinationSystemPath);
 
             // !!! do not umount system before isolinux -> syslinux renaming !!!
             destinationSystemPartition.umount();
