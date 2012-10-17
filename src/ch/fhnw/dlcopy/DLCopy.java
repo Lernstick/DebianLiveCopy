@@ -4417,8 +4417,24 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 }
             });
 
-            // determine exact partition sizes
             String device = "/dev/" + storageDevice.getDevice();
+
+            // First create a new partition table, otherwise USB flash drives
+            // previously written with a dd'ed ISO will NOT work!
+            int exitValue = processExecutor.executeProcess(
+                    "parted", "-s", device, "mklabel", "msdos");
+            if (exitValue != 0) {
+                String errorMessage = 
+                        STRINGS.getString("Error_Creating_Partition_Table");
+                errorMessage = MessageFormat.format(errorMessage, device);
+                LOGGER.severe(errorMessage);
+                if (showErrorMessages) {
+                    showErrorMessage(errorMessage);
+                }
+                return false;
+            }
+
+            // determine exact partition sizes
             long overhead = size - systemSizeEnlarged;
             int persistentMB = partitions.getPersistencyMB();
             if (LOGGER.isLoggable(Level.FINEST)) {
@@ -4534,7 +4550,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // repartition device
             String[] commandArray = partedCommandList.toArray(
                     new String[partedCommandList.size()]);
-            int exitValue = processExecutor.executeProcess(commandArray);
+            exitValue = processExecutor.executeProcess(commandArray);
             if (exitValue != 0) {
                 String errorMessage = STRINGS.getString("Error_Repartitioning");
                 errorMessage = MessageFormat.format(errorMessage, device);

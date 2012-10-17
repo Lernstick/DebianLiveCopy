@@ -1,3 +1,9 @@
+dlcopy (201209251915-2) unstable; urgency=low
+
+  * create a fresh partition table on target device during installation
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Wed, 17 Oct 2012 13:36:42 +0200
+
 dlcopy (201209251915-1) unstable; urgency=low
 
   * fixed boot device detection to also support boot devices without partitions
