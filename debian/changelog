@@ -1,9 +1,9 @@
-dlcopy (201210211833-1) unstable; urgency=low
+dlcopy (201210211848-1) unstable; urgency=low
 
   * create a fresh partition table on target device during installation to
     support installation on devices with a previously dd'ed hybrid iso on them
 
- -- Ronny Standtke <ronny@agora.imedias.ch>  Sun, 21 Oct 2012 18:33:16 +0200
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Sun, 21 Oct 2012 18:48:16 +0200
 
 dlcopy (201209251915-1) unstable; urgency=low
 

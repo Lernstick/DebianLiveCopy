@@ -4533,11 +4533,17 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // Create a new partition table before creating the partitions,
             // otherwise USB flash drives previously written with a dd'ed ISO
             // will NOT work!
-            // ADDITIONAL NOTE:
+            //
+            // NOTE 1:
             // "parted <device> mklabel msdos" did NOT work correctly here!
             // (the partition table type was still unknown and booting failed)
+            //
+            // NOTE 2:
+            // "--print-reply" is needed in the call to dbus-send below to make
+            // the call synchronous
             int exitValue = processExecutor.executeProcess(
-                    "dbus-send", "--system", "--dest=org.freedesktop.UDisks",
+                    "dbus-send", "--system", "--print-reply",
+                    "--dest=org.freedesktop.UDisks",
                     "/org/freedesktop/UDisks/devices/" + device.substring(5),
                     "org.freedesktop.UDisks.Device.PartitionTableCreate",
                     "string:mbr", "array:string:");
@@ -4551,6 +4557,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 }
                 return false;
             }
+            
+            // another safety wait...
+            Thread.sleep(3000);
             
             // repartition device
             String[] commandArray = partedCommandList.toArray(
