@@ -4419,21 +4419,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             String device = "/dev/" + storageDevice.getDevice();
 
-            // First create a new partition table, otherwise USB flash drives
-            // previously written with a dd'ed ISO will NOT work!
-            int exitValue = processExecutor.executeProcess(
-                    "parted", "-s", device, "mklabel", "msdos");
-            if (exitValue != 0) {
-                String errorMessage = 
-                        STRINGS.getString("Error_Creating_Partition_Table");
-                errorMessage = MessageFormat.format(errorMessage, device);
-                LOGGER.severe(errorMessage);
-                if (showErrorMessages) {
-                    showErrorMessage(errorMessage);
-                }
-                return false;
-            }
-
             // determine exact partition sizes
             long overhead = size - systemSizeEnlarged;
             int persistentMB = partitions.getPersistencyMB();
@@ -4454,8 +4439,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             partedCommandList.add("-a");
             partedCommandList.add("optimal");
             partedCommandList.add(device);
-            partedCommandList.add("mklabel");
-            partedCommandList.add("msdos");
 
 //            // list of "rm" commands must be inversely sorted, otherwise
 //            // removal of already existing partitions will fail when storage
@@ -4547,6 +4530,28 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // umount all mounted partitions of device
             umountPartitions(device);
 
+            // Create a new partition table before creating the partitions,
+            // otherwise USB flash drives previously written with a dd'ed ISO
+            // will NOT work!
+            // ADDITIONAL NOTE:
+            // "parted <device> mklabel msdos" did NOT work correctly here!
+            // (the partition table type was still unknown and booting failed)
+            int exitValue = processExecutor.executeProcess(
+                    "dbus-send", "--system", "--dest=org.freedesktop.UDisks",
+                    "/org/freedesktop/UDisks/devices/" + device.substring(5),
+                    "org.freedesktop.UDisks.Device.PartitionTableCreate",
+                    "string:mbr", "array:string:");
+            if (exitValue != 0) {
+                String errorMessage = 
+                        STRINGS.getString("Error_Creating_Partition_Table");
+                errorMessage = MessageFormat.format(errorMessage, device);
+                LOGGER.severe(errorMessage);
+                if (showErrorMessages) {
+                    showErrorMessage(errorMessage);
+                }
+                return false;
+            }
+            
             // repartition device
             String[] commandArray = partedCommandList.toArray(
                     new String[partedCommandList.size()]);
