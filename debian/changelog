@@ -1,3 +1,9 @@
+dlcopy (201211021639-1) unstable; urgency=low
+
+  * more logging in file copy library
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 02 Nov 2012 16:39:37 +0100
+
 dlcopy (201210211848-1) unstable; urgency=low
 
   * create a fresh partition table on target device during installation to
