@@ -1,8 +1,14 @@
-dlcopy (201211021639-1) unstable; urgency=low
+dlcopy (201211051048-1) unstable; urgency=low
+
+  * redirect stderr to /dev/null (because of https://savannah.nongnu.org/bugs/?37667)
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Mon, 05 Nov 2012 10:48:40 +0100
+
+dlcopy (201211021858-1) unstable; urgency=low
 
   * more logging in file copy library
 
- -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 02 Nov 2012 16:39:37 +0100
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 02 Nov 2012 18:58:55 +0100
 
 dlcopy (201210211848-1) unstable; urgency=low
 
