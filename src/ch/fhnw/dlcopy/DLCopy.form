@@ -245,7 +245,7 @@
                       <Component id="selectionLabel" min="-2" max="-2" attributes="0"/>
                       <EmptySpace max="-2" attributes="0"/>
                       <Component id="executionLabel" min="-2" max="-2" attributes="0"/>
-                      <EmptySpace pref="381" max="32767" attributes="0"/>
+                      <EmptySpace max="32767" attributes="0"/>
                   </Group>
               </Group>
             </DimensionLayout>
@@ -406,16 +406,20 @@
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" attributes="0">
-                                          <Group type="103" groupAlignment="0" attributes="0">
-                                              <Component id="exchangeDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                              <Component id="dataDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                              <Component id="osDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                              <Component id="installSelectionCountLabel" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          </Group>
+                                          <Component id="installSelectionCountLabel" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                       </Group>
-                                      <Component id="storageDeviceListScrollPane" alignment="1" pref="0" max="32767" attributes="0"/>
                                       <Component id="installListTabbedPane" alignment="0" pref="0" max="32767" attributes="0"/>
+                                      <Component id="storageDeviceListScrollPane" alignment="0" pref="0" max="32767" attributes="0"/>
+                                      <Group type="102" alignment="0" attributes="0">
+                                          <EmptySpace min="12" pref="12" max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Component id="dataDefinitionLabel" min="-2" max="-2" attributes="0"/>
+                                              <Component id="exchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
+                                              <Component id="osDefinitionLabel" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace pref="214" max="-2" attributes="0"/>
+                                      </Group>
                                   </Group>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
@@ -426,16 +430,16 @@
                               <Group type="102" alignment="1" attributes="0">
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="installSelectionCountLabel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" max="-2" attributes="0"/>
-                                  <Component id="storageDeviceListScrollPane" pref="173" max="32767" attributes="0"/>
-                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="storageDeviceListScrollPane" max="32767" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Component id="exchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Component id="dataDefinitionLabel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
                                   <Component id="osDefinitionLabel" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace min="-2" max="-2" attributes="0"/>
-                                  <Component id="installListTabbedPane" min="-2" pref="124" max="-2" attributes="0"/>
+                                  <EmptySpace max="-2" attributes="0"/>
+                                  <Component id="installListTabbedPane" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
                               </Group>
                           </Group>
@@ -518,7 +522,7 @@
                             <Container class="javax.swing.JPanel" name="exchangePartitionPanel">
                               <Constraints>
                                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                                  <JTabbedPaneConstraints tabName="Austauschpartition (optional)">
+                                  <JTabbedPaneConstraints tabName="Exchange partition (optional)">
                                     <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                                       <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.exchangePartitionPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                     </Property>
@@ -535,17 +539,27 @@
                                       <Group type="102" alignment="0" attributes="0">
                                           <EmptySpace max="-2" attributes="0"/>
                                           <Group type="103" groupAlignment="0" attributes="0">
-                                              <Component id="exchangePartitionSizeLabel" linkSize="1" min="-2" max="-2" attributes="0"/>
-                                              <Component id="exchangePartitionLabel" linkSize="1" alignment="0" min="-2" max="-2" attributes="0"/>
+                                              <Group type="102" alignment="0" attributes="0">
+                                                  <Component id="exchangePartitionSizeLabel" linkSize="1" min="-2" max="-2" attributes="0"/>
+                                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                                  <Component id="exchangePartitionSizeSlider" pref="287" max="32767" attributes="0"/>
+                                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                                  <Component id="exchangePartitionSizeTextField" min="-2" pref="84" max="-2" attributes="0"/>
+                                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                                  <Component id="exchangePartitionSizeUnitLabel" min="-2" max="-2" attributes="0"/>
+                                              </Group>
+                                              <Group type="102" attributes="0">
+                                                  <Group type="103" groupAlignment="0" attributes="0">
+                                                      <Component id="copyExchangeCheckBox" min="-2" max="-2" attributes="0"/>
+                                                      <Group type="102" attributes="0">
+                                                          <Component id="exchangePartitionLabel" linkSize="1" min="-2" max="-2" attributes="0"/>
+                                                          <EmptySpace max="-2" attributes="0"/>
+                                                          <Component id="exchangePartitionTextField" min="-2" pref="119" max="-2" attributes="0"/>
+                                                      </Group>
+                                                  </Group>
+                                                  <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
+                                              </Group>
                                           </Group>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="exchangePartitionTextField" min="-2" pref="119" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="exchangePartitionSizeSlider" pref="244" max="32767" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="exchangePartitionSizeTextField" min="-2" pref="84" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="exchangePartitionSizeUnitLabel" min="-2" max="-2" attributes="0"/>
                                           <EmptySpace max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
@@ -560,16 +574,16 @@
                                                   <Component id="exchangePartitionSizeTextField" alignment="3" min="-2" max="-2" attributes="0"/>
                                                   <Component id="exchangePartitionSizeUnitLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                                               </Group>
-                                              <Group type="102" alignment="0" attributes="0">
-                                                  <Component id="exchangePartitionSizeLabel" min="-2" max="-2" attributes="0"/>
-                                                  <EmptySpace max="-2" attributes="0"/>
-                                                  <Group type="103" groupAlignment="3" attributes="0">
-                                                      <Component id="exchangePartitionLabel" alignment="3" min="-2" max="-2" attributes="0"/>
-                                                      <Component id="exchangePartitionTextField" alignment="3" min="-2" max="-2" attributes="0"/>
-                                                  </Group>
-                                              </Group>
+                                              <Component id="exchangePartitionSizeLabel" alignment="0" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <EmptySpace pref="45" max="32767" attributes="0"/>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                                          <Group type="103" groupAlignment="3" attributes="0">
+                                              <Component id="exchangePartitionLabel" alignment="3" min="-2" max="-2" attributes="0"/>
+                                              <Component id="exchangePartitionTextField" alignment="3" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                                          <Component id="copyExchangeCheckBox" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
@@ -627,12 +641,19 @@
                                     <Property name="enabled" type="boolean" value="false"/>
                                   </Properties>
                                 </Component>
+                                <Component class="javax.swing.JCheckBox" name="copyExchangeCheckBox">
+                                  <Properties>
+                                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.copyExchangeCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                    </Property>
+                                  </Properties>
+                                </Component>
                               </SubComponents>
                             </Container>
                             <Container class="javax.swing.JPanel" name="dataPartitionPanel">
                               <Constraints>
                                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                                  <JTabbedPaneConstraints tabName="Datenpartition">
+                                  <JTabbedPaneConstraints tabName="Data partition">
                                     <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                                       <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.dataPartitionPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                     </Property>
@@ -648,10 +669,15 @@
                                   <Group type="103" groupAlignment="0" attributes="0">
                                       <Group type="102" alignment="0" attributes="0">
                                           <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="fileSystemLabel" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="filesystemComboBox" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace pref="452" max="32767" attributes="0"/>
+                                          <Group type="103" groupAlignment="0" attributes="0">
+                                              <Group type="102" alignment="0" attributes="0">
+                                                  <Component id="fileSystemLabel" min="-2" max="-2" attributes="0"/>
+                                                  <EmptySpace max="-2" attributes="0"/>
+                                                  <Component id="filesystemComboBox" min="-2" max="-2" attributes="0"/>
+                                              </Group>
+                                              <Component id="copyPersistencyCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
+                                          </Group>
+                                          <EmptySpace pref="323" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
@@ -663,7 +689,9 @@
                                               <Component id="fileSystemLabel" alignment="3" min="-2" max="-2" attributes="0"/>
                                               <Component id="filesystemComboBox" alignment="3" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <EmptySpace pref="61" max="32767" attributes="0"/>
+                                          <EmptySpace type="separate" max="-2" attributes="0"/>
+                                          <Component id="copyPersistencyCheckBox" min="-2" max="-2" attributes="0"/>
+                                          <EmptySpace max="-2" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
@@ -684,55 +712,6 @@
                                         <StringItem index="1" value="ext3"/>
                                         <StringItem index="2" value="ext4"/>
                                       </StringArray>
-                                    </Property>
-                                  </Properties>
-                                </Component>
-                              </SubComponents>
-                            </Container>
-                            <Container class="javax.swing.JPanel" name="copyPartitionPanel">
-                              <Constraints>
-                                <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                                  <JTabbedPaneConstraints tabName="Partitionen kopieren">
-                                    <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.copyPartitionPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                                    </Property>
-                                    <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                                      <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/edit-copy.png"/>
-                                    </Property>
-                                  </JTabbedPaneConstraints>
-                                </Constraint>
-                              </Constraints>
-
-                              <Layout>
-                                <DimensionLayout dim="0">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="102" attributes="0">
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Group type="103" groupAlignment="0" attributes="0">
-                                              <Component id="copyExchangeCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
-                                              <Component id="copyPersistencyCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
-                                          </Group>
-                                          <EmptySpace pref="398" max="32767" attributes="0"/>
-                                      </Group>
-                                  </Group>
-                                </DimensionLayout>
-                                <DimensionLayout dim="1">
-                                  <Group type="103" groupAlignment="0" attributes="0">
-                                      <Group type="102" alignment="0" attributes="0">
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="copyExchangeCheckBox" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace max="-2" attributes="0"/>
-                                          <Component id="copyPersistencyCheckBox" min="-2" max="-2" attributes="0"/>
-                                          <EmptySpace pref="43" max="32767" attributes="0"/>
-                                      </Group>
-                                  </Group>
-                                </DimensionLayout>
-                              </Layout>
-                              <SubComponents>
-                                <Component class="javax.swing.JCheckBox" name="copyExchangeCheckBox">
-                                  <Properties>
-                                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.copyExchangeCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                     </Property>
                                   </Properties>
                                 </Component>
@@ -1150,7 +1129,7 @@
                     <Container class="javax.swing.JPanel" name="upgradeSelectionCardPanel">
                       <Constraints>
                         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                          <JTabbedPaneConstraints tabName="Auswahl">
+                          <JTabbedPaneConstraints tabName="Selection">
                             <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                               <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeSelectionCardPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
@@ -1453,7 +1432,7 @@
                           <Properties>
                             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                               <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                                <TitledBorder title="Immer &#xfc;berschreiben">
+                                <TitledBorder title="Always overwrite">
                                   <ResourceString PropertyName="titleX" bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeOverwritePanel.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </TitledBorder>
                               </Border>
@@ -2413,7 +2392,7 @@
                   <Properties>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                        <TitledBorder title="Separate Dateisysteme f&#xfc;r Verzeichnisse">
+                        <TitledBorder title="Separate filesystems for directories">
                           <ResourceString PropertyName="titleX" bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.separateFileSystemsPanel.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
@@ -2447,7 +2426,7 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="separateFileSystemsRemoveButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="separateFileSystemsScrollpane" alignment="1" pref="0" max="32767" attributes="0"/>
+                                  <Component id="separateFileSystemsScrollpane" alignment="1" pref="163" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
