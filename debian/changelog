@@ -1,8 +1,8 @@
-dlcopy (201211091330-1) unstable; urgency=low
+dlcopy (201211091807-1) unstable; urgency=low
 
   * added option to select file system of data partition (default to ext4)
 
- -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 09 Nov 2012 13:30:27 +0100
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Fri, 09 Nov 2012 18:07:58 +0100
 
 dlcopy (201211051048-1) unstable; urgency=low
 
