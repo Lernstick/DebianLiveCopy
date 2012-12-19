@@ -425,7 +425,7 @@ public class DLCopy extends JFrame
 
         // default to ext4 for data partition
         filesystemComboBox.setSelectedItem("ext4");
-        
+
         // TODO: pack() does not work reliably!?
         //pack();
         setSize(950, 550);
@@ -3611,8 +3611,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             LOGGER.info("replacing isolinux with syslinux");
             final String syslinuxPath = mountPoint + "/syslinux";
             moveFile(isolinuxPath, syslinuxPath);
-            moveFile(syslinuxPath + "/isolinux.bin",
-                    syslinuxPath + "/syslinux.bin");
             moveFile(syslinuxPath + "/isolinux.cfg",
                     syslinuxPath + "/syslinux.cfg");
 
@@ -3628,6 +3626,26 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             if (!bootCatFile.delete()) {
                 showErrorMessage("Could not delete " + bootCatFileName);
             }
+
+            // update md5sum.txt
+            String md5sumFileName = mountPoint + "/md5sum.txt";
+            replaceText(md5sumFileName, pattern, "syslinux");
+            File md5sumFile = new File(md5sumFileName);
+            if (md5sumFile.exists()) {
+                List<String> lines = FileTools.readFile(md5sumFile);
+                for (int i = 0, size = lines.size(); i < size; i++) {
+                    String line = lines.get(i);
+                    if (line.contains("xmlboot.config")) {
+                        lines.remove(i);
+                        break;
+                    }
+                }
+                writeFile(md5sumFile, lines);
+            } else {
+                LOGGER.log(Level.WARNING,
+                        "file \"{0}\" does not exist!", md5sumFileName);
+            }
+
         } else {
             // boot device is probably a hard disk
             LOGGER.info(

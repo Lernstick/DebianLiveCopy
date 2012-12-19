@@ -1,3 +1,9 @@
+dlcopy (201212191939-1) unstable; urgency=low
+
+  * update md5sum.txt file
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Wed, 19 Dec 2012 19:39:49 +0100
+
 dlcopy (201211091817-1) unstable; urgency=low
 
   * added option to select file system of data partition (default to ext4)
