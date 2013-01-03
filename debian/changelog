@@ -1,3 +1,9 @@
+dlcopy (201301031844-1) unstable; urgency=low
+
+  * support xmlboot when creating ISO image
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 03 Jan 2013 18:44:36 +0100
+
 dlcopy (201301031706-1) unstable; urgency=low
 
   * added support for Debian 7 system path

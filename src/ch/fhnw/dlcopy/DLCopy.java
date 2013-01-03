@@ -5510,8 +5510,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // syslinux -> isolinux
                 final String ISOLINUX_DIR = targetDirectory + "/isolinux";
                 moveFile(targetDirectory + "/syslinux", ISOLINUX_DIR);
-                moveFile(ISOLINUX_DIR + "/syslinux.bin",
-                        ISOLINUX_DIR + "/isolinux.bin");
+                final String syslinuxBinPath = ISOLINUX_DIR + "/syslinux.bin";
+                File syslinuxBinFile = new File(syslinuxBinPath);
+                if (syslinuxBinFile.exists()) {
+                    moveFile(syslinuxBinPath, ISOLINUX_DIR + "/isolinux.bin");
+                }
                 moveFile(ISOLINUX_DIR + "/syslinux.cfg",
                         ISOLINUX_DIR + "/isolinux.cfg");
 
