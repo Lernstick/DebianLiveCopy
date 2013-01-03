@@ -122,7 +122,9 @@ public class DLCopy extends JFrame
     // some things to change when debugging...
     // SIZE_FACTOR is >1 so that we leave some space for updates, etc...
     private final float SIZE_FACTOR = 1.1f;
-    private final String DEBIAN_LIVE_SYSTEM_PATH = "/live/image";
+    private final String DEBIAN_6_LIVE_SYSTEM_PATH = "/live/image";
+    private final String DEBIAN_7_LIVE_SYSTEM_PATH = "/lib/live/mount/medium";
+    private final String DEBIAN_LIVE_SYSTEM_PATH;
     private final String SYSLINUX_MBR_PATH = "/usr/lib/syslinux/mbr.bin";
     private final DateFormat timeFormat;
 
@@ -258,6 +260,25 @@ public class DLCopy extends JFrame
                 debianLiveDistribution == DebianLiveDistribution.lernstick
                 ? "lernstick"
                 : "DEBIAN_LIVE";
+
+        // determine system path
+        File testFile = new File(DEBIAN_6_LIVE_SYSTEM_PATH);
+        if (testFile.exists()) {
+            DEBIAN_LIVE_SYSTEM_PATH = DEBIAN_6_LIVE_SYSTEM_PATH;
+            LOGGER.log(Level.INFO, "Debian Live system path: {0}",
+                    DEBIAN_LIVE_SYSTEM_PATH);
+        } else {
+            testFile = new File(DEBIAN_7_LIVE_SYSTEM_PATH);
+            if (testFile.exists()) {
+                DEBIAN_LIVE_SYSTEM_PATH = DEBIAN_7_LIVE_SYSTEM_PATH;
+                LOGGER.log(Level.INFO, "Debian Live system path: {0}",
+                        DEBIAN_LIVE_SYSTEM_PATH);
+            } else {
+                DEBIAN_LIVE_SYSTEM_PATH = null;
+                LOGGER.severe("Debian Live system path not found!");
+                System.exit(-1);
+            }
+        }
 
         // determine system size
         File system = new File(DEBIAN_LIVE_SYSTEM_PATH);

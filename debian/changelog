@@ -1,3 +1,9 @@
+dlcopy (201301031706-1) unstable; urgency=low
+
+  * added support for Debian 7 system path
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 03 Jan 2013 17:06:25 +0100
+
 dlcopy (201212191939-1) unstable; urgency=low
 
   * update md5sum.txt file
