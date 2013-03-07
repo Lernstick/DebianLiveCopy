@@ -2789,15 +2789,15 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private void addHiddenFilesFilter(final JFileChooser fileChooser) {
         fileChooser.addPropertyChangeListener(
                 new java.beans.PropertyChangeListener() {
-                    @Override
-                    public void propertyChange(
-                            java.beans.PropertyChangeEvent evt) {
-                        fileChooser.setFileHidingEnabled(
-                                fileChooser.getFileFilter()
-                                == NO_HIDDEN_FILES_FILTER);
-                        fileChooser.rescanCurrentDirectory();
-                    }
-                });
+            @Override
+            public void propertyChange(
+                    java.beans.PropertyChangeEvent evt) {
+                fileChooser.setFileHidingEnabled(
+                        fileChooser.getFileFilter()
+                        == NO_HIDDEN_FILES_FILTER);
+                fileChooser.rescanCurrentDirectory();
+            }
+        });
         fileChooser.addChoosableFileFilter(NO_HIDDEN_FILES_FILTER);
         fileChooser.setFileFilter(NO_HIDDEN_FILES_FILTER);
     }
@@ -3654,12 +3654,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             File md5sumFile = new File(md5sumFileName);
             if (md5sumFile.exists()) {
                 List<String> lines = FileTools.readFile(md5sumFile);
-                for (int i = 0, size = lines.size(); i < size; i++) {
+                for (int i = lines.size() - 1; i >= 0; i--) {
                     String line = lines.get(i);
                     if (line.contains("xmlboot.config")
                             || line.contains("grub.cfg")) {
                         lines.remove(i);
-                        break;
                     }
                 }
                 writeFile(md5sumFile, lines);
@@ -4478,8 +4477,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         + "exchangeMB = {3} MiB\n"
                         + "persistentMB = {4} MiB",
                         new Object[]{
-                            device, size, overhead, exchangeMB, persistentMB
-                        });
+                    device, size, overhead, exchangeMB, persistentMB
+                });
             }
 
             // assemble partition command
@@ -4723,9 +4722,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     if (LOGGER.isLoggable(Level.FINEST)) {
                         LOGGER.log(Level.FINEST, "{0} already mounted at {1}",
                                 new Object[]{
-                                    bootExchangePartition,
-                                    sourceExchangePath
-                                });
+                            bootExchangePartition,
+                            sourceExchangePath
+                        });
                     }
                 }
 
@@ -4948,8 +4947,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 LOGGER.log(Level.INFO,
                         "upgrading storage device: {0} of {1} ({2})",
                         new Object[]{
-                            currentDevice, selectionCount, storageDevice
-                        });
+                    currentDevice, selectionCount, storageDevice
+                });
 
                 // use the device serial number as unique identifier for backups
                 // (but replace all slashes because they are not allowed in
@@ -4980,8 +4979,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
                 LOGGER.log(Level.INFO, "upgrading of storage device finished: "
                         + "{0} of {1} ({2})", new Object[]{
-                            currentDevice, selectionCount, storageDevice
-                        });
+                    currentDevice, selectionCount, storageDevice
+                });
             }
 
             return true;
@@ -5753,8 +5752,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 LOGGER.log(Level.INFO,
                         "repairing storage device: {0} of {1} ({2})",
                         new Object[]{
-                            currentDevice, selectionCount, storageDevice
-                        });
+                    currentDevice, selectionCount, storageDevice
+                });
 
                 // repair
                 Partition dataPartition = storageDevice.getDataPartition();
@@ -5819,8 +5818,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
                 LOGGER.log(Level.INFO, "repairing of storage device finished: "
                         + "{0} of {1} ({2})", new Object[]{
-                            currentDevice, selectionCount, storageDevice
-                        });
+                    currentDevice, selectionCount, storageDevice
+                });
             }
 
             return true;
