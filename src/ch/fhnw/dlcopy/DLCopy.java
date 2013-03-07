@@ -3656,7 +3656,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 List<String> lines = FileTools.readFile(md5sumFile);
                 for (int i = 0, size = lines.size(); i < size; i++) {
                     String line = lines.get(i);
-                    if (line.contains("xmlboot.config")) {
+                    if (line.contains("xmlboot.config")
+                            || line.contains("grub.cfg")) {
                         lines.remove(i);
                         break;
                     }

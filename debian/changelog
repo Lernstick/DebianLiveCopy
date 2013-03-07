@@ -1,3 +1,9 @@
+dlcopy (201303071313-1) unstable; urgency=low
+
+  * remove grub.cfg from md5sum.txt file
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 07 Mar 2013 13:13:11 +0100
+
 dlcopy (201301031844-1) unstable; urgency=low
 
   * support xmlboot when creating ISO image
