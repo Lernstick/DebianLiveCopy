@@ -447,6 +447,11 @@ public class DLCopy extends JFrame
         // default to ext4 for data partition
         filesystemComboBox.setSelectedItem("ext4");
 
+        // in Debian 7 we do not need separate file systems anymore...
+        if (DEBIAN_LIVE_SYSTEM_PATH.equals(DEBIAN_7_LIVE_SYSTEM_PATH)) {
+            separateFileSystemsPanel.setVisible(false);
+        }
+
         // TODO: pack() does not work reliably!?
         //pack();
         setSize(950, 550);
@@ -2646,10 +2651,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
             } finally {
-                try {
-                    fileWriter.close();
-                } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, "", ex);
+                if (fileWriter != null) {
+                    try {
+                        fileWriter.close();
+                    } catch (IOException ex) {
+                        LOGGER.log(Level.SEVERE, "", ex);
+                    }
                 }
             }
         }
@@ -2672,15 +2679,19 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
             } finally {
-                try {
-                    fileReader.close();
-                } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, "", ex);
+                if (fileReader != null) {
+                    try {
+                        fileReader.close();
+                    } catch (IOException ex) {
+                        LOGGER.log(Level.SEVERE, "", ex);
+                    }
                 }
-                try {
-                    bufferedReader.close();
-                } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, "", ex);
+                if (bufferedReader != null) {
+                    try {
+                        bufferedReader.close();
+                    } catch (IOException ex) {
+                        LOGGER.log(Level.SEVERE, "", ex);
+                    }
                 }
             }
         }
@@ -3611,8 +3622,16 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private boolean formatSystemPartition(
             String device, boolean showErrorMessage) {
         // hint: the partition label can be only 11 characters long!
-        int exitValue = processExecutor.executeProcess(
-                "mkfs.vfat", "-n", systemPartitionLabel, device);
+        int exitValue;
+        if (DEBIAN_LIVE_SYSTEM_PATH.equals(DEBIAN_7_LIVE_SYSTEM_PATH)) {
+            // Syslinux in Debian 7 supports ext file systems
+            exitValue = processExecutor.executeProcess(
+                    "mkfs.ext4", "-L", systemPartitionLabel, device);
+        } else {
+            exitValue = processExecutor.executeProcess(
+                    "mkfs.vfat", "-n", systemPartitionLabel, device);
+        }
+
         if (exitValue != 0) {
             LOGGER.severe(processExecutor.getOutput());
             String errorMessage =
