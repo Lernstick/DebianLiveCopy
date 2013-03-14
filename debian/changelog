@@ -1,3 +1,9 @@
+dlcopy (201303141620-1) unstable; urgency=low
+
+  * Debian 7: revert to vfat and file splitting because Macs only boot from FAT :-(
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 14 Mar 2013 16:20:11 +0100
+
 dlcopy (201303141514-1) unstable; urgency=low
 
   * Debian 7: use ntfs instead of ext4 for system partition as Macs don't boot from ext4 :-(

@@ -466,11 +466,6 @@ public class DLCopy extends JFrame
         // default to ext4 for data partition
         filesystemComboBox.setSelectedItem("ext4");
 
-        // in Debian 7 we do not need separate file systems anymore...
-        if (DEBIAN_LIVE_SYSTEM_PATH.equals(DEBIAN_7_LIVE_SYSTEM_PATH)) {
-            separateFileSystemsPanel.setVisible(false);
-        }
-
         // TODO: pack() does not work reliably!?
         //pack();
         setSize(950, 550);
@@ -3641,25 +3636,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private boolean formatSystemPartition(
             String device, boolean showErrorMessage) {
         // hint: the partition label can be only 11 characters long!
-        int exitValue = -1;
-        switch (distribution) {
-            case DEBIAN_6:
-                // we use syslinux with a vfat partition in Debian 6
-                exitValue = processExecutor.executeProcess(
+        int exitValue = processExecutor.executeProcess(
                         "mkfs.vfat", "-n", systemPartitionLabel, device);
-                break;
-
-            case DEBIAN_7:
-                // we use extlinux with an ntfs partition in Debian 7
-                exitValue = processExecutor.executeProcess(
-                        "mkfs.ntfs", "-f", "-L", systemPartitionLabel, device);
-                break;
-
-            default:
-                LOGGER.log(Level.WARNING,
-                        "unsupported distribution \"{0}\"", distribution);
-        }
-
         if (exitValue != 0) {
             LOGGER.severe(processExecutor.getOutput());
             String errorMessage =
@@ -3727,26 +3705,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         String systemDevice = "/dev/"
                 + destinationSystemPartition.getDeviceAndNumber();
-        int exitValue = -1;
-        switch (distribution) {
-            case DEBIAN_6:
-                // we use syslinux for Debian 6
-                exitValue = processExecutor.executeProcess(true, true,
+        int exitValue = processExecutor.executeProcess(true, true,
                         "syslinux", "-d", "syslinux", systemDevice);
-                break;
-                
-            case DEBIAN_7:
-                // we use extlinux for Debian 7
-                String mountPath = destinationSystemPartition.getMountPath();
-                exitValue = processExecutor.executeProcess(true, true,
-                        "extlinux", "--install", mountPath + "/syslinux/");
-                break;
-                
-            default:
-                LOGGER.log(Level.WARNING,
-                        "unsupported distribution \"{0}\"", distribution);
-        }
-
         if (exitValue != 0) {
             String errorMessage = STRINGS.getString("Make_Bootable_Failed");
             errorMessage = MessageFormat.format(errorMessage,
