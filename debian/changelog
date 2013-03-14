@@ -1,3 +1,9 @@
+dlcopy (201303141514-1) unstable; urgency=low
+
+  * Debian 7: use ntfs instead of ext4 for system partition as Macs don't boot from ext4 :-(
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Thu, 14 Mar 2013 15:14:45 +0100
+
 dlcopy (201303141200-1) unstable; urgency=low
 
   * use extlinux instead of syslinux in Debian 7

@@ -74,6 +74,9 @@ public class DLCopy extends JFrame
      * the minimal size for a data partition (200 MByte)
      */
     public final static long MINIMUM_PARTITION_SIZE = 200 * MEGA;
+    /**
+     * the current Linux distribution
+     */
     public static Distribution distribution;
 
     /**
@@ -3647,9 +3650,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 break;
 
             case DEBIAN_7:
-                // we use extlinux with an ext4 partition in Debian 7
+                // we use extlinux with an ntfs partition in Debian 7
                 exitValue = processExecutor.executeProcess(
-                        "mkfs.ext4", "-L", systemPartitionLabel, device);
+                        "mkfs.ntfs", "-f", "-L", systemPartitionLabel, device);
                 break;
 
             default:
