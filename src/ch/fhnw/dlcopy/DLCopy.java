@@ -74,6 +74,7 @@ public class DLCopy extends JFrame
      * the minimal size for a data partition (200 MByte)
      */
     public final static long MINIMUM_PARTITION_SIZE = 200 * MEGA;
+    public static Distribution distribution;
 
     /**
      * the known partition states for a drive
@@ -97,6 +98,21 @@ public class DLCopy extends JFrame
          * the system is large enough to create all partition scenarios
          */
         EXCHANGE
+    }
+
+    /**
+     * the known supported Distributions
+     */
+    public enum Distribution {
+
+        /**
+         * Debian 6 (squeeze)
+         */
+        DEBIAN_6,
+        /**
+         * Debian 7 (wheezy)
+         */
+        DEBIAN_7
     }
     private final static ProcessExecutor processExecutor =
             new ProcessExecutor();
@@ -153,8 +169,6 @@ public class DLCopy extends JFrame
     }
     private DebianLiveDistribution debianLiveDistribution;
     private final String systemPartitionLabel;
-    private final Pattern rsyncPattern =
-            Pattern.compile(".*to-check=(.*)/(.*)\\)");
     private final Pattern mksquashfsPattern =
             Pattern.compile("\\[.* (.*)/(.*) .*");
     private final Pattern genisoimagePattern =
@@ -267,12 +281,14 @@ public class DLCopy extends JFrame
             DEBIAN_LIVE_SYSTEM_PATH = DEBIAN_6_LIVE_SYSTEM_PATH;
             LOGGER.log(Level.INFO, "Debian Live system path: {0}",
                     DEBIAN_LIVE_SYSTEM_PATH);
+            distribution = Distribution.DEBIAN_6;
         } else {
             testFile = new File(DEBIAN_7_LIVE_SYSTEM_PATH);
             if (testFile.exists()) {
                 DEBIAN_LIVE_SYSTEM_PATH = DEBIAN_7_LIVE_SYSTEM_PATH;
                 LOGGER.log(Level.INFO, "Debian Live system path: {0}",
                         DEBIAN_LIVE_SYSTEM_PATH);
+                distribution = Distribution.DEBIAN_7;
             } else {
                 DEBIAN_LIVE_SYSTEM_PATH = null;
                 LOGGER.severe("Debian Live system path not found!");
@@ -3622,14 +3638,23 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private boolean formatSystemPartition(
             String device, boolean showErrorMessage) {
         // hint: the partition label can be only 11 characters long!
-        int exitValue;
-        if (DEBIAN_LIVE_SYSTEM_PATH.equals(DEBIAN_7_LIVE_SYSTEM_PATH)) {
-            // Syslinux in Debian 7 supports ext file systems
-            exitValue = processExecutor.executeProcess(
-                    "mkfs.ext4", "-L", systemPartitionLabel, device);
-        } else {
-            exitValue = processExecutor.executeProcess(
-                    "mkfs.vfat", "-n", systemPartitionLabel, device);
+        int exitValue = -1;
+        switch (distribution) {
+            case DEBIAN_6:
+                // we use syslinux with a vfat partition in Debian 6
+                exitValue = processExecutor.executeProcess(
+                        "mkfs.vfat", "-n", systemPartitionLabel, device);
+                break;
+
+            case DEBIAN_7:
+                // we use extlinux with an ext4 partition in Debian 7
+                exitValue = processExecutor.executeProcess(
+                        "mkfs.ext4", "-L", systemPartitionLabel, device);
+                break;
+
+            default:
+                LOGGER.log(Level.WARNING,
+                        "unsupported distribution \"{0}\"", distribution);
         }
 
         if (exitValue != 0) {
@@ -3693,11 +3718,32 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }
 
-    private boolean makeBootable(String device, String systemDevice)
-            throws IOException {
+    private boolean makeBootable(String device,
+            Partition destinationSystemPartition)
+            throws IOException, DBusException {
 
-        int exitValue = processExecutor.executeProcess(true, true,
-                "syslinux", "-d", "syslinux", systemDevice);
+        String systemDevice = "/dev/"
+                + destinationSystemPartition.getDeviceAndNumber();
+        int exitValue = -1;
+        switch (distribution) {
+            case DEBIAN_6:
+                // we use syslinux for Debian 6
+                exitValue = processExecutor.executeProcess(true, true,
+                        "syslinux", "-d", "syslinux", systemDevice);
+                break;
+                
+            case DEBIAN_7:
+                // we use extlinux for Debian 7
+                String mountPath = destinationSystemPartition.getMountPath();
+                exitValue = processExecutor.executeProcess(true, true,
+                        "extlinux", "--install", mountPath + "/syslinux/");
+                break;
+                
+            default:
+                LOGGER.log(Level.WARNING,
+                        "unsupported distribution \"{0}\"", distribution);
+        }
+
         if (exitValue != 0) {
             String errorMessage = STRINGS.getString("Make_Bootable_Failed");
             errorMessage = MessageFormat.format(errorMessage,
@@ -4459,7 +4505,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             STRINGS.getString("Writing_Boot_Sector"));
                 }
             });
-            return makeBootable(device, destinationSystemDevice);
+            if (!makeBootable(device, destinationSystemPartition)) {
+                return false;
+            }
+
+            return umount(destinationSystemPartition);
         }
 
         private boolean createPartitions(StorageDevice storageDevice,
@@ -4785,9 +4835,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // (usb flash drives with an isohybrid image also contain the
             //  isolinux directory)
             isolinuxToSyslinux(destinationSystemPath);
-
-            // !!! do not umount system before isolinux -> syslinux renaming !!!
-            destinationSystemPartition.umount();
 
             return true;
         }
@@ -5337,11 +5384,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             });
             isolinuxToSyslinux(systemMountPoint);
 
-            // make sure that systemPartition is unmounted
-            if (!umount(systemPartition)) {
-                return false;
-            }
-
+            // make storage device bootable
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -5349,8 +5392,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             STRINGS.getString("Writing_Boot_Sector"));
                 }
             });
-            return makeBootable("/dev/" + storageDevice.getDevice(),
-                    "/dev/" + systemPartition.getDeviceAndNumber());
+            if (!makeBootable("/dev/" + storageDevice.getDevice(),
+                    systemPartition)) {
+                return false;
+            }
+
+            return umount(systemPartition);
         }
     }
 

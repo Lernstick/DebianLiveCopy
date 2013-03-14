@@ -249,10 +249,19 @@ public class Partition {
     }
 
     /**
+     * returns the first mount path of this partition
+     *
+     * @return the first mount path of this partition
+     * @throws DBusException if a dbus exception occurs
+     */
+    public String getMountPath() throws DBusException {
+        return getMountPaths().get(0);
+    }
+
+    /**
      * checks if the partition is an extended partition
      *
-     * @return
-     * <code>true</code>, if the partition is an extended partition,
+     * @return <code>true</code>, if the partition is an extended partition,
      * <code>false</code> otherwise
      */
     public boolean isExtended() {
@@ -262,9 +271,8 @@ public class Partition {
     /**
      * checks if the file system on the partition is ext[2|3|4]
      *
-     * @return
-     * <code>true</code>, if the file system on the partition is ext[2|3|4],
-     * <code>false</code> otherwise
+     * @return <code>true</code>, if the file system on the partition is
+     * ext[2|3|4], <code>false</code> otherwise
      */
     public boolean hasExtendedFilesystem() {
         return idType.equals("ext2")
@@ -377,8 +385,7 @@ public class Partition {
     /**
      * umounts this partition via dbus/udisks
      *
-     * @return
-     * <code>true</code>, if the umount operation succeeded,
+     * @return <code>true</code>, if the umount operation succeeded,
      * <code>false</code> otherwise
      * @throws DBusException if a dbus exception occurs
      */
@@ -428,9 +435,8 @@ public class Partition {
      * <code>true</code>, if this partition is a Debian Live system partition,
      * <code>false</code> otherwise
      *
-     * @return
-     * <code>true</code>, if this partition is a Debian Live system partition,
-     * <code>false</code> otherwise
+     * @return <code>true</code>, if this partition is a Debian Live system
+     * partition, <code>false</code> otherwise
      * @throws DBusException if a dbus exception occurs
      */
     public boolean isSystemPartition() throws DBusException {
@@ -461,7 +467,6 @@ public class Partition {
                 File liveDir = new File(mountPath, "live");
                 if (liveDir.exists()) {
                     FilenameFilter squashFsFilter = new FilenameFilter() {
-
                         @Override
                         public boolean accept(File dir, String name) {
                             return name.endsWith(".squashfs");
@@ -488,10 +493,8 @@ public class Partition {
      * partition,
      * <code>false</code> otherwise
      *
-     * @return
-     * <code>true</code>, if this partition is a Debian Live persistency
-     * partition,
-     * <code>false</code> otherwise
+     * @return <code>true</code>, if this partition is a Debian Live persistency
+     * partition, <code>false</code> otherwise
      */
     public boolean isPersistencyPartition() {
         return idLabel.equals(PERSISTENCY_LABEL);
@@ -502,8 +505,7 @@ public class Partition {
      * <code>true</code> if this partition is the exchange partition,
      * <code>false</code> otherwise
      *
-     * @return
-     * <code>true</code> if this partition is the exchange partition,
+     * @return <code>true</code> if this partition is the exchange partition,
      * <code>false</code> otherwise
      */
     public boolean isExchangePartition() {
@@ -515,17 +517,31 @@ public class Partition {
      * <code>true</code>, if this partition is an active persistency partition,
      * <code>false</code> otherwise
      *
-     * @return
-     * <code>true</code>, if this partition is an active persistency partition,
-     * <code>false</code> otherwise
+     * @return <code>true</code>, if this partition is an active persistency
+     * partition, <code>false</code> otherwise
      * @throws DBusException if a dbus exception occurs
      */
     public boolean isActivePersistencyPartition() throws DBusException {
         if (isPersistencyPartition()) {
             List<String> mountPaths = getMountPaths();
             for (String mountPath : mountPaths) {
-                if (mountPath.equals("/live/cow")) {
-                    return true;
+                switch (DLCopy.distribution) {
+                    case DEBIAN_6:
+                        if (mountPath.equals("/live/cow")) {
+                            return true;
+                        }
+                        break;
+
+                    case DEBIAN_7:
+                        if (mountPath.startsWith(
+                                "/lib/live/mount/persistence/")) {
+                            return true;
+                        }
+                        break;
+
+                    default:
+                        LOGGER.log(Level.WARNING, "unsupported distribution \"{0}\"",
+                                DLCopy.distribution);
                 }
             }
         }
@@ -537,8 +553,7 @@ public class Partition {
      * <code>true</code>, if the partition is mounted,
      * <code>false</code> otherwise
      *
-     * @return
-     * <code>true</code>, if the partition is mounted,
+     * @return <code>true</code>, if the partition is mounted,
      * <code>false</code> otherwise
      * @throws DBusException if an dbus exception occurs
      */
@@ -558,9 +573,9 @@ public class Partition {
                 LOGGER.log(Level.INFO, "/dev/{0} is still being used by the "
                         + "following processes:\n{1}",
                         new Object[]{
-                            deviceAndNumber,
-                            processExecutor.getStdOut()
-                        });
+                    deviceAndNumber,
+                    processExecutor.getStdOut()
+                });
                 Thread.sleep(1000);
 //                returnValue = processExecutor.executeProcess(true, true,
 //                        "fuser", "-v", "-m", "/dev/" + deviceAndNumber);
