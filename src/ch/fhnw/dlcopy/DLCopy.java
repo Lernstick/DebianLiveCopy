@@ -3637,7 +3637,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             String device, boolean showErrorMessage) {
         // hint: the partition label can be only 11 characters long!
         int exitValue = processExecutor.executeProcess(
-                        "mkfs.vfat", "-n", systemPartitionLabel, device);
+                        "/sbin/mkfs.vfat", "-n", systemPartitionLabel, device);
         if (exitValue != 0) {
             LOGGER.severe(processExecutor.getOutput());
             String errorMessage =
@@ -4116,7 +4116,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private boolean formatPersistentPartition(
             String device, boolean showErrorMessage) {
         String fileSystem = filesystemComboBox.getSelectedItem().toString();
-        int exitValue = processExecutor.executeProcess("mkfs." + fileSystem,
+        int exitValue = processExecutor.executeProcess("/sbin/mkfs." + fileSystem,
                 "-L", Partition.PERSISTENCY_LABEL, device);
         if (exitValue != 0) {
             LOGGER.severe(processExecutor.getOutput());
@@ -4129,7 +4129,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             return false;
         }
         exitValue = processExecutor.executeProcess(
-                "tune2fs", "-m", "0", "-c", "0", "-i", "0", device);
+                "/sbin/tune2fs", "-m", "0", "-c", "0", "-i", "0", device);
         if (exitValue != 0) {
             LOGGER.severe(processExecutor.getOutput());
             String errorMessage =
@@ -4515,7 +4515,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             // assemble partition command
             List<String> partedCommandList = new ArrayList<String>();
-            partedCommandList.add("parted");
+            partedCommandList.add("/sbin/parted");
             partedCommandList.add("-s");
             partedCommandList.add("-a");
             partedCommandList.add("optimal");
@@ -4677,7 +4677,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         String exchangePartitionLabel =
                                 exchangePartitionTextField.getText();
                         exitValue = processExecutor.executeProcess(
-                                "mkfs.vfat", "-n", exchangePartitionLabel,
+                                "/sbin/mkfs.vfat", "-n", exchangePartitionLabel,
                                 exchangeDevice);
                         if (exitValue != 0) {
                             String errorMessage = STRINGS.getString(
@@ -5276,7 +5276,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 String systemPartitionString =
                         String.valueOf(systemPartition.getNumber());
                 returnValue = processExecutor.executeProcess(true, true,
-                        "parted", "-a", "optimal", "-s", "/dev/" + storageDevice.getDevice(),
+                        "/sbin/parted", "-a", "optimal", "-s", "/dev/" + storageDevice.getDevice(),
                         "rm", String.valueOf(dataPartition.getNumber()),
                         "rm", systemPartitionString,
                         "mkpart", "primary", start, border,
@@ -5382,7 +5382,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 String targetDirectory = tmpDirTextField.getText();
                 String copyScript = "rm -rf " + targetDirectory + '\n'
                         + "mkdir \"" + targetDirectory + "\"\n"
-                        + "cd /live/image\n"
+                        + "cd " + DEBIAN_LIVE_SYSTEM_PATH + "\n"
                         + "find -not -name filesystem*.squashfs | cpio -pvdum \""
                         + targetDirectory + "\"";
                 processExecutor.executeScript(copyScript);
@@ -5397,7 +5397,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         return name.endsWith(".squashfs");
                     }
                 };
-                File liveDir = new File("/live/image/live/");
+                File liveDir = new File(DEBIAN_LIVE_SYSTEM_PATH, "live");
                 File[] squashFileSystems = liveDir.listFiles(squashFsFilter);
 
                 // mount all squashfs read-only in temporary directories

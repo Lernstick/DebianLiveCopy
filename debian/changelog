@@ -1,3 +1,15 @@
+dlcopy (201304231303-1) unstable; urgency=low
+
+  * support image creation on wheezy
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Tue, 23 Apr 2013 13:03:58 +0200
+
+dlcopy (201304131800-1) unstable; urgency=low
+
+  * use full path to parted, mkfs and tune2fs so that dlcopy works in the exam environment
+
+ -- Ronny Standtke <ronny@agora.imedias.ch>  Sat, 20 Apr 2013 18:00:47 +0200
+
 dlcopy (201303141620-2) unstable; urgency=low
 
   * removed dependency on extlinux
