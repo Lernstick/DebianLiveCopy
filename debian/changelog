@@ -1,3 +1,9 @@
+dlcopy (201304241834-1) unstable; urgency=low
+
+  * feedback when mistyping control text for harddrive installations
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 24 Apr 2013 18:34:43 +0200
+
 dlcopy (201304231303-1) unstable; urgency=low
 
   * support image creation on wheezy

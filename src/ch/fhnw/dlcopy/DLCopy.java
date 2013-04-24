@@ -3637,7 +3637,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             String device, boolean showErrorMessage) {
         // hint: the partition label can be only 11 characters long!
         int exitValue = processExecutor.executeProcess(
-                        "/sbin/mkfs.vfat", "-n", systemPartitionLabel, device);
+                "/sbin/mkfs.vfat", "-n", systemPartitionLabel, device);
         if (exitValue != 0) {
             LOGGER.severe(processExecutor.getOutput());
             String errorMessage =
@@ -3706,7 +3706,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         String systemDevice = "/dev/"
                 + destinationSystemPartition.getDeviceAndNumber();
         int exitValue = processExecutor.executeProcess(true, true,
-                        "syslinux", "-d", "syslinux", systemDevice);
+                "syslinux", "-d", "syslinux", systemDevice);
         if (exitValue != 0) {
             String errorMessage = STRINGS.getString("Make_Bootable_Failed");
             errorMessage = MessageFormat.format(errorMessage,
@@ -3813,10 +3813,21 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             String expectedInput = STRINGS.getString("Harddisk_Warning_Input");
             String message = STRINGS.getString("Harddisk_Warning");
             message = MessageFormat.format(message, expectedInput);
-            String input = JOptionPane.showInputDialog(this, message,
-                    STRINGS.getString("Warning"), JOptionPane.WARNING_MESSAGE);
-            if (!expectedInput.equals(input)) {
-                return;
+            for (boolean correctAnswer = false; !correctAnswer;) {
+                String input = JOptionPane.showInputDialog(
+                        this, message, STRINGS.getString("Warning"),
+                        JOptionPane.WARNING_MESSAGE);
+                if (input == null) {
+                    // dialog was cancelled or closed
+                    return;
+                }
+                correctAnswer = expectedInput.equals(input);
+                if (!correctAnswer) {
+                    JOptionPane.showMessageDialog(this,
+                            STRINGS.getString("Warning_Mistyped_Text"),
+                            STRINGS.getString("Warning"),
+                            JOptionPane.WARNING_MESSAGE);
+                }
             }
         } else {
             int result = JOptionPane.showConfirmDialog(this,

@@ -659,7 +659,7 @@
                                               </Group>
                                               <Component id="copyPersistencyCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <EmptySpace pref="451" max="32767" attributes="0"/>
+                                          <EmptySpace pref="446" max="32767" attributes="0"/>
                                       </Group>
                                   </Group>
                                 </DimensionLayout>
@@ -1463,7 +1463,7 @@
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="upgradeOverwriteImportButton" min="-2" max="-2" attributes="0"/>
                                           </Group>
-                                          <Component id="upgradeOverwriteScrollPane" alignment="0" min="0" pref="182" max="32767" attributes="2"/>
+                                          <Component id="upgradeOverwriteScrollPane" alignment="0" min="0" pref="186" max="32767" attributes="2"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <Component id="upgradeMoveUpButton" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
@@ -2408,7 +2408,7 @@
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="separateFileSystemsRemoveButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <Component id="separateFileSystemsScrollpane" alignment="1" pref="163" max="32767" attributes="0"/>
+                                  <Component id="separateFileSystemsScrollpane" alignment="1" pref="167" max="32767" attributes="0"/>
                               </Group>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
