@@ -391,7 +391,7 @@ public class DLCopy extends JFrame
             final String CMD_LINE_FILENAME = "/proc/cmdline";
             try {
                 String cmdLine = readOneLineFile(new File(CMD_LINE_FILENAME));
-                persistencyBoot = cmdLine.contains(" persistent ");
+                persistencyBoot = cmdLine.contains(" persistence ");
                 LOGGER.log(Level.FINEST,
                         "persistencyBoot: {0}", persistencyBoot);
             } catch (IOException ex) {
@@ -3956,10 +3956,24 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             return false;
         }
 
-        // make sure it is not mounted
-        List<String> mountPaths = bootDataPartition.getMountPaths();
-        if ((mountPaths != null) && !mountPaths.isEmpty()) {
-            // it is still mounted
+        // ensure that the persistency partition is not mounted read-write
+        String dataPartitionDevice =
+                "/dev/" + bootDataPartition.getDeviceAndNumber();
+        boolean mountedReadWrite = false;
+        for (String mount : FileTools.readFile(new File("/proc/mounts"))) {
+            String[] tokens = mount.split(" ");
+            String mountedPartition = tokens[0];
+            if (mountedPartition.equals(dataPartitionDevice)) {
+                // check mount options
+                String mountOptions = tokens[3];
+                if (mountOptions.startsWith("rw")) {
+                    mountedReadWrite = true;
+                    break;
+                }
+            }
+        }
+
+        if (mountedReadWrite) {
             if (persistencyBoot) {
                 // error and hint
                 String message = STRINGS.getString(
@@ -3970,6 +3984,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 return false;
 
             } else {
+                // persistence partition was manually mounted
                 // warning and offer umount
                 String message = STRINGS.getString(
                         "Warning_Persistency_Mounted") + "\n"
@@ -3980,6 +3995,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 if (returnValue == JOptionPane.YES_OPTION) {
                     bootDataPartition.umount();
                     return isUnmountedPersistencyAvailable();
+                } else {
+                    return false;
                 }
             }
         }
