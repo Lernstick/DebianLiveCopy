@@ -1,3 +1,10 @@
+dlcopy (201304261120-1) unstable; urgency=low
+
+  * more verbose error message when target data partition is too small
+  * improved concurrency handling when adding devices while updating the device list
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Fri, 26 Apr 2013 11:20:50 +0200
+
 dlcopy (201304251321-1) unstable; urgency=low
 
   * updated nonpersistent boot hint for wheezy
