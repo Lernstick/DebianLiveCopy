@@ -439,7 +439,7 @@ public class DLCopy extends JFrame
         udisksMonitorThread.start();
 
         separateFileSystemsListModel = new DefaultListModel();
-        separateFileSystemsListModel.addElement("/usr");
+        separateFileSystemsListModel.addElement("/usr/share");
         separateFileSystemsList.setModel(separateFileSystemsListModel);
 
         upgradeOverwriteListModel = new DefaultListModel();
@@ -5472,7 +5472,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 }
 
                 // mount persistency
-                String rwPath = bootDataPartition.mount();
+                String dataPartitionPath = bootDataPartition.mount();
 
                 // union base image with persistency
                 File cowDir = new File(tmpDir, "cow");
@@ -5480,16 +5480,25 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 String cowPath = cowDir.getPath();
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append("br=");
-                stringBuilder.append(rwPath);
-                stringBuilder.append("=rw");
+                stringBuilder.append(dataPartitionPath);
+                stringBuilder.append("=ro");
                 for (String readOnlyMountPoint : readOnlyMountPoints) {
                     stringBuilder.append(':');
                     stringBuilder.append(readOnlyMountPoint);
                     stringBuilder.append("=ro");
                 }
                 String branchDefinition = stringBuilder.toString();
-                processExecutor.executeProcess("mount", "-t", "aufs", "-o",
-                        branchDefinition, "none", cowPath);
+                
+                // To create the file system union, we need a temporary and
+                // writable xino file that must not reside in an aufs. Therefore
+                // we use a file in the /run directory, which is a writable
+                // tmpfs.
+                File xinoTmpFile = File.createTempFile(
+                        ".aufs.xino", "", new File("/run/"));
+                xinoTmpFile.delete();
+                processExecutor.executeProcess("mount", "-t", "aufs",
+                        "-o", "ro", "-o", "xino=" + xinoTmpFile.getPath(),
+                        "-o", branchDefinition, "none", cowPath);
 
                 // move lernstick autostart script temporarily away
                 String lernstickAutostart = cowDir

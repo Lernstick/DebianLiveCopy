@@ -1,3 +1,9 @@
+dlcopy (201308022123-1) unstable; urgency=low
+
+  * support image creation when data partition is in read-write mode
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Fri, 02 Aug 2013 21:23:05 +0200
+
 dlcopy (201304261120-1) unstable; urgency=low
 
   * more verbose error message when target data partition is too small
