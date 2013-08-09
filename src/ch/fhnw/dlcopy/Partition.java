@@ -27,7 +27,7 @@ public class Partition {
     /**
      * the label used for persistency partitions
      */
-    public final static String PERSISTENCY_LABEL = "live-rw";
+    public final static String PERSISTENCY_LABEL = "persistence";
     private final static Logger LOGGER =
             Logger.getLogger(Partition.class.getName());
     private final static Pattern deviceAndNumberPattern =

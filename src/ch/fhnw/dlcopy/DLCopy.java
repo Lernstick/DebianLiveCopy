@@ -4746,10 +4746,24 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 return false;
             }
 
-            // copy persistency layer
-            if ((destinationDataPartition != null)
-                    && !copyPersistency(destinationDataPartition)) {
-                return false;
+            if (destinationDataPartition != null) {
+                // create default persistency configuration file
+                String mountPath = destinationDataPartition.mount();
+                if (mountPath == null) {
+                    // TODO: error message
+                    return false;
+                }
+                FileWriter writer = 
+                        new FileWriter(mountPath + "/persistence.conf");
+                writer.write("/ union,source=.\n");
+                writer.flush();
+                writer.close();
+                destinationDataPartition.umount();
+                
+                // copy persistency layer
+                if (!copyPersistency(destinationDataPartition)) {
+                    return false;
+                }
             }
 
             // make storage device bootable

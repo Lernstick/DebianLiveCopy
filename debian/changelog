@@ -1,3 +1,10 @@
+dlcopy (201308091928-1) unstable; urgency=low
+
+  * use "persistence" instead of "live-rw" as persistence label
+  * create default persistence configuration
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Fri, 09 Aug 2013 19:28:33 +0200
+
 dlcopy (201308091755-1) unstable; urgency=low
 
   * new: target data partition mode selection
