@@ -48,10 +48,25 @@ import javax.swing.event.ListDataListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
 import org.freedesktop.DBus;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.UInt64;
 import org.freedesktop.dbus.exceptions.DBusException;
+import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
 
 /**
  * Installs Debian Live to a USB flash drive
@@ -190,6 +205,12 @@ public class DLCopy extends JFrame
     private final static String BACKUP_DESTINATION = "backupDestination";
     private final static String AUTO_REMOVE_BACKUP = "autoRemoveBackup";
     private final static String UPGRADE_OVERWRITE_LIST = "upgradeOverwriteList";
+
+    private enum DataPartitionMode {
+
+        ReadWrite, ReadOnly, NotUsed
+    }
+    private final DataPartitionMode sourceDataPartitionMode;
 
     /**
      * Creates new form DLCopy
@@ -466,6 +487,36 @@ public class DLCopy extends JFrame
         // default to ext4 for data partition
         filesystemComboBox.setSelectedItem("ext4");
 
+        // init data partition mode
+        dataPartitionModeComboBox.setModel(new DefaultComboBoxModel(
+                new String[]{
+            STRINGS.getString("Read_Write"),
+            STRINGS.getString("Read_Only"),
+            STRINGS.getString("Not_Used")
+        }));
+        sourceDataPartitionMode = getDataPartitionMode(DEBIAN_LIVE_SYSTEM_PATH);
+        if (sourceDataPartitionMode != null) {
+            switch (sourceDataPartitionMode) {
+                case NotUsed:
+                    dataPartitionModeComboBox.setSelectedItem(
+                            STRINGS.getString("Not_Used"));
+                    break;
+
+                case ReadOnly:
+                    dataPartitionModeComboBox.setSelectedItem(
+                            STRINGS.getString("Read_Only"));
+                    break;
+
+                case ReadWrite:
+                    dataPartitionModeComboBox.setSelectedItem(
+                            STRINGS.getString("Read_Write"));
+                    break;
+
+                default:
+                    LOGGER.warning("Unsupported data partition mode!");
+            }
+        }
+
         // TODO: pack() does not work reliably!?
         //pack();
         setSize(950, 550);
@@ -674,6 +725,8 @@ public class DLCopy extends JFrame
         dataPartitionPanel = new javax.swing.JPanel();
         fileSystemLabel = new javax.swing.JLabel();
         filesystemComboBox = new javax.swing.JComboBox();
+        dataPartitionModeLabel = new javax.swing.JLabel();
+        dataPartitionModeComboBox = new javax.swing.JComboBox();
         copyPersistencyCheckBox = new javax.swing.JCheckBox();
         installNoMediaPanel = new javax.swing.JPanel();
         installNoMediaLabel = new javax.swing.JLabel();
@@ -1091,37 +1144,40 @@ public class DLCopy extends JFrame
 
         installListTabbedPane.addTab(bundle.getString("DLCopy.exchangePartitionPanel.TabConstraints.tabTitle"), new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/yellow_box.png")), exchangePartitionPanel); // NOI18N
 
+        dataPartitionPanel.setLayout(new java.awt.GridBagLayout());
+
         fileSystemLabel.setText(bundle.getString("DLCopy.fileSystemLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 0);
+        dataPartitionPanel.add(fileSystemLabel, gridBagConstraints);
 
         filesystemComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ext2", "ext3", "ext4" }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 10);
+        dataPartitionPanel.add(filesystemComboBox, gridBagConstraints);
+
+        dataPartitionModeLabel.setText(bundle.getString("DLCopy.dataPartitionModeLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
+        dataPartitionPanel.add(dataPartitionModeLabel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 10);
+        dataPartitionPanel.add(dataPartitionModeComboBox, gridBagConstraints);
 
         copyPersistencyCheckBox.setText(bundle.getString("Copy_Data_Partition")); // NOI18N
-
-        javax.swing.GroupLayout dataPartitionPanelLayout = new javax.swing.GroupLayout(dataPartitionPanel);
-        dataPartitionPanel.setLayout(dataPartitionPanelLayout);
-        dataPartitionPanelLayout.setHorizontalGroup(
-            dataPartitionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(dataPartitionPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(dataPartitionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(dataPartitionPanelLayout.createSequentialGroup()
-                        .addComponent(fileSystemLabel)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(filesystemComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addComponent(copyPersistencyCheckBox))
-                .addContainerGap(451, Short.MAX_VALUE))
-        );
-        dataPartitionPanelLayout.setVerticalGroup(
-            dataPartitionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(dataPartitionPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(dataPartitionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(fileSystemLabel)
-                    .addComponent(filesystemComboBox, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addGap(18, 18, 18)
-                .addComponent(copyPersistencyCheckBox)
-                .addContainerGap())
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        dataPartitionPanel.add(copyPersistencyCheckBox, gridBagConstraints);
 
         installListTabbedPane.addTab(bundle.getString("DLCopy.dataPartitionPanel.TabConstraints.tabTitle"), new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/green_box.png")), dataPartitionPanel); // NOI18N
 
@@ -1152,7 +1208,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(installSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 160, Short.MAX_VALUE)
+                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(exchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1603,7 +1659,7 @@ public class DLCopy extends JFrame
                         .addComponent(upgradeOverwriteExportButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(upgradeOverwriteImportButton))
-                    .addComponent(upgradeOverwriteScrollPane, 0, 182, Short.MAX_VALUE)
+                    .addComponent(upgradeOverwriteScrollPane, 0, 186, Short.MAX_VALUE)
                     .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
                         .addComponent(upgradeMoveUpButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2043,7 +2099,7 @@ public class DLCopy extends JFrame
                         .addComponent(separateFileSystemsEditButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(separateFileSystemsRemoveButton))
-                    .addComponent(separateFileSystemsScrollpane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 163, Short.MAX_VALUE))
+                    .addComponent(separateFileSystemsScrollpane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -2710,6 +2766,185 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
         }
     }//GEN-LAST:event_upgradeOverwriteImportButtonActionPerformed
+
+    private Node getPersistenceNode(org.w3c.dom.Document xmlBootDocument) {
+        Node configsNode =
+                xmlBootDocument.getElementsByTagName("configs").item(0);
+        NodeList childNodes = configsNode.getChildNodes();
+        for (int i = 0, length = childNodes.getLength(); i < length; i++) {
+            Node childNode = childNodes.item(i);
+            String childNodeName = childNode.getNodeName();
+            LOGGER.log(Level.FINER, "childNodeName: \"{0}\"", childNodeName);
+            if ("config".equals(childNodeName)) {
+                Node idNode = childNode.getAttributes().getNamedItem("id");
+                String idNodeValue = idNode.getNodeValue();
+                LOGGER.log(Level.FINER, "idNodeValue: \"{0}\"", idNodeValue);
+                if ("persistence".equals(idNodeValue)) {
+                    return childNode;
+                }
+            }
+        }
+        return null;
+    }
+
+    private DataPartitionMode getDataPartitionMode(String imagePath) {
+        try {
+            File xmlBootConfigFile = getXmlBootConfigFile(new File(imagePath));
+            org.w3c.dom.Document xmlBootDocument =
+                    parseXmlFile(xmlBootConfigFile);
+            xmlBootDocument.getDocumentElement().normalize();
+            Node persistenceNode = getPersistenceNode(xmlBootDocument);
+            NodeList childNodes = persistenceNode.getChildNodes();
+            for (int i = 0, length = childNodes.getLength(); i < length; i++) {
+                Node childNode = childNodes.item(i);
+                String childNodeName = childNode.getNodeName();
+                LOGGER.log(Level.FINER,
+                        "childNodeName: \"{0}\"", childNodeName);
+                if ("option".equals(childNodeName)) {
+                    NamedNodeMap optionAttributes = childNode.getAttributes();
+                    Node selectedNode =
+                            optionAttributes.getNamedItem("selected");
+                    if (selectedNode != null) {
+                        String selectedPersistence =
+                                optionAttributes.getNamedItem("id").getNodeValue();
+                        LOGGER.log(Level.FINER, "selectedPersistence: \"{0}\"",
+                                selectedPersistence);
+                        if ("rw".equals(selectedPersistence)) {
+                            return DataPartitionMode.ReadWrite;
+                        } else if ("ro".equals(selectedPersistence)) {
+                            return DataPartitionMode.ReadOnly;
+                        } else if ("no".equals(selectedPersistence)) {
+                            return DataPartitionMode.NotUsed;
+                        }
+                    }
+                }
+            }
+        } catch (ParserConfigurationException ex) {
+            LOGGER.log(Level.WARNING, "could not parse xmlboot config", ex);
+        } catch (SAXException ex) {
+            LOGGER.log(Level.WARNING, "could not parse xmlboot config", ex);
+        } catch (IOException ex) {
+            LOGGER.log(Level.WARNING, "could not parse xmlboot config", ex);
+        }
+        LOGGER.warning("could not determine data partition mode");
+        return null;
+    }
+
+    private void setDataPartitionMode(
+            String imagePath, DataPartitionMode dataPartitionMode) {
+        // xmlboot
+        try {
+            File xmlBootConfigFile = getXmlBootConfigFile(new File(imagePath));
+            org.w3c.dom.Document xmlBootDocument =
+                    parseXmlFile(xmlBootConfigFile);
+            xmlBootDocument.getDocumentElement().normalize();
+            Node persistenceNode = getPersistenceNode(xmlBootDocument);
+            NodeList childNodes = persistenceNode.getChildNodes();
+            for (int i = 0, length = childNodes.getLength(); i < length; i++) {
+                Node childNode = childNodes.item(i);
+                String childNodeName = childNode.getNodeName();
+                LOGGER.log(Level.FINER,
+                        "childNodeName: \"{0}\"", childNodeName);
+                if ("option".equals(childNodeName)) {
+                    NamedNodeMap optionAttributes = childNode.getAttributes();
+                    String id =
+                            optionAttributes.getNamedItem("id").getNodeValue();
+                    LOGGER.log(Level.FINER, "id: \"{0}\"", id);
+                    if ("rw".equals(id)) {
+                        if (dataPartitionMode == DataPartitionMode.ReadWrite) {
+                            selectNode(childNode);
+                        } else {
+                            unselectNode(childNode);
+                        }
+                    } else if ("ro".equals(id)) {
+                        if (dataPartitionMode == DataPartitionMode.ReadOnly) {
+                            selectNode(childNode);
+                        } else {
+                            unselectNode(childNode);
+                        }
+                    } else if ("no".equals(id)) {
+                        if (dataPartitionMode == DataPartitionMode.NotUsed) {
+                            selectNode(childNode);
+                        } else {
+                            unselectNode(childNode);
+                        }
+                    }
+                }
+            }
+
+            TransformerFactory transformerFactory =
+                    TransformerFactory.newInstance();
+            Transformer transformer = transformerFactory.newTransformer();
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            DOMSource source = new DOMSource(xmlBootDocument);
+            StreamResult result = new StreamResult(xmlBootConfigFile);
+            transformer.transform(source, result);
+
+        } catch (ParserConfigurationException ex) {
+            LOGGER.log(Level.WARNING, "could not parse xmlboot config", ex);
+        } catch (SAXException ex) {
+            LOGGER.log(Level.WARNING, "could not parse xmlboot config", ex);
+        } catch (IOException ex) {
+            LOGGER.log(Level.WARNING, "could not parse xmlboot config", ex);
+        } catch (TransformerException ex) {
+            LOGGER.log(Level.WARNING, "could not save xmlboot config", ex);
+        }
+
+        // grub
+        String persistenceString = "";
+        switch (dataPartitionMode) {
+            case ReadOnly:
+                persistenceString = "persistence persistence-read-only forcepersistentfsck";
+                break;
+
+            case ReadWrite:
+                persistenceString = "persistence forcepersistentfsck";
+                break;
+
+            default:
+                LOGGER.log(Level.WARNING, "unsupported dataPartitionMode: {0}",
+                        dataPartitionMode);
+        }
+        processExecutor.executeProcess("sed", "-i", "-e",
+                "s|set PERSISTENCE=.*|set PERSISTENCE=\"" + persistenceString + "\"|1",
+                imagePath + "/boot/grub/grub.cfg");
+    }
+
+    private void selectNode(Node node) {
+        Element element = (Element) node;
+        element.setAttribute("selected", "true");
+    }
+
+    private void unselectNode(Node node) {
+        Element element = (Element) node;
+        element.removeAttribute("selected");
+    }
+
+    private File getXmlBootConfigFile(File imageDirectory) {
+        File configFile = new File(imageDirectory, "isolinux/xmlboot.config");
+        if (configFile.exists()) {
+            LOGGER.log(Level.INFO, "xmlboot config file: {0}", configFile);
+            return configFile;
+        } else {
+            configFile = new File(imageDirectory, "syslinux/xmlboot.config");
+            if (configFile.exists()) {
+                LOGGER.log(Level.INFO, "xmlboot config file: {0}", configFile);
+                return configFile;
+            } else {
+                LOGGER.warning("xmlboot config file not found!");
+                return null;
+            }
+        }
+    }
+
+    private org.w3c.dom.Document parseXmlFile(File file)
+            throws ParserConfigurationException, SAXException, IOException {
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        factory.setIgnoringComments(true);
+        factory.setIgnoringElementContentWhitespace(true);
+        DocumentBuilder builder = factory.newDocumentBuilder();
+        return builder.parse(file);
+    }
 
     private void resetNextButton() {
         nextButton.setIcon(new ImageIcon(
@@ -4858,6 +5093,25 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             //  isolinux directory)
             isolinuxToSyslinux(destinationSystemPath);
 
+            // change data partition mode on target (if needed)
+            DataPartitionMode destinationDataPartitionMode = null;
+            String dstString =
+                    (String) dataPartitionModeComboBox.getSelectedItem();
+            if (dstString.equals(STRINGS.getString("Not_Used"))) {
+                destinationDataPartitionMode = DataPartitionMode.NotUsed;
+            } else if (dstString.equals(STRINGS.getString("Read_Only"))) {
+                destinationDataPartitionMode = DataPartitionMode.ReadOnly;
+            } else if (dstString.equals(STRINGS.getString("Read_Write"))) {
+                destinationDataPartitionMode = DataPartitionMode.ReadWrite;
+            } else {
+                LOGGER.log(Level.WARNING,
+                        "unsupported data partition mode: {0}", dstString);
+            }
+            if (sourceDataPartitionMode != destinationDataPartitionMode) {
+                setDataPartitionMode(
+                        destinationSystemPath, destinationDataPartitionMode);
+            }
+
             return true;
         }
 
@@ -5488,7 +5742,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     stringBuilder.append("=ro");
                 }
                 String branchDefinition = stringBuilder.toString();
-                
+
                 // To create the file system union, we need a temporary and
                 // writable xino file that must not reside in an aufs. Therefore
                 // we use a file in the /run directory, which is a writable
@@ -6560,6 +6814,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel currentlyRepairedDeviceLabel;
     private javax.swing.JLabel currentlyUpgradedDeviceLabel;
     private javax.swing.JLabel dataDefinitionLabel;
+    private javax.swing.JComboBox dataPartitionModeComboBox;
+    private javax.swing.JLabel dataPartitionModeLabel;
     private javax.swing.JPanel dataPartitionPanel;
     private javax.swing.JLabel doneLabel;
     private javax.swing.JPanel donePanel;
