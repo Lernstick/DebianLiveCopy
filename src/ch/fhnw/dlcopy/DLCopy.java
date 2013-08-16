@@ -6188,18 +6188,20 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     boolean resetHome = homeDirectoryCheckBox.isSelected();
                     if (systemFilesCheckBox.isSelected() && resetHome) {
                         // remove all files
-                        // but keep "/lost+found/"
+                        // but keep "/lost+found/" and "persistence.conf"
                         processExecutor.executeProcess("find", mountPoint,
                                 "!", "-regex", mountPoint,
                                 "!", "-regex", mountPoint + "/lost\\+found",
+                                "!", "-regex", mountPoint + "/persistence.conf",
                                 "-exec", "rm", "-rf", "{}", ";");
                     } else {
                         if (systemFilesCheckBox.isSelected()) {
-                            // remove all files
-                            // but keep "/lost+found/" and "/home/"
+                            // remove all files but keep
+                            // "/lost+found/", "persistence.conf" and "/home/"
                             processExecutor.executeProcess("find", mountPoint,
                                     "!", "-regex", mountPoint,
                                     "!", "-regex", mountPoint + "/lost\\+found",
+                                    "!", "-regex", mountPoint + "/persistence.conf",
                                     "!", "-regex", mountPoint + "/home.*",
                                     "-exec", "rm", "-rf", "{}", ";");
                         }
