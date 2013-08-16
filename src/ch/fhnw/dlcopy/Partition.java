@@ -28,6 +28,9 @@ public class Partition {
      * the label used for persistency partitions
      */
     public final static String PERSISTENCY_LABEL = "persistence";
+    private final static String[] LEGACY_PERSISTENCY_LABELs = new String[]{
+        "live-rw"
+    };
     private final static Logger LOGGER =
             Logger.getLogger(Partition.class.getName());
     private final static Pattern deviceAndNumberPattern =
@@ -497,7 +500,15 @@ public class Partition {
      * partition, <code>false</code> otherwise
      */
     public boolean isPersistencyPartition() {
-        return idLabel.equals(PERSISTENCY_LABEL);
+        if (idLabel.equals(PERSISTENCY_LABEL)) {
+            return true;
+        }
+        for (String legacyLabel : LEGACY_PERSISTENCY_LABELs) {
+            if (idLabel.equals(legacyLabel)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

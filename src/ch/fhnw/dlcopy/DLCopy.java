@@ -53,7 +53,6 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
@@ -3680,6 +3679,17 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }
 
+    private boolean isMounted(String device) throws IOException {
+        List<String> mounts = FileTools.readFile(new File("/proc/mounts"));
+        for (String mount : mounts) {
+            String mountedPartition = mount.split(" ")[0];
+            if (mountedPartition.startsWith(device)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     private void swapoffFile(String device, String swapLine)
             throws IOException {
 
@@ -4382,9 +4392,18 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }
 
     private boolean formatPersistentPartition(
-            String device, boolean showErrorMessage) {
+            String device, boolean showErrorMessage)
+            throws DBusException, IOException {
+
+        // make sure that the partition is unmounted
+        if (isMounted(device)) {
+            umount(device);
+        }
+
+        // formatting
         String fileSystem = filesystemComboBox.getSelectedItem().toString();
-        int exitValue = processExecutor.executeProcess("/sbin/mkfs." + fileSystem,
+        int exitValue = processExecutor.executeProcess(
+                "/sbin/mkfs." + fileSystem,
                 "-L", Partition.PERSISTENCY_LABEL, device);
         if (exitValue != 0) {
             LOGGER.severe(processExecutor.getOutput());
@@ -4396,6 +4415,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
             return false;
         }
+
+        // tuning
         exitValue = processExecutor.executeProcess(
                 "/sbin/tune2fs", "-m", "0", "-c", "0", "-i", "0", device);
         if (exitValue != 0) {
@@ -4408,6 +4429,23 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
             return false;
         }
+
+        // create default persistency configuration file
+        Partition persistentPartition =
+                Partition.getPartitionFromDeviceAndNumber(
+                device.substring(5), systemPartitionLabel, systemSize);
+        String mountPath = persistentPartition.mount();
+        if (mountPath == null) {
+            // TODO: error message
+            return false;
+        }
+        FileWriter writer =
+                new FileWriter(mountPath + "/persistence.conf");
+        writer.write("/ union,source=.\n");
+        writer.flush();
+        writer.close();
+        persistentPartition.umount();
+
         return true;
     }
 
@@ -4746,24 +4784,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 return false;
             }
 
-            if (destinationDataPartition != null) {
-                // create default persistency configuration file
-                String mountPath = destinationDataPartition.mount();
-                if (mountPath == null) {
-                    // TODO: error message
-                    return false;
-                }
-                FileWriter writer = 
-                        new FileWriter(mountPath + "/persistence.conf");
-                writer.write("/ union,source=.\n");
-                writer.flush();
-                writer.close();
-                destinationDataPartition.umount();
-                
-                // copy persistency layer
-                if (!copyPersistency(destinationDataPartition)) {
-                    return false;
-                }
+            // copy persistency layer
+            if ((destinationDataPartition != null)
+                    && (!copyPersistency(destinationDataPartition))) {
+                return false;
             }
 
             // make storage device bootable
@@ -4788,7 +4812,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 final PartitionState partitionState, String exchangeDevice,
                 String systemDevice, String persistentDevice,
                 boolean showErrorMessages)
-                throws InterruptedException, IOException {
+                throws InterruptedException, IOException, DBusException {
 
             // update GUI
             SwingUtilities.invokeLater(new Runnable() {
@@ -5452,6 +5476,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 processExecutor.executeProcess("find", dataMountPoint,
                         "!", "-regex", dataMountPoint,
                         "!", "-regex", dataMountPoint + "/lost\\+found",
+                        "!", "-regex", dataMountPoint + "/persistence.conf",
                         "!", "-regex", dataMountPoint + "/home.*",
                         "!", "-regex", dataMountPoint + "/etc.*",
                         "-exec", "rm", "-rf", "{}", ";");
@@ -5464,6 +5489,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 processExecutor.executeProcess("find", dataMountPoint,
                         "!", "-regex", dataMountPoint,
                         "!", "-regex", dataMountPoint + "/lost\\+found",
+                        "!", "-regex", dataMountPoint + "/persistence.conf",
                         "!", "-regex", dataMountPoint + "/home.*",
                         "-exec", "rm", "-rf", "{}", ";");
             }
@@ -5502,7 +5528,19 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
 
             // umount
-            return umount(dataPartition);
+            if (!umount(dataPartition)) {
+                return false;
+            }
+            
+            // upgrade label (if necessary)
+            if (!(dataPartition.getIdLabel().equals(
+                    Partition.PERSISTENCY_LABEL))) {
+                processExecutor.executeProcess("e2label", 
+                        "/dev/" + dataPartition.getDeviceAndNumber(),
+                        Partition.PERSISTENCY_LABEL);
+            }
+            
+            return true;
         }
 
         private boolean upgradeSystemPartition(StorageDevice storageDevice)
@@ -6132,8 +6170,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         }
                     });
 
-                    formatPersistentPartition(
-                            "/dev/" + dataPartition.getDeviceAndNumber(), true);
+                    if (!(formatPersistentPartition("/dev/"
+                            + dataPartition.getDeviceAndNumber(), true))) {
+                        return false;
+                    }
                 } else {
                     // remove files from data partition
                     SwingUtilities.invokeLater(new Runnable() {
