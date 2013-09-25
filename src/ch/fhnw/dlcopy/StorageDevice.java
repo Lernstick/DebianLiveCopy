@@ -92,7 +92,7 @@ public class StorageDevice implements Comparable<StorageDevice> {
         if (isOpticalDisc) {
             type = Type.OpticalDisc;
         } else {
-            if (device.equals("mmcblk")) {
+            if (device.startsWith("mmcblk")) {
                 type = Type.SDMemoryCard;
             } else {
                 if (removable) {
