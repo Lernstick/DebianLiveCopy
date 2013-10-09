@@ -2632,7 +2632,7 @@ public class DLCopy extends JFrame
     }//GEN-LAST:event_upgradeSelectionPanelComponentShown
 
 private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_upgradeShowHarddisksCheckBoxItemStateChanged
-    new UpgradeStorageDeviceListUpdater().execute();
+        new UpgradeStorageDeviceListUpdater().execute();
 }//GEN-LAST:event_upgradeShowHarddisksCheckBoxItemStateChanged
 
     private void separateFileSystemsAddButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_separateFileSystemsAddButtonActionPerformed
@@ -4622,9 +4622,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             exchangePartitionTextField.getText();
                     String autoNumberPattern =
                             autoNumberPatternTextField.getText();
-                    exchangePartitionLabel = exchangePartitionLabel.replace(
-                            autoNumberPattern, String.valueOf(autoNumber));
-                    autoNumber += autoIncrement;
+                    if (!autoNumberPattern.isEmpty()) {
+                        exchangePartitionLabel = exchangePartitionLabel.replace(
+                                autoNumberPattern, String.valueOf(autoNumber));
+                        autoNumber += autoIncrement;
+                    }
 
                     if (!copyToStorageDevice(
                             storageDevice, exchangePartitionLabel)) {

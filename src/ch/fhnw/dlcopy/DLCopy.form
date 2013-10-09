@@ -431,7 +431,7 @@
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="installSelectionCountLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="storageDeviceListScrollPane" pref="156" max="32767" attributes="0"/>
+                                  <Component id="storageDeviceListScrollPane" pref="172" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="exchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
