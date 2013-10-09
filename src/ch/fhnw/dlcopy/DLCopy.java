@@ -5503,10 +5503,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     Properties lernstickWelcomeProperties = new Properties();
                     lernstickWelcomeProperties.load(reader);
                     lernstickWelcomeProperties.setProperty(
-                            "ShowAtStartup", "true");
+                            "ShowWelcome", "true");
                     FileWriter writer = new FileWriter(propertiesFile);
                     lernstickWelcomeProperties.store(
-                            writer, "lernstick Welcome dialog properties");
+                            writer, "lernstick Welcome properties");
                     reader.close();
                     writer.close();
                 } catch (IOException iOException) {
