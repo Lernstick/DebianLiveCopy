@@ -516,10 +516,21 @@ public class DLCopy extends JFrame
             }
         }
 
+        // set colums for spinners
+        setSpinnerColums(autoNumberStartSpinner, 2);
+        setSpinnerColums(autoNumberIncrementSpinner, 2);
+
         // TODO: pack() does not work reliably!?
         //pack();
         setSize(950, 550);
         setLocationRelativeTo(null);
+    }
+
+    private void setSpinnerColums(JSpinner spinner, int columns) {
+        JComponent editor = spinner.getEditor();
+        JFormattedTextField tf =
+                ((JSpinner.DefaultEditor) editor).getTextField();
+        tf.setColumns(columns);
     }
 
     @Override
@@ -718,8 +729,16 @@ public class DLCopy extends JFrame
         exchangePartitionSizeSlider = new javax.swing.JSlider();
         exchangePartitionSizeTextField = new javax.swing.JTextField();
         exchangePartitionSizeUnitLabel = new javax.swing.JLabel();
+        exchangePartitionBottomPanel = new javax.swing.JPanel();
         exchangePartitionLabel = new javax.swing.JLabel();
         exchangePartitionTextField = new javax.swing.JTextField();
+        autoNumberPanel = new javax.swing.JPanel();
+        autoNumberPatternLabel = new javax.swing.JLabel();
+        autoNumberPatternTextField = new javax.swing.JTextField();
+        autoNumberStartLabel = new javax.swing.JLabel();
+        autoNumberStartSpinner = new javax.swing.JSpinner();
+        autoNumberIncrementLabel = new javax.swing.JLabel();
+        autoNumberIncrementSpinner = new javax.swing.JSpinner();
         copyExchangeCheckBox = new javax.swing.JCheckBox();
         dataPartitionPanel = new javax.swing.JPanel();
         fileSystemLabel = new javax.swing.JLabel();
@@ -1014,7 +1033,7 @@ public class DLCopy extends JFrame
                 .addComponent(selectionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(executionLabel)
-                .addContainerGap(381, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         cardPanel.setLayout(new java.awt.CardLayout());
@@ -1118,28 +1137,95 @@ public class DLCopy extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 10);
         exchangePartitionPanel.add(exchangePartitionSizeUnitLabel, gridBagConstraints);
 
+        exchangePartitionBottomPanel.setLayout(new java.awt.GridBagLayout());
+
+        exchangePartitionLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         exchangePartitionLabel.setText(bundle.getString("Label")); // NOI18N
         exchangePartitionLabel.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
-        exchangePartitionPanel.add(exchangePartitionLabel, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        exchangePartitionBottomPanel.add(exchangePartitionLabel, gridBagConstraints);
 
         exchangePartitionTextField.setColumns(11);
         exchangePartitionTextField.setText(bundle.getString("Exchange")); // NOI18N
         exchangePartitionTextField.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 15, 0, 10);
+        exchangePartitionBottomPanel.add(exchangePartitionTextField, gridBagConstraints);
+
+        autoNumberPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopy.autoNumberPanel.border.title"))); // NOI18N
+        autoNumberPanel.setLayout(new java.awt.GridBagLayout());
+
+        autoNumberPatternLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        autoNumberPatternLabel.setText(bundle.getString("DLCopy.autoNumberPatternLabel.text")); // NOI18N
+        autoNumberPatternLabel.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 2, 0);
+        autoNumberPanel.add(autoNumberPatternLabel, gridBagConstraints);
+
+        autoNumberPatternTextField.setColumns(11);
+        autoNumberPatternTextField.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 0);
+        autoNumberPanel.add(autoNumberPatternTextField, gridBagConstraints);
+
+        autoNumberStartLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        autoNumberStartLabel.setText(bundle.getString("DLCopy.autoNumberStartLabel.text")); // NOI18N
+        autoNumberStartLabel.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 2, 0);
+        autoNumberPanel.add(autoNumberStartLabel, gridBagConstraints);
+
+        autoNumberStartSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), null, null, Integer.valueOf(1)));
+        autoNumberStartSpinner.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 0);
+        autoNumberPanel.add(autoNumberStartSpinner, gridBagConstraints);
+
+        autoNumberIncrementLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
+        autoNumberIncrementLabel.setText(bundle.getString("DLCopy.autoNumberIncrementLabel.text")); // NOI18N
+        autoNumberIncrementLabel.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 2, 0);
+        autoNumberPanel.add(autoNumberIncrementLabel, gridBagConstraints);
+
+        autoNumberIncrementSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+        autoNumberIncrementSpinner.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 5);
+        autoNumberPanel.add(autoNumberIncrementSpinner, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 15, 0, 0);
-        exchangePartitionPanel.add(exchangePartitionTextField, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(2, 8, 0, 0);
+        exchangePartitionBottomPanel.add(autoNumberPanel, gridBagConstraints);
 
         copyExchangeCheckBox.setText(bundle.getString("DLCopy.copyExchangeCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 0);
-        exchangePartitionPanel.add(copyExchangeCheckBox, gridBagConstraints);
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 6, 5, 0);
+        exchangePartitionBottomPanel.add(copyExchangeCheckBox, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
+        exchangePartitionPanel.add(exchangePartitionBottomPanel, gridBagConstraints);
 
         installListTabbedPane.addTab(bundle.getString("DLCopy.exchangePartitionPanel.TabConstraints.tabTitle"), new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/yellow_box.png")), exchangePartitionPanel); // NOI18N
 
@@ -1207,7 +1293,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(installSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE)
+                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(exchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -3363,6 +3449,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
         exchangePartitionLabel.setEnabled(exchange);
         exchangePartitionTextField.setEnabled(exchange);
+        autoNumberPatternLabel.setEnabled(exchange);
+        autoNumberPatternTextField.setEnabled(exchange);
+        autoNumberStartLabel.setEnabled(exchange);
+        autoNumberStartSpinner.setEnabled(exchange);
+        autoNumberIncrementLabel.setEnabled(exchange);
+        autoNumberIncrementSpinner.setEnabled(exchange);
 
         // enable nextButton?
         updateInstallNextButton();
@@ -4497,6 +4589,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             fileCopier = new FileCopier();
             try {
                 // main loop over all target storage devices
+                Number autoNumberStart =
+                        (Number) autoNumberStartSpinner.getValue();
+                Number autoIncrementNumber =
+                        (Number) autoNumberIncrementSpinner.getValue();
+                int autoNumber = autoNumberStart.intValue();
+                int autoIncrement = autoIncrementNumber.intValue();
                 boolean noError = true;
                 for (int i = 0; i < selectionCount; i++) {
                     currentDevice = i + 1;
@@ -4519,7 +4617,17 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         }
                     });
 
-                    if (!copyToStorageDevice(storageDevice)) {
+                    // auto numbering
+                    String exchangePartitionLabel =
+                            exchangePartitionTextField.getText();
+                    String autoNumberPattern =
+                            autoNumberPatternTextField.getText();
+                    exchangePartitionLabel = exchangePartitionLabel.replace(
+                            autoNumberPattern, String.valueOf(autoNumber));
+                    autoNumber += autoIncrement;
+
+                    if (!copyToStorageDevice(
+                            storageDevice, exchangePartitionLabel)) {
                         noError = false;
                         switchToInstallSelection();
                         break;
@@ -4643,7 +4751,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
         }
 
-        private boolean copyToStorageDevice(StorageDevice storageDevice)
+        private boolean copyToStorageDevice(
+                StorageDevice storageDevice, String exchangePartitionLabel)
                 throws InterruptedException, IOException, DBusException {
 
             // determine size and state
@@ -4707,7 +4816,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // create all necessary partitions
             if (!createPartitions(storageDevice, partitions, size, exchangeMB,
                     partitionState, destinationExchangeDevice,
-                    destinationSystemDevice, destinationDataDevice, false)) {
+                    exchangePartitionLabel, destinationSystemDevice,
+                    destinationDataDevice, false)) {
                 // On some Corsari Flash Voyager GT drives the first sfdisk try
                 // failes with the following output:
                 // ---------------
@@ -4754,7 +4864,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // we automatically retry once more in case of an error.
                 if (!createPartitions(storageDevice, partitions, size,
                         exchangeMB, partitionState, destinationExchangeDevice,
-                        destinationSystemDevice, destinationDataDevice, true)) {
+                        exchangePartitionLabel, destinationSystemDevice,
+                        destinationDataDevice, true)) {
                     return false;
                 }
             }
@@ -4810,8 +4921,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         private boolean createPartitions(StorageDevice storageDevice,
                 Partitions partitions, long size, int exchangeMB,
                 final PartitionState partitionState, String exchangeDevice,
-                String systemDevice, String persistentDevice,
-                boolean showErrorMessages)
+                String exchangePartitionLabel, String systemDevice,
+                String persistentDevice, boolean showErrorMessages)
                 throws InterruptedException, IOException, DBusException {
 
             // update GUI
@@ -5006,8 +5117,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 case EXCHANGE:
                     if (exchangeMB != 0) {
                         // create file system for exchange partition
-                        String exchangePartitionLabel =
-                                exchangePartitionTextField.getText();
                         exitValue = processExecutor.executeProcess(
                                 "/sbin/mkfs.vfat", "-n", exchangePartitionLabel,
                                 exchangeDevice);
@@ -5531,15 +5640,15 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             if (!umount(dataPartition)) {
                 return false;
             }
-            
+
             // upgrade label (if necessary)
             if (!(dataPartition.getIdLabel().equals(
                     Partition.PERSISTENCY_LABEL))) {
-                processExecutor.executeProcess("e2label", 
+                processExecutor.executeProcess("e2label",
                         "/dev/" + dataPartition.getDeviceAndNumber(),
                         Partition.PERSISTENCY_LABEL);
             }
-            
+
             return true;
         }
 
@@ -6850,6 +6959,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel autoNumberIncrementLabel;
+    private javax.swing.JSpinner autoNumberIncrementSpinner;
+    private javax.swing.JPanel autoNumberPanel;
+    private javax.swing.JLabel autoNumberPatternLabel;
+    private javax.swing.JTextField autoNumberPatternTextField;
+    private javax.swing.JLabel autoNumberStartLabel;
+    private javax.swing.JSpinner autoNumberStartSpinner;
     private javax.swing.JCheckBox autoStartCheckBox;
     private javax.swing.JButton automaticBackupButton;
     private javax.swing.JCheckBox automaticBackupCheckBox;
@@ -6876,6 +6992,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel doneLabel;
     private javax.swing.JPanel donePanel;
     private javax.swing.JLabel exchangeDefinitionLabel;
+    private javax.swing.JPanel exchangePartitionBottomPanel;
     private javax.swing.JLabel exchangePartitionLabel;
     private javax.swing.JPanel exchangePartitionPanel;
     private javax.swing.JLabel exchangePartitionSizeLabel;

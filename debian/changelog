@@ -1,3 +1,9 @@
+dlcopy (201310091544-1) unstable; urgency=low
+
+  * added auto numbering for exchange partition
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 09 Oct 2013 15:44:28 +0200
+
 dlcopy (201310091324-1) unstable; urgency=low
 
   * fixed reactivation of lernstickWelcome after upgrade

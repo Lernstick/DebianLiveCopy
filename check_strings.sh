@@ -1,5 +1,5 @@
 #!/bin/sh
-for BUNDLE in src/dlcopy/Strings*
+for BUNDLE in src/ch/fhnw/dlcopy/Strings*
 do
 	echo "processing bundle ${BUNDLE}"
 	while read LINE
