@@ -4634,6 +4634,16 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         switchToInstallSelection();
                         break;
                     }
+                    
+                    // auto-increment autoNumberStartSpinner
+                    final int newStartNumber = autoNumber;
+                    SwingUtilities.invokeLater(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            autoNumberStartSpinner.setValue(newStartNumber);
+                        }
+                    });
                 }
 
                 if (noError) {
