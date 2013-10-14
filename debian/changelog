@@ -1,8 +1,8 @@
-dlcopy (201310111439-1) unstable; urgency=low
+dlcopy (201310141953-1) unstable; urgency=low
 
   * use improved file copy library
 
- -- Ronny Standtke <ronny.standtke@fhnw.ch>  Thu, 11 Oct 2013 14:39:32 +0200
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Thu, 14 Oct 2013 19:54:32 +0200
 
 dlcopy (201310101017-1) unstable; urgency=low
 
