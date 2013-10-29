@@ -1,3 +1,9 @@
+dlcopy (201310291225-1) unstable; urgency=low
+
+  * fixed spelling error
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 29 Oct 2013 12:25:40 +0100
+
 dlcopy (201310141953-1) unstable; urgency=low
 
   * use improved file copy library
