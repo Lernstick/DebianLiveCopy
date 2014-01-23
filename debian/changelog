@@ -1,3 +1,10 @@
+dlcopy (201401231736-1) unstable; urgency=low
+
+  * fixed persistency handling in grub
+  * fixed ant jar target
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Thu, 23 Jan 2014 17:36:28 +0100
+
 dlcopy (201310291225-1) unstable; urgency=low
 
   * fixed spelling error

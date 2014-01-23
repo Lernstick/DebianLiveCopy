@@ -6,9 +6,8 @@
     <description>Builds, tests, and runs the project DLCopy.</description>
     <import file="nbproject/build-impl.xml"/>
     <!-- Our own Jar Building Target -->
-    <target
-        depends="init,compile,-pre-jar,-do-jar-with-manifest,-do-jar-without-manifest,-do-jar-with-mainclass,-do-jar-with-libraries,-post-jar,bin-jar,full-jar"
-        description="Build JAR." name="jar"/>
+    <target depends="init,compile,-pre-jar,-do-jar,-post-jar"
+            description="Build JAR." name="jar"/>
 
     <target name="bin-jar" depends="init,compile,-pre-pre-jar">
         <jar destfile="dist/DLCopy.jar" basedir="build/classes/">

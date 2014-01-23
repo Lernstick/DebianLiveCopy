@@ -2979,11 +2979,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         String persistenceString = "";
         switch (dataPartitionMode) {
             case ReadOnly:
-                persistenceString = "persistence persistence-read-only forcepersistentfsck";
+                persistenceString = "persistence persistence-read-only";
                 break;
 
             case ReadWrite:
-                persistenceString = "persistence forcepersistentfsck";
+                persistenceString = "persistence";
                 break;
 
             default:
