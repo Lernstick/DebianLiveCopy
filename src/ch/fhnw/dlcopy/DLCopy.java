@@ -5619,7 +5619,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             if (reactivateWelcomeCheckBox.isSelected()) {
                 try {
                     File propertiesFile = new File(dataMountPoint
-                            + "/home/user/.config/lernstickWelcome");
+                            + "/etc/lernstickWelcome");
                     FileReader reader = new FileReader(propertiesFile);
                     Properties lernstickWelcomeProperties = new Properties();
                     lernstickWelcomeProperties.load(reader);
