@@ -43,8 +43,8 @@ public class StorageDevice implements Comparable<StorageDevice> {
          */
         SDMemoryCard
     }
-    private static final Logger LOGGER =
-            Logger.getLogger(StorageDevice.class.getName());
+    private static final Logger LOGGER
+            = Logger.getLogger(StorageDevice.class.getName());
     private final String device;
     private final String vendor;
     private final String model;
@@ -53,8 +53,8 @@ public class StorageDevice implements Comparable<StorageDevice> {
     private final long size;
     private final String systemPartitionLabel;
     private final long systemSize;
-    private final boolean removable;
     private final boolean systemInternal;
+    private final String connectionInterface;
     private final Type type;
     private List<Partition> partitions;
     private Boolean canBeUpgraded;
@@ -82,9 +82,10 @@ public class StorageDevice implements Comparable<StorageDevice> {
         revision = DbusTools.getStringProperty(device, "DriveRevision");
         serial = DbusTools.getStringProperty(device, "DriveSerial");
         size = DbusTools.getLongProperty(device, "DeviceSize");
-        removable = DbusTools.getBooleanProperty(device, "DeviceIsRemovable");
         systemInternal = DbusTools.getBooleanProperty(
                 device, "DeviceIsSystemInternal");
+        connectionInterface = DbusTools.getStringProperty(
+                device, "DriveConnectionInterface");
         boolean isOpticalDisc = DbusTools.getBooleanProperty(
                 device, "DeviceIsOpticalDisc");
 
@@ -95,7 +96,8 @@ public class StorageDevice implements Comparable<StorageDevice> {
             if (device.startsWith("mmcblk")) {
                 type = Type.SDMemoryCard;
             } else {
-                if (removable) {
+                if (connectionInterface.equals("usb")
+                        && (systemInternal == false)) {
                     type = Type.USBFlashDrive;
                 } else {
                     type = Type.HardDrive;
@@ -222,8 +224,7 @@ public class StorageDevice implements Comparable<StorageDevice> {
     }
 
     /**
-     * returns
-     * <code>true</code>, if this device is system internal,
+     * returns <code>true</code>, if this device is system internal,
      * <code>false</code> otherwise
      *
      * @return <code>true</code>, if this device is system internal,
@@ -231,18 +232,6 @@ public class StorageDevice implements Comparable<StorageDevice> {
      */
     public boolean isSystemInternal() {
         return systemInternal;
-    }
-
-    /**
-     * returns
-     * <code>true</code> if this device is removable,
-     * <code>false</code> otherwise
-     *
-     * @return <code>true</code> if this device is removable, <code>false</code>
-     * otherwise
-     */
-    public boolean isRemovable() {
-        return removable;
     }
 
     /**
@@ -274,7 +263,6 @@ public class StorageDevice implements Comparable<StorageDevice> {
             //      /org/freedesktop/UDisks/devices/loop1
             //      /org/freedesktop/UDisks/devices/sdb1
             //      /org/freedesktop/UDisks/devices/sda
-
             // we only want to catch the partition numbers...
             Pattern pattern = Pattern.compile(
                     "/org/freedesktop/UDisks/devices/" + device + "(\\d+)");
@@ -291,8 +279,7 @@ public class StorageDevice implements Comparable<StorageDevice> {
     }
 
     /**
-     * returns
-     * <code>true</code>, if this storage device can be upgraded,
+     * returns <code>true</code>, if this storage device can be upgraded,
      * <code>false</code> otherwise
      *
      * @return <code>true</code>, if this storage device can be upgraded,
@@ -330,14 +317,13 @@ public class StorageDevice implements Comparable<StorageDevice> {
                     //  - device with partition gaps
                     //  - expand in both directions
                     //  - ...
-
                     // check if repartitioning is possible
                     if ((previousPartition != null)
                             && (!previousPartition.isExtended())) {
                         // right now we can only resize ext partitions
                         if (previousPartition.hasExtendedFilesystem()) {
-                            long usableSpace =
-                                    previousPartition.getSize()
+                            long usableSpace
+                                    = previousPartition.getSize()
                                     - previousPartition.getUsedSpace(true);
                             if (usableSpace > Math.abs(remaining)) {
                                 canBeUpgraded = true;

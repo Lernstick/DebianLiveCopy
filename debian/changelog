@@ -1,3 +1,9 @@
+dlcopy (201401311621-1) unstable; urgency=low
+
+  * fixed detection of usb flash drives
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Fri, 31 Jan 2014 16:21:08 +0100
+
 dlcopy (201401231824-1) unstable; urgency=low
 
   * fixed persistency handling in grub
