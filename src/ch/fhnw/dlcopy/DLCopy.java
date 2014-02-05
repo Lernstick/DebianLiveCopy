@@ -5867,9 +5867,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // copy base image files
                 publish(STRINGS.getString("Copying_Files"));
                 String targetDirectory = tmpDirTextField.getText();
-                String copyScript = "rm -rf " + targetDirectory + '\n'
-                        + "mkdir \"" + targetDirectory + "\"\n"
-                        + "cd " + DEBIAN_LIVE_SYSTEM_PATH + "\n"
+                String copyScript = "#!/bin/sh" + '\n'
+                        + "find " + targetDirectory + " -mindepth 1 -delete\n"
+                        + "cd " + DEBIAN_LIVE_SYSTEM_PATH + '\n'
                         + "find -not -name filesystem*.squashfs | cpio -pvdum \""
                         + targetDirectory + "\"";
                 processExecutor.executeScript(copyScript);
