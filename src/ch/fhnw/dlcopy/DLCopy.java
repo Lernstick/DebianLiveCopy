@@ -1257,7 +1257,7 @@ public class DLCopy extends JFrame
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(3, 0, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 5, 0);
         exchangePartitionPanel.add(exchangePartitionBottomPanel, gridBagConstraints);
 
         installListTabbedPane.addTab(bundle.getString("DLCopy.exchangePartitionPanel.TabConstraints.tabTitle"), new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/yellow_box.png")), exchangePartitionPanel); // NOI18N
@@ -1326,7 +1326,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(installSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
+                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(exchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
