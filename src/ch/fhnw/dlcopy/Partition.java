@@ -232,9 +232,9 @@ public class Partition {
     }
 
     /**
-     * returns the partition type, e.g. "0x83" for vfat partitions
+     * returns the partition type, e.g. "0x83" for Linux partitions
      *
-     * @return the partition type, e.g. "0x83" for vfat partitions
+     * @return the partition type, e.g. "0x83" for Linux partitions
      */
     public String getType() {
         return type;

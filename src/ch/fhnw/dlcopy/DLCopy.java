@@ -483,8 +483,11 @@ public class DLCopy extends JFrame
                 UPGRADE_OVERWRITE_LIST, "");
         fillUpgradeOverwriteList(upgradeOverWriteList);
 
+        // default to exFAT for exchange partition
+        exchangePartitionFileSystemComboBox.setSelectedItem("exFAT");
+
         // default to ext4 for data partition
-        filesystemComboBox.setSelectedItem("ext4");
+        dataPartitionFilesystemComboBox.setSelectedItem("ext4");
 
         // init data partition mode
         dataPartitionModeComboBox.setModel(new DefaultComboBoxModel(
@@ -729,6 +732,7 @@ public class DLCopy extends JFrame
         exchangePartitionSizeTextField = new javax.swing.JTextField();
         exchangePartitionSizeUnitLabel = new javax.swing.JLabel();
         exchangePartitionBottomPanel = new javax.swing.JPanel();
+        exchangePartitionLabelPanel = new javax.swing.JPanel();
         exchangePartitionLabel = new javax.swing.JLabel();
         exchangePartitionTextField = new javax.swing.JTextField();
         autoNumberPanel = new javax.swing.JPanel();
@@ -738,10 +742,13 @@ public class DLCopy extends JFrame
         autoNumberStartSpinner = new javax.swing.JSpinner();
         autoNumberIncrementLabel = new javax.swing.JLabel();
         autoNumberIncrementSpinner = new javax.swing.JSpinner();
+        exchangePartitionFileSystemPanel = new javax.swing.JPanel();
+        exchangePartitionFileSystemLabel = new javax.swing.JLabel();
+        exchangePartitionFileSystemComboBox = new javax.swing.JComboBox();
         copyExchangeCheckBox = new javax.swing.JCheckBox();
         dataPartitionPanel = new javax.swing.JPanel();
-        fileSystemLabel = new javax.swing.JLabel();
-        filesystemComboBox = new javax.swing.JComboBox();
+        dataPartitionFileSystemLabel = new javax.swing.JLabel();
+        dataPartitionFilesystemComboBox = new javax.swing.JComboBox();
         dataPartitionModeLabel = new javax.swing.JLabel();
         dataPartitionModeComboBox = new javax.swing.JComboBox();
         copyPersistencyCheckBox = new javax.swing.JCheckBox();
@@ -1138,21 +1145,27 @@ public class DLCopy extends JFrame
 
         exchangePartitionBottomPanel.setLayout(new java.awt.GridBagLayout());
 
+        exchangePartitionLabelPanel.setLayout(new java.awt.GridBagLayout());
+
         exchangePartitionLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
         exchangePartitionLabel.setText(bundle.getString("Label")); // NOI18N
         exchangePartitionLabel.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
-        exchangePartitionBottomPanel.add(exchangePartitionLabel, gridBagConstraints);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        exchangePartitionLabelPanel.add(exchangePartitionLabel, gridBagConstraints);
 
         exchangePartitionTextField.setColumns(11);
         exchangePartitionTextField.setText(bundle.getString("Exchange")); // NOI18N
         exchangePartitionTextField.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 15, 0, 10);
-        exchangePartitionBottomPanel.add(exchangePartitionTextField, gridBagConstraints);
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        exchangePartitionLabelPanel.add(exchangePartitionTextField, gridBagConstraints);
+
+        exchangePartitionBottomPanel.add(exchangePartitionLabelPanel, new java.awt.GridBagConstraints());
 
         autoNumberPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopy.autoNumberPanel.border.title"))); // NOI18N
         autoNumberPanel.setLayout(new java.awt.GridBagLayout());
@@ -1207,15 +1220,36 @@ public class DLCopy extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(2, 8, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
         exchangePartitionBottomPanel.add(autoNumberPanel, gridBagConstraints);
 
+        exchangePartitionFileSystemPanel.setLayout(new java.awt.GridBagLayout());
+
+        exchangePartitionFileSystemLabel.setText(bundle.getString("DLCopy.exchangePartitionFileSystemLabel.text")); // NOI18N
+        exchangePartitionFileSystemLabel.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        exchangePartitionFileSystemPanel.add(exchangePartitionFileSystemLabel, gridBagConstraints);
+
+        exchangePartitionFileSystemComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "exFAT", "FAT32", "NTFS" }));
+        exchangePartitionFileSystemComboBox.setToolTipText(bundle.getString("DLCopy.exchangePartitionFileSystemComboBox.toolTipText")); // NOI18N
+        exchangePartitionFileSystemComboBox.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        exchangePartitionFileSystemPanel.add(exchangePartitionFileSystemComboBox, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        exchangePartitionBottomPanel.add(exchangePartitionFileSystemPanel, gridBagConstraints);
+
         copyExchangeCheckBox.setText(bundle.getString("DLCopy.copyExchangeCheckBox.text")); // NOI18N
+        copyExchangeCheckBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 6, 5, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
         exchangePartitionBottomPanel.add(copyExchangeCheckBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1230,19 +1264,19 @@ public class DLCopy extends JFrame
 
         dataPartitionPanel.setLayout(new java.awt.GridBagLayout());
 
-        fileSystemLabel.setText(bundle.getString("DLCopy.fileSystemLabel.text")); // NOI18N
+        dataPartitionFileSystemLabel.setText(bundle.getString("DLCopy.dataPartitionFileSystemLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 0);
-        dataPartitionPanel.add(fileSystemLabel, gridBagConstraints);
+        dataPartitionPanel.add(dataPartitionFileSystemLabel, gridBagConstraints);
 
-        filesystemComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ext2", "ext3", "ext4" }));
+        dataPartitionFilesystemComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ext2", "ext3", "ext4" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 10);
-        dataPartitionPanel.add(filesystemComboBox, gridBagConstraints);
+        dataPartitionPanel.add(dataPartitionFilesystemComboBox, gridBagConstraints);
 
         dataPartitionModeLabel.setText(bundle.getString("DLCopy.dataPartitionModeLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1292,7 +1326,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(installSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 156, Short.MAX_VALUE)
+                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(exchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1417,7 +1451,7 @@ public class DLCopy extends JFrame
             .addGroup(installPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(currentlyInstalledDeviceLabel)
-                .addContainerGap(373, Short.MAX_VALUE))
+                .addContainerGap(330, Short.MAX_VALUE))
             .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 638, Short.MAX_VALUE)
             .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 638, Short.MAX_VALUE)
         );
@@ -1533,7 +1567,7 @@ public class DLCopy extends JFrame
                 .addGroup(upgradeSelectionDeviceListPanelLayout.createSequentialGroup()
                     .addContainerGap()
                     .addGroup(upgradeSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 609, Short.MAX_VALUE)
+                        .addComponent(upgradeStorageDeviceListScrollPane)
                         .addComponent(upgradeOsDefinitionLabel)
                         .addComponent(upgradeDataDefinitionLabel)
                         .addComponent(upgradeExchangeDefinitionLabel)
@@ -1776,7 +1810,7 @@ public class DLCopy extends JFrame
                                     .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
                                         .addComponent(automaticBackupLabel)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(automaticBackupTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 369, Short.MAX_VALUE)))))
+                                        .addComponent(automaticBackupTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 407, Short.MAX_VALUE)))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(automaticBackupButton)))
                 .addContainerGap())
@@ -2003,7 +2037,7 @@ public class DLCopy extends JFrame
             .addGroup(repairSelectionDeviceListPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(repairSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 614, Short.MAX_VALUE)
+                    .addComponent(repairStorageDeviceListScrollPane)
                     .addComponent(repairSelectionCountLabel)
                     .addComponent(repairDataDefinitionLabel)
                     .addComponent(repairExchangeDefinitionLabel)
@@ -2183,7 +2217,7 @@ public class DLCopy extends JFrame
                         .addComponent(separateFileSystemsEditButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(separateFileSystemsRemoveButton))
-                    .addComponent(separateFileSystemsScrollpane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 167, Short.MAX_VALUE))
+                    .addComponent(separateFileSystemsScrollpane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE))
                 .addContainerGap())
         );
 
@@ -2205,16 +2239,16 @@ public class DLCopy extends JFrame
                                     .addComponent(isoLabelLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(writableTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 421, Short.MAX_VALUE)
-                                    .addComponent(isoLabelTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 421, Short.MAX_VALUE)))
+                                    .addComponent(writableTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE)
+                                    .addComponent(isoLabelTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE)))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, toISOSelectionPanelLayout.createSequentialGroup()
                                 .addComponent(freeSpaceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(freeSpaceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 421, Short.MAX_VALUE))
+                                .addComponent(freeSpaceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, toISOSelectionPanelLayout.createSequentialGroup()
                                 .addComponent(tmpDirLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tmpDirTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 421, Short.MAX_VALUE)))
+                                .addComponent(tmpDirTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tmpDirSelectButton)))
                 .addContainerGap())
@@ -3454,6 +3488,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         autoNumberStartSpinner.setEnabled(exchange);
         autoNumberIncrementLabel.setEnabled(exchange);
         autoNumberIncrementSpinner.setEnabled(exchange);
+        exchangePartitionFileSystemLabel.setEnabled(exchange);
+        exchangePartitionFileSystemComboBox.setEnabled(exchange);
+        copyExchangeCheckBox.setEnabled(exchange);
 
         // enable nextButton?
         updateInstallNextButton();
@@ -4491,7 +4528,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         // formatting
-        String fileSystem = filesystemComboBox.getSelectedItem().toString();
+        String fileSystem
+                = dataPartitionFilesystemComboBox.getSelectedItem().toString();
         int exitValue = processExecutor.executeProcess(
                 "/sbin/mkfs." + fileSystem,
                 "-L", Partition.PERSISTENCY_LABEL, device);
@@ -5113,6 +5151,60 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // safety wait so that new partitions are known to the system
             Thread.sleep(5000);
 
+            // The partition types assigned by parted are mosty garbage.
+            // We must fix them here...
+            switch (partitionState) {
+                case ONLY_SYSTEM:
+                    processExecutor.executeProcess("/sbin/sfdisk",
+                            "--id", device, "1", "83");
+                    break;
+
+                case PERSISTENT:
+                    processExecutor.executeProcess("/sbin/sfdisk",
+                            "--id", device, "1", "83");
+                    processExecutor.executeProcess("/sbin/sfdisk",
+                            "--id", device, "2", "83");
+                    break;
+
+                case EXCHANGE:
+                    if (exchangeMB == 0) {
+                        processExecutor.executeProcess("/sbin/sfdisk",
+                                "--id", device, "1", "83");
+                        processExecutor.executeProcess("/sbin/sfdisk",
+                                "--id", device, "2", "83");
+                    } else {
+                        String partitionID;
+                        String fileSystem
+                                = exchangePartitionFileSystemComboBox.getSelectedItem().toString();
+                        if (fileSystem.equalsIgnoreCase("fat32")) {
+                            partitionID = "c";
+                        } else {
+                            // exFAT & NTFS
+                            partitionID = "7";
+                        }
+                        if (persistentMB == 0) {
+                            processExecutor.executeProcess("/sbin/sfdisk",
+                                    "--id", device, "1", partitionID);
+                            processExecutor.executeProcess("/sbin/sfdisk",
+                                    "--id", device, "2", "83");
+                        } else {
+                            processExecutor.executeProcess("/sbin/sfdisk",
+                                    "--id", device, "1", partitionID);
+                            processExecutor.executeProcess("/sbin/sfdisk",
+                                    "--id", device, "2", "83");
+                            processExecutor.executeProcess("/sbin/sfdisk",
+                                    "--id", device, "3", "83");
+                        }
+                    }
+                    break;
+
+                default:
+                    LOGGER.log(Level.SEVERE,
+                            "unsupported partitionState \"{0}\"",
+                            partitionState);
+                    return false;
+            }
+
             // create file systems
             switch (partitionState) {
                 case ONLY_SYSTEM:
@@ -5128,18 +5220,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 case EXCHANGE:
                     if (exchangeMB != 0) {
                         // create file system for exchange partition
-                        exitValue = processExecutor.executeProcess(
-                                "/sbin/mkfs.vfat", "-n", exchangePartitionLabel,
-                                exchangeDevice);
-                        if (exitValue != 0) {
-                            String errorMessage = STRINGS.getString(
-                                    "Error_Create_Exchange_Partition");
-                            errorMessage = MessageFormat.format(
-                                    errorMessage, exchangeDevice);
-                            LOGGER.severe(errorMessage);
-                            if (showErrorMessages) {
-                                showErrorMessage(errorMessage);
-                            }
+                        if (!(formatExchangePartition(exchangeDevice,
+                                exchangePartitionLabel, showErrorMessages))) {
                             return false;
                         }
                     }
@@ -5157,6 +5239,41 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             partitionState);
                     return false;
             }
+        }
+
+        private boolean formatExchangePartition(String exchangeDevice,
+                String exchangePartitionLabel, boolean showErrorMessages) {
+            // create file system for exchange partition
+            String exFS
+                    = exchangePartitionFileSystemComboBox.getSelectedItem().toString();
+            String mkfsBuilder;
+            String mkfsLabelSwitch;
+            if (exFS.equalsIgnoreCase("fat32")) {
+                mkfsBuilder = "vfat";
+                mkfsLabelSwitch = "-n";
+            } else if (exFS.equalsIgnoreCase("exfat")) {
+                mkfsBuilder = "exfat";
+                mkfsLabelSwitch = "-n";
+            } else {
+                mkfsBuilder = "ntfs";
+                mkfsLabelSwitch = "-L";
+            }
+
+            int exitValue = processExecutor.executeProcess(
+                    "/sbin/mkfs." + mkfsBuilder,
+                    mkfsLabelSwitch, exchangePartitionLabel, exchangeDevice);
+            if (exitValue != 0) {
+                String errorMessage = 
+                        STRINGS.getString("Error_Create_Exchange_Partition");
+                errorMessage = 
+                        MessageFormat.format(errorMessage, exchangeDevice);
+                LOGGER.severe(errorMessage);
+                if (showErrorMessages) {
+                    showErrorMessage(errorMessage);
+                }
+                return false;
+            }
+            return true;
         }
 
         private void mkpart(List<String> commandList,
@@ -6998,6 +7115,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel currentlyRepairedDeviceLabel;
     private javax.swing.JLabel currentlyUpgradedDeviceLabel;
     private javax.swing.JLabel dataDefinitionLabel;
+    private javax.swing.JLabel dataPartitionFileSystemLabel;
+    private javax.swing.JComboBox dataPartitionFilesystemComboBox;
     private javax.swing.JComboBox dataPartitionModeComboBox;
     private javax.swing.JLabel dataPartitionModeLabel;
     private javax.swing.JPanel dataPartitionPanel;
@@ -7005,7 +7124,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JPanel donePanel;
     private javax.swing.JLabel exchangeDefinitionLabel;
     private javax.swing.JPanel exchangePartitionBottomPanel;
+    private javax.swing.JComboBox exchangePartitionFileSystemComboBox;
+    private javax.swing.JLabel exchangePartitionFileSystemLabel;
+    private javax.swing.JPanel exchangePartitionFileSystemPanel;
     private javax.swing.JLabel exchangePartitionLabel;
+    private javax.swing.JPanel exchangePartitionLabelPanel;
     private javax.swing.JPanel exchangePartitionPanel;
     private javax.swing.JLabel exchangePartitionSizeLabel;
     private javax.swing.JSlider exchangePartitionSizeSlider;
@@ -7014,8 +7137,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JTextField exchangePartitionTextField;
     private javax.swing.JLabel executionLabel;
     private javax.swing.JPanel executionPanel;
-    private javax.swing.JLabel fileSystemLabel;
-    private javax.swing.JComboBox filesystemComboBox;
     private javax.swing.JRadioButton formatDataPartitionRadioButton;
     private javax.swing.JLabel freeSpaceLabel;
     private javax.swing.JTextField freeSpaceTextField;
