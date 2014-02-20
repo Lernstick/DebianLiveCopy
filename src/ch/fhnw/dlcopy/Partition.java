@@ -520,7 +520,7 @@ public class Partition {
      * <code>false</code> otherwise
      */
     public boolean isExchangePartition() {
-        return (number == 1) && idType.equals("vfat");
+        return (number == 1);
     }
 
     /**

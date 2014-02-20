@@ -1,9 +1,9 @@
-dlcopy (201402201135-1) unstable; urgency=low
+dlcopy (201402201820-1) unstable; urgency=low
 
   * added support for different file systems (exFAT, FAT32, NTFS) on exchange
     partition and default to exFAT
 
- -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 12 Feb 2014 11:35:19 +0100
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 20 Feb 2014 18:20:19 +0100
 
 dlcopy (201402051052-1) unstable; urgency=low
 

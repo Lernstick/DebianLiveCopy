@@ -1246,7 +1246,6 @@ public class DLCopy extends JFrame
         exchangePartitionBottomPanel.add(exchangePartitionFileSystemPanel, gridBagConstraints);
 
         copyExchangeCheckBox.setText(bundle.getString("DLCopy.copyExchangeCheckBox.text")); // NOI18N
-        copyExchangeCheckBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
@@ -3491,7 +3490,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         autoNumberIncrementSpinner.setEnabled(exchange);
         exchangePartitionFileSystemLabel.setEnabled(exchange);
         exchangePartitionFileSystemComboBox.setEnabled(exchange);
-        copyExchangeCheckBox.setEnabled(exchange);
+        copyExchangeCheckBox.setEnabled(exchange
+                && (bootExchangePartition != null));
 
         // enable nextButton?
         updateInstallNextButton();
@@ -5264,10 +5264,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     "/sbin/mkfs." + mkfsBuilder,
                     mkfsLabelSwitch, exchangePartitionLabel, exchangeDevice);
             if (exitValue != 0) {
-                String errorMessage = 
-                        STRINGS.getString("Error_Create_Exchange_Partition");
-                errorMessage = 
-                        MessageFormat.format(errorMessage, exchangeDevice);
+                String errorMessage
+                        = STRINGS.getString("Error_Create_Exchange_Partition");
+                errorMessage
+                        = MessageFormat.format(errorMessage, exchangeDevice);
                 LOGGER.severe(errorMessage);
                 if (showErrorMessages) {
                     showErrorMessage(errorMessage);

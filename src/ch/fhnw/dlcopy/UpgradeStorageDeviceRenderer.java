@@ -108,7 +108,7 @@ public class UpgradeStorageDeviceRenderer
                         label.setIcon(blueBox);
                     } else if (partition.isPersistencyPartition()) {
                         label.setIcon(greenBox);
-                    } else if (partition.getIdType().equals("vfat")) {
+                    } else if (partition.isExchangePartition()) {
                         label.setIcon(yellowBox);
                     } else if (extended) {
                         label.setIcon(darkGrayBox);
@@ -250,7 +250,7 @@ public class UpgradeStorageDeviceRenderer
                     graphics2D.setPaint(LIGHT_BLUE);
                 } else if (partition.isPersistencyPartition()) {
                     graphics2D.setPaint(Color.GREEN);
-                } else if (partition.getIdType().equals("vfat")) {
+                } else if (partition.isExchangePartition()) {
                     // W95 FAT32 (LBA)
                     graphics2D.setPaint(Color.YELLOW);
                 } else if (extended) {
