@@ -98,7 +98,7 @@ public class RepairStorageDeviceRenderer
                 try {
                     if (partition.isSystemPartition()) {
                         label.setIcon(blueBox);
-                    } else if (partition.isPersistencyPartition()) {
+                    } else if (partition.isPersistencePartition()) {
                         label.setIcon(greenBox);
                     } else if (partition.isExchangePartition()) {
                         label.setIcon(yellowBox);
@@ -169,7 +169,7 @@ public class RepairStorageDeviceRenderer
                         "Repairing_Impossible_No_Data_Partition"));
             } else {
                 try {
-                    if (dataPartition.isActivePersistencyPartition()) {
+                    if (dataPartition.isActivePersistencePartition()) {
                         upgradeInfoLabel.setIcon(cancelIcon);
                         upgradeInfoLabel.setText(DLCopy.STRINGS.getString(
                                 "Repairing_Impossible_Active_Data_Partition"));
@@ -242,7 +242,7 @@ public class RepairStorageDeviceRenderer
             try {
                 if (partition.isSystemPartition()) {
                     graphics2D.setPaint(LIGHT_BLUE);
-                } else if (partition.isPersistencyPartition()) {
+                } else if (partition.isPersistencePartition()) {
                     graphics2D.setPaint(Color.GREEN);
                 } else if (partition.isExchangePartition()) {
                     graphics2D.setPaint(Color.YELLOW);

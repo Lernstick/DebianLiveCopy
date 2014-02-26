@@ -1,3 +1,9 @@
+dlcopy (201402261912-1) unstable; urgency=low
+
+  * added support for boot partition
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 26 Feb 2014 19:12:39 +0100
+
 dlcopy (201402201820-1) unstable; urgency=low
 
   * added support for different file systems (exFAT, FAT32, NTFS) on exchange

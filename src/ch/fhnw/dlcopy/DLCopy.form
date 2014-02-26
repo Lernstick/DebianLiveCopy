@@ -861,7 +861,7 @@
                                     </Constraint>
                                   </Constraints>
                                 </Component>
-                                <Component class="javax.swing.JCheckBox" name="copyPersistencyCheckBox">
+                                <Component class="javax.swing.JCheckBox" name="copyPersistenceCheckBox">
                                   <Properties>
                                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                                       <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="Copy_Data_Partition" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>

@@ -148,7 +148,7 @@ public class InstallStorageDeviceRenderer
 
         // do not paint exchange partition when not selected
         if ((partitionState == PartitionState.EXCHANGE) && !isSelected) {
-            partitionState = PartitionState.PERSISTENT;
+            partitionState = PartitionState.PERSISTENCE;
         }
         // paint additional blocks and texts
         switch (partitionState) {
@@ -171,7 +171,7 @@ public class InstallStorageDeviceRenderer
                         BAR_HEIGHT, text, shortText, graphics2D);
                 break;
 
-            case PERSISTENT:
+            case PERSISTENCE:
                 // block widths
                 int persistentWidth =
                         (int) ((usbStorageWidth * overhead) / storageSize);

@@ -106,7 +106,7 @@ public class UpgradeStorageDeviceRenderer
                 try {
                     if (partition.isSystemPartition()) {
                         label.setIcon(blueBox);
-                    } else if (partition.isPersistencyPartition()) {
+                    } else if (partition.isPersistencePartition()) {
                         label.setIcon(greenBox);
                     } else if (partition.isExchangePartition()) {
                         label.setIcon(yellowBox);
@@ -248,7 +248,7 @@ public class UpgradeStorageDeviceRenderer
             try {
                 if (partition.isSystemPartition()) {
                     graphics2D.setPaint(LIGHT_BLUE);
-                } else if (partition.isPersistencyPartition()) {
+                } else if (partition.isPersistencePartition()) {
                     graphics2D.setPaint(Color.GREEN);
                 } else if (partition.isExchangePartition()) {
                     // W95 FAT32 (LBA)

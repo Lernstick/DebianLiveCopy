@@ -60,9 +60,10 @@ public class StorageDevice implements Comparable<StorageDevice> {
     private Boolean canBeUpgraded;
     private boolean needsRepartitioning;
     private String noUpgradeReason;
-    private Partition systemPartition;
-    private Partition dataPartition;
     private Partition exchangePartition;
+    private Partition dataPartition;
+    private Partition bootPartition;
+    private Partition systemPartition;
 
     /**
      * creates a new StorageDevice
@@ -366,6 +367,16 @@ public class StorageDevice implements Comparable<StorageDevice> {
     public String getNoUpgradeReason() {
         return noUpgradeReason;
     }
+    
+    /**
+     * returns the system partition of this storage device
+     *
+     * @return the system partition of this storage device
+     */
+    public synchronized Partition getBootPartition() {
+        getPartitions();
+        return bootPartition;
+    }
 
     /**
      * returns the system partition of this storage device
@@ -402,12 +413,14 @@ public class StorageDevice implements Comparable<StorageDevice> {
             String numberString = matcher.group(1);
             Partition partition = Partition.getPartitionFromDevice(
                     device, numberString, systemPartitionLabel, systemSize);
-            if (partition.isPersistencyPartition()) {
+            if (partition.isPersistencePartition()) {
                 dataPartition = partition;
             } else if (partition.isExchangePartition()) {
                 exchangePartition = partition;
             } else if (partition.isSystemPartition()) {
                 systemPartition = partition;
+            } else if (partition.isBootPartition()) {
+                bootPartition = partition;
             }
             return partition;
         } catch (NumberFormatException numberFormatException) {

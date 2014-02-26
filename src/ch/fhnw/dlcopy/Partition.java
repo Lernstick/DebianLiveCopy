@@ -25,16 +25,20 @@ import org.freedesktop.udisks.Device;
 public class Partition {
 
     /**
-     * the label used for persistency partitions
+     * the label used for boot partitions
      */
-    public final static String PERSISTENCY_LABEL = "persistence";
-    private final static String[] LEGACY_PERSISTENCY_LABELs = new String[]{
+    public final static String BOOT_LABEL = "boot";
+    /**
+     * the label used for persistence partitions
+     */
+    public final static String PERSISTENCE_LABEL = "persistence";
+    private final static String[] LEGACY_PERSISTENCE_LABELs = new String[]{
         "live-rw"
     };
-    private final static Logger LOGGER =
-            Logger.getLogger(Partition.class.getName());
-    private final static Pattern deviceAndNumberPattern =
-            Pattern.compile("(.*)(\\d+)");
+    private final static Logger LOGGER
+            = Logger.getLogger(Partition.class.getName());
+    private final static Pattern deviceAndNumberPattern
+            = Pattern.compile("(.*)(\\d+)");
     private final String device;
     private final int number;
     private final String deviceAndNumber;
@@ -46,6 +50,7 @@ public class Partition {
     private final String systemPartitionLabel;
     private final long systemSize;
     private final boolean isDrive;
+    private Boolean isBootPartition;
     private Boolean isSystemPartition;
     private Long usedSpace;
     private StorageDevice storageDevice;
@@ -408,9 +413,11 @@ public class Partition {
             // in handleUmountException() the umount call succeeded!
             // therefore we need to test for the mount status in every round
             // and act accordingly...
-            if (isMounted()) {
-                LOGGER.log(Level.INFO, "/dev/{0} is mounted, calling umount...",
-                        deviceAndNumber);
+            List<String> mountPaths = getMountPaths();
+            if ((mountPaths != null) && (!mountPaths.isEmpty())) {
+                LOGGER.log(Level.INFO,
+                        "/dev/{0} is mounted on {1}, calling umount...",
+                        new Object[]{deviceAndNumber, mountPaths.get(0)});
                 try {
                     Device dbusDevice = DbusTools.getDevice(deviceAndNumber);
                     dbusDevice.FilesystemUnmount(new ArrayList<String>());
@@ -434,9 +441,30 @@ public class Partition {
     }
 
     /**
-     * returns
-     * <code>true</code>, if this partition is a Debian Live system partition,
-     * <code>false</code> otherwise
+     * returns <code>true</code>, if this partition is a Lernstick boot
+     * partition, <code>false</code> otherwise
+     *
+     * @return <code>true</code>, if this partition is a Lernstick boot
+     * partition, <code>false</code> otherwise
+     * @throws DBusException if a dbus exception occurs
+     */
+    public boolean isBootPartition() throws DBusException {
+        if (isBootPartition == null) {
+            isBootPartition = false;
+            LOGGER.log(Level.FINEST, "checking partition {0}", deviceAndNumber);
+            LOGGER.log(Level.FINEST, "partition label: \"{0}\"", idLabel);
+            if (BOOT_LABEL.equals(idLabel)) {
+                isBootPartition = true;
+            } else {
+                LOGGER.finest("does not match system partition label");
+            }
+        }
+        return isBootPartition;
+    }
+
+    /**
+     * returns <code>true</code>, if this partition is a Debian Live system
+     * partition, <code>false</code> otherwise
      *
      * @return <code>true</code>, if this partition is a Debian Live system
      * partition, <code>false</code> otherwise
@@ -447,63 +475,58 @@ public class Partition {
             isSystemPartition = false;
             LOGGER.log(Level.FINEST, "checking partition {0}", deviceAndNumber);
             LOGGER.log(Level.FINEST, "partition label: \"{0}\"", idLabel);
-            if (systemPartitionLabel.equals(idLabel)) {
-                // mount partition if not already mounted
-                boolean tmpMount = false;
-                List<String> mountPaths = getMountPaths();
-                String mountPath;
-                if (mountPaths.isEmpty()) {
-                    mountPath = mount();
-                    tmpMount = true;
-                } else {
-                    mountPath = mountPaths.get(0);
-                    if (LOGGER.isLoggable(Level.FINEST)) {
-                        LOGGER.log(Level.FINEST, "{0} already mounted at {1}",
-                                new Object[]{deviceAndNumber, mountPath});
-                    }
-                }
 
-                // check partition file structure
-                LOGGER.log(Level.FINEST,
-                        "checking file structure on partition {0}",
-                        deviceAndNumber);
-                File liveDir = new File(mountPath, "live");
-                if (liveDir.exists()) {
-                    FilenameFilter squashFsFilter = new FilenameFilter() {
-                        @Override
-                        public boolean accept(File dir, String name) {
-                            return name.endsWith(".squashfs");
-                        }
-                    };
-                    String[] squashFileSystems = liveDir.list(squashFsFilter);
-                    isSystemPartition = (squashFileSystems.length > 0);
-                }
-
-                // cleanup
-                if (tmpMount) {
-                    umount();
-                }
+            // mount partition if not already mounted
+            boolean tmpMount = false;
+            List<String> mountPaths = getMountPaths();
+            String mountPath;
+            if (mountPaths.isEmpty()) {
+                mountPath = mount();
+                tmpMount = true;
             } else {
-                LOGGER.finest("does not match system partition label");
+                mountPath = mountPaths.get(0);
+                if (LOGGER.isLoggable(Level.FINEST)) {
+                    LOGGER.log(Level.FINEST, "{0} already mounted at {1}",
+                            new Object[]{deviceAndNumber, mountPath});
+                }
+            }
+
+            // check partition file structure
+            LOGGER.log(Level.FINEST,
+                    "checking file structure on partition {0}",
+                    deviceAndNumber);
+            File liveDir = new File(mountPath, "live");
+            if (liveDir.exists()) {
+                FilenameFilter squashFsFilter = new FilenameFilter() {
+                    @Override
+                    public boolean accept(File dir, String name) {
+                        return name.endsWith(".squashfs");
+                    }
+                };
+                String[] squashFileSystems = liveDir.list(squashFsFilter);
+                isSystemPartition = (squashFileSystems.length > 0);
+            }
+
+            // cleanup
+            if (tmpMount) {
+                umount();
             }
         }
         return isSystemPartition;
     }
 
     /**
-     * returns
-     * <code>true</code>, if this partition is a Debian Live persistency
-     * partition,
-     * <code>false</code> otherwise
+     * returns <code>true</code>, if this partition is a Debian Live persistence
+     * partition, <code>false</code> otherwise
      *
-     * @return <code>true</code>, if this partition is a Debian Live persistency
+     * @return <code>true</code>, if this partition is a Debian Live persistence
      * partition, <code>false</code> otherwise
      */
-    public boolean isPersistencyPartition() {
-        if (idLabel.equals(PERSISTENCY_LABEL)) {
+    public boolean isPersistencePartition() {
+        if (idLabel.equals(PERSISTENCE_LABEL)) {
             return true;
         }
-        for (String legacyLabel : LEGACY_PERSISTENCY_LABELs) {
+        for (String legacyLabel : LEGACY_PERSISTENCE_LABELs) {
             if (idLabel.equals(legacyLabel)) {
                 return true;
             }
@@ -512,8 +535,7 @@ public class Partition {
     }
 
     /**
-     * returns
-     * <code>true</code> if this partition is the exchange partition,
+     * returns <code>true</code> if this partition is the exchange partition,
      * <code>false</code> otherwise
      *
      * @return <code>true</code> if this partition is the exchange partition,
@@ -524,16 +546,15 @@ public class Partition {
     }
 
     /**
-     * returns
-     * <code>true</code>, if this partition is an active persistency partition,
-     * <code>false</code> otherwise
+     * returns <code>true</code>, if this partition is an active persistence
+     * partition, <code>false</code> otherwise
      *
-     * @return <code>true</code>, if this partition is an active persistency
+     * @return <code>true</code>, if this partition is an active persistence
      * partition, <code>false</code> otherwise
      * @throws DBusException if a dbus exception occurs
      */
-    public boolean isActivePersistencyPartition() throws DBusException {
-        if (isPersistencyPartition()) {
+    public boolean isActivePersistencePartition() throws DBusException {
+        if (isPersistencePartition()) {
             List<String> mountPaths = getMountPaths();
             for (String mountPath : mountPaths) {
                 switch (DLCopy.distribution) {
@@ -560,8 +581,7 @@ public class Partition {
     }
 
     /**
-     * returns
-     * <code>true</code>, if the partition is mounted,
+     * returns <code>true</code>, if the partition is mounted,
      * <code>false</code> otherwise
      *
      * @return <code>true</code>, if the partition is mounted,
@@ -584,9 +604,9 @@ public class Partition {
                 LOGGER.log(Level.INFO, "/dev/{0} is still being used by the "
                         + "following processes:\n{1}",
                         new Object[]{
-                    deviceAndNumber,
-                    processExecutor.getStdOut()
-                });
+                            deviceAndNumber,
+                            processExecutor.getStdOut()
+                        });
                 Thread.sleep(1000);
 //                returnValue = processExecutor.executeProcess(true, true,
 //                        "fuser", "-v", "-m", "/dev/" + deviceAndNumber);
