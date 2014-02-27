@@ -508,26 +508,14 @@ public class DLCopy extends JFrame
                     = getDataPartitionMode(DEBIAN_LIVE_SYSTEM_PATH);
         } else {
             try {
-                String sourceBootPath;
-                boolean sourceBootTempMounted = false;
-                List<String> mountPaths = bootBootPartition.getMountPaths();
-                if (mountPaths.isEmpty()) {
-                    sourceBootPath = bootBootPartition.mount();
-                    sourceBootTempMounted = true;
-                } else {
-                    sourceBootPath = mountPaths.get(0);
-                    if (LOGGER.isLoggable(Level.FINEST)) {
-                        LOGGER.log(Level.FINEST, "{0} already mounted at {1}",
-                                new Object[]{bootBootPartition, sourceBootPath}
-                        );
-                    }
-                }
-                sourceDataPartitionMode = getDataPartitionMode(sourceBootPath);
-                if (sourceBootTempMounted) {
+                BootMountInfo bootMountInfo = mountBootPartition();
+                sourceDataPartitionMode
+                        = getDataPartitionMode(bootMountInfo.getMountPath());
+                if (bootMountInfo.isTempMounted()) {
                     bootBootPartition.umount();
                 }
-            } catch (DBusException dBusException) {
-                LOGGER.log(Level.WARNING, "", dBusException);
+            } catch (DBusException ex) {
+                LOGGER.log(Level.WARNING, "", ex);
             }
         }
 
@@ -561,6 +549,24 @@ public class DLCopy extends JFrame
         //pack();
         setSize(950, 550);
         setLocationRelativeTo(null);
+    }
+
+    private BootMountInfo mountBootPartition() throws DBusException {
+        String sourceBootPath;
+        boolean sourceBootTempMounted = false;
+        List<String> mountPaths = bootBootPartition.getMountPaths();
+        if (mountPaths.isEmpty()) {
+            sourceBootPath = bootBootPartition.mount();
+            sourceBootTempMounted = true;
+        } else {
+            sourceBootPath = mountPaths.get(0);
+            if (LOGGER.isLoggable(Level.FINEST)) {
+                LOGGER.log(Level.FINEST, "{0} already mounted at {1}",
+                        new Object[]{bootBootPartition, sourceBootPath}
+                );
+            }
+        }
+        return new BootMountInfo(sourceBootPath, sourceBootTempMounted);
     }
 
     private void setSpinnerColums(JSpinner spinner, int columns) {
@@ -4660,32 +4666,18 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         boolean sourceBootTempMounted = false;
         if (bootBootPartition != null) {
             // our source medium already has a separate boot partition
-            // check that boot partition is mounted
-            String sourceBootPath;
-            List<String> mountPaths = bootBootPartition.getMountPaths();
-            if (mountPaths.isEmpty()) {
-                sourceBootPath = bootBootPartition.mount();
-                sourceBootTempMounted = true;
-            } else {
-                sourceBootPath = mountPaths.get(0);
-                if (LOGGER.isLoggable(Level.FINEST)) {
-                    LOGGER.log(Level.FINEST, "{0} already mounted at {1}",
-                            new Object[]{
-                                bootBootPartition,
-                                sourceBootPath
-                            });
-                }
-            }
-
+            BootMountInfo bootMountInfo = mountBootPartition();
+            String bootPath = bootMountInfo.getMountPath();
+            sourceBootTempMounted = bootMountInfo.isTempMounted();
             bootCopyJob = new CopyJob(
-                    new Source[]{new Source(sourceBootPath, ".*")},
+                    new Source[]{new Source(bootPath, ".*")},
                     new String[]{destinationBootPath});
             systemCopyJob = new CopyJob(
                     new Source[]{new Source(DEBIAN_LIVE_SYSTEM_PATH, ".*")},
                     new String[]{destinationSystemPath});
 
         } else {
-                // our source medium has NO separate boot partition
+            // our source medium has NO separate boot partition
 
             // copy everything but the squashfs file(s) to the boot
             // partition
@@ -6100,8 +6092,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         = String.valueOf(bootPartitionOffset) + "B";
                 String systemPartitionStart
                         = String.valueOf(systemPartitionOffset) + "MiB";
-                String systemPartitionNumberString =
-                        String.valueOf(systemPartitionNumber);
+                String systemPartitionNumberString
+                        = String.valueOf(systemPartitionNumber);
                 int returnValue = processExecutor.executeProcess(true, true,
                         "/sbin/parted", "-a", "optimal", "-s", devicePath,
                         "rm", systemPartitionNumberString,
@@ -6238,17 +6230,35 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         @Override
         protected Boolean doInBackground() throws Exception {
             try {
-
-                // copy base image files
                 publish(STRINGS.getString("Copying_Files"));
-                String targetDirectory = tmpDirTextField.getText();
-                String copyScript = "#!/bin/sh" + '\n'
-                        + "find " + targetDirectory + " -mindepth 1 -delete\n"
-                        + "cd " + DEBIAN_LIVE_SYSTEM_PATH + '\n'
-                        + "find -not -name filesystem*.squashfs | cpio -pvdum \""
-                        + targetDirectory + "\"";
-                processExecutor.executeScript(copyScript);
 
+                // cleanup target directory
+                String targetDirectory = tmpDirTextField.getText();
+                LOGGER.log(Level.INFO,
+                        "recursively deleting {0}", targetDirectory);
+                FileTools.recursiveDelete(new File(targetDirectory), false);
+
+                // copy boot files
+                if (bootBootPartition == null) {
+                    // legacy system without separate boot partition
+                    String copyScript = "#!/bin/sh" + '\n'
+                            + "cd " + DEBIAN_LIVE_SYSTEM_PATH + '\n'
+                            + "find -not -name filesystem*.squashfs | cpio -pvdum \""
+                            + targetDirectory + "\"";
+                    processExecutor.executeScript(copyScript);
+
+                } else {
+                    // system with a separate boot partition
+                    BootMountInfo bootMountInfo = mountBootPartition();
+                    String bootPath = bootMountInfo.getMountPath();
+                    CopyJob bootCopyJob = new CopyJob(
+                            new Source[]{new Source(bootPath, ".*")},
+                            new String[]{targetDirectory});
+                    FileCopier fileCopier = new FileCopier();
+                    fileCopier.copy(bootCopyJob);
+                }
+
+                // assemble new squashfs
                 publish(STRINGS.getString("Mounting_Partitions"));
                 File tmpDir = createTempDir("usb2iso");
 
@@ -6457,23 +6467,41 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 publish(STRINGS.getString("Creating_Image"));
                 processExecutor.addPropertyChangeListener(this);
                 String isoLabel = isoLabelTextField.getText();
-                int returnValue;
-                if (isoLabel.isEmpty()) {
-                    returnValue = processExecutor.executeProcess("genisoimage",
-                            "-J", "-l", "-cache-inodes", "-allow-multidot",
-                            "-no-emul-boot", "-boot-load-size", "4",
-                            "-boot-info-table", "-r", "-b",
-                            "isolinux/isolinux.bin", "-c", "isolinux/boot.cat",
-                            "-o", isoPath, targetDirectory);
-                } else {
-                    returnValue = processExecutor.executeProcess("genisoimage",
-                            "-J", "-V", isoLabel, "-l", "-cache-inodes",
-                            "-allow-multidot", "-no-emul-boot",
-                            "-boot-load-size", "4", "-boot-info-table", "-r",
-                            "-b", "isolinux/isolinux.bin", "-c",
-                            "isolinux/boot.cat", "-o", isoPath,
-                            targetDirectory);
+                
+                // xorriso
+                // -dev <iso-file>
+                // -volid <volume-id>
+                // -boot_image isolinux dir=isolinux
+                // -joliet on
+                // -compliance iso_9660_level=3
+                // -add <targetDirectory>
+                
+                List<String> genisoCommand = new ArrayList<String>();
+                genisoCommand.add("genisoimage");
+                genisoCommand.add("-J");
+                if (!(isoLabel.isEmpty())) {
+                    genisoCommand.add("-V");
+                    genisoCommand.add(isoLabel);
                 }
+                genisoCommand.add("-l");
+                genisoCommand.add("-cache-inodes");
+                genisoCommand.add("-allow-multidot");
+                genisoCommand.add("-no-emul-boot");
+                genisoCommand.add("-boot-load-size");
+                genisoCommand.add("4");
+                genisoCommand.add("-boot-info-table");
+                genisoCommand.add("-r");
+                genisoCommand.add("-b");
+                genisoCommand.add("isolinux/isolinux.bin");
+                genisoCommand.add("-c");
+                genisoCommand.add("isolinux/boot.cat");
+                genisoCommand.add("-o");
+                genisoCommand.add(isoPath);
+                genisoCommand.add(targetDirectory);
+
+                int returnValue = processExecutor.executeProcess(true, true,
+                        genisoCommand.toArray(new String[genisoCommand.size()]));
+                
                 processExecutor.removePropertyChangeListener(this);
                 if (returnValue != 0) {
                     return false;
@@ -7388,6 +7416,25 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         public CopyJob getSystemCopyJob() {
             return systemCopyJob;
+        }
+    }
+
+    private class BootMountInfo {
+
+        private String mountPath;
+        private boolean tempMount;
+
+        public BootMountInfo(String mountPath, boolean tempMount) {
+            this.mountPath = mountPath;
+            this.tempMount = tempMount;
+        }
+
+        public String getMountPath() {
+            return mountPath;
+        }
+
+        public boolean isTempMounted() {
+            return tempMount;
         }
     }
     // Variables declaration - do not modify//GEN-BEGIN:variables
