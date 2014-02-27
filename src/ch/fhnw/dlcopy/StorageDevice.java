@@ -274,7 +274,8 @@ public class StorageDevice implements Comparable<StorageDevice> {
                 }
             }
 
-            LOGGER.log(Level.INFO, "found {0} partitions", partitions.size());
+            LOGGER.log(Level.INFO, "found {0} partitions on {1}", 
+                    new Object[]{partitions.size(), device});
         }
         return partitions;
     }
@@ -367,7 +368,7 @@ public class StorageDevice implements Comparable<StorageDevice> {
     public String getNoUpgradeReason() {
         return noUpgradeReason;
     }
-    
+
     /**
      * returns the system partition of this storage device
      *
@@ -417,10 +418,14 @@ public class StorageDevice implements Comparable<StorageDevice> {
                 dataPartition = partition;
             } else if (partition.isExchangePartition()) {
                 exchangePartition = partition;
-            } else if (partition.isSystemPartition()) {
-                systemPartition = partition;
             } else if (partition.isBootPartition()) {
                 bootPartition = partition;
+            } else if (partition.isSystemPartition()) {
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                // ! put the system partition check at the end of the list   !
+                // ! because it is the most expensive one                    !
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                systemPartition = partition;
             }
             return partition;
         } catch (NumberFormatException numberFormatException) {

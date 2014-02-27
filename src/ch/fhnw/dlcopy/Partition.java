@@ -480,15 +480,25 @@ public class Partition {
             boolean tmpMount = false;
             List<String> mountPaths = getMountPaths();
             String mountPath;
-            if (mountPaths.isEmpty()) {
-                mountPath = mount();
-                tmpMount = true;
-            } else {
-                mountPath = mountPaths.get(0);
-                if (LOGGER.isLoggable(Level.FINEST)) {
-                    LOGGER.log(Level.FINEST, "{0} already mounted at {1}",
-                            new Object[]{deviceAndNumber, mountPath});
+            try {
+                if (mountPaths.isEmpty()) {
+                    mountPath = mount();
+                    tmpMount = true;
+                } else {
+                    mountPath = mountPaths.get(0);
+                    if (LOGGER.isLoggable(Level.FINEST)) {
+                        LOGGER.log(Level.FINEST, "{0} already mounted at {1}",
+                                new Object[]{deviceAndNumber, mountPath});
+                    }
                 }
+            } catch (DBusException dBusException) {
+                // the partition could not be mounted
+                LOGGER.log(Level.WARNING, "", dBusException);
+                return false;
+            } catch (DBusExecutionException dBusException) {
+                // the partition could not be mounted
+                LOGGER.log(Level.WARNING, "", dBusException);
+                return false;
             }
 
             // check partition file structure

@@ -5275,7 +5275,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
 
             // safety wait so that new partitions are known to the system
-            Thread.sleep(5000);
+            Thread.sleep(7000);
 
             // The partition types assigned by parted are mosty garbage.
             // We must fix them here...
@@ -5901,9 +5901,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         private boolean upgradeSystemPartition(StorageDevice storageDevice)
                 throws DBusException, IOException, InterruptedException {
             String device = storageDevice.getDevice();
+            String devicePath = "/dev/" + device;
             Partition dataPartition = storageDevice.getDataPartition();
             Partition bootPartition = storageDevice.getBootPartition();
             Partition systemPartition = storageDevice.getSystemPartition();
+            int systemPartitionNumber = systemPartition.getNumber();
 
             // make sure that systemPartition is unmounted
             if (!umount(systemPartition)) {
@@ -6006,7 +6008,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 partedCommand.add("-a");
                 partedCommand.add("optimal");
                 partedCommand.add("-s");
-                partedCommand.add(device);
+                partedCommand.add(devicePath);
                 // remove old partitions
                 partedCommand.add("rm");
                 partedCommand.add(String.valueOf(dataPartition.getNumber()));
@@ -6016,7 +6018,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             String.valueOf(bootPartition.getNumber()));
                 }
                 partedCommand.add("rm");
-                partedCommand.add(String.valueOf(systemPartition.getNumber()));
+                partedCommand.add(String.valueOf(systemPartitionNumber));
                 // create new partitions
                 partedCommand.add("mkpart");
                 partedCommand.add("primary");
@@ -6052,11 +6054,24 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // refresh storage device and partition info
                 processExecutor.executeProcess(true, true, "/sbin/partprobe");
                 // safety wait so that new partitions are known to the system
-                Thread.sleep(5000);
+                // (5000ms were NOT enough!)
+                Thread.sleep(7000);
                 storageDevice = new StorageDevice(
                         device, systemPartitionLabel, systemSize);
-                bootPartition = storageDevice.getBootPartition();
-                systemPartition = storageDevice.getSystemPartition();
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                // ! We can't use storageDevice.getBootPartition() and      !
+                // ! storageDevice.getSystemPartition() here because the    !
+                // ! partitions dont have the necessary properties, yet. We !
+                // ! will set them in the next steps.                       !
+                // ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                List<Partition> partitions = storageDevice.getPartitions();
+                if (bootPartition == null) {
+                    bootPartition = partitions.get(systemPartitionNumber - 1);
+                    systemPartition = partitions.get(systemPartitionNumber);
+                } else {
+                    bootPartition = partitions.get(systemPartitionNumber - 2);
+                    systemPartition = partitions.get(systemPartitionNumber - 1);
+                }
 
                 returnValue = processExecutor.executeProcess(true, true,
                         "resize2fs", dataDevPath);
@@ -6085,11 +6100,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         = String.valueOf(bootPartitionOffset) + "B";
                 String systemPartitionStart
                         = String.valueOf(systemPartitionOffset) + "MiB";
+                String systemPartitionNumberString =
+                        String.valueOf(systemPartitionNumber);
                 int returnValue = processExecutor.executeProcess(true, true,
-                        "/sbin/parted", "-a", "optimal", "-s", device,
-                        "rm", String.valueOf(systemPartition.getNumber()),
+                        "/sbin/parted", "-a", "optimal", "-s", devicePath,
+                        "rm", systemPartitionNumberString,
                         "mkpart", "primary", bootPartitionStart, systemPartitionStart,
-                        "mkpart", "primary", systemPartitionStart, "100%");
+                        "mkpart", "primary", systemPartitionStart, "100%",
+                        "set", systemPartitionNumberString, "boot", "on");
                 if (returnValue != 0) {
                     String errorMessage = STRINGS.getString(
                             "Error_Changing_Partition_Sizes");
@@ -6102,19 +6120,29 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // We must fix them here...
                 //  - boot: actually FAT32, but "hidden" by using the Linux partition type 83
                 //  - system: Linux
-                processExecutor.executeProcess("/sbin/sfdisk", "--id", device,
-                        String.valueOf(systemPartition.getNumber()), "83");
-                processExecutor.executeProcess("/sbin/sfdisk", "--id", device,
-                        String.valueOf(systemPartition.getNumber() + 1), "83");
+                processExecutor.executeProcess("/sbin/sfdisk", "--id",
+                        devicePath, systemPartitionNumberString,
+                        "83");
+                processExecutor.executeProcess("/sbin/sfdisk", "--id",
+                        devicePath, String.valueOf(systemPartitionNumber + 1),
+                        "83");
 
                 // refresh storage device and partition info
                 processExecutor.executeProcess(true, true, "/sbin/partprobe");
                 // safety wait so that new partitions are known to the system
-                Thread.sleep(5000);
+                // (5000ms were NOT enough!)
+                Thread.sleep(7000);
                 storageDevice = new StorageDevice(
                         device, systemPartitionLabel, systemSize);
-                bootPartition = storageDevice.getBootPartition();
-                systemPartition = storageDevice.getSystemPartition();
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                // ! We can't use storageDevice.getBootPartition() and      !
+                // ! storageDevice.getSystemPartition() here because the    !
+                // ! partitions dont have the necessary properties, yet. We !
+                // ! will set them in the next steps.                       !
+                // ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                List<Partition> partitions = storageDevice.getPartitions();
+                bootPartition = partitions.get(systemPartitionNumber - 1);
+                systemPartition = partitions.get(systemPartitionNumber);
 
                 // format boot and system partition
                 if (!(formatBootAndSystemPartition(
@@ -6183,7 +6211,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             STRINGS.getString("Writing_Boot_Sector"));
                 }
             });
-            if (!makeBootable(device, bootPartition)) {
+            if (!makeBootable(devicePath, bootPartition)) {
                 return false;
             }
 
@@ -6999,7 +7027,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     addedDevice.canBeUpgraded();
                     // safety wait, otherwise the call below to getPartitions()
                     // fails very often
-                    Thread.sleep(5000);
+                    Thread.sleep(7000);
                     for (Partition partition : addedDevice.getPartitions()) {
                         try {
                             partition.getUsedSpace(true);
@@ -7150,7 +7178,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     // in Swing Event Thread
                     // safety wait, otherwise the call below to getPartitions()
                     // fails very often
-                    Thread.sleep(5000);
+                    Thread.sleep(7000);
                     addedDevice.canBeUpgraded();
                     for (Partition partition : addedDevice.getPartitions()) {
                         try {
