@@ -189,8 +189,15 @@ public class DLCopy extends JFrame
     private final String systemPartitionLabel;
     private final Pattern mksquashfsPattern
             = Pattern.compile("\\[.* (.*)/(.*) .*");
+    // genisoimage output looks like this:
+    // 89.33% done, estimate finish Wed Dec  2 17:08:41 2009
     private final Pattern genisoimagePattern
             = Pattern.compile("(.*)\\..*%.*");
+    // xorriso output looks like this:
+    // xorriso : UPDATE : Writing:    234234s  31.5%   fifo 23% buf 50% 12.7xD
+    // (the first 31.5% is the progress value we are looking for
+    private final Pattern xorrisoPattern
+            = Pattern.compile(".* (.*%) .*%.*%.*");
     private DBusConnection dbusSystemConnection;
     private UdisksMonitorThread udisksMonitorThread;
     private DefaultListModel separateFileSystemsListModel;
@@ -2948,6 +2955,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private DataPartitionMode getDataPartitionMode(String imagePath) {
         try {
             File xmlBootConfigFile = getXmlBootConfigFile(new File(imagePath));
+            if (xmlBootConfigFile == null) {
+                return null;
+            }
             org.w3c.dom.Document xmlBootDocument
                     = parseXmlFile(xmlBootConfigFile);
             xmlBootDocument.getDocumentElement().normalize();
@@ -6231,12 +6241,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         protected Boolean doInBackground() throws Exception {
             try {
                 publish(STRINGS.getString("Copying_Files"));
+                String tmpDirectory = tmpDirTextField.getText();
 
-                // cleanup target directory
-                String targetDirectory = tmpDirTextField.getText();
-                LOGGER.log(Level.INFO,
-                        "recursively deleting {0}", targetDirectory);
-                FileTools.recursiveDelete(new File(targetDirectory), false);
+                // create new temporary directory in selected directory
+                String targetRootDirectory = FileTools.createTempDirectory(
+                        new File(tmpDirectory), "Lernstick-ISO").getPath();
+                String targetDirectory = targetRootDirectory + "/build";
+                new File(targetDirectory).mkdirs();
 
                 // copy boot files
                 if (bootBootPartition == null) {
@@ -6256,6 +6267,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             new String[]{targetDirectory});
                     FileCopier fileCopier = new FileCopier();
                     fileCopier.copy(bootCopyJob);
+                    if (bootMountInfo.isTempMounted()) {
+                        bootBootPartition.umount();
+                    }
                 }
 
                 // assemble new squashfs
@@ -6280,8 +6294,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     String roPath = roDir.getPath();
                     readOnlyMountPoints.add(roPath);
                     String filePath = squashFileSystems[i].getPath();
-                    processExecutor.executeProcess("mount", "-t", "squashfs",
-                            "-o", "loop,ro", filePath, roPath);
+                    processExecutor.executeProcess(
+                            "mount", "-o", "loop", filePath, roPath);
                 }
 
                 // mount persistence
@@ -6462,46 +6476,27 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         toISOProgressBar.setIndeterminate(false);
                     }
                 });
-                isoPath = targetDirectory + "/lernstick.iso";
+                isoPath = targetRootDirectory + "/Lernstick.iso";
                 step = IsoStep.GENISOIMAGE;
                 publish(STRINGS.getString("Creating_Image"));
                 processExecutor.addPropertyChangeListener(this);
                 String isoLabel = isoLabelTextField.getText();
-                
-                // xorriso
-                // -dev <iso-file>
-                // -volid <volume-id>
-                // -boot_image isolinux dir=isolinux
-                // -joliet on
-                // -compliance iso_9660_level=3
-                // -add <targetDirectory>
-                
-                List<String> genisoCommand = new ArrayList<String>();
-                genisoCommand.add("genisoimage");
-                genisoCommand.add("-J");
-                if (!(isoLabel.isEmpty())) {
-                    genisoCommand.add("-V");
-                    genisoCommand.add(isoLabel);
-                }
-                genisoCommand.add("-l");
-                genisoCommand.add("-cache-inodes");
-                genisoCommand.add("-allow-multidot");
-                genisoCommand.add("-no-emul-boot");
-                genisoCommand.add("-boot-load-size");
-                genisoCommand.add("4");
-                genisoCommand.add("-boot-info-table");
-                genisoCommand.add("-r");
-                genisoCommand.add("-b");
-                genisoCommand.add("isolinux/isolinux.bin");
-                genisoCommand.add("-c");
-                genisoCommand.add("isolinux/boot.cat");
-                genisoCommand.add("-o");
-                genisoCommand.add(isoPath);
-                genisoCommand.add(targetDirectory);
 
-                int returnValue = processExecutor.executeProcess(true, true,
-                        genisoCommand.toArray(new String[genisoCommand.size()]));
-                
+                String xorrisoScript = "#!/bin/sh\n"
+                        + "cd " + targetDirectory + '\n'
+                        + "xorriso -dev " + isoPath
+                        + " -volid LERNSTICK";
+                if (!(isoLabel.isEmpty())) {
+                    xorrisoScript += " -application_id \"" + isoLabel + "\"";
+                }
+                xorrisoScript += " -boot_image isolinux dir=isolinux"
+                        + " -joliet on"
+                        + " -compliance iso_9660_level=3"
+                        + " -add .";
+
+                int returnValue = processExecutor.executeScript(
+                        true, true, xorrisoScript);
+
                 processExecutor.removePropertyChangeListener(this);
                 if (returnValue != 0) {
                     return false;
@@ -6554,9 +6549,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 String line = (String) evt.getNewValue();
                 switch (step) {
                     case GENISOIMAGE:
-                        // genisoimage output looks like this:
-                        // 89.33% done, estimate finish Wed Dec  2 17:08:41 2009
-                        Matcher matcher = genisoimagePattern.matcher(line);
+                        Matcher matcher = xorrisoPattern.matcher(line);
                         if (matcher.matches()) {
                             String progressString = matcher.group(1).trim();
                             try {
@@ -6575,7 +6568,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                                 });
                             } catch (NumberFormatException ex) {
                                 LOGGER.log(Level.WARNING,
-                                        "could not parse genisoimage progress",
+                                        "could not parse xorriso progress",
                                         ex);
                             }
                         }

@@ -8,7 +8,7 @@ Homepage: http://www.imedias.ch/lernstick
 
 Package: dlcopy
 Architecture: all
-Depends: java-runtime, squashfs-tools, cpio, genisoimage, syslinux, dbus, libdbus-java, libmatthew-debug-java, libunixsocket-java, parted, policykit-1, exfat-utils
+Depends: java-runtime, squashfs-tools, cpio, xorriso, syslinux, dbus, libdbus-java, libmatthew-debug-java, libunixsocket-java, parted, policykit-1, exfat-utils
 Description: an application to copy Debian Live to other storage media
  This is a small application that copies Debian Live to other storage media like
  USB flash drives, USB hard drives or SD memory cards. It has hot-plug support

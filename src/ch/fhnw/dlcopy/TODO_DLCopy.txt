@@ -2,6 +2,14 @@
 kdesudo "java -Djava.library.path=/usr/lib/jni -jar dist/DLCopy_orig.jar --variant lernstick"
 ********************************************************************************
 
+- getDataPartitionMode() muss zuerst nach Bootpartition suchen, dann auf legacy-Modus zurückfallen
+
+- Berechnung der Partitionsgrössen bei Installation und Upgrade nochmal genauer ansehen
+
+- ISO-Erstellung
+    - die Datei "ldlinux.sys" löschen?
+    - VolID, AppID, Name in xmlboot anpassen lassen?
+
 - fuser -m <file> zeigt unter wheezy *immer* etwas an!
 
 - Icons DVD->USB und USB->USB sind nicht allgemein genug
