@@ -195,12 +195,13 @@ public class DLCopy extends JFrame
             = Pattern.compile("(.*)\\..*%.*");
     // xorriso output looks like this:
     // xorriso : UPDATE : Writing:    234234s  31.5%   fifo 23% buf 50% 12.7xD
-    // (the first 31.5% is the progress value we are looking for
+    //
+    // The first 31.5% is the progress value we are looking for. We are only
+    // interested in the integer value (31 in the example above).
     private final Pattern xorrisoPattern
-            = Pattern.compile(".* (.*%) .*%.*%.*");
+            = Pattern.compile(".* (.*)\\..*% .*%.*%.*");
     private DBusConnection dbusSystemConnection;
     private UdisksMonitorThread udisksMonitorThread;
-    private DefaultListModel separateFileSystemsListModel;
     private DefaultListModel upgradeOverwriteListModel;
     private JFileChooser addFileChooser;
     private RdiffBackupRestore rdiffBackupRestore;
@@ -469,10 +470,6 @@ public class DLCopy extends JFrame
         // monitor udisks changes
         udisksMonitorThread = new UdisksMonitorThread();
         udisksMonitorThread.start();
-
-        separateFileSystemsListModel = new DefaultListModel();
-        separateFileSystemsListModel.addElement("/usr/share");
-        separateFileSystemsList.setModel(separateFileSystemsListModel);
 
         upgradeOverwriteListModel = new DefaultListModel();
         upgradeOverwriteListModel.addListDataListener(this);
@@ -910,12 +907,6 @@ public class DLCopy extends JFrame
         isoLabelLabel = new javax.swing.JLabel();
         isoLabelTextField = new javax.swing.JTextField();
         autoStartCheckBox = new javax.swing.JCheckBox();
-        separateFileSystemsPanel = new javax.swing.JPanel();
-        separateFileSystemsScrollpane = new javax.swing.JScrollPane();
-        separateFileSystemsList = new javax.swing.JList();
-        separateFileSystemsAddButton = new javax.swing.JButton();
-        separateFileSystemsEditButton = new javax.swing.JButton();
-        separateFileSystemsRemoveButton = new javax.swing.JButton();
         toISOProgressPanel = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         toISOProgressBar = new javax.swing.JProgressBar();
@@ -2200,74 +2191,6 @@ public class DLCopy extends JFrame
 
         autoStartCheckBox.setText(bundle.getString("DLCopy.autoStartCheckBox.text")); // NOI18N
 
-        separateFileSystemsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopy.separateFileSystemsPanel.border.title"))); // NOI18N
-
-        separateFileSystemsList.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                separateFileSystemsListMouseClicked(evt);
-            }
-        });
-        separateFileSystemsList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                separateFileSystemsListValueChanged(evt);
-            }
-        });
-        separateFileSystemsScrollpane.setViewportView(separateFileSystemsList);
-
-        separateFileSystemsAddButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/list-add.png"))); // NOI18N
-        separateFileSystemsAddButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        separateFileSystemsAddButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                separateFileSystemsAddButtonActionPerformed(evt);
-            }
-        });
-
-        separateFileSystemsEditButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/document-edit.png"))); // NOI18N
-        separateFileSystemsEditButton.setEnabled(false);
-        separateFileSystemsEditButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        separateFileSystemsEditButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                separateFileSystemsEditButtonActionPerformed(evt);
-            }
-        });
-
-        separateFileSystemsRemoveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/list-remove.png"))); // NOI18N
-        separateFileSystemsRemoveButton.setEnabled(false);
-        separateFileSystemsRemoveButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        separateFileSystemsRemoveButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                separateFileSystemsRemoveButtonActionPerformed(evt);
-            }
-        });
-
-        javax.swing.GroupLayout separateFileSystemsPanelLayout = new javax.swing.GroupLayout(separateFileSystemsPanel);
-        separateFileSystemsPanel.setLayout(separateFileSystemsPanelLayout);
-        separateFileSystemsPanelLayout.setHorizontalGroup(
-            separateFileSystemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, separateFileSystemsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(separateFileSystemsScrollpane, javax.swing.GroupLayout.DEFAULT_SIZE, 577, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(separateFileSystemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(separateFileSystemsAddButton)
-                    .addComponent(separateFileSystemsEditButton)
-                    .addComponent(separateFileSystemsRemoveButton))
-                .addContainerGap())
-        );
-        separateFileSystemsPanelLayout.setVerticalGroup(
-            separateFileSystemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(separateFileSystemsPanelLayout.createSequentialGroup()
-                .addGroup(separateFileSystemsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(separateFileSystemsPanelLayout.createSequentialGroup()
-                        .addComponent(separateFileSystemsAddButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(separateFileSystemsEditButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(separateFileSystemsRemoveButton))
-                    .addComponent(separateFileSystemsScrollpane, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-
         javax.swing.GroupLayout toISOSelectionPanelLayout = new javax.swing.GroupLayout(toISOSelectionPanel);
         toISOSelectionPanel.setLayout(toISOSelectionPanelLayout);
         toISOSelectionPanelLayout.setHorizontalGroup(
@@ -2275,7 +2198,6 @@ public class DLCopy extends JFrame
             .addGroup(toISOSelectionPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(separateFileSystemsPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(tmpDriveInfoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 643, Short.MAX_VALUE)
                     .addComponent(autoStartCheckBox)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, toISOSelectionPanelLayout.createSequentialGroup()
@@ -2327,9 +2249,7 @@ public class DLCopy extends JFrame
                     .addComponent(isoLabelLabel))
                 .addGap(18, 18, 18)
                 .addComponent(autoStartCheckBox)
-                .addGap(18, 18, 18)
-                .addComponent(separateFileSystemsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                .addContainerGap(155, Short.MAX_VALUE))
         );
 
         cardPanel.add(toISOSelectionPanel, "toISOSelectionPanel");
@@ -2714,33 +2634,6 @@ public class DLCopy extends JFrame
 private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_upgradeShowHarddisksCheckBoxItemStateChanged
     new UpgradeStorageDeviceListUpdater().execute();
 }//GEN-LAST:event_upgradeShowHarddisksCheckBoxItemStateChanged
-
-    private void separateFileSystemsAddButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_separateFileSystemsAddButtonActionPerformed
-        addPathToList(JFileChooser.DIRECTORIES_ONLY,
-                separateFileSystemsListModel);
-    }//GEN-LAST:event_separateFileSystemsAddButtonActionPerformed
-
-    private void separateFileSystemsEditButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_separateFileSystemsEditButtonActionPerformed
-        editPathListEntry(separateFileSystemsList,
-                JFileChooser.DIRECTORIES_ONLY);
-    }//GEN-LAST:event_separateFileSystemsEditButtonActionPerformed
-
-    private void separateFileSystemsRemoveButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_separateFileSystemsRemoveButtonActionPerformed
-        removeSelectedListEntries(separateFileSystemsList);
-    }//GEN-LAST:event_separateFileSystemsRemoveButtonActionPerformed
-
-    private void separateFileSystemsListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_separateFileSystemsListValueChanged
-        int[] selectedIndices = separateFileSystemsList.getSelectedIndices();
-        separateFileSystemsEditButton.setEnabled(selectedIndices.length == 1);
-        separateFileSystemsRemoveButton.setEnabled(selectedIndices.length > 0);
-    }//GEN-LAST:event_separateFileSystemsListValueChanged
-
-    private void separateFileSystemsListMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_separateFileSystemsListMouseClicked
-        if (evt.getClickCount() == 2) {
-            editPathListEntry(separateFileSystemsList,
-                    JFileChooser.DIRECTORIES_ONLY);
-        }
-    }//GEN-LAST:event_separateFileSystemsListMouseClicked
 
     private void upgradeOverwriteAddButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeOverwriteAddButtonActionPerformed
         addPathToList(JFileChooser.FILES_AND_DIRECTORIES,
@@ -6348,68 +6241,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 });
                 publish(STRINGS.getString("Compressing_Filesystem"));
                 processExecutor.addPropertyChangeListener(this);
-                List<String> separateFileSystems = getSeparateFileSystems();
-                if (separateFileSystems.isEmpty()) {
-                    // build just one single squash file system
-                    fileSystem = 1;
-                    fileSystems = 1;
-                    processExecutor.executeProcess("mksquashfs", cowPath,
-                            targetDirectory + "/live/filesystem.squashfs");
-
-                } else {
-                    // build several squash file systems
-                    fileSystems = 1 + separateFileSystems.size();
-
-                    // first file system (excludes all separate file systems)
-                    fileSystem = 1;
-                    List<String> commandList = new ArrayList<String>();
-                    commandList.add("mksquashfs");
-                    commandList.add(cowPath);
-                    commandList.add(
-                            targetDirectory + "/live/filesystem1.squashfs");
-                    for (String separateFileSystem : separateFileSystems) {
-                        commandList.add("-e");
-                        commandList.add(separateFileSystem);
-                    }
-                    String[] commandArray = new String[commandList.size()];
-                    commandArray = commandList.toArray(commandArray);
-                    processExecutor.executeProcess(commandArray);
-
-                    // separate file systems (excludes everything but itself)
-                    for (String separateFileSystem : separateFileSystems) {
-                        commandList = new ArrayList<String>();
-                        commandList.add("mksquashfs");
-                        commandList.add(cowPath);
-                        commandList.add(targetDirectory + "/live/filesystem"
-                                + (++fileSystem) + ".squashfs");
-                        commandList.add("-wildcards");
-                        // subdirectories need special handling...
-                        // to only get /usr/share/, mksquashfs must be called
-                        // with -e !(usr) -e usr/!(share)
-                        String[] directories = separateFileSystem.split("/");
-                        for (int i = 0, length = directories.length; i < length; i++) {
-                            commandList.add("-e");
-                            StringBuilder builder = new StringBuilder();
-                            for (int j = 0; j <= i; j++) {
-                                String directory = directories[j];
-                                if (j == i) {
-                                    // exclude directory
-                                    builder.append("!(");
-                                    builder.append(directory);
-                                    builder.append(')');
-                                } else {
-                                    // directory is part of path
-                                    builder.append(directory);
-                                    builder.append('/');
-                                }
-                            }
-                            commandList.add(builder.toString());
-                        }
-                        commandArray = new String[commandList.size()];
-                        commandArray = commandList.toArray(commandArray);
-                        processExecutor.executeProcess(commandArray);
-                    }
-                }
+                processExecutor.executeProcess("mksquashfs", cowPath,
+                        targetDirectory + "/live/filesystem.squashfs");
                 processExecutor.removePropertyChangeListener(this);
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
@@ -6588,9 +6421,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                                 final int progress = (doneInt * 100) / maxInt;
                                 String message = STRINGS.getString(
                                         "Compressing_Filesystem_Progress");
-                                message = MessageFormat.format(message,
-                                        fileSystem, fileSystems,
-                                        progress + "%");
+                                message = MessageFormat.format(
+                                        message, progress + "%");
                                 publish(message);
                                 SwingUtilities.invokeLater(new Runnable() {
                                     @Override
@@ -6610,17 +6442,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         LOGGER.log(Level.WARNING, "unsupported step {0}", step);
                 }
             }
-        }
-
-        private List<String> getSeparateFileSystems() {
-            List<String> separateFileSystems = new ArrayList<String>();
-            for (int i = 0, size = separateFileSystemsListModel.size(); i < size; i++) {
-                String separateFileSystem = (String) separateFileSystemsListModel.get(i);
-                // cut off the leading slash
-                separateFileSystem = separateFileSystem.substring(1);
-                separateFileSystems.add(separateFileSystem.trim());
-            }
-            return separateFileSystems;
         }
     }
 
@@ -7546,12 +7367,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JProgressBar rsyncPogressBar;
     private javax.swing.JLabel rsyncTimeLabel;
     private javax.swing.JLabel selectionLabel;
-    private javax.swing.JButton separateFileSystemsAddButton;
-    private javax.swing.JButton separateFileSystemsEditButton;
-    private javax.swing.JList separateFileSystemsList;
-    private javax.swing.JPanel separateFileSystemsPanel;
-    private javax.swing.JButton separateFileSystemsRemoveButton;
-    private javax.swing.JScrollPane separateFileSystemsScrollpane;
     private javax.swing.JButton sortAscendingButton;
     private javax.swing.JButton sortDescendingButton;
     private javax.swing.JLabel stepsLabel;
