@@ -191,8 +191,9 @@ public class DLCopy extends JFrame
             = Pattern.compile("\\[.* (.*)/(.*) .*");
     // genisoimage output looks like this:
     // 89.33% done, estimate finish Wed Dec  2 17:08:41 2009
-    private final Pattern genisoimagePattern
-            = Pattern.compile("(.*)\\..*%.*");
+    // private final Pattern genisoimagePattern
+    //      = Pattern.compile("(.*)\\..*%.*");
+
     // xorriso output looks like this:
     // xorriso : UPDATE : Writing:    234234s  31.5%   fifo 23% buf 50% 12.7xD
     //
@@ -6242,7 +6243,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 publish(STRINGS.getString("Compressing_Filesystem"));
                 processExecutor.addPropertyChangeListener(this);
                 processExecutor.executeProcess("mksquashfs", cowPath,
-                        targetDirectory + "/live/filesystem.squashfs");
+                        targetDirectory + "/live/filesystem.squashfs",
+                        "-comp", "xz");
                 processExecutor.removePropertyChangeListener(this);
                 SwingUtilities.invokeLater(new Runnable() {
                     @Override
