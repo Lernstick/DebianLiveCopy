@@ -907,7 +907,9 @@ public class DLCopy extends JFrame
         writableTextField = new javax.swing.JTextField();
         isoLabelLabel = new javax.swing.JLabel();
         isoLabelTextField = new javax.swing.JTextField();
-        autoStartCheckBox = new javax.swing.JCheckBox();
+        isoOptionsPanel = new javax.swing.JPanel();
+        showNotUsedDialogCheckBox = new javax.swing.JCheckBox();
+        autoStartInstallerCheckBox = new javax.swing.JCheckBox();
         toISOProgressPanel = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         toISOProgressBar = new javax.swing.JProgressBar();
@@ -1078,7 +1080,7 @@ public class DLCopy extends JFrame
                 .addComponent(selectionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(executionLabel)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(300, Short.MAX_VALUE))
         );
 
         cardPanel.setLayout(new java.awt.CardLayout());
@@ -1365,7 +1367,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(installSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
+                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(exchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1502,7 +1504,7 @@ public class DLCopy extends JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(1, 1, 1)
-                .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 430, Short.MAX_VALUE))
+                .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE))
         );
 
         cardPanel.add(installPanel, "installPanel");
@@ -1527,12 +1529,12 @@ public class DLCopy extends JFrame
         );
         donePanelLayout.setVerticalGroup(
             donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 474, Short.MAX_VALUE)
+            .addGap(0, 393, Short.MAX_VALUE)
             .addGroup(donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(donePanelLayout.createSequentialGroup()
                     .addGap(83, 83, 83)
                     .addComponent(doneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(225, Short.MAX_VALUE)))
+                    .addContainerGap(144, Short.MAX_VALUE)))
         );
 
         cardPanel.add(donePanel, "donePanel");
@@ -1606,7 +1608,7 @@ public class DLCopy extends JFrame
                 .addGroup(upgradeSelectionDeviceListPanelLayout.createSequentialGroup()
                     .addContainerGap()
                     .addGroup(upgradeSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 638, Short.MAX_VALUE)
+                        .addComponent(upgradeStorageDeviceListScrollPane)
                         .addComponent(upgradeOsDefinitionLabel)
                         .addComponent(upgradeDataDefinitionLabel)
                         .addComponent(upgradeExchangeDefinitionLabel)
@@ -1615,13 +1617,13 @@ public class DLCopy extends JFrame
         );
         upgradeSelectionDeviceListPanelLayout.setVerticalGroup(
             upgradeSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 402, Short.MAX_VALUE)
+            .addGap(0, 321, Short.MAX_VALUE)
             .addGroup(upgradeSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(upgradeSelectionDeviceListPanelLayout.createSequentialGroup()
                     .addContainerGap()
                     .addComponent(upgradeSelectionCountLabel)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 291, Short.MAX_VALUE)
+                    .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                     .addComponent(upgradeExchangeDefinitionLabel)
                     .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1816,7 +1818,7 @@ public class DLCopy extends JFrame
                         .addComponent(upgradeOverwriteExportButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(upgradeOverwriteImportButton))
-                    .addComponent(upgradeOverwriteScrollPane, 0, 186, Short.MAX_VALUE)
+                    .addComponent(upgradeOverwriteScrollPane, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
                         .addComponent(upgradeMoveUpButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2076,7 +2078,7 @@ public class DLCopy extends JFrame
             .addGroup(repairSelectionDeviceListPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(repairSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 643, Short.MAX_VALUE)
+                    .addComponent(repairStorageDeviceListScrollPane)
                     .addComponent(repairSelectionCountLabel)
                     .addComponent(repairDataDefinitionLabel)
                     .addComponent(repairExchangeDefinitionLabel)
@@ -2096,7 +2098,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(repairSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 238, Short.MAX_VALUE)
+                .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(repairExchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2190,7 +2192,31 @@ public class DLCopy extends JFrame
 
         isoLabelLabel.setText(bundle.getString("DLCopy.isoLabelLabel.text")); // NOI18N
 
-        autoStartCheckBox.setText(bundle.getString("DLCopy.autoStartCheckBox.text")); // NOI18N
+        isoOptionsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopy.isoOptionsPanel.border.title"))); // NOI18N
+
+        showNotUsedDialogCheckBox.setText(bundle.getString("DLCopy.showNotUsedDialogCheckBox.text")); // NOI18N
+
+        autoStartInstallerCheckBox.setText(bundle.getString("DLCopy.autoStartInstallerCheckBox.text")); // NOI18N
+
+        javax.swing.GroupLayout isoOptionsPanelLayout = new javax.swing.GroupLayout(isoOptionsPanel);
+        isoOptionsPanel.setLayout(isoOptionsPanelLayout);
+        isoOptionsPanelLayout.setHorizontalGroup(
+            isoOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(isoOptionsPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(isoOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(showNotUsedDialogCheckBox)
+                    .addComponent(autoStartInstallerCheckBox))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        isoOptionsPanelLayout.setVerticalGroup(
+            isoOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(isoOptionsPanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(showNotUsedDialogCheckBox)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(autoStartInstallerCheckBox))
+        );
 
         javax.swing.GroupLayout toISOSelectionPanelLayout = new javax.swing.GroupLayout(toISOSelectionPanel);
         toISOSelectionPanel.setLayout(toISOSelectionPanelLayout);
@@ -2199,8 +2225,8 @@ public class DLCopy extends JFrame
             .addGroup(toISOSelectionPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(isoOptionsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(tmpDriveInfoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 643, Short.MAX_VALUE)
-                    .addComponent(autoStartCheckBox)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, toISOSelectionPanelLayout.createSequentialGroup()
                         .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, toISOSelectionPanelLayout.createSequentialGroup()
@@ -2249,8 +2275,8 @@ public class DLCopy extends JFrame
                     .addComponent(isoLabelTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(isoLabelLabel))
                 .addGap(18, 18, 18)
-                .addComponent(autoStartCheckBox)
-                .addContainerGap(155, Short.MAX_VALUE))
+                .addComponent(isoOptionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(22, Short.MAX_VALUE))
         );
 
         cardPanel.add(toISOSelectionPanel, "toISOSelectionPanel");
@@ -2295,12 +2321,12 @@ public class DLCopy extends JFrame
         );
         toISODonePanelLayout.setVerticalGroup(
             toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 474, Short.MAX_VALUE)
+            .addGap(0, 393, Short.MAX_VALUE)
             .addGroup(toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(toISODonePanelLayout.createSequentialGroup()
                     .addGap(83, 83, 83)
                     .addComponent(isoDoneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(195, Short.MAX_VALUE)))
+                    .addContainerGap(114, Short.MAX_VALUE)))
         );
 
         cardPanel.add(toISODonePanel, "toISODonePanel");
@@ -6196,17 +6222,18 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 String dataPartitionPath = bootDataPartition.mount();
 
                 // union base image with persistence
-                File cowDir = new File(tmpDir, "cow");
-                cowDir.mkdirs();
-                String cowPath = cowDir.getPath();
+                // rwDir and cowDir are placed in /run/ because it is one of
+                // the few directories that are not aufs itself
+                // nested aufs is not (yet) supported...
+                File rwDir = FileTools.createTempDirectory("/run/", "rw");
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append("br=");
+                stringBuilder.append(rwDir.getPath());
+                stringBuilder.append(':');
                 stringBuilder.append(dataPartitionPath);
-                stringBuilder.append("=ro");
                 for (String readOnlyMountPoint : readOnlyMountPoints) {
                     stringBuilder.append(':');
                     stringBuilder.append(readOnlyMountPoint);
-                    stringBuilder.append("=ro");
                 }
                 String branchDefinition = stringBuilder.toString();
 
@@ -6217,19 +6244,35 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 File xinoTmpFile = File.createTempFile(
                         ".aufs.xino", "", new File("/run/"));
                 xinoTmpFile.delete();
+                File cowDir = FileTools.createTempDirectory("/run/", "cow");
+                String cowPath = cowDir.getPath();
                 processExecutor.executeProcess("mount", "-t", "aufs",
-                        "-o", "ro", "-o", "xino=" + xinoTmpFile.getPath(),
+                        "-o", "xino=" + xinoTmpFile.getPath(),
                         "-o", branchDefinition, "none", cowPath);
 
-                // move lernstick autostart script temporarily away
-                String lernstickAutostart = cowDir
-                        + "/etc/xdg/autostart/lernstick-autostart.desktop";
-                File lernstickAutostartFile = new File(lernstickAutostart);
-                boolean moveAutostart = !autoStartCheckBox.isSelected();
-                String tmpFile = "/tmp/lernstick-autostart.desktop";
-                if (moveAutostart && lernstickAutostartFile.exists()) {
-                    processExecutor.executeProcess(
-                            "mv", lernstickAutostart, tmpFile);
+                // apply settings (temporarily) in cow directory
+                Properties lernstickWelcomeProperties = new Properties();
+                File propertiesFile = new File(cowDir, "/etc/lernstickWelcome");
+                try {
+                    FileReader reader = new FileReader(propertiesFile);
+                    lernstickWelcomeProperties.load(reader);
+                    reader.close();
+                } catch (IOException iOException) {
+                    LOGGER.log(Level.WARNING, "", iOException);
+                }
+                lernstickWelcomeProperties.setProperty("ShowNotUsedInfo",
+                        showNotUsedDialogCheckBox.isSelected()
+                        ? "true" : "false");
+                lernstickWelcomeProperties.setProperty("AutoStartInstaller",
+                        autoStartInstallerCheckBox.isSelected()
+                        ? "true" : "false");
+                try {
+                    FileWriter writer = new FileWriter(propertiesFile);
+                    lernstickWelcomeProperties.store(
+                            writer, "lernstick Welcome properties");
+                    writer.close();
+                } catch (IOException iOException) {
+                    LOGGER.log(Level.WARNING, "", iOException);
                 }
 
                 // create new squashfs image
@@ -6252,12 +6295,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         toISOProgressBar.setIndeterminate(true);
                     }
                 });
-
-                // bring back lernstick autostart script
-                if (moveAutostart && lernstickAutostartFile.exists()) {
-                    processExecutor.executeProcess(
-                            "mv", tmpFile, lernstickAutostart);
-                }
 
                 // umount all partitions
                 umount(cowPath);
@@ -7261,7 +7298,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JTextField autoNumberPatternTextField;
     private javax.swing.JLabel autoNumberStartLabel;
     private javax.swing.JSpinner autoNumberStartSpinner;
-    private javax.swing.JCheckBox autoStartCheckBox;
+    private javax.swing.JCheckBox autoStartInstallerCheckBox;
     private javax.swing.JButton automaticBackupButton;
     private javax.swing.JCheckBox automaticBackupCheckBox;
     private javax.swing.JLabel automaticBackupLabel;
@@ -7330,6 +7367,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel isoDoneLabel;
     private javax.swing.JLabel isoLabelLabel;
     private javax.swing.JTextField isoLabelTextField;
+    private javax.swing.JPanel isoOptionsPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -7369,6 +7407,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JProgressBar rsyncPogressBar;
     private javax.swing.JLabel rsyncTimeLabel;
     private javax.swing.JLabel selectionLabel;
+    private javax.swing.JCheckBox showNotUsedDialogCheckBox;
     private javax.swing.JButton sortAscendingButton;
     private javax.swing.JButton sortDescendingButton;
     private javax.swing.JLabel stepsLabel;
