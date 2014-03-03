@@ -1,8 +1,8 @@
-dlcopy (201403031516-1) unstable; urgency=low
+dlcopy (201403031541-1) unstable; urgency=low
 
   * configurable testmode dialog and dlcopy autostart in iso creation module
 
- -- Ronny Standtke <ronny.standtke@fhnw.ch>  Mon, 03 Mar 2014 15:16:08 +0100
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Mon, 03 Mar 2014 15:41:08 +0100
 
 dlcopy (201403011118-1) unstable; urgency=low
 

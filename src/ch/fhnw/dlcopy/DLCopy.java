@@ -6225,7 +6225,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // rwDir and cowDir are placed in /run/ because it is one of
                 // the few directories that are not aufs itself
                 // nested aufs is not (yet) supported...
-                File rwDir = FileTools.createTempDirectory("/run/", "rw");
+                File runDir = new File("/run/");
+                File rwDir = FileTools.createTempDirectory(runDir, "rw");
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append("br=");
                 stringBuilder.append(rwDir.getPath());
@@ -6244,7 +6245,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 File xinoTmpFile = File.createTempFile(
                         ".aufs.xino", "", new File("/run/"));
                 xinoTmpFile.delete();
-                File cowDir = FileTools.createTempDirectory("/run/", "cow");
+                File cowDir = FileTools.createTempDirectory(runDir, "cow");
                 String cowPath = cowDir.getPath();
                 processExecutor.executeProcess("mount", "-t", "aufs",
                         "-o", "xino=" + xinoTmpFile.getPath(),
