@@ -5,6 +5,9 @@
  */
 package ch.fhnw.dlcopy;
 
+import ch.fhnw.util.FileTools;
+import ch.fhnw.util.Partition;
+import ch.fhnw.util.StorageDevice;
 import java.awt.*;
 import java.util.List;
 import java.util.logging.Level;
@@ -21,29 +24,29 @@ import org.freedesktop.dbus.exceptions.DBusExecutionException;
 public class RepairStorageDeviceRenderer
         extends JPanel implements ListCellRenderer {
 
-    private final static Logger LOGGER =
-            Logger.getLogger(DLCopy.class.getName());
+    private final static Logger LOGGER
+            = Logger.getLogger(DLCopy.class.getName());
     private final static Icon blueBox = new ImageIcon(
             RepairStorageDeviceRenderer.class.getResource(
-            "/ch/fhnw/dlcopy/icons/blue_box.png"));
+                    "/ch/fhnw/dlcopy/icons/blue_box.png"));
     private final static Icon greenBox = new ImageIcon(
             RepairStorageDeviceRenderer.class.getResource(
-            "/ch/fhnw/dlcopy/icons/green_box.png"));
+                    "/ch/fhnw/dlcopy/icons/green_box.png"));
     private final static Icon yellowBox = new ImageIcon(
             RepairStorageDeviceRenderer.class.getResource(
-            "/ch/fhnw/dlcopy/icons/yellow_box.png"));
+                    "/ch/fhnw/dlcopy/icons/yellow_box.png"));
     private final static Icon grayBox = new ImageIcon(
             RepairStorageDeviceRenderer.class.getResource(
-            "/ch/fhnw/dlcopy/icons/gray_box.png"));
+                    "/ch/fhnw/dlcopy/icons/gray_box.png"));
     private final static Icon darkGrayBox = new ImageIcon(
             RepairStorageDeviceRenderer.class.getResource(
-            "/ch/fhnw/dlcopy/icons/dark_gray_box.png"));
+                    "/ch/fhnw/dlcopy/icons/dark_gray_box.png"));
     private final static Icon okIcon = new ImageIcon(
             RepairStorageDeviceRenderer.class.getResource(
-            "/ch/fhnw/dlcopy/icons/16x16/dialog-ok-apply.png"));
+                    "/ch/fhnw/dlcopy/icons/16x16/dialog-ok-apply.png"));
     private final static Icon cancelIcon = new ImageIcon(
             RepairStorageDeviceRenderer.class.getResource(
-            "/ch/fhnw/dlcopy/icons/16x16/dialog-cancel.png"));
+                    "/ch/fhnw/dlcopy/icons/16x16/dialog-cancel.png"));
     private final Color LIGHT_BLUE = new Color(170, 170, 255);
     private long maxStorageDeviceSize;
     private StorageDevice storageDevice;
@@ -116,7 +119,7 @@ public class RepairStorageDeviceRenderer
                 stringBuilder.append("<html><b>&#47;dev&#47;");
                 stringBuilder.append(partition.getDeviceAndNumber());
                 stringBuilder.append("</b> (");
-                stringBuilder.append(DLCopy.getDataVolumeString(
+                stringBuilder.append(FileTools.getDataVolumeString(
                         partition.getSize(), 1));
                 stringBuilder.append(")<br>");
                 if (extended) {
@@ -139,7 +142,7 @@ public class RepairStorageDeviceRenderer
                             stringBuilder.append(DLCopy.STRINGS.getString("Unknown"));
                         } else {
                             stringBuilder.append(
-                                    DLCopy.getDataVolumeString(usedSpace, 1));
+                                    FileTools.getDataVolumeString(usedSpace, 1));
                         }
                     } catch (DBusExecutionException ex) {
                         LOGGER.log(Level.SEVERE, "", ex);
@@ -148,8 +151,8 @@ public class RepairStorageDeviceRenderer
                 stringBuilder.append("</html>");
                 label.setText(stringBuilder.toString());
 
-                GridBagConstraints gridBagConstraints =
-                        new GridBagConstraints();
+                GridBagConstraints gridBagConstraints
+                        = new GridBagConstraints();
                 gridBagConstraints.anchor = GridBagConstraints.WEST;
                 if (i == (size - 1)) {
                     // last element
@@ -232,8 +235,8 @@ public class RepairStorageDeviceRenderer
             // determine width
             long partitionSize = partition.getSize();
             LOGGER.log(Level.INFO, "partitionSize = {0}", partitionSize);
-            int partitionWidth =
-                    (int) ((width * partitionSize) / maxStorageDeviceSize);
+            int partitionWidth
+                    = (int) ((width * partitionSize) / maxStorageDeviceSize);
             LOGGER.log(Level.INFO, "partitionWidth = {0}", partitionWidth);
 
             // determine color
@@ -405,7 +408,7 @@ public class RepairStorageDeviceRenderer
         stringBuilder.append(DLCopy.STRINGS.getString("Size"));
         stringBuilder.append(": ");
         stringBuilder.append(
-                DLCopy.getDataVolumeString(storageDevice.getSize(), 1));
+                FileTools.getDataVolumeString(storageDevice.getSize(), 1));
         stringBuilder.append(", ");
         stringBuilder.append(DLCopy.STRINGS.getString("Revision"));
         stringBuilder.append(": ");

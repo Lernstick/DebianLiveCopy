@@ -6,6 +6,8 @@
 package ch.fhnw.dlcopy;
 
 import ch.fhnw.dlcopy.DLCopy.PartitionState;
+import ch.fhnw.util.FileTools;
+import ch.fhnw.util.StorageDevice;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
 import java.text.MessageFormat;
@@ -81,13 +83,13 @@ public class InstallStorageDeviceRenderer
         switch (deviceType) {
             case SDMemoryCard:
                 deviceText = storageDevice.getModel() + " "
-                        + DLCopy.getDataVolumeString(storageSize, 1) + " ("
+                        + FileTools.getDataVolumeString(storageSize, 1) + " ("
                         + "/dev/" + storageDevice.getDevice() + ")";
                 break;
             default:
                 deviceText = storageDevice.getVendor() + " "
                         + storageDevice.getModel() + ", "
-                        + DLCopy.getDataVolumeString(storageSize, 1) + " ("
+                        + FileTools.getDataVolumeString(storageSize, 1) + " ("
                         + "/dev/" + storageDevice.getDevice() + ")";
         }
 
@@ -162,7 +164,7 @@ public class InstallStorageDeviceRenderer
             case ONLY_SYSTEM:
                 // paint OS text
                 String usbStorageSizeText =
-                        DLCopy.getDataVolumeString(storageSize, 1) + " ";
+                        FileTools.getDataVolumeString(storageSize, 1) + " ";
                 String text = usbStorageSizeText
                         + DLCopy.STRINGS.getString("Operating_System");
                 String shortText = usbStorageSizeText
@@ -177,10 +179,10 @@ public class InstallStorageDeviceRenderer
                         (int) ((usbStorageWidth * overhead) / storageSize);
                 int systemWidth = usbStorageWidth - persistentWidth;
                 // texts
-                String persistentText = DLCopy.getDataVolumeString(
+                String persistentText = FileTools.getDataVolumeString(
                         overhead, 1) + " " + DLCopy.STRINGS.getString("Data");
                 String systemSizeString =
-                        DLCopy.getDataVolumeString(systemSize, 1) + " ";
+                        FileTools.getDataVolumeString(systemSize, 1) + " ";
                 String systemText = systemSizeString
                         + DLCopy.STRINGS.getString("Operating_System");
                 String systemTextShort = systemSizeString
@@ -227,15 +229,15 @@ public class InstallStorageDeviceRenderer
 
                 // texts
                 String exchangeTextShort =
-                        DLCopy.getDataVolumeString(exchangeSize, 1);
+                        FileTools.getDataVolumeString(exchangeSize, 1);
                 String exchangeText = exchangeTextShort + " "
                         + DLCopy.STRINGS.getString("Exchange");
                 String persistentTextShort =
-                        DLCopy.getDataVolumeString(persistentSize, 1);
+                        FileTools.getDataVolumeString(persistentSize, 1);
                 persistentText = persistentTextShort + " "
                         + DLCopy.STRINGS.getString("Data");
                 systemSizeString =
-                        DLCopy.getDataVolumeString(systemSize, 1) + " ";
+                        FileTools.getDataVolumeString(systemSize, 1) + " ";
                 systemText = systemSizeString
                         + DLCopy.STRINGS.getString("Operating_System");
                 systemTextShort = systemSizeString

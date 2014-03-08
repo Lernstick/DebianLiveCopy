@@ -11,9 +11,13 @@ import ch.fhnw.filecopier.Source;
 import ch.fhnw.jbackpack.JSqueezedLabel;
 import ch.fhnw.jbackpack.RdiffBackupRestore;
 import ch.fhnw.jbackpack.chooser.SelectBackupDirectoryDialog;
+import ch.fhnw.util.MountInfo;
 import ch.fhnw.util.FileTools;
 import ch.fhnw.util.ModalDialogHandler;
+import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
+import ch.fhnw.util.StorageDevice;
+import ch.fhnw.util.StorageTools;
 import java.applet.Applet;
 import java.applet.AudioClip;
 import java.awt.*;
@@ -152,9 +156,6 @@ public class DLCopy extends JFrame
     private final RepairStorageDeviceRenderer repairStorageDeviceRenderer;
     private long systemSize = -1;
     private long systemSizeEnlarged = -1;
-    // some things to change when debugging...
-    // SIZE_FACTOR is >1 so that we leave some space for updates, etc...
-    private final float SIZE_FACTOR = 1.1f;
     private final String DEBIAN_6_LIVE_SYSTEM_PATH = "/live/image";
     private final String DEBIAN_7_LIVE_SYSTEM_PATH = "/lib/live/mount/medium";
     private final String DEBIAN_LIVE_SYSTEM_PATH;
@@ -284,16 +285,6 @@ public class DLCopy extends JFrame
                     && (arguments[i + 1].equals("lernstick"))) {
                 debianLiveDistribution = DebianLiveDistribution.lernstick;
             }
-
-            if (arguments[i].equals("--systemsize") && (i != length - 1)) {
-                try {
-                    systemSizeEnlarged = Long.parseLong(arguments[i + 1]);
-                    LOGGER.log(Level.INFO, "systemSize = {0}", systemSizeEnlarged);
-                } catch (NumberFormatException numberFormatException) {
-                    LOGGER.log(Level.SEVERE, "can not parse system size",
-                            numberFormatException);
-                }
-            }
         }
         if (LOGGER.isLoggable(Level.INFO)) {
             if (debianLiveDistribution == DebianLiveDistribution.Default) {
@@ -329,15 +320,6 @@ public class DLCopy extends JFrame
             }
         }
 
-        // determine system size
-        File system = new File(DEBIAN_LIVE_SYSTEM_PATH);
-        if (systemSizeEnlarged == -1) {
-            systemSize = system.getTotalSpace() - system.getFreeSpace();
-            LOGGER.log(Level.FINEST, "systemSpace: {0}", systemSize);
-            systemSizeEnlarged = (long) (systemSize * SIZE_FACTOR);
-            LOGGER.log(Level.FINEST, "systemSize: {0}", systemSizeEnlarged);
-        }
-
         try {
             dbusSystemConnection = DBusConnection.getConnection(
                     DBusConnection.SYSTEM);
@@ -346,20 +328,7 @@ public class DLCopy extends JFrame
         }
 
         try {
-            Partition bootSystemPartition
-                    = Partition.getPartitionFromMountPoint(
-                            DEBIAN_LIVE_SYSTEM_PATH, systemPartitionLabel, systemSize);
-            LOGGER.log(Level.INFO, "boot partition: {0}", bootSystemPartition);
-
-            if (bootSystemPartition == null) {
-                // booted from a device, e.g. isohybrid on a usb flash drive
-                bootStorageDevice
-                        = StorageDevice.getStorageDeviceFromMountPoint(
-                                DEBIAN_LIVE_SYSTEM_PATH, systemPartitionLabel,
-                                systemSize);
-            } else {
-                bootStorageDevice = bootSystemPartition.getStorageDevice();
-            }
+            bootStorageDevice = StorageTools.getSystemStorageDevice();
 
             LOGGER.log(Level.INFO,
                     "boot storage device: {0}", bootStorageDevice);
@@ -404,12 +373,16 @@ public class DLCopy extends JFrame
                 "/ch/fhnw/dlcopy/icons/usbpendrive_unmount.png");
         setIconImage(new ImageIcon(imageURL).getImage());
 
-        String sizeString = getDataVolumeString(systemSizeEnlarged, 1);
+        systemSize = StorageTools.getSystemSize();
+        systemSizeEnlarged = StorageTools.getEnlargedSystemSize();
+
+        String sizeString
+                = FileTools.getDataVolumeString(systemSizeEnlarged, 1);
         String text = STRINGS.getString("Select_Install_Target_Storage_Media");
         text = MessageFormat.format(text, sizeString);
         installSelectionHeaderLabel.setText(text);
 
-        sizeString = getDataVolumeString(systemSize, 1);
+        sizeString = FileTools.getDataVolumeString(systemSize, 1);
         text = STRINGS.getString("Select_Upgrade_Target_Storage_Media");
         text = MessageFormat.format(text, sizeString);
         upgradeSelectionHeaderLabel.setText(text);
@@ -436,7 +409,7 @@ public class DLCopy extends JFrame
             copyPersistenceCheckBox.setEnabled(true);
 
             String checkBoxText = STRINGS.getString("Copy_Data_Partition")
-                    + " (" + getDataVolumeString(
+                    + " (" + FileTools.getDataVolumeString(
                             bootDataPartition.getUsedSpace(false), 1) + ')';
             copyPersistenceCheckBox.setText(checkBoxText);
 
@@ -513,10 +486,10 @@ public class DLCopy extends JFrame
                     = getDataPartitionMode(DEBIAN_LIVE_SYSTEM_PATH);
         } else {
             try {
-                BootMountInfo bootMountInfo = mountBootPartition();
+                MountInfo bootMountInfo = bootBootPartition.mount();
                 sourceDataPartitionMode
                         = getDataPartitionMode(bootMountInfo.getMountPath());
-                if (bootMountInfo.isTempMounted()) {
+                if (!bootMountInfo.alreadyMounted()) {
                     bootBootPartition.umount();
                 }
             } catch (DBusException ex) {
@@ -554,24 +527,6 @@ public class DLCopy extends JFrame
         //pack();
         setSize(950, 550);
         setLocationRelativeTo(null);
-    }
-
-    private BootMountInfo mountBootPartition() throws DBusException {
-        String sourceBootPath;
-        boolean sourceBootTempMounted = false;
-        List<String> mountPaths = bootBootPartition.getMountPaths();
-        if (mountPaths.isEmpty()) {
-            sourceBootPath = bootBootPartition.mount();
-            sourceBootTempMounted = true;
-        } else {
-            sourceBootPath = mountPaths.get(0);
-            if (LOGGER.isLoggable(Level.FINEST)) {
-                LOGGER.log(Level.FINEST, "{0} already mounted at {1}",
-                        new Object[]{bootBootPartition, sourceBootPath}
-                );
-            }
-        }
-        return new BootMountInfo(sourceBootPath, sourceBootTempMounted);
     }
 
     private void setSpinnerColums(JSpinner spinner, int columns) {
@@ -703,33 +658,6 @@ public class DLCopy extends JFrame
                 new DLCopy(args).setVisible(true);
             }
         });
-    }
-
-    /**
-     * returns the string representation of a given data volume
-     *
-     * @param bytes the datavolume given in Byte
-     * @param fractionDigits the number of fraction digits to display
-     * @return the string representation of a given data volume
-     */
-    public static String getDataVolumeString(long bytes, int fractionDigits) {
-        if (bytes >= 1024) {
-            numberFormat.setMaximumFractionDigits(fractionDigits);
-            float kbytes = (float) bytes / 1024;
-            if (kbytes >= 1024) {
-                float mbytes = (float) bytes / 1048576;
-                if (mbytes >= 1024) {
-                    float gbytes = (float) bytes / 1073741824;
-                    return numberFormat.format(gbytes) + " GiB";
-                }
-
-                return numberFormat.format(mbytes) + " MiB";
-            }
-
-            return numberFormat.format(kbytes) + " KiB";
-        }
-
-        return numberFormat.format(bytes) + " Byte";
     }
 
     /**
@@ -1273,7 +1201,7 @@ public class DLCopy extends JFrame
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         exchangePartitionFileSystemPanel.add(exchangePartitionFileSystemLabel, gridBagConstraints);
 
-        exchangePartitionFileSystemComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "exFAT", "FAT32", "NTFS" }));
+        exchangePartitionFileSystemComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "FAT32", "exFAT", "NTFS" }));
         exchangePartitionFileSystemComboBox.setToolTipText(bundle.getString("DLCopy.exchangePartitionFileSystemComboBox.toolTipText")); // NOI18N
         exchangePartitionFileSystemComboBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1367,7 +1295,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(installSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
+                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(exchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2276,7 +2204,7 @@ public class DLCopy extends JFrame
                     .addComponent(isoLabelLabel))
                 .addGap(18, 18, 18)
                 .addComponent(isoOptionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(22, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         cardPanel.add(toISOSelectionPanel, "toISOSelectionPanel");
@@ -3389,9 +3317,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         // update copyExchangeCheckBox
         if (bootExchangePartition != null) {
             long exchangeSize = bootExchangePartition.getUsedSpace(false);
+            String dataVolumeString
+                    = FileTools.getDataVolumeString(exchangeSize, 1);
             copyExchangeCheckBox.setText(
                     STRINGS.getString("DLCopy.copyExchangeCheckBox.text")
-                    + " (" + getDataVolumeString(exchangeSize, 1) + ')');
+                    + " (" + dataVolumeString + ')');
         }
 
         previousButton.setEnabled(true);
@@ -3421,8 +3351,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                                 selectedIndices[i]);
                 long overhead = device.getSize() - systemSizeEnlarged;
                 minOverhead = Math.min(minOverhead, overhead);
-                PartitionState partitionState
-                        = getPartitionState(device.getSize(), systemSizeEnlarged);
+                PartitionState partitionState = getPartitionState(
+                        device.getSize(), systemSizeEnlarged);
                 if (partitionState != PartitionState.EXCHANGE) {
                     exchange = false;
                     break; // for
@@ -3800,8 +3730,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // deactivating the swap file is dangerous
             // show a warning dialog and let the user decide
             String warningMessage = STRINGS.getString("Warning_Swapoff_File");
-            warningMessage = MessageFormat.format(warningMessage,
-                    swapFile, device, getDataVolumeString(remainingFreeMem, 0));
+            warningMessage = MessageFormat.format(warningMessage, swapFile,
+                    device, FileTools.getDataVolumeString(remainingFreeMem, 0));
             int selection = JOptionPane.showConfirmDialog(this,
                     warningMessage, STRINGS.getString("Warning"),
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
@@ -3834,8 +3764,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // show a warning dialog and let the user decide
             String warningMessage
                     = STRINGS.getString("Warning_Swapoff_Partition");
-            warningMessage = MessageFormat.format(warningMessage,
-                    swapFile, device, getDataVolumeString(remainingFreeMem, 0));
+            warningMessage = MessageFormat.format(warningMessage, swapFile,
+                    device, FileTools.getDataVolumeString(remainingFreeMem, 0));
             int selection = JOptionPane.showConfirmDialog(this,
                     warningMessage, STRINGS.getString("Warning"),
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
@@ -4054,17 +3984,17 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }
 
     private boolean makeBootable(String device,
-            Partition destinationSystemPartition)
+            Partition destinationBootPartition)
             throws IOException, DBusException {
 
-        String systemDevice = "/dev/"
-                + destinationSystemPartition.getDeviceAndNumber();
+        String bootDevice
+                = "/dev/" + destinationBootPartition.getDeviceAndNumber();
         int exitValue = processExecutor.executeProcess(true, true,
-                "syslinux", "-d", "syslinux", systemDevice);
+                "syslinux", "-d", "syslinux", bootDevice);
         if (exitValue != 0) {
             String errorMessage = STRINGS.getString("Make_Bootable_Failed");
-            errorMessage = MessageFormat.format(errorMessage,
-                    systemDevice, processExecutor.getOutput());
+            errorMessage = MessageFormat.format(
+                    errorMessage, bootDevice, processExecutor.getOutput());
             LOGGER.severe(errorMessage);
             showErrorMessage(errorMessage);
             return false;
@@ -4385,8 +4315,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             String errorMessage
                     = STRINGS.getString("Error_Target_Persistence_Too_Small");
             errorMessage = MessageFormat.format(errorMessage,
-                    getDataVolumeString(persistenceSize, 1),
-                    getDataVolumeString(targetPersistenceSize, 1));
+                    FileTools.getDataVolumeString(persistenceSize, 1),
+                    FileTools.getDataVolumeString(targetPersistenceSize, 1));
             JOptionPane.showMessageDialog(this, errorMessage,
                     STRINGS.getString("Error"), JOptionPane.ERROR_MESSAGE);
             return false;
@@ -4482,7 +4412,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         File tmpDir = new File(tmpDirTextField.getText());
         if (tmpDir.exists()) {
             long freeSpace = tmpDir.getFreeSpace();
-            freeSpaceTextField.setText(getDataVolumeString(freeSpace, 1));
+            freeSpaceTextField.setText(
+                    FileTools.getDataVolumeString(freeSpace, 1));
             if (tmpDir.canWrite()) {
                 writableTextField.setText(STRINGS.getString("Yes"));
                 writableTextField.setForeground(Color.BLACK);
@@ -4544,7 +4475,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         Partition persistencePartition
                 = Partition.getPartitionFromDeviceAndNumber(
                         device.substring(5), systemPartitionLabel, systemSize);
-        String mountPath = persistencePartition.mount();
+        String mountPath = persistencePartition.mount().getMountPath();
         if (mountPath == null) {
             // TODO: error message
             return false;
@@ -4589,16 +4520,18 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             Partition destinationBootPartition,
             Partition destinationSystemPartition) throws DBusException {
 
-        String destinationBootPath = destinationBootPartition.mount();
-        String destinationSystemPath = destinationSystemPartition.mount();
+        String destinationBootPath
+                = destinationBootPartition.mount().getMountPath();
+        String destinationSystemPath
+                = destinationSystemPartition.mount().getMountPath();
         CopyJob bootCopyJob;
         CopyJob systemCopyJob;
         boolean sourceBootTempMounted = false;
         if (bootBootPartition != null) {
             // our source medium already has a separate boot partition
-            BootMountInfo bootMountInfo = mountBootPartition();
+            MountInfo bootMountInfo = bootBootPartition.mount();
             String bootPath = bootMountInfo.getMountPath();
-            sourceBootTempMounted = bootMountInfo.isTempMounted();
+            sourceBootTempMounted = bootMountInfo.alreadyMounted();
             bootCopyJob = new CopyJob(
                     new Source[]{new Source(bootPath, ".*")},
                     new String[]{destinationBootPath});
@@ -4665,7 +4598,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     final String message = MessageFormat.format(pattern,
                             storageDevice.getVendor() + " "
                             + storageDevice.getModel() + " "
-                            + getDataVolumeString(
+                            + FileTools.getDataVolumeString(
                                     storageDevice.getSize(), 1),
                             "/dev/" + storageDevice.getDevice(),
                             currentDevice, selectionCount);
@@ -5385,24 +5318,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             String destinationExchangePath = null;
             CopyJob exchangeCopyJob = null;
             if (copyExchangeCheckBox.isSelected()) {
-                // check that source is mounted
-                String sourceExchangePath;
-                List<String> mountPaths = bootExchangePartition.getMountPaths();
-                if (mountPaths.isEmpty()) {
-                    sourceExchangePath = bootExchangePartition.mount();
-                    sourceExchangeTempMounted = true;
-                } else {
-                    sourceExchangePath = mountPaths.get(0);
-                    if (LOGGER.isLoggable(Level.FINEST)) {
-                        LOGGER.log(Level.FINEST, "{0} already mounted at {1}",
-                                new Object[]{
-                                    bootExchangePartition,
-                                    sourceExchangePath
-                                });
-                    }
-                }
-
-                destinationExchangePath = destinationExchangePartition.mount();
+                MountInfo mountInfo = bootExchangePartition.mount();
+                String sourceExchangePath = mountInfo.getMountPath();
+                sourceExchangeTempMounted = !mountInfo.alreadyMounted();
+                destinationExchangePath
+                        = destinationExchangePartition.mount().getMountPath();
 
                 exchangeCopyJob = new CopyJob(
                         new Source[]{new Source(sourceExchangePath, ".*")},
@@ -5473,23 +5393,25 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             if (copyPersistenceCheckBox.isSelected()) {
 
                 // mount persistence source
-                String persistenceSourcePath = bootDataPartition.mount();
-                if (persistenceSourcePath == null) {
+                MountInfo sourceDataMountInfo = bootDataPartition.mount();
+                String sourceDataPath = sourceDataMountInfo.getMountPath();
+                if (sourceDataPath == null) {
                     // TODO: error message
                     return false;
                 }
 
                 // mount persistence destination
-                String persistenceDestinationPath
+                MountInfo destinationDataMountInfo
                         = destinationDataPartition.mount();
-                if (persistenceDestinationPath == null) {
+                String destinationDataPath
+                        = destinationDataMountInfo.getMountPath();
+                if (destinationDataPath == null) {
                     // TODO: error message
                     return false;
                 }
 
                 // TODO: use filecopier as soon as it supports symlinks etc.
-                if (!copyPersistenceCp(persistenceSourcePath,
-                        persistenceDestinationPath)) {
+                if (!copyPersistenceCp(sourceDataPath, destinationDataPath)) {
                     return false;
                 }
 
@@ -5504,9 +5426,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     }
                 });
 
-                // umount persistence partitions
-                bootDataPartition.umount();
-                destinationDataPartition.umount();
+                // umount both source and destination persistence partitions
+                //  (only if there were not mounted before)
+                if (!sourceDataMountInfo.alreadyMounted()) {
+                    bootDataPartition.umount();
+                }
+                if (!destinationDataMountInfo.alreadyMounted()) {
+                    destinationDataPartition.umount();
+                }
             }
 
             return true;
@@ -5586,7 +5513,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         storageDevice.getVendor() + " "
                         + storageDevice.getModel(),
                         " (" + DLCopy.STRINGS.getString("Size") + ": "
-                        + getDataVolumeString(storageDevice.getSize(), 1) + ", "
+                        + FileTools.getDataVolumeString(storageDevice.getSize(), 1)
+                        + ", "
                         + DLCopy.STRINGS.getString("Revision") + ": "
                         + storageDevice.getRevision() + ", "
                         + DLCopy.STRINGS.getString("Serial") + ": "
@@ -5712,7 +5640,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         storageDevice.getDevice());
                 return true;
             }
-            String dataMountPoint = dataPartition.mount();
+            MountInfo mountInfo = dataPartition.mount();
+            String dataMountPoint = mountInfo.getMountPath();
 
             // backup
             if (automaticBackupCheckBox.isSelected()) {
@@ -5805,7 +5734,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
 
             // umount
-            if (!umount(dataPartition)) {
+            if ((!mountInfo.alreadyMounted()) && (!umount(dataPartition))) {
                 return false;
             }
 
@@ -6154,8 +6083,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         private IsoStep step;
         private String isoPath;
-        private int fileSystem;
-        private int fileSystems;
 
         @Override
         protected Boolean doInBackground() throws Exception {
@@ -6180,14 +6107,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
                 } else {
                     // system with a separate boot partition
-                    BootMountInfo bootMountInfo = mountBootPartition();
+                    MountInfo bootMountInfo = bootBootPartition.mount();
                     String bootPath = bootMountInfo.getMountPath();
                     CopyJob bootCopyJob = new CopyJob(
                             new Source[]{new Source(bootPath, ".*")},
                             new String[]{targetDirectory});
                     FileCopier fileCopier = new FileCopier();
                     fileCopier.copy(bootCopyJob);
-                    if (bootMountInfo.isTempMounted()) {
+                    if (!bootMountInfo.alreadyMounted()) {
                         bootBootPartition.umount();
                     }
                 }
@@ -6219,7 +6146,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 }
 
                 // mount persistence
-                String dataPartitionPath = bootDataPartition.mount();
+                MountInfo dataMountInfo = bootDataPartition.mount();
+                String dataPartitionPath = dataMountInfo.getMountPath();
 
                 // union base image with persistence
                 // rwDir and cowDir are placed in /run/ because it is one of
@@ -6299,7 +6227,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
                 // umount all partitions
                 umount(cowPath);
-                bootDataPartition.umount();
+                if (!dataMountInfo.alreadyMounted()) {
+                    bootDataPartition.umount();
+                }
                 for (String readOnlyMountPoint : readOnlyMountPoints) {
                     umount(readOnlyMountPoint);
                 }
@@ -6517,7 +6447,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         storageDevice.getVendor() + " "
                         + storageDevice.getModel(),
                         " (" + DLCopy.STRINGS.getString("Size") + ": "
-                        + getDataVolumeString(storageDevice.getSize(), 1) + ", "
+                        + FileTools.getDataVolumeString(storageDevice.getSize(), 1)
+                        + ", "
                         + DLCopy.STRINGS.getString("Revision") + ": "
                         + storageDevice.getRevision() + ", "
                         + DLCopy.STRINGS.getString("Serial") + ": "
@@ -6562,7 +6493,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         }
                     });
 
-                    String mountPoint = dataPartition.mount();
+                    MountInfo mountInfo = dataPartition.mount();
+                    String mountPoint = mountInfo.getMountPath();
                     boolean resetHome = homeDirectoryCheckBox.isSelected();
                     if (systemFilesCheckBox.isSelected() && resetHome) {
                         // remove all files
@@ -6598,7 +6530,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         processExecutor.executeProcess("chown", "-R",
                                 "user.user", mountPoint + "/home/user/");
                     }
-                    umount(dataPartition);
+                    if (!mountInfo.alreadyMounted()) {
+                        umount(dataPartition);
+                    }
                 }
 
                 LOGGER.log(Level.INFO, "repairing of storage device finished: "
@@ -6640,7 +6574,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private class SwapInfo {
 
         private String file;
-        private long remainingFreeMemory;
+        private final long remainingFreeMemory;
 
         public SwapInfo(String swapLine) throws IOException {
             long swapSize = 0;
@@ -6711,7 +6645,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         // use local ProcessExecutor because the udisks process is blocking and
         // long-running
-        private ProcessExecutor executor = new ProcessExecutor();
+        private final ProcessExecutor executor = new ProcessExecutor();
 
         @Override
         public void run() {
@@ -7236,11 +7170,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private class CopyJobsInfo {
 
-        private boolean bootTempMount;
-        private String destinationBootPath;
-        private String destinationSystemPath;
-        private CopyJob bootCopyJob;
-        private CopyJob systemCopyJob;
+        private final boolean bootTempMount;
+        private final String destinationBootPath;
+        private final String destinationSystemPath;
+        private final CopyJob bootCopyJob;
+        private final CopyJob systemCopyJob;
 
         public CopyJobsInfo(boolean bootTempMount,
                 String destinationBootPath, String destinationSystemPath,
@@ -7273,24 +7207,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }
 
-    private class BootMountInfo {
 
-        private String mountPath;
-        private boolean tempMount;
-
-        public BootMountInfo(String mountPath, boolean tempMount) {
-            this.mountPath = mountPath;
-            this.tempMount = tempMount;
-        }
-
-        public String getMountPath() {
-            return mountPath;
-        }
-
-        public boolean isTempMounted() {
-            return tempMount;
-        }
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel autoNumberIncrementLabel;
     private javax.swing.JSpinner autoNumberIncrementSpinner;

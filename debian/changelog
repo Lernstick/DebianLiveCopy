@@ -1,3 +1,9 @@
+dlcopy (201403081744-1) unstable; urgency=low
+
+  * code cleanup (separate lernstickTools library for sharing with lernstickWelcome)
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Sat, 08 Mar 2014 17:44:09 +0100
+
 dlcopy (201403031541-1) unstable; urgency=low
 
   * configurable testmode dialog and dlcopy autostart in iso creation module
