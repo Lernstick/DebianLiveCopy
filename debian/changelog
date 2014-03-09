@@ -1,3 +1,9 @@
+dlcopy (201403091935-1) unstable; urgency=low
+
+  * separate version for exam environment (default to FAT32 for exchange partition)
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Sun, 09 Mar 2014 19:35:35 +0100
+
 dlcopy (201403081744-1) unstable; urgency=low
 
   * code cleanup (separate lernstickTools library for sharing with lernstickWelcome)

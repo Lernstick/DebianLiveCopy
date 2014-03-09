@@ -9,7 +9,18 @@
 # Uncomment this to turn on verbose mode.
 #export DH_VERBOSE=1
 
-DESTDIR      = $(CURDIR)/debian/dlcopy
+DESTDIR               = $(CURDIR)/debian/dlcopy
+DESTDIR_PU            = $(CURDIR)/debian/dlcopy-pu
+DESTDIR_COMMON        = $(CURDIR)/debian/dlcopy-common
+
+APPDIR                = $(DESTDIR)/usr/share/applications/
+BINDIR                = $(DESTDIR)/usr/bin/
+
+APPDIR_PU             = $(DESTDIR_PU)/usr/share/applications/
+BINDIR_PU             = $(DESTDIR_PU)/usr/bin/
+
+ICON_DIR              = $(DESTDIR_COMMON)/usr/share/icons/
+BINDIR_COMMON         = $(DESTDIR_COMMON)/usr/bin/
 
 configure: configure-stamp
 configure-stamp:
@@ -37,8 +48,23 @@ install: build
 	dh_clean -k
 	dh_installdirs
 
-	cp -r usr $(DESTDIR)
-	cp dist/DLCopy.jar $(DESTDIR)/usr/bin
+	# standard package (binary and desktop file)
+	mkdir -p $(APPDIR)
+	cp usr/share/applications/dlcopy.desktop $(APPDIR)
+	mkdir -p $(BINDIR)
+	cp usr/bin/dlcopy $(BINDIR)
+
+	# exam environment package  (binary and desktop file)
+	mkdir -p $(APPDIR_PU)
+	cp usr/share/applications/dlcopy_pu.desktop $(APPDIR_PU)
+	mkdir -p $(BINDIR_PU)
+	cp usr/bin/dlcopy_pu $(BINDIR_PU)
+
+	# common package (JAR and icon)
+	mkdir -p $(ICON_DIR)
+	cp usr/share/icons/dlcopy.png $(ICON_DIR)
+	mkdir -p $(BINDIR_COMMON)
+	cp dist/DLCopy.jar $(BINDIR_COMMON)
 
 # Build architecture-independent files here.
 binary-indep: build install

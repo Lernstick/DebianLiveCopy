@@ -42,7 +42,7 @@
         <jar destfile="dist/DLCopy_full.jar" basedir="src" update="true"/>
     </target>
 
-    <target name="1_debian_package">
+    <target name="1_debian_packages">
         <!-- build debian package -->
         <exec executable="dpkg-buildpackage">
             <arg value="-ai386"/>

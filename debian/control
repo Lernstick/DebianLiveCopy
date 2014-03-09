@@ -8,9 +8,33 @@ Homepage: http://www.imedias.ch/lernstick
 
 Package: dlcopy
 Architecture: all
+Depends: dlcopy-common (>= 201403091913)
+Description: an application to copy Debian Live to other storage media
+ This is a small application that copies Debian Live to other storage media like
+ USB flash drives, USB hard drives or SD memory cards. It has hot-plug support
+ for target storage media, allows the specification of an exchange partition and
+ provides a graphical copy progress feedback.
+ This is the version for the standard Lernstick distribution.
+
+Package: dlcopy-pu
+Architecture: all
+Depends: dlcopy-common
+Description: an application to copy Debian Live to other storage media
+ This is a small application that copies Debian Live to other storage media like
+ USB flash drives, USB hard drives or SD memory cards. It has hot-plug support
+ for target storage media, allows the specification of an exchange partition and
+ provides a graphical copy progress feedback.
+ This is the version for the Lernstick exam environment distribution.
+
+Package: dlcopy-common
+Architecture: all
+Replaces: dlcopy (<< 201403091913)
+Breaks: dlcopy (<< 201403091913)
 Depends: java-runtime, squashfs-tools, cpio, xorriso, syslinux, dbus, libdbus-java, libmatthew-debug-java, libunixsocket-java, parted, policykit-1, exfat-utils
 Description: an application to copy Debian Live to other storage media
  This is a small application that copies Debian Live to other storage media like
  USB flash drives, USB hard drives or SD memory cards. It has hot-plug support
  for target storage media, allows the specification of an exchange partition and
  provides a graphical copy progress feedback.
+ This package contains the files common to the standard and exam environment
+ versions.

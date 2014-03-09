@@ -184,7 +184,7 @@ public class DLCopy extends JFrame
 
     private enum DebianLiveDistribution {
 
-        Default, lernstick
+        Default, lernstick, lernstick_pu
     }
     private DebianLiveDistribution debianLiveDistribution;
     private final String systemPartitionLabel;
@@ -285,12 +285,26 @@ public class DLCopy extends JFrame
                     && (arguments[i + 1].equals("lernstick"))) {
                 debianLiveDistribution = DebianLiveDistribution.lernstick;
             }
+            if (arguments[i].equals("--variant")
+                    && (i != length - 1)
+                    && (arguments[i + 1].equals("lernstick-pu"))) {
+                debianLiveDistribution = DebianLiveDistribution.lernstick_pu;
+            }
         }
         if (LOGGER.isLoggable(Level.INFO)) {
-            if (debianLiveDistribution == DebianLiveDistribution.Default) {
-                LOGGER.info("using default variant");
-            } else {
-                LOGGER.info("using lernstick variant");
+            switch (debianLiveDistribution) {
+                case lernstick:
+                    LOGGER.info("using lernstick distribution");
+                    break;
+                case lernstick_pu:
+                    LOGGER.info("using lernstick exam environment distribution");
+                    break;
+                case Default:
+                    LOGGER.info("using Debian Live distribution");
+                    break;
+                default:
+                    LOGGER.log(Level.WARNING, "unsupported distribution: {0}",
+                            debianLiveDistribution);
             }
         }
 
@@ -437,8 +451,32 @@ public class DLCopy extends JFrame
         exchangePartitionDocument.setDocumentFilter(new DocumentSizeFilter());
         exchangePartitionSizeTextField.getDocument().addDocumentListener(this);
 
-        if (debianLiveDistribution == DebianLiveDistribution.lernstick) {
-            isoLabelTextField.setText("lernstick");
+        switch (debianLiveDistribution) {
+            case lernstick:
+                isoLabelTextField.setText("lernstick");
+                // default to exFAT for exchange partition
+                ComboBoxModel model = new DefaultComboBoxModel(
+                        new String[]{"exFAT", "FAT32", "NTFS"});
+                exchangePartitionFileSystemComboBox.setModel(model);
+                exchangePartitionFileSystemComboBox.setSelectedItem("exFAT");
+                exchangePartitionFileSystemComboBox.setToolTipText(
+                        STRINGS.getString("DLCopy."
+                                + "exchangePartitionFileSystemComboBox."
+                                + "toolTipText"));
+                break;
+            case lernstick_pu:
+                isoLabelTextField.setText("lernstick");
+                // default to FAT32 for exchange partition
+                // (rdiff-backup can't cope with destinations on exFAT)
+                model = new DefaultComboBoxModel(
+                        new String[]{"FAT32", "exFAT", "NTFS"});
+                exchangePartitionFileSystemComboBox.setModel(model);
+                exchangePartitionFileSystemComboBox.setSelectedItem("FAT32");
+                exchangePartitionFileSystemComboBox.setToolTipText(
+                        STRINGS.getString("DLCopy."
+                                + "exchangePartitionFileSystemComboBox."
+                                + "toolTipText.pu"));
+                break;
         }
 
         // monitor udisks changes
@@ -465,9 +503,6 @@ public class DLCopy extends JFrame
         String upgradeOverWriteList = preferences.get(
                 UPGRADE_OVERWRITE_LIST, "");
         fillUpgradeOverwriteList(upgradeOverWriteList);
-
-        // default to exFAT for exchange partition
-        exchangePartitionFileSystemComboBox.setSelectedItem("exFAT");
 
         // default to ext4 for data partition
         dataPartitionFilesystemComboBox.setSelectedItem("ext4");
@@ -1201,7 +1236,7 @@ public class DLCopy extends JFrame
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         exchangePartitionFileSystemPanel.add(exchangePartitionFileSystemLabel, gridBagConstraints);
 
-        exchangePartitionFileSystemComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "FAT32", "exFAT", "NTFS" }));
+        exchangePartitionFileSystemComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "exFAT", "FAT32", "NTFS" }));
         exchangePartitionFileSystemComboBox.setToolTipText(bundle.getString("DLCopy.exchangePartitionFileSystemComboBox.toolTipText")); // NOI18N
         exchangePartitionFileSystemComboBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
