@@ -3643,8 +3643,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         String deviceFile = deviceProperties.Get(
                 "org.freedesktop.UDisks", "DeviceFile");
 
-        StorageDevice storageDevice = new StorageDevice(
-                deviceFile.substring(5), systemPartitionLabel, systemSize);
+        StorageDevice storageDevice
+                = new StorageDevice(deviceFile.substring(5), systemSize);
 
         if ((storageDevice.getType() == StorageDevice.Type.HardDrive)
                 && !includeHarddisks) {
@@ -4509,7 +4509,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         // create default persistence configuration file
         Partition persistencePartition
                 = Partition.getPartitionFromDeviceAndNumber(
-                        device.substring(5), systemPartitionLabel, systemSize);
+                        device.substring(5), systemSize);
         String mountPath = persistencePartition.mount().getMountPath();
         if (mountPath == null) {
             // TODO: error message
@@ -4921,24 +4921,20 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             Partition destinationExchangePartition
                     = (destinationExchangeDevice == null) ? null
                     : Partition.getPartitionFromDeviceAndNumber(
-                            destinationExchangeDevice.substring(5),
-                            systemPartitionLabel, systemSize);
+                            destinationExchangeDevice.substring(5), systemSize);
 
             Partition destinationDataPartition
                     = (destinationDataDevice == null) ? null
                     : Partition.getPartitionFromDeviceAndNumber(
-                            destinationDataDevice.substring(5),
-                            systemPartitionLabel, systemSize);
+                            destinationDataDevice.substring(5), systemSize);
 
             Partition destinationBootPartition
                     = Partition.getPartitionFromDeviceAndNumber(
-                            destinationBootDevice.substring(5),
-                            systemPartitionLabel, systemSize);
+                            destinationBootDevice.substring(5), systemSize);
 
             Partition destinationSystemPartition
                     = Partition.getPartitionFromDeviceAndNumber(
-                            destinationSystemDevice.substring(5),
-                            systemPartitionLabel, systemSize);
+                            destinationSystemDevice.substring(5), systemSize);
 
             // copy operating system files
             if (!copyExchangeBootAndSystem(destinationExchangePartition,
@@ -5942,8 +5938,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // safety wait so that new partitions are known to the system
                 // (5000ms were NOT enough!)
                 Thread.sleep(7000);
-                storageDevice = new StorageDevice(
-                        device, systemPartitionLabel, systemSize);
+                storageDevice = new StorageDevice(device, systemSize);
                 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 // ! We can't use storageDevice.getBootPartition() and      !
                 // ! storageDevice.getSystemPartition() here because the    !
@@ -6018,8 +6013,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // safety wait so that new partitions are known to the system
                 // (5000ms were NOT enough!)
                 Thread.sleep(7000);
-                storageDevice = new StorageDevice(
-                        device, systemPartitionLabel, systemSize);
+                storageDevice = new StorageDevice(device, systemSize);
                 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 // ! We can't use storageDevice.getBootPartition() and      !
                 // ! storageDevice.getSystemPartition() here because the    !
