@@ -93,6 +93,10 @@ public class DLCopy extends JFrame
      */
     public final static long MINIMUM_PARTITION_SIZE = 200 * MEGA;
     /**
+     * the size of the boot partition (given in MiB)
+     */
+    public final static long BOOT_PARTITION_SIZE = 100;
+    /**
      * the current Linux distribution
      */
     public static Distribution distribution;
@@ -389,12 +393,22 @@ public class DLCopy extends JFrame
 
         systemSize = StorageTools.getSystemSize();
         systemSizeEnlarged = StorageTools.getEnlargedSystemSize();
-
         String sizeString
                 = FileTools.getDataVolumeString(systemSizeEnlarged, 1);
+
         String text = STRINGS.getString("Select_Install_Target_Storage_Media");
         text = MessageFormat.format(text, sizeString);
         installSelectionHeaderLabel.setText(text);
+
+        text = STRINGS.getString("Boot_Definition");
+        String bootSize = 
+                FileTools.getDataVolumeString(BOOT_PARTITION_SIZE * MEGA, 1);
+        text = MessageFormat.format(text, bootSize);
+        bootDefinitionLabel.setText(text);
+
+        text = STRINGS.getString("System_Definition");
+        text = MessageFormat.format(text, sizeString);
+        systemDefinitionLabel.setText(text);
 
         sizeString = FileTools.getDataVolumeString(systemSize, 1);
         text = STRINGS.getString("Select_Upgrade_Target_Storage_Media");
@@ -731,7 +745,8 @@ public class DLCopy extends JFrame
         installStorageDeviceList = new javax.swing.JList();
         exchangeDefinitionLabel = new javax.swing.JLabel();
         dataDefinitionLabel = new javax.swing.JLabel();
-        osDefinitionLabel = new javax.swing.JLabel();
+        bootDefinitionLabel = new javax.swing.JLabel();
+        systemDefinitionLabel = new javax.swing.JLabel();
         installSelectionCountLabel = new javax.swing.JLabel();
         installListTabbedPane = new javax.swing.JTabbedPane();
         exchangePartitionPanel = new javax.swing.JPanel();
@@ -1097,9 +1112,13 @@ public class DLCopy extends JFrame
         dataDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/green_box.png"))); // NOI18N
         dataDefinitionLabel.setText(bundle.getString("DLCopy.dataDefinitionLabel.text")); // NOI18N
 
-        osDefinitionLabel.setFont(osDefinitionLabel.getFont().deriveFont(osDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, osDefinitionLabel.getFont().getSize()-1));
-        osDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/blue_box.png"))); // NOI18N
-        osDefinitionLabel.setText(bundle.getString("DLCopy.osDefinitionLabel.text")); // NOI18N
+        bootDefinitionLabel.setFont(bootDefinitionLabel.getFont().deriveFont(bootDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, bootDefinitionLabel.getFont().getSize()-1));
+        bootDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/dark_blue_box.png"))); // NOI18N
+        bootDefinitionLabel.setText(bundle.getString("Boot_Definition")); // NOI18N
+
+        systemDefinitionLabel.setFont(systemDefinitionLabel.getFont().deriveFont(systemDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, systemDefinitionLabel.getFont().getSize()-1));
+        systemDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/blue_box.png"))); // NOI18N
+        systemDefinitionLabel.setText(bundle.getString("System_Definition")); // NOI18N
 
         installSelectionCountLabel.setText(bundle.getString("Selection_Count")); // NOI18N
 
@@ -1320,7 +1339,10 @@ public class DLCopy extends JFrame
                         .addGroup(installListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(dataDefinitionLabel)
                             .addComponent(exchangeDefinitionLabel)
-                            .addComponent(osDefinitionLabel))
+                            .addGroup(installListPanelLayout.createSequentialGroup()
+                                .addComponent(bootDefinitionLabel)
+                                .addGap(18, 18, 18)
+                                .addComponent(systemDefinitionLabel)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, 214, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addContainerGap())
         );
@@ -1330,13 +1352,15 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(installSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 86, Short.MAX_VALUE)
+                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(exchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(dataDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(osDefinitionLabel)
+                .addGroup(installListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(systemDefinitionLabel)
+                    .addComponent(bootDefinitionLabel))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(installListTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addContainerGap())
@@ -5033,7 +5057,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             switch (partitionState) {
                 case ONLY_SYSTEM:
                     // create two partitions: boot, system
-                    String bootBorder = "100MiB";
+                    String bootBorder = BOOT_PARTITION_SIZE + "MiB";
                     mkpart(partedCommandList, "0%", bootBorder);
                     mkpart(partedCommandList, bootBorder, "100%");
                     setFlag(partedCommandList, "1", "boot", "on");
@@ -5043,7 +5067,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 case PERSISTENCE:
                     // create three partitions: persistence, boot, system
                     String persistenceBorder = persistenceMB + "MiB";
-                    bootBorder = (persistenceMB + 100) + "MiB";
+                    bootBorder = (persistenceMB + BOOT_PARTITION_SIZE) + "MiB";
                     mkpart(partedCommandList, "0%", persistenceBorder);
                     mkpart(partedCommandList, persistenceBorder, bootBorder);
                     mkpart(partedCommandList, bootBorder, "100%");
@@ -5055,7 +5079,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     if (exchangeMB == 0) {
                         // create three partitions: persistence, boot, system
                         persistenceBorder = persistenceMB + "MiB";
-                        bootBorder = (persistenceMB + 100) + "MiB";
+                        bootBorder = (persistenceMB + BOOT_PARTITION_SIZE) + "MiB";
                         mkpart(partedCommandList, "0%", persistenceBorder);
                         mkpart(partedCommandList, persistenceBorder, bootBorder);
                         mkpart(partedCommandList, bootBorder, "100%");
@@ -5066,7 +5090,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         String exchangeBorder = exchangeMB + "MiB";
                         if (persistenceMB == 0) {
                             // create three partitions: exchange, boot, system
-                            bootBorder = (exchangeMB + 100) + "MiB";
+                            bootBorder = (exchangeMB + BOOT_PARTITION_SIZE) + "MiB";
                             mkpart(partedCommandList, "0%", exchangeBorder);
                             mkpart(partedCommandList, exchangeBorder, bootBorder);
                             mkpart(partedCommandList, bootBorder, "100%");
@@ -5077,7 +5101,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             // create four partitions:
                             //   exchange, persistence, boot, system
                             persistenceBorder = (exchangeMB + persistenceMB) + "MiB";
-                            bootBorder = (exchangeMB + persistenceMB + 100) + "MiB";
+                            bootBorder = (exchangeMB + persistenceMB + BOOT_PARTITION_SIZE) + "MiB";
                             mkpart(partedCommandList, "0%", exchangeBorder);
                             mkpart(partedCommandList, exchangeBorder, persistenceBorder);
                             mkpart(partedCommandList, persistenceBorder, bootBorder);
@@ -5877,8 +5901,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         - (long) (systemSize * 1.01);
                 // align newSystemPartitionOffset on a MiB boundary
                 newSystemPartitionOffset /= MEGA;
-                // make boot partition 100 MiB large
-                long newBootPartitionOffset = newSystemPartitionOffset - 100;
+                long newBootPartitionOffset
+                        = newSystemPartitionOffset - BOOT_PARTITION_SIZE;
                 String dataPartitionStart
                         = String.valueOf(dataPartitionOffset) + "B";
                 String bootPartitionStart
@@ -5976,7 +6000,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // legacy system without a separate boot partition
                 // split the old system partition into boot and system partition
                 long bootPartitionOffset = systemPartition.getOffset();
-                long systemPartitionOffset = (bootPartitionOffset / MEGA) + 100;
+                long systemPartitionOffset
+                        = (bootPartitionOffset / MEGA) + BOOT_PARTITION_SIZE;
                 String bootPartitionStart
                         = String.valueOf(bootPartitionOffset) + "B";
                 String systemPartitionStart
@@ -7251,6 +7276,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel automaticBackupLabel;
     private javax.swing.JCheckBox automaticBackupRemoveCheckBox;
     private javax.swing.JTextField automaticBackupTextField;
+    private javax.swing.JLabel bootDefinitionLabel;
     private javax.swing.JPanel buttonGridPanel;
     private javax.swing.JPanel cardPanel;
     private javax.swing.JLabel choiceLabel;
@@ -7327,7 +7353,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JSeparator jSeparator5;
     private javax.swing.JCheckBox keepPrinterSettingsCheckBox;
     private javax.swing.JButton nextButton;
-    private javax.swing.JLabel osDefinitionLabel;
     private javax.swing.JButton previousButton;
     private javax.swing.JCheckBox reactivateWelcomeCheckBox;
     private javax.swing.JRadioButton removeFilesRadioButton;
@@ -7360,6 +7385,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel stepsLabel;
     private javax.swing.JPanel stepsPanel;
     private javax.swing.JScrollPane storageDeviceListScrollPane;
+    private javax.swing.JLabel systemDefinitionLabel;
     private javax.swing.JCheckBox systemFilesCheckBox;
     private javax.swing.JLabel tmpDirLabel;
     private javax.swing.JButton tmpDirSelectButton;

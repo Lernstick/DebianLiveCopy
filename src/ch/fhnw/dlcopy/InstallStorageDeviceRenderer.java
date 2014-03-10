@@ -23,13 +23,17 @@ import javax.swing.*;
 public class InstallStorageDeviceRenderer
         extends JPanel implements ListCellRenderer {
 
-    private final static Logger LOGGER =
-            Logger.getLogger(DLCopy.class.getName());
+    private final static Logger LOGGER
+            = Logger.getLogger(DLCopy.class.getName());
+    // here we need the boot partition size in bytes
+    private final static long BOOT_PARTITION_SIZE
+            = DLCopy.BOOT_PARTITION_SIZE * DLCopy.MEGA;
     private final static int OFFSET = 5;
     private final static int BAR_HEIGHT = 30;
     private final DLCopy dlCopy;
     private final long systemSize;
     private final Color LIGHT_BLUE = new Color(170, 170, 255);
+    private final Color DARK_BLUE = new Color(69, 69, 255);
     private long maxStorageDeviceSize;
     private StorageDevice storageDevice;
     private boolean isSelected;
@@ -74,7 +78,8 @@ public class InstallStorageDeviceRenderer
         if (maxStorageDeviceSize == 0) {
             return;
         }
-        LOGGER.log(Level.FINEST, "maxStorageDeviceSize = {0}", maxStorageDeviceSize);
+        LOGGER.log(Level.FINEST,
+                "maxStorageDeviceSize = {0}", maxStorageDeviceSize);
 
         // set device text and icon based on storage type
         String deviceText;
@@ -117,18 +122,16 @@ public class InstallStorageDeviceRenderer
         Graphics2D graphics2D = (Graphics2D) g;
         int componentWidth = getWidth();
         int height = getHeight();
-        long overhead = storageSize - systemSize;
+        long overhead = storageSize - systemSize - BOOT_PARTITION_SIZE;
         int usbStorageWidth = (int) (((componentWidth - iconGap - 2 * OFFSET)
                 * storageSize) / maxStorageDeviceSize);
-        PartitionState partitionState =
-                DLCopy.getPartitionState(storageSize, systemSize);
+        PartitionState partitionState
+                = DLCopy.getPartitionState(storageSize, systemSize);
 
-        // set painter for text
+        // draw top text
         graphics2D.setPaint(Color.BLACK);
-
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
-        // draw top text
         int rectangleTop;
         if (partitionState == PartitionState.TOO_SMALL) {
             rectangleTop = drawTopText(graphics2D, deviceText);
@@ -137,16 +140,16 @@ public class InstallStorageDeviceRenderer
             text = MessageFormat.format(text, deviceText);
             rectangleTop = drawTopText(graphics2D, text);
         }
+
         // paint usb stick rectangle
         if (partitionState == PartitionState.TOO_SMALL) {
             graphics2D.setPaint(Color.GRAY);
         } else {
             graphics2D.setPaint(LIGHT_BLUE);
         }
-
-        graphics2D.fill3DRect(iconGap
+        graphics2D.fillRect(iconGap
                 + OFFSET, rectangleTop,
-                usbStorageWidth, BAR_HEIGHT, true);
+                usbStorageWidth, BAR_HEIGHT);
 
         // do not paint exchange partition when not selected
         if ((partitionState == PartitionState.EXCHANGE) && !isSelected) {
@@ -158,62 +161,71 @@ public class InstallStorageDeviceRenderer
                 // paint error text
                 String errorText = DLCopy.STRINGS.getString("Too_Small");
                 drawCenterText(iconGap + OFFSET, rectangleTop, usbStorageWidth,
-                        BAR_HEIGHT, errorText, errorText, graphics2D);
+                        BAR_HEIGHT, errorText, graphics2D);
                 break;
 
             case ONLY_SYSTEM:
                 // paint OS text
-                String usbStorageSizeText =
-                        FileTools.getDataVolumeString(storageSize, 1) + " ";
-                String text = usbStorageSizeText
-                        + DLCopy.STRINGS.getString("Operating_System");
-                String shortText = usbStorageSizeText
-                        + DLCopy.STRINGS.getString("Operating_System_Short");
+                String text = FileTools.getDataVolumeString(storageSize, 1);
                 drawCenterText(iconGap + OFFSET, rectangleTop, usbStorageWidth,
-                        BAR_HEIGHT, text, shortText, graphics2D);
+                        BAR_HEIGHT, text, graphics2D);
                 break;
 
             case PERSISTENCE:
                 // block widths
-                int persistentWidth =
-                        (int) ((usbStorageWidth * overhead) / storageSize);
-                int systemWidth = usbStorageWidth - persistentWidth;
+                int bootWidth = (int) ((usbStorageWidth * BOOT_PARTITION_SIZE)
+                        / storageSize);
+                int systemWidth = (int) ((usbStorageWidth * systemSize)
+                        / storageSize);
+                int persistentWidth = usbStorageWidth - bootWidth - systemWidth;
+
                 // texts
-                String persistentText = FileTools.getDataVolumeString(
-                        overhead, 1) + " " + DLCopy.STRINGS.getString("Data");
-                String systemSizeString =
-                        FileTools.getDataVolumeString(systemSize, 1) + " ";
-                String systemText = systemSizeString
-                        + DLCopy.STRINGS.getString("Operating_System");
-                String systemTextShort = systemSizeString
-                        + DLCopy.STRINGS.getString("Operating_System_Short");
-                // paint persistent partition in green
+                String persistentText
+                        = FileTools.getDataVolumeString(overhead, 1);
+                String systemText
+                        = FileTools.getDataVolumeString(systemSize, 1);
+
+                // paint persistent partition block
+                int persistentPartitionX = iconGap + OFFSET;
                 graphics2D.setPaint(Color.GREEN);
-                graphics2D.fill3DRect(iconGap + OFFSET, rectangleTop,
-                        persistentWidth, BAR_HEIGHT, true);
-                // paint block texts
-                drawCenterText(iconGap + OFFSET, rectangleTop, persistentWidth,
-                        BAR_HEIGHT, persistentText, persistentText, graphics2D);
-                int systemPartitionX = iconGap + OFFSET + persistentWidth;
+                graphics2D.fillRect(persistentPartitionX, rectangleTop,
+                        persistentWidth, BAR_HEIGHT);
+
+                // paint boot partition block
+                int bootPartitionX = persistentPartitionX + persistentWidth;
+                graphics2D.setPaint(DARK_BLUE);
+                graphics2D.fillRect(
+                        bootPartitionX, rectangleTop, bootWidth, BAR_HEIGHT);
+
+                // paint persistent partition text
+                drawCenterText(persistentPartitionX, rectangleTop,
+                        persistentWidth, BAR_HEIGHT, persistentText,
+                        graphics2D);
+
+                // paint system partition text
+                int systemPartitionX = bootPartitionX + bootWidth;
                 drawCenterText(systemPartitionX, rectangleTop, systemWidth,
-                        BAR_HEIGHT, systemText, systemTextShort, graphics2D);
+                        BAR_HEIGHT, systemText, graphics2D);
+
                 break;
 
             case EXCHANGE:
                 // block widths
+                bootWidth = (int) ((usbStorageWidth * BOOT_PARTITION_SIZE)
+                        / storageSize);
                 systemWidth = (int) ((usbStorageWidth * systemSize)
                         / storageSize);
-                JSlider getExchangePartitionSizeSlider =
-                        dlCopy.getExchangePartitionSizeSlider();
-                long exchangeSize =
-                        (long) getExchangePartitionSizeSlider.getValue()
+                JSlider getExchangePartitionSizeSlider
+                        = dlCopy.getExchangePartitionSizeSlider();
+                long exchangeSize
+                        = (long) getExchangePartitionSizeSlider.getValue()
                         * DLCopy.MEGA;
                 int exchangeWidth = (int) ((usbStorageWidth * exchangeSize)
                         / storageSize);
-                int maximumExchangeSizeMega =
-                        getExchangePartitionSizeSlider.getMaximum();
-                long maximumExchangeSize =
-                        (long) maximumExchangeSizeMega * DLCopy.MEGA;
+                int maximumExchangeSizeMega
+                        = getExchangePartitionSizeSlider.getMaximum();
+                long maximumExchangeSize
+                        = (long) maximumExchangeSizeMega * DLCopy.MEGA;
                 long persistentSize = 0;
                 persistentWidth = 0;
                 // we need to calculate with overheadMega because we define MiB
@@ -222,55 +234,56 @@ public class InstallStorageDeviceRenderer
                 long overheadMega = overhead / DLCopy.MEGA;
                 if ((overheadMega != maximumExchangeSizeMega)
                         || (exchangeSize != maximumExchangeSize)) {
-                    persistentSize = storageSize - systemSize - exchangeSize;
-                    persistentWidth =
-                            usbStorageWidth - exchangeWidth - systemWidth;
+                    persistentSize = storageSize
+                            - exchangeSize - BOOT_PARTITION_SIZE - systemSize;
+                    persistentWidth = usbStorageWidth
+                            - exchangeWidth - bootWidth - systemWidth;
                 }
 
                 // texts
-                String exchangeTextShort =
-                        FileTools.getDataVolumeString(exchangeSize, 1);
-                String exchangeText = exchangeTextShort + " "
-                        + DLCopy.STRINGS.getString("Exchange");
-                String persistentTextShort =
-                        FileTools.getDataVolumeString(persistentSize, 1);
-                persistentText = persistentTextShort + " "
-                        + DLCopy.STRINGS.getString("Data");
-                systemSizeString =
-                        FileTools.getDataVolumeString(systemSize, 1) + " ";
-                systemText = systemSizeString
-                        + DLCopy.STRINGS.getString("Operating_System");
-                systemTextShort = systemSizeString
-                        + DLCopy.STRINGS.getString("Operating_System_Short");
+                String exchangeText
+                        = FileTools.getDataVolumeString(exchangeSize, 1);
+                persistentText
+                        = FileTools.getDataVolumeString(persistentSize, 1);
+                systemText
+                        = FileTools.getDataVolumeString(systemSize, 1);
 
-                int persistentPartitionX = iconGap + OFFSET + exchangeWidth;
+                persistentPartitionX = iconGap + OFFSET + exchangeWidth;
 
                 // paint color blocks first and texts later
                 // this way the persistent color block can not overwrite the
                 // exchange text...
+                // color blocks
                 if (exchangeWidth > 0) {
                     graphics2D.setPaint(Color.YELLOW);
-                    graphics2D.fill3DRect(iconGap + OFFSET, rectangleTop,
-                            exchangeWidth, BAR_HEIGHT, true);
+                    graphics2D.fillRect(iconGap + OFFSET, rectangleTop,
+                            exchangeWidth, BAR_HEIGHT);
                 }
                 if (persistentWidth > 0) {
                     graphics2D.setPaint(Color.GREEN);
-                    graphics2D.fill3DRect(persistentPartitionX, rectangleTop,
-                            persistentWidth, BAR_HEIGHT, true);
+                    graphics2D.fillRect(persistentPartitionX, rectangleTop,
+                            persistentWidth, BAR_HEIGHT);
                 }
+                graphics2D.setPaint(DARK_BLUE);
+                bootPartitionX = persistentPartitionX + persistentWidth;
+                graphics2D.fillRect(bootPartitionX, rectangleTop,
+                        bootWidth, BAR_HEIGHT);
+
+                // texts
                 if (exchangeWidth > 0) {
-                    drawCenterText(iconGap + OFFSET, rectangleTop, exchangeWidth,
-                            BAR_HEIGHT, exchangeText, exchangeTextShort,
+                    drawCenterText(iconGap + OFFSET, rectangleTop,
+                            exchangeWidth, BAR_HEIGHT, exchangeText,
                             graphics2D);
                 }
                 if (persistentWidth > 0) {
                     drawCenterText(persistentPartitionX, rectangleTop,
                             persistentWidth, BAR_HEIGHT,
-                            persistentText, persistentTextShort, graphics2D);
+                            persistentText, graphics2D);
                 }
-                systemPartitionX = persistentPartitionX + persistentWidth;
+
+                systemPartitionX = bootPartitionX + bootWidth;
                 drawCenterText(systemPartitionX, rectangleTop, systemWidth,
-                        BAR_HEIGHT, systemText, systemTextShort, graphics2D);
+                        BAR_HEIGHT, systemText, graphics2D);
                 break;
 
             default:
@@ -322,8 +335,8 @@ public class InstallStorageDeviceRenderer
 
     private int drawTopText(Graphics2D graphics2D, String text) {
         FontMetrics fontMetrics = graphics2D.getFontMetrics();
-        Rectangle2D stringBounds =
-                fontMetrics.getStringBounds(text, graphics2D);
+        Rectangle2D stringBounds
+                = fontMetrics.getStringBounds(text, graphics2D);
         int stringHeight = (int) stringBounds.getHeight();
         graphics2D.drawString(text,
                 iconGap + OFFSET,
@@ -332,21 +345,11 @@ public class InstallStorageDeviceRenderer
     }
 
     private void drawCenterText(int x, int y, int width, int height,
-            String text, String shortText, Graphics2D graphics2D) {
+            String text, Graphics2D graphics2D) {
         Font originalFont = graphics2D.getFont();
 
-        // check if we can use the (long) text
-        FontMetrics fontMetrics = graphics2D.getFontMetrics();
-        Rectangle2D stringBounds = fontMetrics.getStringBounds(
-                text, graphics2D);
-        int stringWidth = (int) stringBounds.getWidth() + 2;
-        if (stringWidth > width) {
-            // no, we must use the short text
-            text = shortText;
-        }
-
-        stringBounds = setFont(graphics2D, text, width);
-        stringWidth = (int) stringBounds.getWidth();
+        Rectangle2D stringBounds = setFont(graphics2D, text, width);
+        int stringWidth = (int) stringBounds.getWidth();
         int stringHeight = (int) stringBounds.getHeight();
         graphics2D.setPaint(Color.BLACK);
         int textX = x + (width - stringWidth) / 2;
