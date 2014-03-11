@@ -312,10 +312,14 @@ public class DLCopy extends JFrame
             }
         }
 
-        systemPartitionLabel
-                = debianLiveDistribution == DebianLiveDistribution.lernstick
-                ? "system"
-                : "DEBIAN_LIVE";
+        switch (debianLiveDistribution) {
+            case lernstick:
+            case lernstick_pu:
+                systemPartitionLabel = "system";
+                break;
+            default:
+                systemPartitionLabel = "DEBIAN_LIVE";
+        }
 
         // determine system path
         File testFile = new File(DEBIAN_6_LIVE_SYSTEM_PATH);
@@ -401,8 +405,8 @@ public class DLCopy extends JFrame
         installSelectionHeaderLabel.setText(text);
 
         text = STRINGS.getString("Boot_Definition");
-        String bootSize = 
-                FileTools.getDataVolumeString(BOOT_PARTITION_SIZE * MEGA, 1);
+        String bootSize
+                = FileTools.getDataVolumeString(BOOT_PARTITION_SIZE * MEGA, 1);
         text = MessageFormat.format(text, bootSize);
         bootDefinitionLabel.setText(text);
 
