@@ -12,7 +12,7 @@ import ch.fhnw.jbackpack.JSqueezedLabel;
 import ch.fhnw.jbackpack.RdiffBackupRestore;
 import ch.fhnw.jbackpack.chooser.SelectBackupDirectoryDialog;
 import ch.fhnw.util.MountInfo;
-import ch.fhnw.util.FileTools;
+import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.ModalDialogHandler;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
@@ -397,16 +397,16 @@ public class DLCopy extends JFrame
 
         systemSize = StorageTools.getSystemSize();
         systemSizeEnlarged = StorageTools.getEnlargedSystemSize();
-        String sizeString
-                = FileTools.getDataVolumeString(systemSizeEnlarged, 1);
+        String sizeString = LernstickFileTools.getDataVolumeString(
+                systemSizeEnlarged, 1);
 
         String text = STRINGS.getString("Select_Install_Target_Storage_Media");
         text = MessageFormat.format(text, sizeString);
         installSelectionHeaderLabel.setText(text);
 
         text = STRINGS.getString("Boot_Definition");
-        String bootSize
-                = FileTools.getDataVolumeString(BOOT_PARTITION_SIZE * MEGA, 1);
+        String bootSize = LernstickFileTools.getDataVolumeString(
+                BOOT_PARTITION_SIZE * MEGA, 1);
         text = MessageFormat.format(text, bootSize);
         bootDefinitionLabel.setText(text);
 
@@ -414,7 +414,7 @@ public class DLCopy extends JFrame
         text = MessageFormat.format(text, sizeString);
         systemDefinitionLabel.setText(text);
 
-        sizeString = FileTools.getDataVolumeString(systemSize, 1);
+        sizeString = LernstickFileTools.getDataVolumeString(systemSize, 1);
         text = STRINGS.getString("Select_Upgrade_Target_Storage_Media");
         text = MessageFormat.format(text, sizeString);
         upgradeSelectionHeaderLabel.setText(text);
@@ -441,7 +441,7 @@ public class DLCopy extends JFrame
             copyPersistenceCheckBox.setEnabled(true);
 
             String checkBoxText = STRINGS.getString("Copy_Data_Partition")
-                    + " (" + FileTools.getDataVolumeString(
+                    + " (" + LernstickFileTools.getDataVolumeString(
                             bootDataPartition.getUsedSpace(false), 1) + ')';
             copyPersistenceCheckBox.setText(checkBoxText);
 
@@ -3426,7 +3426,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         if (bootExchangePartition != null) {
             long exchangeSize = bootExchangePartition.getUsedSpace(false);
             String dataVolumeString
-                    = FileTools.getDataVolumeString(exchangeSize, 1);
+                    = LernstickFileTools.getDataVolumeString(exchangeSize, 1);
             copyExchangeCheckBox.setText(
                     STRINGS.getString("DLCopy.copyExchangeCheckBox.text")
                     + " (" + dataVolumeString + ')');
@@ -3806,7 +3806,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private void umountPartitions(String device) throws IOException {
         LOGGER.log(Level.FINEST, "umountPartitions({0})", device);
-        List<String> mounts = FileTools.readFile(new File("/proc/mounts"));
+        List<String> mounts
+                = LernstickFileTools.readFile(new File("/proc/mounts"));
         for (String mount : mounts) {
             String mountedPartition = mount.split(" ")[0];
             if (mountedPartition.startsWith(device)) {
@@ -3816,7 +3817,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }
 
     private boolean isMounted(String device) throws IOException {
-        List<String> mounts = FileTools.readFile(new File("/proc/mounts"));
+        List<String> mounts
+                = LernstickFileTools.readFile(new File("/proc/mounts"));
         for (String mount : mounts) {
             String mountedPartition = mount.split(" ")[0];
             if (mountedPartition.startsWith(device)) {
@@ -3838,8 +3840,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // deactivating the swap file is dangerous
             // show a warning dialog and let the user decide
             String warningMessage = STRINGS.getString("Warning_Swapoff_File");
-            warningMessage = MessageFormat.format(warningMessage, swapFile,
-                    device, FileTools.getDataVolumeString(remainingFreeMem, 0));
+            String freeMem = LernstickFileTools.getDataVolumeString(
+                    remainingFreeMem, 0);
+            warningMessage = MessageFormat.format(
+                    warningMessage, swapFile, device, freeMem);
             int selection = JOptionPane.showConfirmDialog(this,
                     warningMessage, STRINGS.getString("Warning"),
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
@@ -3872,8 +3876,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // show a warning dialog and let the user decide
             String warningMessage
                     = STRINGS.getString("Warning_Swapoff_Partition");
-            warningMessage = MessageFormat.format(warningMessage, swapFile,
-                    device, FileTools.getDataVolumeString(remainingFreeMem, 0));
+            String freeMem = LernstickFileTools.getDataVolumeString(
+                    remainingFreeMem, 0);
+            warningMessage = MessageFormat.format(
+                    warningMessage, swapFile, device, freeMem);
             int selection = JOptionPane.showConfirmDialog(this,
                     warningMessage, STRINGS.getString("Warning"),
                     JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
@@ -3917,13 +3923,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private void umount(String partition) throws IOException {
         // check if a swapfile is in use on this partition
-        List<String> mounts = FileTools.readFile(new File("/proc/mounts"));
+        List<String> mounts
+                = LernstickFileTools.readFile(new File("/proc/mounts"));
         for (String mount : mounts) {
             String[] tokens = mount.split(" ");
             String device = tokens[0];
             String mountPoint = tokens[1];
             if (device.equals(partition) || mountPoint.equals(partition)) {
-                List<String> swapLines = FileTools.readFile(
+                List<String> swapLines = LernstickFileTools.readFile(
                         new File("/proc/swaps"));
                 for (String swapLine : swapLines) {
                     if (swapLine.startsWith(mountPoint)) {
@@ -4070,7 +4077,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             replaceText(md5sumFileName, pattern, "syslinux");
             File md5sumFile = new File(md5sumFileName);
             if (md5sumFile.exists()) {
-                List<String> lines = FileTools.readFile(md5sumFile);
+                List<String> lines = LernstickFileTools.readFile(md5sumFile);
                 for (int i = lines.size() - 1; i >= 0; i--) {
                     String line = lines.get(i);
                     if (line.contains("xmlboot.config")
@@ -4141,7 +4148,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         "replacing pattern \"{0}\" with \"{1}\" in file \"{2}\"",
                         new Object[]{pattern.pattern(), replacement, fileName});
             }
-            List<String> lines = FileTools.readFile(file);
+            List<String> lines = LernstickFileTools.readFile(file);
             boolean changed = false;
             for (int i = 0, size = lines.size(); i < size; i++) {
                 String line = lines.get(i);
@@ -4352,7 +4359,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         String dataPartitionDevice
                 = "/dev/" + bootDataPartition.getDeviceAndNumber();
         boolean mountedReadWrite = false;
-        for (String mount : FileTools.readFile(new File("/proc/mounts"))) {
+        List<String> mounts = LernstickFileTools.readFile(
+                new File("/proc/mounts"));
+        for (String mount : mounts) {
             String[] tokens = mount.split(" ");
             String mountedPartition = tokens[0];
             if (mountedPartition.equals(dataPartitionDevice)) {
@@ -4423,8 +4432,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             String errorMessage
                     = STRINGS.getString("Error_Target_Persistence_Too_Small");
             errorMessage = MessageFormat.format(errorMessage,
-                    FileTools.getDataVolumeString(persistenceSize, 1),
-                    FileTools.getDataVolumeString(targetPersistenceSize, 1));
+                    LernstickFileTools.getDataVolumeString(persistenceSize, 1),
+                    LernstickFileTools.getDataVolumeString(
+                            targetPersistenceSize, 1));
             JOptionPane.showMessageDialog(this, errorMessage,
                     STRINGS.getString("Error"), JOptionPane.ERROR_MESSAGE);
             return false;
@@ -4521,7 +4531,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         if (tmpDir.exists()) {
             long freeSpace = tmpDir.getFreeSpace();
             freeSpaceTextField.setText(
-                    FileTools.getDataVolumeString(freeSpace, 1));
+                    LernstickFileTools.getDataVolumeString(freeSpace, 1));
             if (tmpDir.canWrite()) {
                 writableTextField.setText(STRINGS.getString("Yes"));
                 writableTextField.setForeground(Color.BLACK);
@@ -4706,7 +4716,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     final String message = MessageFormat.format(pattern,
                             storageDevice.getVendor() + " "
                             + storageDevice.getModel() + " "
-                            + FileTools.getDataVolumeString(
+                            + LernstickFileTools.getDataVolumeString(
                                     storageDevice.getSize(), 1),
                             "/dev/" + storageDevice.getDevice(),
                             currentDevice, selectionCount);
@@ -5178,7 +5188,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             // check if a swap partition is active on this device
             // if so, switch it off
-            List<String> swaps = FileTools.readFile(new File("/proc/swaps"));
+            List<String> swaps
+                    = LernstickFileTools.readFile(new File("/proc/swaps"));
             for (String swapLine : swaps) {
                 if (swapLine.startsWith(device)) {
                     swapoffPartition(device, swapLine);
@@ -5617,7 +5628,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         storageDevice.getVendor() + " "
                         + storageDevice.getModel(),
                         " (" + DLCopy.STRINGS.getString("Size") + ": "
-                        + FileTools.getDataVolumeString(storageDevice.getSize(), 1)
+                        + LernstickFileTools.getDataVolumeString(
+                                storageDevice.getSize(), 1)
                         + ", "
                         + DLCopy.STRINGS.getString("Revision") + ": "
                         + storageDevice.getRevision() + ", "
@@ -5654,7 +5666,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         // automatic removal of (temporary) backup
                         if (automaticBackupCheckBox.isSelected()
                                 && automaticBackupRemoveCheckBox.isSelected()) {
-                            FileTools.recursiveDelete(backupDestination, true);
+                            LernstickFileTools.recursiveDelete(
+                                    backupDestination, true);
                         }
                     } else {
                         return false;
@@ -5830,7 +5843,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // remove the old destination file (or directory)
                 String sourcePath = (String) upgradeOverwriteListModel.get(i);
                 File destinationFile = new File(dataMountPoint, sourcePath);
-                FileTools.recursiveDelete(destinationFile, true);
+                LernstickFileTools.recursiveDelete(destinationFile, true);
 
                 // recursive copy
                 processExecutor.executeProcess(true, true,
@@ -6126,12 +6139,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     copyJobsInfo.getDestinationBootPath());
             LOGGER.log(Level.INFO, "recursively deleting {0}",
                     bootMountPointFile);
-            FileTools.recursiveDelete(bootMountPointFile, false);
+            LernstickFileTools.recursiveDelete(bootMountPointFile, false);
             File systemMountPointFile = new File(
                     copyJobsInfo.getDestinationSystemPath());
             LOGGER.log(Level.INFO, "recursively deleting {0}",
                     systemMountPointFile);
-            FileTools.recursiveDelete(systemMountPointFile, false);
+            LernstickFileTools.recursiveDelete(systemMountPointFile, false);
 
             LOGGER.info("starting copy job");
             upgradeFileCopierPanel.setFileCopier(fileCopier);
@@ -6194,8 +6207,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 String tmpDirectory = tmpDirTextField.getText();
 
                 // create new temporary directory in selected directory
-                String targetRootDirectory = FileTools.createTempDirectory(
-                        new File(tmpDirectory), "Lernstick-ISO").getPath();
+                File tmpDirFile = LernstickFileTools.createTempDirectory(
+                        new File(tmpDirectory), "Lernstick-ISO");
+                String targetRootDirectory = tmpDirFile.getPath();
                 String targetDirectory = targetRootDirectory + "/build";
                 new File(targetDirectory).mkdirs();
 
@@ -6257,7 +6271,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // the few directories that are not aufs itself
                 // nested aufs is not (yet) supported...
                 File runDir = new File("/run/");
-                File rwDir = FileTools.createTempDirectory(runDir, "rw");
+                File rwDir = LernstickFileTools.createTempDirectory(
+                        runDir, "rw");
                 StringBuilder stringBuilder = new StringBuilder();
                 stringBuilder.append("br=");
                 stringBuilder.append(rwDir.getPath());
@@ -6276,7 +6291,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 File xinoTmpFile = File.createTempFile(
                         ".aufs.xino", "", new File("/run/"));
                 xinoTmpFile.delete();
-                File cowDir = FileTools.createTempDirectory(runDir, "cow");
+                File cowDir = LernstickFileTools.createTempDirectory(
+                        runDir, "cow");
                 String cowPath = cowDir.getPath();
                 processExecutor.executeProcess("mount", "-t", "aufs",
                         "-o", "xino=" + xinoTmpFile.getPath(),
@@ -6550,7 +6566,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         storageDevice.getVendor() + " "
                         + storageDevice.getModel(),
                         " (" + DLCopy.STRINGS.getString("Size") + ": "
-                        + FileTools.getDataVolumeString(storageDevice.getSize(), 1)
+                        + LernstickFileTools.getDataVolumeString(
+                                storageDevice.getSize(), 1)
                         + ", "
                         + DLCopy.STRINGS.getString("Revision") + ": "
                         + storageDevice.getRevision() + ", "
@@ -6702,7 +6719,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             long memFree = 0;
             pattern = Pattern.compile("\\p{Graph}+\\p{Blank}+(\\p{Graph}+).*");
-            List<String> meminfo = FileTools.readFile(
+            List<String> meminfo = LernstickFileTools.readFile(
                     new File("/proc/meminfo"));
             for (String meminfoLine : meminfo) {
                 if (meminfoLine.startsWith("MemFree:")

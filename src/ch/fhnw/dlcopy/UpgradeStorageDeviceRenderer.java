@@ -5,7 +5,7 @@
  */
 package ch.fhnw.dlcopy;
 
-import ch.fhnw.util.FileTools;
+import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.StorageDevice;
 import java.awt.*;
@@ -127,7 +127,7 @@ public class UpgradeStorageDeviceRenderer
                 stringBuilder.append("<html><b>&#47;dev&#47;");
                 stringBuilder.append(partition.getDeviceAndNumber());
                 stringBuilder.append("</b> (");
-                stringBuilder.append(FileTools.getDataVolumeString(
+                stringBuilder.append(LernstickFileTools.getDataVolumeString(
                         partition.getSize(), 1));
                 stringBuilder.append(")<br>");
                 if (extended) {
@@ -147,10 +147,12 @@ public class UpgradeStorageDeviceRenderer
                     try {
                         long usedSpace = partition.getUsedSpace(true);
                         if (usedSpace == -1) {
-                            stringBuilder.append(DLCopy.STRINGS.getString("Unknown"));
+                            stringBuilder.append(
+                                    DLCopy.STRINGS.getString("Unknown"));
                         } else {
                             stringBuilder.append(
-                                    FileTools.getDataVolumeString(usedSpace, 1));
+                                    LernstickFileTools.getDataVolumeString(
+                                            usedSpace, 1));
                         }
                     } catch (DBusExecutionException ex) {
                         LOGGER.log(Level.SEVERE, "", ex);
@@ -414,8 +416,8 @@ public class UpgradeStorageDeviceRenderer
         stringBuilder.append("</b>, ");
         stringBuilder.append(DLCopy.STRINGS.getString("Size"));
         stringBuilder.append(": ");
-        stringBuilder.append(
-                FileTools.getDataVolumeString(storageDevice.getSize(), 1));
+        stringBuilder.append(LernstickFileTools.getDataVolumeString(
+                storageDevice.getSize(), 1));
         stringBuilder.append(", ");
         stringBuilder.append(DLCopy.STRINGS.getString("Revision"));
         stringBuilder.append(": ");

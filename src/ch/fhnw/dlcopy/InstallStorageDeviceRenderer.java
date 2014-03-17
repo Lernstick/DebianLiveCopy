@@ -6,7 +6,7 @@
 package ch.fhnw.dlcopy;
 
 import ch.fhnw.dlcopy.DLCopy.PartitionState;
-import ch.fhnw.util.FileTools;
+import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.StorageDevice;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
@@ -88,14 +88,14 @@ public class InstallStorageDeviceRenderer
         switch (deviceType) {
             case SDMemoryCard:
                 deviceText = storageDevice.getModel() + " "
-                        + FileTools.getDataVolumeString(storageSize, 1) + " ("
-                        + "/dev/" + storageDevice.getDevice() + ")";
+                        + LernstickFileTools.getDataVolumeString(storageSize, 1)
+                        + " (/dev/" + storageDevice.getDevice() + ")";
                 break;
             default:
                 deviceText = storageDevice.getVendor() + " "
                         + storageDevice.getModel() + ", "
-                        + FileTools.getDataVolumeString(storageSize, 1) + " ("
-                        + "/dev/" + storageDevice.getDevice() + ")";
+                        + LernstickFileTools.getDataVolumeString(storageSize, 1)
+                        + " (/dev/" + storageDevice.getDevice() + ")";
         }
 
         switch (deviceType) {
@@ -166,7 +166,8 @@ public class InstallStorageDeviceRenderer
 
             case ONLY_SYSTEM:
                 // paint OS text
-                String text = FileTools.getDataVolumeString(storageSize, 1);
+                String text = LernstickFileTools.getDataVolumeString(
+                        storageSize, 1);
                 drawCenterText(iconGap + OFFSET, rectangleTop, usbStorageWidth,
                         BAR_HEIGHT, text, graphics2D);
                 break;
@@ -181,9 +182,9 @@ public class InstallStorageDeviceRenderer
 
                 // texts
                 String persistentText
-                        = FileTools.getDataVolumeString(overhead, 1);
+                        = LernstickFileTools.getDataVolumeString(overhead, 1);
                 String systemText
-                        = FileTools.getDataVolumeString(systemSize, 1);
+                        = LernstickFileTools.getDataVolumeString(systemSize, 1);
 
                 // paint persistent partition block
                 int persistentPartitionX = iconGap + OFFSET;
@@ -241,12 +242,12 @@ public class InstallStorageDeviceRenderer
                 }
 
                 // texts
-                String exchangeText
-                        = FileTools.getDataVolumeString(exchangeSize, 1);
-                persistentText
-                        = FileTools.getDataVolumeString(persistentSize, 1);
-                systemText
-                        = FileTools.getDataVolumeString(systemSize, 1);
+                String exchangeText = LernstickFileTools.getDataVolumeString(
+                        exchangeSize, 1);
+                persistentText = LernstickFileTools.getDataVolumeString(
+                        persistentSize, 1);
+                systemText = LernstickFileTools.getDataVolumeString(
+                        systemSize, 1);
 
                 persistentPartitionX = iconGap + OFFSET + exchangeWidth;
 

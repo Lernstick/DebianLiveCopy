@@ -1,3 +1,9 @@
+dlcopy (201403171941-1) unstable; urgency=low
+
+  * use updated lernstickTools
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Mon, 17 Mar 2014 19:41:14 +0100
+
 dlcopy (201403112226-1) unstable; urgency=low
 
   * fixed system partition label in exam environment
