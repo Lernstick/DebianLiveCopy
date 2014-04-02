@@ -1,3 +1,9 @@
+dlcopy (201404021349-1) unstable; urgency=low
+
+  * fixed partition detection logic
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 02 Apr 2014 13:49:35 +0200
+
 dlcopy (201403171941-1) unstable; urgency=low
 
   * use updated lernstickTools

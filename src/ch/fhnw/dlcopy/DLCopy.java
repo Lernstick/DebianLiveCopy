@@ -2959,6 +2959,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         // xmlboot
         try {
             File xmlBootConfigFile = getXmlBootConfigFile(new File(imagePath));
+            if (xmlBootConfigFile == null) {
+                LOGGER.warning("xmlBootConfigFile == null");
+                return;
+            }
             org.w3c.dom.Document xmlBootDocument
                     = parseXmlFile(xmlBootConfigFile);
             xmlBootDocument.getDocumentElement().normalize();
@@ -4642,36 +4646,34 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 = destinationBootPartition.mount().getMountPath();
         String destinationSystemPath
                 = destinationSystemPartition.mount().getMountPath();
-        CopyJob bootCopyJob;
-        CopyJob systemCopyJob;
         boolean sourceBootTempMounted = false;
-        if (bootBootPartition != null) {
+        Source bootCopyJobSource;
+        Source systemCopyJobSource;
+        if (bootBootPartition == null) {
+            // our source medium has NO separate boot partition
+            // copy everything but the squashfs file(s) to the boot
+            // partition
+            bootCopyJobSource = new Source(DEBIAN_LIVE_SYSTEM_PATH,
+                    "^((?!live/filesystem.*\\.squashfs).)*$");
+            // copy squashfs file(s) to the system partition
+            systemCopyJobSource = new Source(DEBIAN_LIVE_SYSTEM_PATH,
+                    "live/filesystem.*\\.squashfs");
+        } else {
             // our source medium already has a separate boot partition
             MountInfo bootMountInfo = bootBootPartition.mount();
             String bootPath = bootMountInfo.getMountPath();
             sourceBootTempMounted = bootMountInfo.alreadyMounted();
-            bootCopyJob = new CopyJob(
-                    new Source[]{new Source(bootPath, ".*")},
-                    new String[]{destinationBootPath});
-            systemCopyJob = new CopyJob(
-                    new Source[]{new Source(DEBIAN_LIVE_SYSTEM_PATH, ".*")},
-                    new String[]{destinationSystemPath});
-
-        } else {
-            // our source medium has NO separate boot partition
-
-            // copy everything but the squashfs file(s) to the boot
-            // partition
-            bootCopyJob = new CopyJob(
-                    new Source[]{new Source(DEBIAN_LIVE_SYSTEM_PATH,
-                                "^((?!live/filesystem.*\\.squashfs).)*$")},
-                    new String[]{destinationBootPath});
-            // copy squashfs file(s) to the system partition
-            systemCopyJob = new CopyJob(
-                    new Source[]{new Source(DEBIAN_LIVE_SYSTEM_PATH,
-                                "live/filesystem.*\\.squashfs")},
-                    new String[]{destinationSystemPath});
+            bootCopyJobSource = new Source(bootPath, ".*");
+            systemCopyJobSource = new Source(DEBIAN_LIVE_SYSTEM_PATH, ".*");
         }
+
+        CopyJob bootCopyJob = new CopyJob(
+                new Source[]{bootCopyJobSource},
+                new String[]{destinationBootPath});
+
+        CopyJob systemCopyJob = new CopyJob(
+                new Source[]{systemCopyJobSource},
+                new String[]{destinationSystemPath});
 
         return new CopyJobsInfo(sourceBootTempMounted, destinationBootPath,
                 destinationSystemPath, bootCopyJob, systemCopyJob);
