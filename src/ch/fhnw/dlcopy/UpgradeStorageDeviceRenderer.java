@@ -39,6 +39,9 @@ public class UpgradeStorageDeviceRenderer
     private final static Icon grayBox = new ImageIcon(
             UpgradeStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/gray_box.png"));
+    private final static Icon darkBlueBox = new ImageIcon(
+            UpgradeStorageDeviceRenderer.class.getResource(
+                    "/ch/fhnw/dlcopy/icons/dark_blue_box.png"));
     private final static Icon darkGrayBox = new ImageIcon(
             UpgradeStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/dark_gray_box.png"));
@@ -52,6 +55,7 @@ public class UpgradeStorageDeviceRenderer
             UpgradeStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/16x16/dialog-cancel.png"));
     private final Color LIGHT_BLUE = new Color(170, 170, 255);
+    private final Color DARK_BLUE = new Color(69, 69, 255);
     private long maxStorageDeviceSize;
     private StorageDevice storageDevice;
 
@@ -107,12 +111,14 @@ public class UpgradeStorageDeviceRenderer
 
                 // set color box
                 try {
-                    if (partition.isSystemPartition()) {
-                        label.setIcon(blueBox);
-                    } else if (partition.isPersistencePartition()) {
-                        label.setIcon(greenBox);
+                    if (partition.isBootPartition()) {
+                        label.setIcon(darkBlueBox);
                     } else if (partition.isExchangePartition()) {
                         label.setIcon(yellowBox);
+                    } else if (partition.isPersistencePartition()) {
+                        label.setIcon(greenBox);
+                    } else if (partition.isSystemPartition()) {
+                        label.setIcon(blueBox);
                     } else if (extended) {
                         label.setIcon(darkGrayBox);
                     } else {
@@ -145,7 +151,12 @@ public class UpgradeStorageDeviceRenderer
                     stringBuilder.append(DLCopy.STRINGS.getString("Used"));
                     stringBuilder.append(": ");
                     try {
-                        long usedSpace = partition.getUsedSpace(true);
+                        long usedSpace;
+                        if (partition.isPersistencePartition()) {
+                            usedSpace = partition.getUsedSpace(true);
+                        } else {
+                            usedSpace = partition.getUsedSpace(false);
+                        }
                         if (usedSpace == -1) {
                             stringBuilder.append(
                                     DLCopy.STRINGS.getString("Unknown"));
@@ -251,13 +262,14 @@ public class UpgradeStorageDeviceRenderer
             LOGGER.log(Level.FINEST, "partitionType: {0}", partition.getType());
             boolean extended = partition.isExtended();
             try {
-                if (partition.isSystemPartition()) {
-                    graphics2D.setPaint(LIGHT_BLUE);
+                if (partition.isBootPartition()) {
+                    graphics2D.setPaint(DARK_BLUE);
+                } else if (partition.isExchangePartition()) {
+                    graphics2D.setPaint(Color.YELLOW);
                 } else if (partition.isPersistencePartition()) {
                     graphics2D.setPaint(Color.GREEN);
-                } else if (partition.isExchangePartition()) {
-                    // W95 FAT32 (LBA)
-                    graphics2D.setPaint(Color.YELLOW);
+                } else if (partition.isSystemPartition()) {
+                    graphics2D.setPaint(LIGHT_BLUE);
                 } else if (extended) {
                     graphics2D.setPaint(Color.DARK_GRAY);
                 } else {
@@ -277,7 +289,12 @@ public class UpgradeStorageDeviceRenderer
             // paint partition storage space usage (if known)
             if (!extended) {
                 try {
-                    long usedSpace = partition.getUsedSpace(true);
+                    long usedSpace;
+                    if (partition.isPersistencePartition()) {
+                        usedSpace = partition.getUsedSpace(true);
+                    } else {
+                        usedSpace = partition.getUsedSpace(false);
+                    }
                     if (usedSpace != -1) {
                         int usedWidth = (int) ((width * usedSpace)
                                 / maxStorageDeviceSize);

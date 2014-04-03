@@ -18,9 +18,6 @@ kdesudo "java -Djava.library.path=/usr/lib/jni -jar dist/DLCopy_orig.jar --varia
 
 - Nachfragen, wenn nicht alle Speichermedien aus einer Liste ausgewählt wurden
 
-- Renderer:
-    - InstallationsRenderer and UpgradeRenderer anpassen
-
 - ISO
     - Schritt x/y anzeigen (Gesamtliste mit Hervorhebung und Häkchen)
     - Zeitanzeige (gesamt)

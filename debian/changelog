@@ -1,3 +1,9 @@
+dlcopy (201404031920-1) unstable; urgency=low
+
+  * changed partition schema
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Thu, 03 Apr 2014 19:20:24 +0200
+
 dlcopy (201404021349-1) unstable; urgency=low
 
   * fixed partition detection logic

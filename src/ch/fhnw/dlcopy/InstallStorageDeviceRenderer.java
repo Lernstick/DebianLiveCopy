@@ -122,7 +122,7 @@ public class InstallStorageDeviceRenderer
         Graphics2D graphics2D = (Graphics2D) g;
         int componentWidth = getWidth();
         int height = getHeight();
-        long overhead = storageSize - systemSize - BOOT_PARTITION_SIZE;
+        long overhead = storageSize - BOOT_PARTITION_SIZE - systemSize;
         int usbStorageWidth = (int) (((componentWidth - iconGap - 2 * OFFSET)
                 * storageSize) / maxStorageDeviceSize);
         PartitionState partitionState
@@ -147,9 +147,8 @@ public class InstallStorageDeviceRenderer
         } else {
             graphics2D.setPaint(LIGHT_BLUE);
         }
-        graphics2D.fillRect(iconGap
-                + OFFSET, rectangleTop,
-                usbStorageWidth, BAR_HEIGHT);
+        graphics2D.fillRect(
+                iconGap + OFFSET, rectangleTop, usbStorageWidth, BAR_HEIGHT);
 
         // do not paint exchange partition when not selected
         if ((partitionState == PartitionState.EXCHANGE) && !isSelected) {
@@ -186,17 +185,17 @@ public class InstallStorageDeviceRenderer
                 String systemText
                         = LernstickFileTools.getDataVolumeString(systemSize, 1);
 
+                // paint boot partition block
+                int bootPartitionX = iconGap + OFFSET;
+                graphics2D.setPaint(DARK_BLUE);
+                graphics2D.fillRect(bootPartitionX, rectangleTop,
+                        bootWidth, BAR_HEIGHT);
+
                 // paint persistent partition block
-                int persistentPartitionX = iconGap + OFFSET;
+                int persistentPartitionX = bootPartitionX + bootWidth;
                 graphics2D.setPaint(Color.GREEN);
                 graphics2D.fillRect(persistentPartitionX, rectangleTop,
                         persistentWidth, BAR_HEIGHT);
-
-                // paint boot partition block
-                int bootPartitionX = persistentPartitionX + persistentWidth;
-                graphics2D.setPaint(DARK_BLUE);
-                graphics2D.fillRect(
-                        bootPartitionX, rectangleTop, bootWidth, BAR_HEIGHT);
 
                 // paint persistent partition text
                 drawCenterText(persistentPartitionX, rectangleTop,
@@ -204,7 +203,7 @@ public class InstallStorageDeviceRenderer
                         graphics2D);
 
                 // paint system partition text
-                int systemPartitionX = bootPartitionX + bootWidth;
+                int systemPartitionX = persistentPartitionX + persistentWidth;
                 drawCenterText(systemPartitionX, rectangleTop, systemWidth,
                         BAR_HEIGHT, systemText, graphics2D);
 
@@ -236,9 +235,15 @@ public class InstallStorageDeviceRenderer
                 if ((overheadMega != maximumExchangeSizeMega)
                         || (exchangeSize != maximumExchangeSize)) {
                     persistentSize = storageSize
-                            - exchangeSize - BOOT_PARTITION_SIZE - systemSize;
+                            - BOOT_PARTITION_SIZE - exchangeSize - systemSize;
+                    LOGGER.log(Level.FINEST,
+                            "\nstorageSize: {0}\nBOOT_PARTITION_SIZE: {1}"
+                            + "\nexchangeSize: {2}\nsystemSize: {3}"
+                            + "\npersistentSize: {4}",
+                            new Object[]{storageSize, BOOT_PARTITION_SIZE,
+                                exchangeSize, systemSize, persistentSize});
                     persistentWidth = usbStorageWidth
-                            - exchangeWidth - bootWidth - systemWidth;
+                            - bootWidth - exchangeWidth - systemWidth;
                 }
 
                 // texts
@@ -249,15 +254,20 @@ public class InstallStorageDeviceRenderer
                 systemText = LernstickFileTools.getDataVolumeString(
                         systemSize, 1);
 
-                persistentPartitionX = iconGap + OFFSET + exchangeWidth;
+                bootPartitionX = iconGap + OFFSET;
+                int exchangePartitionX = bootPartitionX + bootWidth;
+                persistentPartitionX = exchangePartitionX + exchangeWidth;
 
                 // paint color blocks first and texts later
                 // this way the persistent color block can not overwrite the
                 // exchange text...
                 // color blocks
+                graphics2D.setPaint(DARK_BLUE);
+                graphics2D.fillRect(bootPartitionX, rectangleTop,
+                        bootWidth, BAR_HEIGHT);
                 if (exchangeWidth > 0) {
                     graphics2D.setPaint(Color.YELLOW);
-                    graphics2D.fillRect(iconGap + OFFSET, rectangleTop,
+                    graphics2D.fillRect(exchangePartitionX, rectangleTop,
                             exchangeWidth, BAR_HEIGHT);
                 }
                 if (persistentWidth > 0) {
@@ -265,16 +275,12 @@ public class InstallStorageDeviceRenderer
                     graphics2D.fillRect(persistentPartitionX, rectangleTop,
                             persistentWidth, BAR_HEIGHT);
                 }
-                graphics2D.setPaint(DARK_BLUE);
-                bootPartitionX = persistentPartitionX + persistentWidth;
-                graphics2D.fillRect(bootPartitionX, rectangleTop,
-                        bootWidth, BAR_HEIGHT);
 
                 // texts
                 if (exchangeWidth > 0) {
-                    drawCenterText(iconGap + OFFSET, rectangleTop,
-                            exchangeWidth, BAR_HEIGHT, exchangeText,
-                            graphics2D);
+                    drawCenterText(exchangePartitionX, rectangleTop,
+                            exchangeWidth, BAR_HEIGHT,
+                            exchangeText, graphics2D);
                 }
                 if (persistentWidth > 0) {
                     drawCenterText(persistentPartitionX, rectangleTop,
@@ -282,7 +288,7 @@ public class InstallStorageDeviceRenderer
                             persistentText, graphics2D);
                 }
 
-                systemPartitionX = bootPartitionX + bootWidth;
+                systemPartitionX = persistentPartitionX + persistentWidth;
                 drawCenterText(systemPartitionX, rectangleTop, systemWidth,
                         BAR_HEIGHT, systemText, graphics2D);
                 break;

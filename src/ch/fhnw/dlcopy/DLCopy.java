@@ -818,6 +818,7 @@ public class DLCopy extends JFrame
         upgradeStorageDeviceList = new javax.swing.JList();
         upgradeExchangeDefinitionLabel = new javax.swing.JLabel();
         upgradeDataDefinitionLabel = new javax.swing.JLabel();
+        upgradeBootDefinitionLabel = new javax.swing.JLabel();
         upgradeOsDefinitionLabel = new javax.swing.JLabel();
         upgradeNoMediaPanel = new javax.swing.JPanel();
         upgradeNoMediaLabel = new javax.swing.JLabel();
@@ -1613,7 +1614,13 @@ public class DLCopy extends JFrame
 
         upgradeSelectionCardPanel.setLayout(new java.awt.CardLayout());
 
+        upgradeSelectionDeviceListPanel.setLayout(new java.awt.GridBagLayout());
+
         upgradeSelectionCountLabel.setText(bundle.getString("Selection_Count")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
+        upgradeSelectionDeviceListPanel.add(upgradeSelectionCountLabel, gridBagConstraints);
 
         upgradeStorageDeviceList.setName("storageDeviceList"); // NOI18N
         upgradeStorageDeviceList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -1623,51 +1630,46 @@ public class DLCopy extends JFrame
         });
         upgradeStorageDeviceListScrollPane.setViewportView(upgradeStorageDeviceList);
 
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+        upgradeSelectionDeviceListPanel.add(upgradeStorageDeviceListScrollPane, gridBagConstraints);
+
         upgradeExchangeDefinitionLabel.setFont(upgradeExchangeDefinitionLabel.getFont().deriveFont(upgradeExchangeDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, upgradeExchangeDefinitionLabel.getFont().getSize()-1));
         upgradeExchangeDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/yellow_box.png"))); // NOI18N
         upgradeExchangeDefinitionLabel.setText(bundle.getString("DLCopy.upgradeExchangeDefinitionLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+        upgradeSelectionDeviceListPanel.add(upgradeExchangeDefinitionLabel, gridBagConstraints);
 
         upgradeDataDefinitionLabel.setFont(upgradeDataDefinitionLabel.getFont().deriveFont(upgradeDataDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, upgradeDataDefinitionLabel.getFont().getSize()-1));
         upgradeDataDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/green_box.png"))); // NOI18N
         upgradeDataDefinitionLabel.setText(bundle.getString("DLCopy.upgradeDataDefinitionLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(3, 10, 0, 10);
+        upgradeSelectionDeviceListPanel.add(upgradeDataDefinitionLabel, gridBagConstraints);
+
+        upgradeBootDefinitionLabel.setFont(upgradeBootDefinitionLabel.getFont().deriveFont(upgradeBootDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, upgradeBootDefinitionLabel.getFont().getSize()-1));
+        upgradeBootDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/dark_blue_box.png"))); // NOI18N
+        upgradeBootDefinitionLabel.setText(bundle.getString("DLCopy.upgradeBootDefinitionLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(3, 10, 5, 0);
+        upgradeSelectionDeviceListPanel.add(upgradeBootDefinitionLabel, gridBagConstraints);
 
         upgradeOsDefinitionLabel.setFont(upgradeOsDefinitionLabel.getFont().deriveFont(upgradeOsDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, upgradeOsDefinitionLabel.getFont().getSize()-1));
         upgradeOsDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/blue_box.png"))); // NOI18N
         upgradeOsDefinitionLabel.setText(bundle.getString("DLCopy.upgradeOsDefinitionLabel.text")); // NOI18N
-
-        javax.swing.GroupLayout upgradeSelectionDeviceListPanelLayout = new javax.swing.GroupLayout(upgradeSelectionDeviceListPanel);
-        upgradeSelectionDeviceListPanel.setLayout(upgradeSelectionDeviceListPanelLayout);
-        upgradeSelectionDeviceListPanelLayout.setHorizontalGroup(
-            upgradeSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 670, Short.MAX_VALUE)
-            .addGroup(upgradeSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(upgradeSelectionDeviceListPanelLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addGroup(upgradeSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(upgradeStorageDeviceListScrollPane)
-                        .addComponent(upgradeOsDefinitionLabel)
-                        .addComponent(upgradeDataDefinitionLabel)
-                        .addComponent(upgradeExchangeDefinitionLabel)
-                        .addComponent(upgradeSelectionCountLabel))
-                    .addContainerGap()))
-        );
-        upgradeSelectionDeviceListPanelLayout.setVerticalGroup(
-            upgradeSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 321, Short.MAX_VALUE)
-            .addGroup(upgradeSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(upgradeSelectionDeviceListPanelLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(upgradeSelectionCountLabel)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(upgradeStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 210, Short.MAX_VALUE)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(upgradeExchangeDefinitionLabel)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(upgradeDataDefinitionLabel)
-                    .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                    .addComponent(upgradeOsDefinitionLabel)
-                    .addContainerGap()))
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(3, 10, 5, 10);
+        upgradeSelectionDeviceListPanel.add(upgradeOsDefinitionLabel, gridBagConstraints);
 
         upgradeSelectionCardPanel.add(upgradeSelectionDeviceListPanel, "upgradeSelectionDeviceListPanel");
 
@@ -2414,7 +2416,7 @@ public class DLCopy extends JFrame
                     .addGroup(executionPanelLayout.createSequentialGroup()
                         .addComponent(stepsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 537, Short.MAX_VALUE))
+                        .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, executionPanelLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(previousButton)
@@ -3461,10 +3463,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 StorageDevice device
                         = (StorageDevice) installStorageDeviceListModel.get(
                                 selectedIndices[i]);
-                long overhead = device.getSize() - systemSizeEnlarged;
+                long overhead = device.getSize()
+                        - (BOOT_PARTITION_SIZE * MEGA) - systemSizeEnlarged;
                 minOverhead = Math.min(minOverhead, overhead);
                 PartitionState partitionState = getPartitionState(
-                        device.getSize(), systemSizeEnlarged);
+                        device.getSize(),
+                        (BOOT_PARTITION_SIZE * MEGA) + systemSizeEnlarged);
                 if (partitionState != PartitionState.EXCHANGE) {
                     exchange = false;
                     break; // for
@@ -4893,42 +4897,36 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     == StorageDevice.Type.SDMemoryCard);
 
             // determine devices
+            String destinationBootDevice = device + (sdDevice ? "p1" : '1');
             String destinationExchangeDevice = null;
             String destinationDataDevice = null;
-            String destinationBootDevice;
             String destinationSystemDevice;
             switch (partitionState) {
                 case ONLY_SYSTEM:
-                    destinationBootDevice = device + (sdDevice ? "p1" : '1');
                     destinationSystemDevice = device + (sdDevice ? "p2" : '2');
                     break;
 
                 case PERSISTENCE:
-                    destinationDataDevice = device + (sdDevice ? "p1" : '1');
-                    destinationBootDevice = device + (sdDevice ? "p2" : '2');
+                    destinationDataDevice = device + (sdDevice ? "p2" : '2');
                     destinationSystemDevice = device + (sdDevice ? "p3" : '3');
                     break;
 
                 case EXCHANGE:
                     if (exchangeMB == 0) {
                         destinationDataDevice
-                                = device + (sdDevice ? "p1" : '1');
-                        destinationBootDevice
                                 = device + (sdDevice ? "p2" : '2');
                         destinationSystemDevice
                                 = device + (sdDevice ? "p3" : '3');
                     } else {
-                        destinationExchangeDevice
-                                = device + (sdDevice ? "p1" : '1');
                         if (partitions.getPersistenceMB() == 0) {
-                            destinationBootDevice
+                            destinationExchangeDevice
                                     = device + (sdDevice ? "p2" : '2');
                             destinationSystemDevice
                                     = device + (sdDevice ? "p3" : '3');
                         } else {
-                            destinationDataDevice
+                            destinationExchangeDevice
                                     = device + (sdDevice ? "p2" : '2');
-                            destinationBootDevice
+                            destinationDataDevice
                                     = device + (sdDevice ? "p3" : '3');
                             destinationSystemDevice
                                     = device + (sdDevice ? "p4" : '4');
@@ -5121,56 +5119,46 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     String bootBorder = BOOT_PARTITION_SIZE + "MiB";
                     mkpart(partedCommandList, "0%", bootBorder);
                     mkpart(partedCommandList, bootBorder, "100%");
-                    setFlag(partedCommandList, "1", "boot", "on");
-                    setFlag(partedCommandList, "1", "lba", "on");
                     break;
 
                 case PERSISTENCE:
-                    // create three partitions: persistence, boot, system
-                    String persistenceBorder = persistenceMB + "MiB";
-                    bootBorder = (persistenceMB + BOOT_PARTITION_SIZE) + "MiB";
-                    mkpart(partedCommandList, "0%", persistenceBorder);
-                    mkpart(partedCommandList, persistenceBorder, bootBorder);
-                    mkpart(partedCommandList, bootBorder, "100%");
-                    setFlag(partedCommandList, "2", "boot", "on");
-                    setFlag(partedCommandList, "2", "lba", "on");
+                    // create three partitions: boot, persistence, system
+                    bootBorder = BOOT_PARTITION_SIZE + "MiB";
+                    String persistenceBorder
+                            = (BOOT_PARTITION_SIZE + persistenceMB) + "MiB";
+                    mkpart(partedCommandList, "0%", bootBorder);
+                    mkpart(partedCommandList, bootBorder, persistenceBorder);
+                    mkpart(partedCommandList, persistenceBorder, "100%");
                     break;
 
                 case EXCHANGE:
                     if (exchangeMB == 0) {
-                        // create three partitions: persistence, boot, system
-                        persistenceBorder = persistenceMB + "MiB";
-                        bootBorder = (persistenceMB + BOOT_PARTITION_SIZE) + "MiB";
-                        mkpart(partedCommandList, "0%", persistenceBorder);
-                        mkpart(partedCommandList, persistenceBorder, bootBorder);
-                        mkpart(partedCommandList, bootBorder, "100%");
-                        setFlag(partedCommandList, "2", "boot", "on");
-                        setFlag(partedCommandList, "2", "lba", "on");
+                        // create three partitions: boot, persistence, system
+                        bootBorder = BOOT_PARTITION_SIZE + "MiB";
+                        persistenceBorder
+                                = (BOOT_PARTITION_SIZE + persistenceMB) + "MiB";
+                        mkpart(partedCommandList, "0%", bootBorder);
+                        mkpart(partedCommandList, bootBorder, persistenceBorder);
+                        mkpart(partedCommandList, persistenceBorder, "100%");
 
                     } else {
-                        String exchangeBorder = exchangeMB + "MiB";
+                        bootBorder = BOOT_PARTITION_SIZE + "MiB";
+                        String exchangeBorder
+                                = (BOOT_PARTITION_SIZE + exchangeMB) + "MiB";
+                        mkpart(partedCommandList, "0%", bootBorder);
+                        mkpart(partedCommandList, bootBorder, exchangeBorder);
                         if (persistenceMB == 0) {
-                            // create three partitions: exchange, boot, system
-                            bootBorder = (exchangeMB + BOOT_PARTITION_SIZE) + "MiB";
-                            mkpart(partedCommandList, "0%", exchangeBorder);
-                            mkpart(partedCommandList, exchangeBorder, bootBorder);
-                            mkpart(partedCommandList, bootBorder, "100%");
-                            setFlag(partedCommandList, "2", "boot", "on");
-                            setFlag(partedCommandList, "1", "lba", "on");
-                            setFlag(partedCommandList, "2", "lba", "on");
+                            // create three partitions: boot, exchange, system
+                            mkpart(partedCommandList, exchangeBorder, "100%");
                         } else {
                             // create four partitions:
-                            //   exchange, persistence, boot, system
-                            persistenceBorder = (exchangeMB + persistenceMB) + "MiB";
-                            bootBorder = (exchangeMB + persistenceMB + BOOT_PARTITION_SIZE) + "MiB";
-                            mkpart(partedCommandList, "0%", exchangeBorder);
+                            //   boot, exchange, persistence, system
+                            persistenceBorder = (BOOT_PARTITION_SIZE
+                                    + exchangeMB + persistenceMB) + "MiB";
                             mkpart(partedCommandList, exchangeBorder, persistenceBorder);
-                            mkpart(partedCommandList, persistenceBorder, bootBorder);
-                            mkpart(partedCommandList, bootBorder, "100%");
-                            setFlag(partedCommandList, "3", "boot", "on");
-                            setFlag(partedCommandList, "1", "lba", "on");
-                            setFlag(partedCommandList, "3", "lba", "on");
+                            mkpart(partedCommandList, persistenceBorder, "100%");
                         }
+                        setFlag(partedCommandList, "2", "lba", "on");
                     }
                     break;
 
@@ -5183,6 +5171,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     }
                     return false;
             }
+            setFlag(partedCommandList, "1", "boot", "on");
+            setFlag(partedCommandList, "1", "lba", "on");
 
             // safety wait in case of device scanning
             // 5 seconds were not enough...
@@ -5251,70 +5241,75 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             // The partition types assigned by parted are mosty garbage.
             // We must fix them here...
+            // boot partition (actually FAT32, but "hidden" by using the EFI
+            // partition type)
+            processExecutor.executeProcess("/sbin/sfdisk",
+                    "--id", device, "1", "ef");
             switch (partitionState) {
                 case ONLY_SYSTEM:
                     // create two partitions:
-                    //  1) boot (actually FAT32, but "hidden" by using the Linux partition type)
+                    //  1) boot
                     //  2) system (Linux)
-                    processExecutor.executeProcess("/sbin/sfdisk",
-                            "--id", device, "1", "83");
                     processExecutor.executeProcess("/sbin/sfdisk",
                             "--id", device, "2", "83");
                     break;
 
                 case PERSISTENCE:
                     // create three partitions:
-                    //  1) persistence (Linux)
-                    //  2) boot (actually FAT32, but "hidden" by using the Linux partition type)
+                    //  1) boot
+                    //  2) persistence (Linux)
                     //  3) system (Linux)
-                    for (int i = 1; i < 4; i++) {
-                        processExecutor.executeProcess("/sbin/sfdisk",
-                                "--id", device, String.valueOf(i), "83");
-                    }
+                    processExecutor.executeProcess("/sbin/sfdisk",
+                            "--id", device, "2", "83");
+                    processExecutor.executeProcess("/sbin/sfdisk",
+                            "--id", device, "3", "83");
                     break;
 
                 case EXCHANGE:
                     if (exchangeMB == 0) {
                         // create three partitions:
-                        //  1) persistence (Linux)
-                        //  2) boot (actually FAT32, but "hidden" by using the Linux partition type)
+                        //  1) boot
+                        //  2) persistence (Linux)
                         //  3) system (Linux)
-                        for (int i = 1; i < 4; i++) {
-                            processExecutor.executeProcess("/sbin/sfdisk",
-                                    "--id", device, String.valueOf(i), "83");
-                        }
+                        processExecutor.executeProcess("/sbin/sfdisk",
+                                "--id", device, "2", "83");
+                        processExecutor.executeProcess("/sbin/sfdisk",
+                                "--id", device, "3", "83");
                     } else {
+                        // determine ID for exchange partition
                         String exchangePartitionID;
-                        String fileSystem
-                                = exchangePartitionFileSystemComboBox.getSelectedItem().toString();
+                        Object selectedItem
+                                = exchangePartitionFileSystemComboBox.
+                                getSelectedItem();
+                        String fileSystem = selectedItem.toString();
                         if (fileSystem.equalsIgnoreCase("fat32")) {
                             exchangePartitionID = "c";
                         } else {
                             // exFAT & NTFS
                             exchangePartitionID = "7";
                         }
+
                         if (persistenceMB == 0) {
                             // create three partitions:
-                            //  1) exchange (FAT32)
-                            //  2) boot (actually FAT32, but "hidden" by using the Linux partition type)
+                            //  1) boot
+                            //  2) exchange (exFAT, FAT32 or NTFS)
                             //  3) system (Linux)
                             processExecutor.executeProcess("/sbin/sfdisk",
-                                    "--id", device, "1", exchangePartitionID);
-                            processExecutor.executeProcess("/sbin/sfdisk",
-                                    "--id", device, "2", "83");
+                                    "--id", device, "2", exchangePartitionID);
                             processExecutor.executeProcess("/sbin/sfdisk",
                                     "--id", device, "3", "83");
                         } else {
                             // create four partitions:
-                            //  1) exchange (FAT32)
-                            //  2) boot (actually FAT32, but "hidden" by using the Linux partition type)
-                            //  3) system (Linux)
+                            //  1) boot
+                            //  2) exchange (exFAT, FAT32 or NTFS)
+                            //  3) persistence (Linux)
+                            //  4) system (Linux)
                             processExecutor.executeProcess("/sbin/sfdisk",
-                                    "--id", device, "1", exchangePartitionID);
-                            processExecutor.executeProcess("/sbin/sfdisk",
-                                    "--id", device, "2", "83");
+                                    "--id", device, "2", exchangePartitionID);
                             processExecutor.executeProcess("/sbin/sfdisk",
                                     "--id", device, "3", "83");
+                            processExecutor.executeProcess("/sbin/sfdisk",
+                                    "--id", device, "4", "83");
                         }
                     }
                     break;
@@ -6968,7 +6963,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     Thread.sleep(7000);
                     for (Partition partition : addedDevice.getPartitions()) {
                         try {
-                            partition.getUsedSpace(true);
+                            if (partition.isPersistencePartition()) {
+                                partition.getUsedSpace(true);
+                            } else {
+                                partition.getUsedSpace(false);
+                            }
                         } catch (Exception ignored) {
                         }
                     }
@@ -7027,7 +7026,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     device.canBeUpgraded();
                     for (Partition partition : device.getPartitions()) {
                         try {
-                            partition.getUsedSpace(true);
+                            if (partition.isPersistencePartition()) {
+                                partition.getUsedSpace(true);
+                            } else {
+                                partition.getUsedSpace(false);
+                            }
                         } catch (Exception ignored) {
                         }
                     }
@@ -7475,6 +7478,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JProgressBar upgradeBackupProgressBar;
     private javax.swing.JLabel upgradeBackupProgressLabel;
     private javax.swing.JLabel upgradeBackupTimeLabel;
+    private javax.swing.JLabel upgradeBootDefinitionLabel;
     private javax.swing.JButton upgradeButton;
     private javax.swing.JPanel upgradeCardPanel;
     private javax.swing.JPanel upgradeCopyPanel;
