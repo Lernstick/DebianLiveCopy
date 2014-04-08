@@ -225,6 +225,7 @@ public class DLCopy extends JFrame
         ReadWrite, ReadOnly, NotUsed
     }
     private DataPartitionMode sourceDataPartitionMode;
+    private final ResultsTableModel resultsTableModel;
 
     /**
      * Creates new form DLCopy
@@ -250,9 +251,7 @@ public class DLCopy extends JFrame
             fileHandler.setLevel(Level.ALL);
             globalLogger.addHandler(fileHandler);
 
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "can not create log file", ex);
-        } catch (SecurityException ex) {
+        } catch (IOException | SecurityException ex) {
             LOGGER.log(Level.SEVERE, "can not create log file", ex);
         }
         // prevent double logs in console
@@ -260,7 +259,7 @@ public class DLCopy extends JFrame
         LOGGER.info("*********** Starting dlcopy ***********");
 
         // prepare processExecutor to always use the POSIX locale
-        Map<String, String> environment = new HashMap<String, String>();
+        Map<String, String> environment = new HashMap<>();
         environment.put("LC_ALL", "C");
         processExecutor.setEnvironment(environment);
 
@@ -366,9 +365,7 @@ public class DLCopy extends JFrame
             bootBootPartition = bootStorageDevice.getBootPartition();
             LOGGER.log(Level.INFO,
                     "boot boot partition: {0}", bootBootPartition);
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "", ex);
-        } catch (DBusException ex) {
+        } catch (IOException | DBusException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
         }
 
@@ -575,6 +572,9 @@ public class DLCopy extends JFrame
         // set colums for spinners
         setSpinnerColums(autoNumberStartSpinner, 2);
         setSpinnerColums(autoNumberIncrementSpinner, 2);
+
+        resultsTableModel = new ResultsTableModel(resultsTable);
+        resultsTable.setModel(resultsTableModel);
 
         // TODO: pack() does not work reliably!?
         //pack();
@@ -903,6 +903,11 @@ public class DLCopy extends JFrame
         toISOProgressBar = new javax.swing.JProgressBar();
         toISODonePanel = new javax.swing.JPanel();
         isoDoneLabel = new javax.swing.JLabel();
+        resultsPanel = new javax.swing.JPanel();
+        resultsInfoLabel = new javax.swing.JLabel();
+        resultsTitledPanel = new javax.swing.JPanel();
+        resultsScrollPane = new javax.swing.JScrollPane();
+        resultsTable = new javax.swing.JTable();
         previousButton = new javax.swing.JButton();
         nextButton = new javax.swing.JButton();
         jSeparator2 = new javax.swing.JSeparator();
@@ -1109,7 +1114,7 @@ public class DLCopy extends JFrame
                 .addComponent(selectionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(executionLabel)
-                .addContainerGap(300, Short.MAX_VALUE))
+                .addContainerGap(316, Short.MAX_VALUE))
         );
 
         cardPanel.setLayout(new java.awt.CardLayout());
@@ -1179,7 +1184,7 @@ public class DLCopy extends JFrame
         exchangePartitionSizeLabel.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
         exchangePartitionPanel.add(exchangePartitionSizeLabel, gridBagConstraints);
 
         exchangePartitionSizeSlider.setMaximum(0);
@@ -1199,7 +1204,7 @@ public class DLCopy extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         exchangePartitionPanel.add(exchangePartitionSizeSlider, gridBagConstraints);
 
         exchangePartitionSizeTextField.setColumns(7);
@@ -1207,14 +1212,14 @@ public class DLCopy extends JFrame
         exchangePartitionSizeTextField.setEnabled(false);
         exchangePartitionSizeTextField.setName("exchangePartitionSizeTextField"); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         exchangePartitionPanel.add(exchangePartitionSizeTextField, gridBagConstraints);
 
         exchangePartitionSizeUnitLabel.setText(bundle.getString("DLCopy.exchangePartitionSizeUnitLabel.text")); // NOI18N
         exchangePartitionSizeUnitLabel.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 10);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 10);
         exchangePartitionPanel.add(exchangePartitionSizeUnitLabel, gridBagConstraints);
 
         exchangePartitionBottomPanel.setLayout(new java.awt.GridBagLayout());
@@ -1330,7 +1335,6 @@ public class DLCopy extends JFrame
         quickFormatCheckBox.setText(bundle.getString("DLCopy.quickFormatCheckBox.text")); // NOI18N
         quickFormatCheckBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
         exchangePartitionBottomPanel.add(quickFormatCheckBox, gridBagConstraints);
@@ -1338,7 +1342,8 @@ public class DLCopy extends JFrame
         copyExchangeCheckBox.setText(bundle.getString("DLCopy.copyExchangeCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
         exchangePartitionBottomPanel.add(copyExchangeCheckBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1418,7 +1423,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(installSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 92, Short.MAX_VALUE)
+                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(exchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1545,9 +1550,9 @@ public class DLCopy extends JFrame
             .addGroup(installPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(currentlyInstalledDeviceLabel)
-                .addContainerGap(206, Short.MAX_VALUE))
-            .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
-            .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE)
+                .addContainerGap(349, Short.MAX_VALUE))
+            .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 657, Short.MAX_VALUE)
+            .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 657, Short.MAX_VALUE)
         );
         installPanelLayout.setVerticalGroup(
             installPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1557,7 +1562,7 @@ public class DLCopy extends JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(1, 1, 1)
-                .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 349, Short.MAX_VALUE))
+                .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 365, Short.MAX_VALUE))
         );
 
         cardPanel.add(installPanel, "installPanel");
@@ -1573,21 +1578,21 @@ public class DLCopy extends JFrame
         donePanel.setLayout(donePanelLayout);
         donePanelLayout.setHorizontalGroup(
             donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 537, Short.MAX_VALUE)
+            .addGap(0, 657, Short.MAX_VALUE)
             .addGroup(donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(donePanelLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(doneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 513, Short.MAX_VALUE)
+                    .addComponent(doneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 633, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         donePanelLayout.setVerticalGroup(
             donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 393, Short.MAX_VALUE)
+            .addGap(0, 409, Short.MAX_VALUE)
             .addGroup(donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(donePanelLayout.createSequentialGroup()
                     .addGap(83, 83, 83)
                     .addComponent(doneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(144, Short.MAX_VALUE)))
+                    .addContainerGap(160, Short.MAX_VALUE)))
         );
 
         cardPanel.add(donePanel, "donePanel");
@@ -1848,7 +1853,7 @@ public class DLCopy extends JFrame
                     .addComponent(sortAscendingButton)
                     .addComponent(sortDescendingButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(upgradeOverwriteScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 410, Short.MAX_VALUE)
+                .addComponent(upgradeOverwriteScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 530, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(upgradeOverwriteAddButton, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -1905,7 +1910,7 @@ public class DLCopy extends JFrame
                                     .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
                                         .addComponent(automaticBackupLabel)
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(automaticBackupTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 242, Short.MAX_VALUE)))))
+                                        .addComponent(automaticBackupTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 426, Short.MAX_VALUE)))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(automaticBackupButton)))
                 .addContainerGap())
@@ -2132,7 +2137,7 @@ public class DLCopy extends JFrame
             .addGroup(repairSelectionDeviceListPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(repairSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(repairStorageDeviceListScrollPane)
+                    .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 633, Short.MAX_VALUE)
                     .addComponent(repairSelectionCountLabel)
                     .addComponent(repairDataDefinitionLabel)
                     .addComponent(repairExchangeDefinitionLabel)
@@ -2152,7 +2157,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(repairSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 157, Short.MAX_VALUE)
+                .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(repairExchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2280,7 +2285,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(isoOptionsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(tmpDriveInfoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 513, Short.MAX_VALUE)
+                    .addComponent(tmpDriveInfoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 633, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, toISOSelectionPanelLayout.createSequentialGroup()
                         .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, toISOSelectionPanelLayout.createSequentialGroup()
@@ -2289,16 +2294,16 @@ public class DLCopy extends JFrame
                                     .addComponent(isoLabelLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(writableTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)
-                                    .addComponent(isoLabelTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)))
+                                    .addComponent(writableTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 445, Short.MAX_VALUE)
+                                    .addComponent(isoLabelTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 445, Short.MAX_VALUE)))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, toISOSelectionPanelLayout.createSequentialGroup()
                                 .addComponent(freeSpaceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(freeSpaceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE))
+                                .addComponent(freeSpaceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 445, Short.MAX_VALUE))
                             .addGroup(javax.swing.GroupLayout.Alignment.LEADING, toISOSelectionPanelLayout.createSequentialGroup()
                                 .addComponent(tmpDirLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tmpDirTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 298, Short.MAX_VALUE)))
+                                .addComponent(tmpDirTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 445, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tmpDirSelectButton)))
                 .addContainerGap())
@@ -2330,7 +2335,7 @@ public class DLCopy extends JFrame
                     .addComponent(isoLabelLabel))
                 .addGap(18, 18, 18)
                 .addComponent(isoOptionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(38, Short.MAX_VALUE))
         );
 
         cardPanel.add(toISOSelectionPanel, "toISOSelectionPanel");
@@ -2366,24 +2371,59 @@ public class DLCopy extends JFrame
         toISODonePanel.setLayout(toISODonePanelLayout);
         toISODonePanelLayout.setHorizontalGroup(
             toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 537, Short.MAX_VALUE)
+            .addGap(0, 657, Short.MAX_VALUE)
             .addGroup(toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(toISODonePanelLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(isoDoneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 513, Short.MAX_VALUE)
+                    .addComponent(isoDoneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 633, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         toISODonePanelLayout.setVerticalGroup(
             toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 393, Short.MAX_VALUE)
+            .addGap(0, 409, Short.MAX_VALUE)
             .addGroup(toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(toISODonePanelLayout.createSequentialGroup()
                     .addGap(83, 83, 83)
                     .addComponent(isoDoneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(69, Short.MAX_VALUE)))
+                    .addContainerGap(130, Short.MAX_VALUE)))
         );
 
         cardPanel.add(toISODonePanel, "toISODonePanel");
+
+        resultsInfoLabel.setText(bundle.getString("Done_Message_From_Non_Removable_Boot_Device")); // NOI18N
+
+        resultsTitledPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("Installation_Report"))); // NOI18N
+        resultsTitledPanel.setLayout(new java.awt.GridBagLayout());
+
+        resultsTable.setAutoCreateRowSorter(true);
+        resultsScrollPane.setViewportView(resultsTable);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        resultsTitledPanel.add(resultsScrollPane, gridBagConstraints);
+
+        javax.swing.GroupLayout resultsPanelLayout = new javax.swing.GroupLayout(resultsPanel);
+        resultsPanel.setLayout(resultsPanelLayout);
+        resultsPanelLayout.setHorizontalGroup(
+            resultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(resultsTitledPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 671, Short.MAX_VALUE)
+            .addGroup(resultsPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(resultsInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                .addContainerGap())
+        );
+        resultsPanelLayout.setVerticalGroup(
+            resultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(resultsPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addComponent(resultsInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(resultsTitledPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE))
+        );
+
+        cardPanel.add(resultsPanel, "resultsPanel");
 
         previousButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/previous.png"))); // NOI18N
         previousButton.setText(bundle.getString("DLCopy.previousButton.text")); // NOI18N
@@ -2432,7 +2472,7 @@ public class DLCopy extends JFrame
                     .addGroup(executionPanelLayout.createSequentialGroup()
                         .addComponent(stepsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 537, Short.MAX_VALUE))
+                        .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 657, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, executionPanelLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(previousButton)
@@ -2489,10 +2529,7 @@ public class DLCopy extends JFrame
             case INSTALL_SELECTION:
                 try {
                     checkInstallSelection();
-                } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE,
-                            "checking the selected usb flash drive failed", ex);
-                } catch (DBusException ex) {
+                } catch (IOException | DBusException ex) {
                     LOGGER.log(Level.SEVERE,
                             "checking the selected usb flash drive failed", ex);
                 }
@@ -2626,10 +2663,8 @@ public class DLCopy extends JFrame
                 globalShow("executionPanel");
                 switchToISOInformation();
             }
-        } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
-        } catch (DBusException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+        } catch (IOException | DBusException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
         }
     }//GEN-LAST:event_toISOButtonActionPerformed
 
@@ -2953,25 +2988,22 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     Node selectedNode
                             = optionAttributes.getNamedItem("selected");
                     if (selectedNode != null) {
-                        String selectedPersistence
-                                = optionAttributes.getNamedItem("id").getNodeValue();
+                        Node idNode = optionAttributes.getNamedItem("id");
+                        String selectedPersistence = idNode.getNodeValue();
                         LOGGER.log(Level.FINER, "selectedPersistence: \"{0}\"",
                                 selectedPersistence);
-                        if ("rw".equals(selectedPersistence)) {
-                            return DataPartitionMode.ReadWrite;
-                        } else if ("ro".equals(selectedPersistence)) {
-                            return DataPartitionMode.ReadOnly;
-                        } else if ("no".equals(selectedPersistence)) {
-                            return DataPartitionMode.NotUsed;
+                        switch (selectedPersistence) {
+                            case "rw":
+                                return DataPartitionMode.ReadWrite;
+                            case "ro":
+                                return DataPartitionMode.ReadOnly;
+                            case "no":
+                                return DataPartitionMode.NotUsed;
                         }
                     }
                 }
             }
-        } catch (ParserConfigurationException ex) {
-            LOGGER.log(Level.WARNING, "could not parse xmlboot config", ex);
-        } catch (SAXException ex) {
-            LOGGER.log(Level.WARNING, "could not parse xmlboot config", ex);
-        } catch (IOException ex) {
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
             LOGGER.log(Level.WARNING, "could not parse xmlboot config", ex);
         }
         LOGGER.warning("could not determine data partition mode");
@@ -2999,27 +3031,34 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         "childNodeName: \"{0}\"", childNodeName);
                 if ("option".equals(childNodeName)) {
                     NamedNodeMap optionAttributes = childNode.getAttributes();
-                    String id
-                            = optionAttributes.getNamedItem("id").getNodeValue();
+                    Node idNode = optionAttributes.getNamedItem("id");
+                    String id = idNode.getNodeValue();
                     LOGGER.log(Level.FINER, "id: \"{0}\"", id);
-                    if ("rw".equals(id)) {
-                        if (dataPartitionMode == DataPartitionMode.ReadWrite) {
-                            selectNode(childNode);
-                        } else {
-                            unselectNode(childNode);
-                        }
-                    } else if ("ro".equals(id)) {
-                        if (dataPartitionMode == DataPartitionMode.ReadOnly) {
-                            selectNode(childNode);
-                        } else {
-                            unselectNode(childNode);
-                        }
-                    } else if ("no".equals(id)) {
-                        if (dataPartitionMode == DataPartitionMode.NotUsed) {
-                            selectNode(childNode);
-                        } else {
-                            unselectNode(childNode);
-                        }
+                    switch (id) {
+                        case "rw":
+                            if (dataPartitionMode
+                                    == DataPartitionMode.ReadWrite) {
+                                selectNode(childNode);
+                            } else {
+                                unselectNode(childNode);
+                            }
+                            break;
+                        case "ro":
+                            if (dataPartitionMode
+                                    == DataPartitionMode.ReadOnly) {
+                                selectNode(childNode);
+                            } else {
+                                unselectNode(childNode);
+                            }
+                            break;
+                        case "no":
+                            if (dataPartitionMode
+                                    == DataPartitionMode.NotUsed) {
+                                selectNode(childNode);
+                            } else {
+                                unselectNode(childNode);
+                            }
+                            break;
                     }
                 }
             }
@@ -3032,11 +3071,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             StreamResult result = new StreamResult(xmlBootConfigFile);
             transformer.transform(source, result);
 
-        } catch (ParserConfigurationException ex) {
-            LOGGER.log(Level.WARNING, "could not parse xmlboot config", ex);
-        } catch (SAXException ex) {
-            LOGGER.log(Level.WARNING, "could not parse xmlboot config", ex);
-        } catch (IOException ex) {
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
             LOGGER.log(Level.WARNING, "could not parse xmlboot config", ex);
         } catch (TransformerException ex) {
             LOGGER.log(Level.WARNING, "could not save xmlboot config", ex);
@@ -3135,7 +3170,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         Object[] selectedValues = upgradeOverwriteList.getSelectedValues();
 
         // sort
-        List<String> list = new ArrayList<String>();
+        List<String> list = new ArrayList<>();
         Enumeration enumeration = upgradeOverwriteListModel.elements();
         while (enumeration.hasMoreElements()) {
             list.add((String) enumeration.nextElement());
@@ -3374,19 +3409,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         if (file.exists()) {
             file.delete();
         }
-        // write new version of file
-        FileOutputStream outputStream = null;
-        try {
-            outputStream = new FileOutputStream(file);
+        try (FileOutputStream outputStream = new FileOutputStream(file)) {
             String lineSeparator = System.getProperty("line.separator");
             for (String line : lines) {
                 outputStream.write((line + lineSeparator).getBytes());
             }
             outputStream.flush();
-        } finally {
-            if (outputStream != null) {
-                outputStream.close();
-            }
         }
     }
 
@@ -3645,8 +3673,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private Dictionary<Integer, JComponent> createLabels(
             JSlider slider, int tickSpacing) {
-        Dictionary<Integer, JComponent> labels
-                = new Hashtable<Integer, JComponent>();
+        Dictionary<Integer, JComponent> labels = new Hashtable<>();
         // we want to use a number format with grouping
         NumberFormat sliderNumberFormat = NumberFormat.getInstance();
         sliderNumberFormat.setGroupingUsed(true);
@@ -3674,7 +3701,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             boolean includeHarddisks, boolean includeBootDevice)
             throws IOException, DBusException {
 
-        List<StorageDevice> storageDevices = new ArrayList<StorageDevice>();
+        List<StorageDevice> storageDevices = new ArrayList<>();
 
         // using libdbus-java here fails on Debian Live
         // therefore we parse the command line output
@@ -4051,8 +4078,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         cardLayout.show(container, cardName);
     }
 
-    private boolean formatBootAndSystemPartition(String bootDevice,
-            String systemDevice, boolean showErrorMessage) {
+    private void formatBootAndSystemPartition(
+            String bootDevice, String systemDevice) throws IOException {
         int exitValue = processExecutor.executeProcess(
                 "/sbin/mkfs.vfat", "-n", Partition.BOOT_LABEL, bootDevice);
         if (exitValue != 0) {
@@ -4060,10 +4087,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             String errorMessage
                     = STRINGS.getString("Error_Create_Boot_Partition");
             LOGGER.severe(errorMessage);
-            if (showErrorMessage) {
-                showErrorMessage(errorMessage);
-            }
-            return false;
+            throw new IOException(errorMessage);
         }
         exitValue = processExecutor.executeProcess(
                 "/sbin/mkfs.ext4", "-L", systemPartitionLabel, systemDevice);
@@ -4072,12 +4096,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             String errorMessage
                     = STRINGS.getString("Error_Create_System_Partition");
             LOGGER.severe(errorMessage);
-            if (showErrorMessage) {
-                showErrorMessage(errorMessage);
-            }
-            return false;
+            throw new IOException(errorMessage);
         }
-        return true;
     }
 
     private void isolinuxToSyslinux(String mountPoint) throws IOException {
@@ -4128,8 +4148,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }
 
-    private boolean makeBootable(String device,
-            Partition destinationBootPartition)
+    private void makeBootable(String device, Partition destinationBootPartition)
             throws IOException, DBusException {
 
         String bootDevice
@@ -4141,8 +4160,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             errorMessage = MessageFormat.format(
                     errorMessage, bootDevice, processExecutor.getOutput());
             LOGGER.severe(errorMessage);
-            showErrorMessage(errorMessage);
-            return false;
+            throw new IOException(errorMessage);
         }
         exitValue = processExecutor.executeScript(
                 "cat " + SYSLINUX_MBR_PATH + " > " + device + '\n'
@@ -4151,11 +4169,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             String errorMessage = "could not copy syslinux Master Boot Record "
                     + "to device \"" + device + '\"';
             LOGGER.severe(errorMessage);
-            showErrorMessage(errorMessage);
-            return false;
+            throw new IOException(errorMessage);
         }
-
-        return true;
     }
 
     private void playNotifySound() {
@@ -4579,8 +4594,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }
 
-    private boolean formatPersistencePartition(
-            String device, boolean showErrorMessage)
+    private void formatPersistencePartition(String device)
             throws DBusException, IOException {
 
         // make sure that the partition is unmounted
@@ -4599,10 +4613,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             String errorMessage
                     = STRINGS.getString("Error_Create_Data_Partition");
             LOGGER.severe(errorMessage);
-            if (showErrorMessage) {
-                showErrorMessage(errorMessage);
-            }
-            return false;
+            throw new IOException(errorMessage);
         }
 
         // tuning
@@ -4613,10 +4624,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             String errorMessage
                     = STRINGS.getString("Error_Tune_Data_Partition");
             LOGGER.severe(errorMessage);
-            if (showErrorMessage) {
-                showErrorMessage(errorMessage);
-            }
-            return false;
+            throw new IOException(errorMessage);
         }
 
         // create default persistence configuration file
@@ -4625,24 +4633,21 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         device.substring(5), systemSize);
         String mountPath = persistencePartition.mount().getMountPath();
         if (mountPath == null) {
-            // TODO: error message
-            return false;
+            throw new IOException("could not mount persistence partition");
         }
-        FileWriter writer
-                = new FileWriter(mountPath + "/persistence.conf");
-        writer.write("/ union,source=.\n");
-        writer.flush();
-        writer.close();
+        try (FileWriter writer
+                = new FileWriter(mountPath + "/persistence.conf")) {
+            writer.write("/ union,source=.\n");
+            writer.flush();
+        }
         persistencePartition.umount();
-
-        return true;
     }
 
     private void addDeviceToList(JList list, StorageDevice newDevice) {
         DefaultListModel listModel = (DefaultListModel) list.getModel();
 
         // put new device into a "sorted" position
-        List<StorageDevice> deviceList = new ArrayList<StorageDevice>();
+        List<StorageDevice> deviceList = new ArrayList<>();
         Object[] entries = listModel.toArray();
         for (Object entry : entries) {
             deviceList.add((StorageDevice) entry);
@@ -4710,7 +4715,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         private FileCopier fileCopier;
         private int currentDevice;
         private int selectionCount;
-        private int rsyncProgress;
         private CpActionListener cpActionListener;
 
         @Override
@@ -4722,147 +4726,132 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 }
             });
 
-            int[] selectedIndices = installStorageDeviceList.getSelectedIndices();
+            int[] selectedIndices
+                    = installStorageDeviceList.getSelectedIndices();
             selectionCount = selectedIndices.length;
             fileCopier = new FileCopier();
-            try {
-                // main loop over all target storage devices
-                Number autoNumberStart
-                        = (Number) autoNumberStartSpinner.getValue();
-                Number autoIncrementNumber
-                        = (Number) autoNumberIncrementSpinner.getValue();
-                int autoNumber = autoNumberStart.intValue();
-                int autoIncrement = autoIncrementNumber.intValue();
-                boolean noError = true;
-                for (int i = 0; i < selectionCount; i++) {
-                    currentDevice = i + 1;
-                    StorageDevice storageDevice
-                            = (StorageDevice) installStorageDeviceListModel.getElementAt(
-                                    selectedIndices[i]);
-                    // update overall progress message
-                    String pattern = STRINGS.getString("Install_Device_Info");
-                    final String message = MessageFormat.format(pattern,
-                            storageDevice.getVendor() + " "
-                            + storageDevice.getModel() + " "
-                            + LernstickFileTools.getDataVolumeString(
-                                    storageDevice.getSize(), 1),
-                            "/dev/" + storageDevice.getDevice(),
-                            currentDevice, selectionCount);
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            currentlyInstalledDeviceLabel.setText(message);
-                        }
-                    });
-
-                    // auto numbering
-                    String exchangePartitionLabel
-                            = exchangePartitionTextField.getText();
-                    String autoNumberPattern
-                            = autoNumberPatternTextField.getText();
-                    if (!autoNumberPattern.isEmpty()) {
-                        exchangePartitionLabel = exchangePartitionLabel.replace(
-                                autoNumberPattern, String.valueOf(autoNumber));
-                        autoNumber += autoIncrement;
+            Number autoNumberStart
+                    = (Number) autoNumberStartSpinner.getValue();
+            Number autoIncrementNumber
+                    = (Number) autoNumberIncrementSpinner.getValue();
+            int autoNumber = autoNumberStart.intValue();
+            int autoIncrement = autoIncrementNumber.intValue();
+            final List<StorageDeviceResult> resultsList = new ArrayList<>();
+            for (int i = 0; i < selectionCount; i++) {
+                long startTime = System.currentTimeMillis();
+                currentDevice = i + 1;
+                StorageDevice storageDevice
+                        = (StorageDevice) installStorageDeviceListModel.getElementAt(
+                                selectedIndices[i]);
+                // update overall progress message
+                String pattern = STRINGS.getString("Install_Device_Info");
+                final String message = MessageFormat.format(pattern,
+                        storageDevice.getVendor() + " "
+                        + storageDevice.getModel() + " "
+                        + LernstickFileTools.getDataVolumeString(
+                                storageDevice.getSize(), 1),
+                        "/dev/" + storageDevice.getDevice(),
+                        currentDevice, selectionCount);
+                SwingUtilities.invokeLater(new Runnable() {
+                    @Override
+                    public void run() {
+                        currentlyInstalledDeviceLabel.setText(message);
                     }
+                });
 
-                    if (!copyToStorageDevice(
-                            storageDevice, exchangePartitionLabel)) {
-                        noError = false;
-                        switchToInstallSelection();
-                        break;
-                    }
-
-                    // auto-increment autoNumberStartSpinner
-                    final int newStartNumber = autoNumber;
-                    SwingUtilities.invokeLater(new Runnable() {
-
-                        @Override
-                        public void run() {
-                            autoNumberStartSpinner.setValue(newStartNumber);
-                        }
-                    });
+                // auto numbering
+                String exchangePartitionLabel
+                        = exchangePartitionTextField.getText();
+                String autoNumberPattern
+                        = autoNumberPatternTextField.getText();
+                if (!autoNumberPattern.isEmpty()) {
+                    exchangePartitionLabel = exchangePartitionLabel.replace(
+                            autoNumberPattern, String.valueOf(autoNumber));
+                    autoNumber += autoIncrement;
                 }
 
-                if (noError) {
-                    // done
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            setTitle(STRINGS.getString("DLCopy.title"));
-                            String key;
-                            switch (bootStorageDevice.getType()) {
-                                case HardDrive:
-                                case OpticalDisc:
-                                    key = "Done_Message_From_Non_Removable_Boot_Device";
-                                    break;
-                                default:
-                                    key = "Done_Message_From_Removable_Boot_Device";
-                            }
-                            doneLabel.setText(STRINGS.getString(key));
-                            showCard(cardPanel, "donePanel");
-                            previousButton.setEnabled(true);
-                            nextButton.setText(STRINGS.getString("Done"));
-                            nextButton.setIcon(new ImageIcon(
-                                    getClass().getResource(
-                                            "/ch/fhnw/dlcopy/icons/exit.png")));
-                            nextButton.setEnabled(true);
-                            previousButton.requestFocusInWindow();
-                            getRootPane().setDefaultButton(previousButton);
-                            //Toolkit.getDefaultToolkit().beep();
-                            playNotifySound();
-                            toFront();
-                        }
-                    });
+                String errorMessage = null;
+                try {
+                    copyToStorageDevice(
+                            storageDevice, exchangePartitionLabel);
+                } catch (InterruptedException | IOException |
+                        DBusException exception) {
+                    errorMessage = exception.getMessage();
                 }
-            } catch (InterruptedException ex) {
-                LOGGER.log(Level.SEVERE, "Installation failed", ex);
-                String errorMessage = STRINGS.getString(
-                        "Installation_Failed_With_Exception");
-                errorMessage = MessageFormat.format(
-                        errorMessage, ex.getMessage());
-                showErrorMessage(errorMessage);
-                switchToInstallSelection();
-            } catch (IOException ex) {
-                LOGGER.log(Level.SEVERE, "Installation failed", ex);
-                String errorMessage = STRINGS.getString(
-                        "Installation_Failed_With_Exception");
-                errorMessage = MessageFormat.format(
-                        errorMessage, ex.getMessage());
-                showErrorMessage(errorMessage);
-                switchToInstallSelection();
-            } catch (DBusException ex) {
-                LOGGER.log(Level.SEVERE, "Installation failed", ex);
-                String errorMessage = STRINGS.getString(
-                        "Installation_Failed_With_Exception");
-                errorMessage = MessageFormat.format(
-                        errorMessage, ex.getMessage());
-                showErrorMessage(errorMessage);
-                switchToInstallSelection();
+
+                long stopTime = System.currentTimeMillis();
+                long duration = stopTime - startTime;
+
+                resultsList.add(new StorageDeviceResult(
+                        storageDevice, duration, errorMessage));
+
+                // auto-increment autoNumberStartSpinner
+                final int newStartNumber = autoNumber;
+                SwingUtilities.invokeLater(new Runnable() {
+
+                    @Override
+                    public void run() {
+                        autoNumberStartSpinner.setValue(newStartNumber);
+                    }
+                });
             }
+
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    setTitle(STRINGS.getString("DLCopy.title"));
+                    String key;
+                    switch (bootStorageDevice.getType()) {
+                        case HardDrive:
+                        case OpticalDisc:
+                            key = "Done_Message_From_Non_Removable_Boot_Device";
+                            break;
+                        default:
+                            key = "Done_Message_From_Removable_Boot_Device";
+                    }
+                    resultsInfoLabel.setText(STRINGS.getString(key));
+                    resultsTableModel.setList(resultsList);
+                    showCard(cardPanel, "resultsPanel");
+                    previousButton.setEnabled(true);
+                    nextButton.setText(STRINGS.getString("Done"));
+                    nextButton.setIcon(new ImageIcon(
+                            getClass().getResource(
+                                    "/ch/fhnw/dlcopy/icons/exit.png")));
+                    nextButton.setEnabled(true);
+                    previousButton.requestFocusInWindow();
+                    getRootPane().setDefaultButton(previousButton);
+                    //Toolkit.getDefaultToolkit().beep();
+                    playNotifySound();
+                    toFront();
+                }
+            });
         }
 
         @Override
         public void propertyChange(PropertyChangeEvent evt) {
             String propertyName = evt.getPropertyName();
-            if (FileCopier.BYTE_COUNTER_PROPERTY.equals(propertyName)) {
-                long byteCount = fileCopier.getByteCount();
-                long copiedBytes = fileCopier.getCopiedBytes();
-                final int progress = (int) ((100 * copiedBytes) / byteCount);
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        setTitle(progress + "% " + STRINGS.getString("Copied")
-                                + " (" + currentDevice + '/' + selectionCount
-                                + ')');
-                    }
-                });
+            switch (propertyName) {
+                case FileCopier.BYTE_COUNTER_PROPERTY:
+                    long byteCount = fileCopier.getByteCount();
+                    long copiedBytes = fileCopier.getCopiedBytes();
+                    final int progress
+                            = (int) ((100 * copiedBytes) / byteCount);
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                            setTitle(progress + "% "
+                                    + STRINGS.getString("Copied") + " ("
+                                    + currentDevice + '/' + selectionCount
+                                    + ')');
+                        }
+                    });
+                    break;
 
-            } else if ("line".equals(propertyName)) {
-                // store current cp progress line
-                // (will be pattern matched later when needed)
-                String line = (String) evt.getNewValue();
-                cpActionListener.setCurrentLine(line);
+                case "line":
+                    // store current cp progress line
+                    // (will be pattern matched later when needed)
+                    String line = (String) evt.getNewValue();
+                    cpActionListener.setCurrentLine(line);
 
 //                // rsync updates
 //                // parse lines that end with "... to-check=100/800)"
@@ -4900,10 +4889,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 //                                "could not parse rsync output", ex);
 //                    }
 //                }
+                    break;
             }
         }
 
-        private boolean copyToStorageDevice(
+        private void copyToStorageDevice(
                 StorageDevice storageDevice, String exchangePartitionLabel)
                 throws InterruptedException, IOException, DBusException {
 
@@ -4960,16 +4950,17 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     String errorMessage = "unsupported partitionState \""
                             + partitionState + '\"';
                     LOGGER.severe(errorMessage);
-                    showErrorMessage(errorMessage);
-                    return false;
+                    throw new IOException(errorMessage);
             }
 
             // create all necessary partitions
-            if (!createPartitions(storageDevice, partitions, size, exchangeMB,
-                    partitionState, destinationExchangeDevice,
-                    exchangePartitionLabel, destinationDataDevice,
-                    destinationBootDevice, destinationSystemDevice, false)) {
-                // On some Corsari Flash Voyager GT drives the first sfdisk try
+            try {
+                createPartitions(storageDevice, partitions, size, exchangeMB,
+                        partitionState, destinationExchangeDevice,
+                        exchangePartitionLabel, destinationDataDevice,
+                        destinationBootDevice, destinationSystemDevice);
+            } catch (IOException iOException) {
+                // On some Corsair Flash Voyager GT drives the first sfdisk try
                 // failes with the following output:
                 // ---------------
                 // Checking that no-one is using this disk right now ...
@@ -5013,12 +5004,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // partitions are *NOT* correctly created the first time. Even
                 // more strangely, it always works the second time. Therefore
                 // we automatically retry once more in case of an error.
-                if (!createPartitions(storageDevice, partitions, size,
-                        exchangeMB, partitionState, destinationExchangeDevice,
+                createPartitions(storageDevice, partitions, size, exchangeMB,
+                        partitionState, destinationExchangeDevice,
                         exchangePartitionLabel, destinationDataDevice,
-                        destinationBootDevice, destinationSystemDevice, true)) {
-                    return false;
-                }
+                        destinationBootDevice, destinationSystemDevice);
             }
 
             // the partitions now really exist
@@ -5042,15 +5031,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             destinationSystemDevice.substring(5), systemSize);
 
             // copy operating system files
-            if (!copyExchangeBootAndSystem(destinationExchangePartition,
-                    destinationBootPartition, destinationSystemPartition)) {
-                return false;
-            }
+            copyExchangeBootAndSystem(destinationExchangePartition,
+                    destinationBootPartition, destinationSystemPartition);
 
             // copy persistence layer
-            if ((destinationDataPartition != null)
-                    && (!copyPersistence(destinationDataPartition))) {
-                return false;
+            if (destinationDataPartition != null) {
+                copyPersistence(destinationDataPartition);
             }
 
             // make storage device bootable
@@ -5063,23 +5049,26 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             STRINGS.getString("Writing_Boot_Sector"));
                 }
             });
-            if (!makeBootable(device, destinationBootPartition)) {
-                return false;
-            }
+            makeBootable(device, destinationBootPartition);
 
             if (!umount(destinationBootPartition)) {
-                return false;
+                String errorMessage
+                        = "could not umount destination boot partition";
+                throw new IOException(errorMessage);
             }
 
-            return umount(destinationSystemPartition);
+            if (!umount(destinationSystemPartition)) {
+                String errorMessage
+                        = "could not umount destination system partition";
+                throw new IOException(errorMessage);
+            }
         }
 
-        private boolean createPartitions(StorageDevice storageDevice,
+        private void createPartitions(StorageDevice storageDevice,
                 Partitions partitions, long storageDeviceSize, int exchangeMB,
                 final PartitionState partitionState, String exchangeDevice,
                 String exchangePartitionLabel, String persistenceDevice,
-                String bootDevice, String systemDevice,
-                boolean showErrorMessages)
+                String bootDevice, String systemDevice)
                 throws InterruptedException, IOException, DBusException {
 
             // update GUI
@@ -5114,7 +5103,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
 
             // assemble partition command
-            List<String> partedCommandList = new ArrayList<String>();
+            List<String> partedCommandList = new ArrayList<>();
             partedCommandList.add("/sbin/parted");
             partedCommandList.add("-s");
             partedCommandList.add("-a");
@@ -5188,10 +5177,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     String errorMessage = "unsupported partitionState \""
                             + partitionState + '\"';
                     LOGGER.severe(errorMessage);
-                    if (showErrorMessages) {
-                        showErrorMessage(errorMessage);
-                    }
-                    return false;
+                    throw new IOException(errorMessage);
             }
             setFlag(partedCommandList, "1", "boot", "on");
             setFlag(partedCommandList, "1", "lba", "on");
@@ -5235,10 +5221,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         = STRINGS.getString("Error_Creating_Partition_Table");
                 errorMessage = MessageFormat.format(errorMessage, device);
                 LOGGER.severe(errorMessage);
-                if (showErrorMessages) {
-                    showErrorMessage(errorMessage);
-                }
-                return false;
+                throw new IOException(errorMessage);
             }
 
             // another safety wait...
@@ -5252,10 +5235,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 String errorMessage = STRINGS.getString("Error_Repartitioning");
                 errorMessage = MessageFormat.format(errorMessage, device);
                 LOGGER.severe(errorMessage);
-                if (showErrorMessages) {
-                    showErrorMessage(errorMessage);
-                }
-                return false;
+                throw new IOException(errorMessage);
             }
 
             // safety wait so that new partitions are known to the system
@@ -5337,53 +5317,49 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     break;
 
                 default:
-                    LOGGER.log(Level.SEVERE,
-                            "unsupported partitionState \"{0}\"",
-                            partitionState);
-                    return false;
+                    String errorMessage = "unsupported partitionState \""
+                            + partitionState + '\"';
+                    LOGGER.log(Level.SEVERE, errorMessage);
+                    throw new IOException(errorMessage);
             }
 
             // create file systems
             switch (partitionState) {
                 case ONLY_SYSTEM:
-                    return formatBootAndSystemPartition(
-                            bootDevice, systemDevice, showErrorMessages);
+                    formatBootAndSystemPartition(bootDevice, systemDevice);
+                    return;
 
                 case PERSISTENCE:
-                    return formatPersistencePartition(
-                            persistenceDevice, showErrorMessages)
-                            && formatBootAndSystemPartition(bootDevice,
-                                    systemDevice, showErrorMessages);
+                    formatPersistencePartition(persistenceDevice);
+                    formatBootAndSystemPartition(bootDevice, systemDevice);
+                    return;
 
                 case EXCHANGE:
                     if (exchangeMB != 0) {
                         // create file system for exchange partition
-                        if (!(formatExchangePartition(exchangeDevice,
-                                exchangePartitionLabel, showErrorMessages))) {
-                            return false;
-                        }
+                        formatExchangePartition(
+                                exchangeDevice, exchangePartitionLabel);
                     }
-                    if ((persistenceDevice != null)
-                            && (!formatPersistencePartition(
-                                    persistenceDevice, showErrorMessages))) {
-                        return false;
+                    if (persistenceDevice != null) {
+                        formatPersistencePartition(persistenceDevice);
                     }
-                    return formatBootAndSystemPartition(
-                            bootDevice, systemDevice, showErrorMessages);
+                    formatBootAndSystemPartition(bootDevice, systemDevice);
+                    return;
 
                 default:
-                    LOGGER.log(Level.SEVERE,
-                            "unsupported partitionState \"{0}\"",
-                            partitionState);
-                    return false;
+                    String errorMessage = "unsupported partitionState \""
+                            + partitionState + '\"';
+                    LOGGER.log(Level.SEVERE, errorMessage);
+                    throw new IOException(errorMessage);
             }
         }
 
-        private boolean formatExchangePartition(String exchangeDevice,
-                String exchangePartitionLabel, boolean showErrorMessages) {
+        private void formatExchangePartition(String exchangeDevice,
+                String exchangePartitionLabel) throws IOException {
             // create file system for exchange partition
-            String exFS
-                    = exchangePartitionFileSystemComboBox.getSelectedItem().toString();
+            Object selectedFileSystem
+                    = exchangePartitionFileSystemComboBox.getSelectedItem();
+            String exFS = selectedFileSystem.toString();
             String mkfsBuilder;
             String mkfsLabelSwitch;
             String quickSwitch = null;
@@ -5401,15 +5377,16 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 mkfsLabelSwitch = "-L";
             }
 
-            int exitValue = 0;
+            int exitValue;
             if (quickSwitch == null) {
                 exitValue = processExecutor.executeProcess(
-                        "/sbin/mkfs." + mkfsBuilder,
-                        mkfsLabelSwitch, exchangePartitionLabel, exchangeDevice);
+                        "/sbin/mkfs." + mkfsBuilder, mkfsLabelSwitch,
+                        exchangePartitionLabel, exchangeDevice);
             } else {
                 exitValue = processExecutor.executeProcess(
                         "/sbin/mkfs." + mkfsBuilder, quickSwitch,
-                        mkfsLabelSwitch, exchangePartitionLabel, exchangeDevice);
+                        mkfsLabelSwitch, exchangePartitionLabel,
+                        exchangeDevice);
             }
 
             if (exitValue != 0) {
@@ -5418,12 +5395,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 errorMessage
                         = MessageFormat.format(errorMessage, exchangeDevice);
                 LOGGER.severe(errorMessage);
-                if (showErrorMessages) {
-                    showErrorMessage(errorMessage);
-                }
-                return false;
+                throw new IOException(errorMessage);
             }
-            return true;
         }
 
         private void mkpart(List<String> commandList,
@@ -5442,7 +5415,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             commandList.add(value);
         }
 
-        private boolean copyExchangeBootAndSystem(
+        private void copyExchangeBootAndSystem(
                 Partition destinationExchangePartition,
                 Partition destinationBootPartition,
                 Partition destinationSystemPartition)
@@ -5529,11 +5502,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 setDataPartitionMode(
                         destinationBootPath, destinationDataPartitionMode);
             }
-
-            return true;
         }
 
-        private boolean copyPersistence(Partition destinationDataPartition)
+        private void copyPersistence(Partition destinationDataPartition)
                 throws IOException, InterruptedException, DBusException {
             // copy persistence partition
             if (copyPersistenceCheckBox.isSelected()) {
@@ -5542,8 +5513,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 MountInfo sourceDataMountInfo = bootDataPartition.mount();
                 String sourceDataPath = sourceDataMountInfo.getMountPath();
                 if (sourceDataPath == null) {
-                    // TODO: error message
-                    return false;
+                    String errorMessage
+                            = "could not mount source data partition";
+                    throw new IOException(errorMessage);
                 }
 
                 // mount persistence destination
@@ -5552,14 +5524,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 String destinationDataPath
                         = destinationDataMountInfo.getMountPath();
                 if (destinationDataPath == null) {
-                    // TODO: error message
-                    return false;
+                    String errorMessage
+                            = "could not mount destination data partition";
+                    throw new IOException(errorMessage);
                 }
 
                 // TODO: use filecopier as soon as it supports symlinks etc.
-                if (!copyPersistenceCp(sourceDataPath, destinationDataPath)) {
-                    return false;
-                }
+                copyPersistenceCp(sourceDataPath, destinationDataPath);
 
                 // update GUI
                 SwingUtilities.invokeLater(new Runnable() {
@@ -5581,11 +5552,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     destinationDataPartition.umount();
                 }
             }
-
-            return true;
         }
 
-        private boolean copyPersistenceCp(String persistenceSourcePath,
+        private void copyPersistenceCp(String persistenceSourcePath,
                 String persistenceDestinationPath)
                 throws InterruptedException, IOException {
             cpActionListener = new CpActionListener();
@@ -5612,15 +5581,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             int exitValue = processExecutor.executeScript(
                     true, true, copyScript);
             processExecutor.removePropertyChangeListener(this);
+            cpTimer.stop();
             if (exitValue != 0) {
                 String errorMessage
                         = "Could not copy persistence layer!";
                 LOGGER.severe(errorMessage);
-                showErrorMessage(errorMessage);
-                return false;
+                throw new IOException(errorMessage);
             }
-            cpTimer.stop();
-            return true;
         }
     }
 
@@ -5763,10 +5730,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 } else {
                     switchToUpgradeSelection();
                 }
-            } catch (InterruptedException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            } catch (ExecutionException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+            } catch (InterruptedException | ExecutionException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
             }
         }
 
@@ -5853,15 +5818,17 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 try {
                     File propertiesFile = new File(dataMountPoint
                             + "/etc/lernstickWelcome");
-                    FileReader reader = new FileReader(propertiesFile);
-                    Properties lernstickWelcomeProperties = new Properties();
-                    lernstickWelcomeProperties.load(reader);
-                    lernstickWelcomeProperties.setProperty(
-                            "ShowWelcome", "true");
-                    FileWriter writer = new FileWriter(propertiesFile);
-                    lernstickWelcomeProperties.store(
-                            writer, "lernstick Welcome properties");
-                    reader.close();
+                    FileWriter writer;
+                    try (FileReader reader = new FileReader(propertiesFile)) {
+                        Properties lernstickWelcomeProperties
+                                = new Properties();
+                        lernstickWelcomeProperties.load(reader);
+                        lernstickWelcomeProperties.setProperty(
+                                "ShowWelcome", "true");
+                        writer = new FileWriter(propertiesFile);
+                        lernstickWelcomeProperties.store(
+                                writer, "lernstick Welcome properties");
+                    }
                     writer.close();
                 } catch (IOException iOException) {
                     LOGGER.log(Level.WARNING, "", iOException);
@@ -6002,7 +5969,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         = String.valueOf(newBootPartitionOffset) + "MiB";
                 String systemPartitionStart
                         = String.valueOf(newSystemPartitionOffset) + "MiB";
-                List<String> partedCommand = new ArrayList<String>();
+                List<String> partedCommand = new ArrayList<>();
                 partedCommand.add("/sbin/parted");
                 partedCommand.add("-a");
                 partedCommand.add("optimal");
@@ -6037,8 +6004,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         String.valueOf(dataPartition.getNumber() + 1));
                 partedCommand.add("boot");
                 partedCommand.add("on");
-                String[] command
-                        = partedCommand.toArray(new String[partedCommand.size()]);
+                String[] command = partedCommand.toArray(
+                        new String[partedCommand.size()]);
 
                 returnValue = processExecutor.executeProcess(
                         true, true, command);
@@ -6082,12 +6049,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     return false;
                 }
 
-                if (!(formatBootAndSystemPartition(
+                formatBootAndSystemPartition(
                         "/dev/" + bootPartition.getDeviceAndNumber(),
-                        "/dev/" + systemPartition.getDeviceAndNumber(),
-                        true))) {
-                    return false;
-                }
+                        "/dev/" + systemPartition.getDeviceAndNumber());
 
             } else if (bootPartition == null) {
                 // legacy system without a separate boot partition
@@ -6143,12 +6107,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 systemPartition = partitions.get(systemPartitionNumber);
 
                 // format boot and system partition
-                if (!(formatBootAndSystemPartition(
+                formatBootAndSystemPartition(
                         "/dev/" + bootPartition.getDeviceAndNumber(),
-                        "/dev/" + systemPartition.getDeviceAndNumber(),
-                        true))) {
-                    return false;
-                }
+                        "/dev/" + systemPartition.getDeviceAndNumber());
             }
 
             // upgrade boot and system partition
@@ -6209,9 +6170,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             STRINGS.getString("Writing_Boot_Sector"));
                 }
             });
-            if (!makeBootable(devicePath, bootPartition)) {
-                return false;
-            }
+            makeBootable(devicePath, bootPartition);
 
             // cleanup
             if (copyJobsInfo.isBootTempMounted()) {
@@ -6282,7 +6241,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 File[] squashFileSystems = liveDir.listFiles(squashFsFilter);
 
                 // mount all squashfs read-only in temporary directories
-                List<String> readOnlyMountPoints = new ArrayList<String>();
+                List<String> readOnlyMountPoints = new ArrayList<>();
                 for (int i = 0; i < squashFileSystems.length; i++) {
                     File roDir = new File(tmpDir, "ro" + (i + 1));
                     roDir.mkdirs();
@@ -6332,10 +6291,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // apply settings (temporarily) in cow directory
                 Properties lernstickWelcomeProperties = new Properties();
                 File propertiesFile = new File(cowDir, "/etc/lernstickWelcome");
-                try {
-                    FileReader reader = new FileReader(propertiesFile);
+                try (FileReader reader = new FileReader(propertiesFile)) {
                     lernstickWelcomeProperties.load(reader);
-                    reader.close();
                 } catch (IOException iOException) {
                     LOGGER.log(Level.WARNING, "", iOException);
                 }
@@ -6345,11 +6302,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 lernstickWelcomeProperties.setProperty("AutoStartInstaller",
                         autoStartInstallerCheckBox.isSelected()
                         ? "true" : "false");
-                try {
-                    FileWriter writer = new FileWriter(propertiesFile);
+                try (FileWriter writer = new FileWriter(propertiesFile)) {
                     lernstickWelcomeProperties.store(
                             writer, "lernstick Welcome properties");
-                    writer.close();
                 } catch (IOException iOException) {
                     LOGGER.log(Level.WARNING, "", iOException);
                 }
@@ -6412,10 +6367,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         + "You can verify them automatically with the "
                         + "'integrity-check' boot parameter,\n"
                         + "or, manually with: 'md5sum -c md5sum.txt'.";
-                FileWriter fileWriter
-                        = new FileWriter(targetDirectory + "/md5sum.txt");
-                fileWriter.write(md5header);
-                fileWriter.close();
+                try (FileWriter fileWriter
+                        = new FileWriter(targetDirectory + "/md5sum.txt")) {
+                    fileWriter.write(md5header);
+                }
                 String md5Script = "cd \"" + targetDirectory + "\"\n"
                         + "find . -type f \\! -path './isolinux/isolinux.bin' "
                         + "\\! -path './boot/grub/stage2_eltorito' -print0 | "
@@ -6476,10 +6431,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 } else {
                     message = STRINGS.getString("Error_ISO_Creation");
                 }
-            } catch (InterruptedException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            } catch (ExecutionException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+            } catch (InterruptedException | ExecutionException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
             }
             isoDoneLabel.setText(message);
             showCard(cardPanel, "toISODonePanel");
@@ -6630,10 +6583,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         }
                     });
 
-                    if (!(formatPersistencePartition("/dev/"
-                            + dataPartition.getDeviceAndNumber(), true))) {
-                        return false;
-                    }
+                    formatPersistencePartition(
+                            "/dev/" + dataPartition.getDeviceAndNumber());
                 } else {
                     // remove files from data partition
                     SwingUtilities.invokeLater(new Runnable() {
@@ -6714,10 +6665,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 } else {
                     switchToRepairSelection();
                 }
-            } catch (InterruptedException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            } catch (ExecutionException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+            } catch (InterruptedException | ExecutionException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
             }
         }
     }
@@ -6911,12 +6860,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     for (StorageDevice device : storageDevices) {
                         installStorageDeviceListModel.addElement(device);
                     }
-                } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
-                } catch (DBusException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
+                } catch (IOException | DBusException ex) {
+                    LOGGER.log(Level.SEVERE, "", ex);
                 } catch (Exception ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, "", ex);
                     throw ex;
                 }
             }
@@ -7070,12 +7017,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     }
                 }
 
-            } catch (IOException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            } catch (DBusException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+            } catch (IOException | DBusException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
             } catch (Exception ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, "", ex);
                 throw ex;
             }
             return null;
@@ -7222,12 +7167,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     }
                 }
 
-            } catch (IOException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
-            } catch (DBusException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+            } catch (IOException | DBusException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
             } catch (Exception ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, "", ex);
                 throw ex;
             }
             return null;
@@ -7484,6 +7427,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JCheckBox repairShowHarddisksCheckBox;
     private javax.swing.JList repairStorageDeviceList;
     private javax.swing.JScrollPane repairStorageDeviceListScrollPane;
+    private javax.swing.JLabel resultsInfoLabel;
+    private javax.swing.JPanel resultsPanel;
+    private javax.swing.JScrollPane resultsScrollPane;
+    private javax.swing.JTable resultsTable;
+    private javax.swing.JPanel resultsTitledPanel;
     private javax.swing.JPanel rsyncPanel;
     private javax.swing.JProgressBar rsyncPogressBar;
     private javax.swing.JLabel rsyncTimeLabel;
