@@ -776,6 +776,7 @@ public class DLCopy extends JFrame
         exchangePartitionFileSystemPanel = new javax.swing.JPanel();
         exchangePartitionFileSystemLabel = new javax.swing.JLabel();
         exchangePartitionFileSystemComboBox = new javax.swing.JComboBox();
+        quickFormatCheckBox = new javax.swing.JCheckBox();
         copyExchangeCheckBox = new javax.swing.JCheckBox();
         dataPartitionPanel = new javax.swing.JPanel();
         dataPartitionFileSystemLabel = new javax.swing.JLabel();
@@ -1238,7 +1239,9 @@ public class DLCopy extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         exchangePartitionLabelPanel.add(exchangePartitionTextField, gridBagConstraints);
 
-        exchangePartitionBottomPanel.add(exchangePartitionLabelPanel, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
+        exchangePartitionBottomPanel.add(exchangePartitionLabelPanel, gridBagConstraints);
 
         autoNumberPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopy.autoNumberPanel.border.title"))); // NOI18N
         autoNumberPanel.setLayout(new java.awt.GridBagLayout());
@@ -1308,6 +1311,11 @@ public class DLCopy extends JFrame
         exchangePartitionFileSystemComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "exFAT", "FAT32", "NTFS" }));
         exchangePartitionFileSystemComboBox.setToolTipText(bundle.getString("DLCopy.exchangePartitionFileSystemComboBox.toolTipText")); // NOI18N
         exchangePartitionFileSystemComboBox.setEnabled(false);
+        exchangePartitionFileSystemComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                exchangePartitionFileSystemComboBoxActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
@@ -1316,13 +1324,21 @@ public class DLCopy extends JFrame
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
         exchangePartitionBottomPanel.add(exchangePartitionFileSystemPanel, gridBagConstraints);
+
+        quickFormatCheckBox.setText(bundle.getString("DLCopy.quickFormatCheckBox.text")); // NOI18N
+        quickFormatCheckBox.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
+        exchangePartitionBottomPanel.add(quickFormatCheckBox, gridBagConstraints);
 
         copyExchangeCheckBox.setText(bundle.getString("DLCopy.copyExchangeCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
         exchangePartitionBottomPanel.add(copyExchangeCheckBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -2889,6 +2905,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
         }
     }//GEN-LAST:event_upgradeOverwriteImportButtonActionPerformed
+
+    private void exchangePartitionFileSystemComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exchangePartitionFileSystemComboBoxActionPerformed
+        String exFS
+                = exchangePartitionFileSystemComboBox.getSelectedItem().toString();
+        quickFormatCheckBox.setEnabled(exFS.equalsIgnoreCase("ntfs"));
+    }//GEN-LAST:event_exchangePartitionFileSystemComboBoxActionPerformed
 
     private Node getPersistenceNode(org.w3c.dom.Document xmlBootDocument) {
         Node configsNode
@@ -5364,6 +5386,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     = exchangePartitionFileSystemComboBox.getSelectedItem().toString();
             String mkfsBuilder;
             String mkfsLabelSwitch;
+            String quickSwitch = null;
             if (exFS.equalsIgnoreCase("fat32")) {
                 mkfsBuilder = "vfat";
                 mkfsLabelSwitch = "-n";
@@ -5372,12 +5395,23 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 mkfsLabelSwitch = "-n";
             } else {
                 mkfsBuilder = "ntfs";
+                if (quickFormatCheckBox.isSelected()) {
+                    quickSwitch = "-f";
+                }
                 mkfsLabelSwitch = "-L";
             }
 
-            int exitValue = processExecutor.executeProcess(
-                    "/sbin/mkfs." + mkfsBuilder,
-                    mkfsLabelSwitch, exchangePartitionLabel, exchangeDevice);
+            int exitValue = 0;
+            if (quickSwitch == null) {
+                exitValue = processExecutor.executeProcess(
+                        "/sbin/mkfs." + mkfsBuilder,
+                        mkfsLabelSwitch, exchangePartitionLabel, exchangeDevice);
+            } else {
+                exitValue = processExecutor.executeProcess(
+                        "/sbin/mkfs." + mkfsBuilder, quickSwitch,
+                        mkfsLabelSwitch, exchangePartitionLabel, exchangeDevice);
+            }
+
             if (exitValue != 0) {
                 String errorMessage
                         = STRINGS.getString("Error_Create_Exchange_Partition");
@@ -7428,6 +7462,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JPanel northEastPanel;
     private javax.swing.JPanel northWestPanel;
     private javax.swing.JButton previousButton;
+    private javax.swing.JCheckBox quickFormatCheckBox;
     private javax.swing.JCheckBox reactivateWelcomeCheckBox;
     private javax.swing.JRadioButton removeFilesRadioButton;
     private javax.swing.JButton repairButton;
