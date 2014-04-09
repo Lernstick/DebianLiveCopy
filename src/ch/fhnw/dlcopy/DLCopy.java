@@ -227,6 +227,7 @@ public class DLCopy extends JFrame
     }
     private DataPartitionMode sourceDataPartitionMode;
     private final ResultsTableModel installationResultsTableModel;
+    private final ResultsTableModel upgradeResultsTableModel;
     private final ResultsTableModel resultsTableModel;
 
     /**
@@ -585,6 +586,15 @@ public class DLCopy extends JFrame
         installationResultsTable.setRowSorter(
                 new ResultsTableRowSorter(installationResultsTableModel));
 
+        upgradeResultsTableModel
+                = new ResultsTableModel(upgradeResultsTable);
+        upgradeResultsTable.setModel(upgradeResultsTableModel);
+        sizeColumn = upgradeResultsTable.getColumnModel().getColumn(
+                ResultsTableModel.SIZE_COLUMN);
+        sizeColumn.setCellRenderer(new SizeTableCellRenderer());
+        upgradeResultsTable.setRowSorter(
+                new ResultsTableRowSorter(upgradeResultsTableModel));
+
         resultsTableModel = new ResultsTableModel(resultsTable);
         resultsTable.setModel(resultsTableModel);
         sizeColumn = resultsTable.getColumnModel().getColumn(
@@ -802,7 +812,7 @@ public class DLCopy extends JFrame
         copyPersistenceCheckBox = new javax.swing.JCheckBox();
         installNoMediaPanel = new javax.swing.JPanel();
         installNoMediaLabel = new javax.swing.JLabel();
-        installPanel = new javax.swing.JTabbedPane();
+        installTabbedPane = new javax.swing.JTabbedPane();
         installCurrentPanel = new javax.swing.JPanel();
         currentlyInstalledDeviceLabel = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
@@ -831,7 +841,7 @@ public class DLCopy extends JFrame
         upgradeSelectionPanel = new javax.swing.JPanel();
         upgradeSelectionHeaderLabel = new javax.swing.JLabel();
         upgradeShowHarddisksCheckBox = new javax.swing.JCheckBox();
-        upgradeTabbedPane = new javax.swing.JTabbedPane();
+        upgradeSelectionTabbedPane = new javax.swing.JTabbedPane();
         upgradeSelectionCardPanel = new javax.swing.JPanel();
         upgradeSelectionDeviceListPanel = new javax.swing.JPanel();
         upgradeSelectionCountLabel = new javax.swing.JLabel();
@@ -864,6 +874,7 @@ public class DLCopy extends JFrame
         upgradeOverwriteRemoveButton = new javax.swing.JButton();
         upgradeOverwriteExportButton = new javax.swing.JButton();
         upgradeOverwriteImportButton = new javax.swing.JButton();
+        upgradeTabbedPane = new javax.swing.JTabbedPane();
         upgradePanel = new javax.swing.JPanel();
         currentlyUpgradedDeviceLabel = new javax.swing.JLabel();
         jSeparator4 = new javax.swing.JSeparator();
@@ -879,6 +890,9 @@ public class DLCopy extends JFrame
         upgradeBackupFilenameLabel = new JSqueezedLabel();
         upgradeBackupProgressBar = new javax.swing.JProgressBar();
         upgradeBackupTimeLabel = new javax.swing.JLabel();
+        upgradeReportPanel = new javax.swing.JPanel();
+        upgradeResultsScrollPane = new javax.swing.JScrollPane();
+        upgradeResultsTable = new javax.swing.JTable();
         repairInfoPanel = new javax.swing.JPanel();
         repairInfoLabel = new javax.swing.JLabel();
         repairSelectionPanel = new javax.swing.JPanel();
@@ -1582,7 +1596,7 @@ public class DLCopy extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
         installCurrentPanel.add(installCardPanel, gridBagConstraints);
 
-        installPanel.addTab(bundle.getString("DLCopy.installCurrentPanel.TabConstraints.tabTitle"), installCurrentPanel); // NOI18N
+        installTabbedPane.addTab(bundle.getString("DLCopy.installCurrentPanel.TabConstraints.tabTitle"), installCurrentPanel); // NOI18N
 
         installReportPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -1596,9 +1610,9 @@ public class DLCopy extends JFrame
         gridBagConstraints.weighty = 1.0;
         installReportPanel.add(installationResultsScrollPane, gridBagConstraints);
 
-        installPanel.addTab(bundle.getString("Installation_Report"), installReportPanel); // NOI18N
+        installTabbedPane.addTab(bundle.getString("Installation_Report"), installReportPanel); // NOI18N
 
-        cardPanel.add(installPanel, "installPanel");
+        cardPanel.add(installTabbedPane, "installTabbedPane");
 
         doneLabel.setFont(doneLabel.getFont().deriveFont(doneLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
         doneLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
@@ -1737,7 +1751,7 @@ public class DLCopy extends JFrame
 
         upgradeSelectionCardPanel.add(upgradeNoMediaPanel, "upgradeNoMediaPanel");
 
-        upgradeTabbedPane.addTab(bundle.getString("DLCopy.upgradeSelectionCardPanel.TabConstraints.tabTitle"), upgradeSelectionCardPanel); // NOI18N
+        upgradeSelectionTabbedPane.addTab(bundle.getString("DLCopy.upgradeSelectionCardPanel.TabConstraints.tabTitle"), upgradeSelectionCardPanel); // NOI18N
 
         upgradeSystemPartitionCheckBox.setSelected(true);
         upgradeSystemPartitionCheckBox.setText(bundle.getString("DLCopy.upgradeSystemPartitionCheckBox.text")); // NOI18N
@@ -1971,14 +1985,14 @@ public class DLCopy extends JFrame
                 .addContainerGap())
         );
 
-        upgradeTabbedPane.addTab(bundle.getString("DLCopy.upgradeSelectionConfigPanel.TabConstraints.tabTitle"), upgradeSelectionConfigPanel); // NOI18N
+        upgradeSelectionTabbedPane.addTab(bundle.getString("DLCopy.upgradeSelectionConfigPanel.TabConstraints.tabTitle"), upgradeSelectionConfigPanel); // NOI18N
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        upgradeSelectionPanel.add(upgradeTabbedPane, gridBagConstraints);
+        upgradeSelectionPanel.add(upgradeSelectionTabbedPane, gridBagConstraints);
 
         cardPanel.add(upgradeSelectionPanel, "upgradeSelectionPanel");
 
@@ -1989,6 +2003,7 @@ public class DLCopy extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
         upgradePanel.add(currentlyUpgradedDeviceLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -2067,9 +2082,26 @@ public class DLCopy extends JFrame
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
         upgradePanel.add(upgradeCardPanel, gridBagConstraints);
 
-        cardPanel.add(upgradePanel, "upgradePanel");
+        upgradeTabbedPane.addTab(bundle.getString("DLCopy.upgradePanel.TabConstraints.tabTitle"), upgradePanel); // NOI18N
+
+        upgradeReportPanel.setLayout(new java.awt.GridBagLayout());
+
+        upgradeResultsTable.setAutoCreateRowSorter(true);
+        upgradeResultsTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        upgradeResultsScrollPane.setViewportView(upgradeResultsTable);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        upgradeReportPanel.add(upgradeResultsScrollPane, gridBagConstraints);
+
+        upgradeTabbedPane.addTab(bundle.getString("Upgrade_Report"), upgradeReportPanel); // NOI18N
+
+        cardPanel.add(upgradeTabbedPane, "upgradeTabbedPane");
 
         repairInfoPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -4352,7 +4384,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         "Error_Automatic_Backup_Directory_Unreadable");
             }
             if (errorMessage != null) {
-                upgradeTabbedPane.setSelectedComponent(
+                upgradeSelectionTabbedPane.setSelectedComponent(
                         upgradeSelectionConfigPanel);
                 automaticBackupTextField.requestFocusInWindow();
                 showErrorMessage(errorMessage);
@@ -4756,7 +4788,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    showCard(cardPanel, "installPanel");
+                    showCard(cardPanel, "installTabbedPane");
                 }
             });
 
@@ -4855,6 +4887,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             key = "Done_Message_From_Removable_Boot_Device";
                     }
                     resultsInfoLabel.setText(STRINGS.getString(key));
+                    resultsTitledPanel.setBorder(
+                            BorderFactory.createTitledBorder(
+                                    STRINGS.getString("Installation_Report")));
                     showCard(cardPanel, "resultsPanel");
                     previousButton.setEnabled(true);
                     nextButton.setText(STRINGS.getString("Done"));
@@ -5649,7 +5684,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
-                    showCard(cardPanel, "upgradePanel");
+                    showCard(cardPanel, "upgradeTabbedPane");
                 }
             });
 
@@ -5657,7 +5692,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             int[] selectedIndices
                     = upgradeStorageDeviceList.getSelectedIndices();
             selectionCount = selectedIndices.length;
+            final List<StorageDeviceResult> resultsList = new ArrayList<>();
             for (int i : selectedIndices) {
+                long startTime = System.currentTimeMillis();
 
                 StorageDevice storageDevice
                         = (StorageDevice) upgradeStorageDeviceListModel.get(i);
@@ -5691,6 +5728,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             currentDevice, selectionCount, storageDevice
                         });
 
+                // add "in progress" entry to results table
+                resultsList.add(
+                        new StorageDeviceResult(storageDevice, -1, null));
+                upgradeResultsTableModel.setList(resultsList);
+
                 // use the device serial number as unique identifier for backups
                 // (but replace all slashes because they are not allowed in
                 //  directory names)
@@ -5699,6 +5741,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 File backupDestination = new File(
                         automaticBackupTextField.getText(), backupUID);
 
+                String errorMessage = null;
                 try {
                     if (upgradeDataPartition(storageDevice, backupDestination)) {
                         if (upgradeSystemPartitionCheckBox.isSelected()
@@ -5715,14 +5758,28 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         return false;
                     }
 
-                } catch (Exception ex) {
+                } catch (DBusException | IOException |
+                        InterruptedException ex) {
                     LOGGER.log(Level.WARNING, "", ex);
+                    errorMessage = ex.getMessage();
                 }
 
                 LOGGER.log(Level.INFO, "upgrading of storage device finished: "
                         + "{0} of {1} ({2})", new Object[]{
                             currentDevice, selectionCount, storageDevice
                         });
+
+                long stopTime = System.currentTimeMillis();
+                long duration = stopTime - startTime;
+
+                // remove "in progress" entry
+                resultsList.remove(resultsList.size() - 1);
+                // add current result
+                resultsList.add(new StorageDeviceResult(
+                        storageDevice, duration, errorMessage));
+                installationResultsTableModel.setList(resultsList);
+                resultsTableModel.setList(resultsList);
+
             }
 
             return true;
@@ -5760,8 +5817,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         default:
                             key = "Upgrade_Done_From_Removable_Device";
                     }
-                    doneLabel.setText(STRINGS.getString(key));
-                    showCard(cardPanel, "donePanel");
+                    resultsInfoLabel.setText(STRINGS.getString(key));
+                    resultsTitledPanel.setBorder(
+                            BorderFactory.createTitledBorder(
+                                    STRINGS.getString("Upgrade_Report")));
+                    showCard(cardPanel, "resultsPanel");
                     previousButton.setEnabled(true);
                     nextButton.setText(STRINGS.getString("Done"));
                     nextButton.setIcon(new ImageIcon(getClass().getResource(
@@ -5912,8 +5972,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 throws DBusException, IOException, InterruptedException {
             String device = storageDevice.getDevice();
             String devicePath = "/dev/" + device;
-            Partition dataPartition = storageDevice.getDataPartition();
             Partition bootPartition = storageDevice.getBootPartition();
+            Partition dataPartition = storageDevice.getDataPartition();
             Partition systemPartition = storageDevice.getSystemPartition();
             int systemPartitionNumber = systemPartition.getNumber();
 
@@ -6005,12 +6065,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         - (long) (systemSize * 1.01);
                 // align newSystemPartitionOffset on a MiB boundary
                 newSystemPartitionOffset /= MEGA;
-                long newBootPartitionOffset
-                        = newSystemPartitionOffset - BOOT_PARTITION_SIZE;
                 String dataPartitionStart
                         = String.valueOf(dataPartitionOffset) + "B";
-                String bootPartitionStart
-                        = String.valueOf(newBootPartitionOffset) + "MiB";
                 String systemPartitionStart
                         = String.valueOf(newSystemPartitionOffset) + "MiB";
                 List<String> partedCommand = new ArrayList<>();
@@ -6022,32 +6078,17 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // remove old partitions
                 partedCommand.add("rm");
                 partedCommand.add(String.valueOf(dataPartition.getNumber()));
-                if (bootPartition != null) {
-                    partedCommand.add("rm");
-                    partedCommand.add(
-                            String.valueOf(bootPartition.getNumber()));
-                }
                 partedCommand.add("rm");
                 partedCommand.add(String.valueOf(systemPartitionNumber));
                 // create new partitions
                 partedCommand.add("mkpart");
                 partedCommand.add("primary");
                 partedCommand.add(dataPartitionStart);
-                partedCommand.add(bootPartitionStart);
-                partedCommand.add("mkpart");
-                partedCommand.add("primary");
-                partedCommand.add(bootPartitionStart);
                 partedCommand.add(systemPartitionStart);
                 partedCommand.add("mkpart");
                 partedCommand.add("primary");
                 partedCommand.add(systemPartitionStart);
                 partedCommand.add("100%");
-                // set boot partition flag
-                partedCommand.add("set");
-                partedCommand.add(
-                        String.valueOf(dataPartition.getNumber() + 1));
-                partedCommand.add("boot");
-                partedCommand.add("on");
                 String[] command = partedCommand.toArray(
                         new String[partedCommand.size()]);
 
@@ -6066,21 +6107,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // safety wait so that new partitions are known to the system
                 // (5000ms were NOT enough!)
                 Thread.sleep(7000);
-                storageDevice = new StorageDevice(device, systemSize);
-                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                // ! We can't use storageDevice.getBootPartition() and      !
-                // ! storageDevice.getSystemPartition() here because the    !
-                // ! partitions dont have the necessary properties, yet. We !
-                // ! will set them in the next steps.                       !
-                // ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                List<Partition> partitions = storageDevice.getPartitions();
-                if (bootPartition == null) {
-                    bootPartition = partitions.get(systemPartitionNumber - 1);
-                    systemPartition = partitions.get(systemPartitionNumber);
-                } else {
-                    bootPartition = partitions.get(systemPartitionNumber - 2);
-                    systemPartition = partitions.get(systemPartitionNumber - 1);
-                }
 
                 returnValue = processExecutor.executeProcess(true, true,
                         "resize2fs", dataDevPath);
@@ -6093,64 +6119,15 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     return false;
                 }
 
-                formatBootAndSystemPartition(
-                        "/dev/" + bootPartition.getDeviceAndNumber(),
-                        "/dev/" + systemPartition.getDeviceAndNumber());
-
-            } else if (bootPartition == null) {
-                // legacy system without a separate boot partition
-                // split the old system partition into boot and system partition
-                long bootPartitionOffset = systemPartition.getOffset();
-                long systemPartitionOffset
-                        = (bootPartitionOffset / MEGA) + BOOT_PARTITION_SIZE;
-                String bootPartitionStart
-                        = String.valueOf(bootPartitionOffset) + "B";
-                String systemPartitionStart
-                        = String.valueOf(systemPartitionOffset) + "MiB";
-                String systemPartitionNumberString
-                        = String.valueOf(systemPartitionNumber);
-                int returnValue = processExecutor.executeProcess(true, true,
-                        "/sbin/parted", "-a", "optimal", "-s", devicePath,
-                        "rm", systemPartitionNumberString,
-                        "mkpart", "primary", bootPartitionStart, systemPartitionStart,
-                        "mkpart", "primary", systemPartitionStart, "100%",
-                        "set", systemPartitionNumberString, "boot", "on");
-                if (returnValue != 0) {
-                    String errorMessage = STRINGS.getString(
-                            "Error_Changing_Partition_Sizes");
-                    errorMessage = MessageFormat.format(errorMessage,
-                            "/dev/" + dataPartition.getDeviceAndNumber());
-                    showErrorMessage(errorMessage);
-                    return false;
-                }
-                // The partition types assigned by parted are mosty garbage.
-                // We must fix them here...
-                //  - boot: actually FAT32, but "hidden" by using the Linux partition type 83
-                //  - system: Linux
-                processExecutor.executeProcess("/sbin/sfdisk", "--id",
-                        devicePath, systemPartitionNumberString,
-                        "83");
-                processExecutor.executeProcess("/sbin/sfdisk", "--id",
-                        devicePath, String.valueOf(systemPartitionNumber + 1),
-                        "83");
-
-                // refresh storage device and partition info
-                processExecutor.executeProcess(true, true, "/sbin/partprobe");
-                // safety wait so that new partitions are known to the system
-                // (5000ms were NOT enough!)
-                Thread.sleep(7000);
                 storageDevice = new StorageDevice(device, systemSize);
-                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                // ! We can't use storageDevice.getBootPartition() and      !
-                // ! storageDevice.getSystemPartition() here because the    !
-                // ! partitions dont have the necessary properties, yet. We !
-                // ! will set them in the next steps.                       !
-                // ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                // ! We can't use storageDevice.getSystemPartition() here      !
+                // ! because the partitions dont have the necessary properties,!
+                // ! yet. We will set them in the next steps.                  !
+                // ! !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
                 List<Partition> partitions = storageDevice.getPartitions();
-                bootPartition = partitions.get(systemPartitionNumber - 1);
-                systemPartition = partitions.get(systemPartitionNumber);
+                systemPartition = partitions.get(systemPartitionNumber - 1);
 
-                // format boot and system partition
                 formatBootAndSystemPartition(
                         "/dev/" + bootPartition.getDeviceAndNumber(),
                         "/dev/" + systemPartition.getDeviceAndNumber());
@@ -7424,7 +7401,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JTabbedPane installListTabbedPane;
     private javax.swing.JLabel installNoMediaLabel;
     private javax.swing.JPanel installNoMediaPanel;
-    private javax.swing.JTabbedPane installPanel;
     private javax.swing.JPanel installReportPanel;
     private javax.swing.JPanel installSelectionCardPanel;
     private javax.swing.JLabel installSelectionCountLabel;
@@ -7432,6 +7408,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JPanel installSelectionPanel;
     private javax.swing.JCheckBox installShowHarddisksCheckBox;
     private javax.swing.JList installStorageDeviceList;
+    private javax.swing.JTabbedPane installTabbedPane;
     private javax.swing.JScrollPane installationResultsScrollPane;
     private javax.swing.JTable installationResultsTable;
     private javax.swing.JLabel isoDoneLabel;
@@ -7535,12 +7512,16 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JButton upgradeOverwriteRemoveButton;
     private javax.swing.JScrollPane upgradeOverwriteScrollPane;
     private javax.swing.JPanel upgradePanel;
+    private javax.swing.JPanel upgradeReportPanel;
+    private javax.swing.JScrollPane upgradeResultsScrollPane;
+    private javax.swing.JTable upgradeResultsTable;
     private javax.swing.JPanel upgradeSelectionCardPanel;
     private javax.swing.JPanel upgradeSelectionConfigPanel;
     private javax.swing.JLabel upgradeSelectionCountLabel;
     private javax.swing.JPanel upgradeSelectionDeviceListPanel;
     private javax.swing.JLabel upgradeSelectionHeaderLabel;
     private javax.swing.JPanel upgradeSelectionPanel;
+    private javax.swing.JTabbedPane upgradeSelectionTabbedPane;
     private javax.swing.JCheckBox upgradeShowHarddisksCheckBox;
     private javax.swing.JList upgradeStorageDeviceList;
     private javax.swing.JScrollPane upgradeStorageDeviceListScrollPane;
