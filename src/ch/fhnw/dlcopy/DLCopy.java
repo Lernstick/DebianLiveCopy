@@ -50,6 +50,7 @@ import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.table.TableColumn;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
 import javax.xml.parsers.DocumentBuilder;
@@ -225,6 +226,7 @@ public class DLCopy extends JFrame
         ReadWrite, ReadOnly, NotUsed
     }
     private DataPartitionMode sourceDataPartitionMode;
+    private final ResultsTableModel installationResultsTableModel;
     private final ResultsTableModel resultsTableModel;
 
     /**
@@ -573,8 +575,22 @@ public class DLCopy extends JFrame
         setSpinnerColums(autoNumberStartSpinner, 2);
         setSpinnerColums(autoNumberIncrementSpinner, 2);
 
+        installationResultsTableModel
+                = new ResultsTableModel(installationResultsTable);
+        installationResultsTable.setModel(installationResultsTableModel);
+        TableColumn sizeColumn
+                = installationResultsTable.getColumnModel().getColumn(
+                        ResultsTableModel.SIZE_COLUMN);
+        sizeColumn.setCellRenderer(new SizeTableCellRenderer());
+        installationResultsTable.setRowSorter(
+                new ResultsTableRowSorter(installationResultsTableModel));
+
         resultsTableModel = new ResultsTableModel(resultsTable);
         resultsTable.setModel(resultsTableModel);
+        sizeColumn = resultsTable.getColumnModel().getColumn(
+                ResultsTableModel.SIZE_COLUMN);
+        sizeColumn.setCellRenderer(new SizeTableCellRenderer());
+        resultsTable.setRowSorter(new ResultsTableRowSorter(resultsTableModel));
 
         // TODO: pack() does not work reliably!?
         //pack();
@@ -786,7 +802,8 @@ public class DLCopy extends JFrame
         copyPersistenceCheckBox = new javax.swing.JCheckBox();
         installNoMediaPanel = new javax.swing.JPanel();
         installNoMediaLabel = new javax.swing.JLabel();
-        installPanel = new javax.swing.JPanel();
+        installPanel = new javax.swing.JTabbedPane();
+        installCurrentPanel = new javax.swing.JPanel();
         currentlyInstalledDeviceLabel = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
         installCardPanel = new javax.swing.JPanel();
@@ -804,6 +821,9 @@ public class DLCopy extends JFrame
         cpPogressBar = new javax.swing.JProgressBar();
         cpFilenameLabel = new JSqueezedLabel();
         cpTimeLabel = new javax.swing.JLabel();
+        installReportPanel = new javax.swing.JPanel();
+        installationResultsScrollPane = new javax.swing.JScrollPane();
+        installationResultsTable = new javax.swing.JTable();
         donePanel = new javax.swing.JPanel();
         doneLabel = new javax.swing.JLabel();
         upgradeInfoPanel = new javax.swing.JPanel();
@@ -1323,28 +1343,29 @@ public class DLCopy extends JFrame
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         exchangePartitionFileSystemPanel.add(exchangePartitionFileSystemComboBox, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
-        exchangePartitionBottomPanel.add(exchangePartitionFileSystemPanel, gridBagConstraints);
 
         quickFormatCheckBox.setText(bundle.getString("DLCopy.quickFormatCheckBox.text")); // NOI18N
         quickFormatCheckBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 8, 0, 0);
-        exchangePartitionBottomPanel.add(quickFormatCheckBox, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        exchangePartitionFileSystemPanel.add(quickFormatCheckBox, gridBagConstraints);
 
         copyExchangeCheckBox.setText(bundle.getString("DLCopy.copyExchangeCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 0, 0, 10);
-        exchangePartitionBottomPanel.add(copyExchangeCheckBox, gridBagConstraints);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 15, 0, 10);
+        exchangePartitionFileSystemPanel.add(copyExchangeCheckBox, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
+        exchangePartitionBottomPanel.add(exchangePartitionFileSystemPanel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -1459,7 +1480,18 @@ public class DLCopy extends JFrame
 
         cardPanel.add(installSelectionPanel, "installSelectionPanel");
 
+        installCurrentPanel.setLayout(new java.awt.GridBagLayout());
+
         currentlyInstalledDeviceLabel.setText(bundle.getString("Install_Device_Info")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+        installCurrentPanel.add(currentlyInstalledDeviceLabel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+        installCurrentPanel.add(jSeparator3, gridBagConstraints);
 
         installCardPanel.setLayout(new java.awt.CardLayout());
 
@@ -1543,27 +1575,28 @@ public class DLCopy extends JFrame
 
         installCardPanel.add(cpPanel, "cpPanel");
 
-        javax.swing.GroupLayout installPanelLayout = new javax.swing.GroupLayout(installPanel);
-        installPanel.setLayout(installPanelLayout);
-        installPanelLayout.setHorizontalGroup(
-            installPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(installPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(currentlyInstalledDeviceLabel)
-                .addContainerGap(349, Short.MAX_VALUE))
-            .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 657, Short.MAX_VALUE)
-            .addComponent(jSeparator3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 657, Short.MAX_VALUE)
-        );
-        installPanelLayout.setVerticalGroup(
-            installPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(installPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(currentlyInstalledDeviceLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator3, javax.swing.GroupLayout.PREFERRED_SIZE, 10, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(1, 1, 1)
-                .addComponent(installCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 365, Short.MAX_VALUE))
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
+        installCurrentPanel.add(installCardPanel, gridBagConstraints);
+
+        installPanel.addTab(bundle.getString("DLCopy.installCurrentPanel.TabConstraints.tabTitle"), installCurrentPanel); // NOI18N
+
+        installReportPanel.setLayout(new java.awt.GridBagLayout());
+
+        installationResultsTable.setAutoCreateRowSorter(true);
+        installationResultsTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
+        installationResultsScrollPane.setViewportView(installationResultsTable);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        installReportPanel.add(installationResultsScrollPane, gridBagConstraints);
+
+        installPanel.addTab(bundle.getString("Installation_Report"), installReportPanel); // NOI18N
 
         cardPanel.add(installPanel, "installPanel");
 
@@ -2396,6 +2429,7 @@ public class DLCopy extends JFrame
         resultsTitledPanel.setLayout(new java.awt.GridBagLayout());
 
         resultsTable.setAutoCreateRowSorter(true);
+        resultsTable.setAutoResizeMode(javax.swing.JTable.AUTO_RESIZE_OFF);
         resultsScrollPane.setViewportView(resultsTable);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -2408,7 +2442,7 @@ public class DLCopy extends JFrame
         resultsPanel.setLayout(resultsPanelLayout);
         resultsPanelLayout.setHorizontalGroup(
             resultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(resultsTitledPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 671, Short.MAX_VALUE)
+            .addComponent(resultsTitledPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 657, Short.MAX_VALUE)
             .addGroup(resultsPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(resultsInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
@@ -2420,7 +2454,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(resultsInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(resultsTitledPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 295, Short.MAX_VALUE))
+                .addComponent(resultsTitledPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 331, Short.MAX_VALUE))
         );
 
         cardPanel.add(resultsPanel, "resultsPanel");
@@ -4743,6 +4777,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 StorageDevice storageDevice
                         = (StorageDevice) installStorageDeviceListModel.getElementAt(
                                 selectedIndices[i]);
+
                 // update overall progress message
                 String pattern = STRINGS.getString("Install_Device_Info");
                 final String message = MessageFormat.format(pattern,
@@ -4758,6 +4793,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         currentlyInstalledDeviceLabel.setText(message);
                     }
                 });
+
+                // add "in progress" entry to results table
+                resultsList.add(
+                        new StorageDeviceResult(storageDevice, -1, null));
+                installationResultsTableModel.setList(resultsList);
 
                 // auto numbering
                 String exchangePartitionLabel
@@ -4782,8 +4822,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 long stopTime = System.currentTimeMillis();
                 long duration = stopTime - startTime;
 
+                // remove "in progress" entry
+                resultsList.remove(resultsList.size() - 1);
+                // add current result
                 resultsList.add(new StorageDeviceResult(
                         storageDevice, duration, errorMessage));
+                installationResultsTableModel.setList(resultsList);
+                resultsTableModel.setList(resultsList);
 
                 // auto-increment autoNumberStartSpinner
                 final int newStartNumber = autoNumber;
@@ -4810,7 +4855,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             key = "Done_Message_From_Removable_Boot_Device";
                     }
                     resultsInfoLabel.setText(STRINGS.getString(key));
-                    resultsTableModel.setList(resultsList);
                     showCard(cardPanel, "resultsPanel");
                     previousButton.setEnabled(true);
                     nextButton.setText(STRINGS.getString("Done"));
@@ -7370,6 +7414,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JButton installButton;
     private javax.swing.JPanel installCardPanel;
     private javax.swing.JPanel installCopyPanel;
+    private javax.swing.JPanel installCurrentPanel;
     private ch.fhnw.filecopier.FileCopierPanel installFileCopierPanel;
     private javax.swing.JProgressBar installIndeterminateProgressBar;
     private javax.swing.JPanel installIndeterminateProgressPanel;
@@ -7379,13 +7424,16 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JTabbedPane installListTabbedPane;
     private javax.swing.JLabel installNoMediaLabel;
     private javax.swing.JPanel installNoMediaPanel;
-    private javax.swing.JPanel installPanel;
+    private javax.swing.JTabbedPane installPanel;
+    private javax.swing.JPanel installReportPanel;
     private javax.swing.JPanel installSelectionCardPanel;
     private javax.swing.JLabel installSelectionCountLabel;
     private javax.swing.JLabel installSelectionHeaderLabel;
     private javax.swing.JPanel installSelectionPanel;
     private javax.swing.JCheckBox installShowHarddisksCheckBox;
     private javax.swing.JList installStorageDeviceList;
+    private javax.swing.JScrollPane installationResultsScrollPane;
+    private javax.swing.JTable installationResultsTable;
     private javax.swing.JLabel isoDoneLabel;
     private javax.swing.JLabel isoLabelLabel;
     private javax.swing.JTextField isoLabelTextField;

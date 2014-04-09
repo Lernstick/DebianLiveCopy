@@ -38,8 +38,11 @@ public class StorageDeviceResult {
     }
 
     /**
-     * returns the duration (in ms)
-     * @return the duration (in ms)
+     * returns the duration (in ms) or "-1" if the operation is still in
+     * progress
+     *
+     * @return the duration (in ms) or "-1" if the operation is still in
+     * progress
      */
     public long getDuration() {
         return duration;

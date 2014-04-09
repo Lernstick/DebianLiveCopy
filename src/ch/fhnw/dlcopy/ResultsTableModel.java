@@ -17,6 +17,10 @@ import javax.swing.JTable;
  */
 public class ResultsTableModel extends PreferredSizesTableModel {
 
+    /**
+     * the column for the storage device size
+     */
+    public static final int SIZE_COLUMN = 5;
     private static final ResourceBundle STRINGS
             = ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings");
     private List<StorageDeviceResult> resultList;
@@ -31,6 +35,7 @@ public class ResultsTableModel extends PreferredSizesTableModel {
         super(table, new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
         dateFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM);
         dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
+        initSizes();
     }
 
     @Override
@@ -39,10 +44,18 @@ public class ResultsTableModel extends PreferredSizesTableModel {
             case 0:
                 return STRINGS.getString("Number");
             case 1:
-                return STRINGS.getString("Storage_Device");
+                return STRINGS.getString("Device");
             case 2:
-                return STRINGS.getString("Duration");
+                return STRINGS.getString("Vendor");
             case 3:
+                return STRINGS.getString("Model");
+            case 4:
+                return STRINGS.getString("Serial_Number");
+            case SIZE_COLUMN:
+                return STRINGS.getString("Size");
+            case 6:
+                return STRINGS.getString("Duration");
+            case 7:
                 return STRINGS.getString("Status");
         }
         return null;
@@ -58,7 +71,7 @@ public class ResultsTableModel extends PreferredSizesTableModel {
 
     @Override
     public int getColumnCount() {
-        return 4;
+        return 8;
     }
 
     @Override
@@ -74,19 +87,50 @@ public class ResultsTableModel extends PreferredSizesTableModel {
             case 1:
                 // device
                 StorageDevice device = result.getStorageDevice();
-                return device.getVendor() + " " + device.getModel() + " "
-                        + device.getSerial() + " (/dev/" + device.getDevice()
-                        + ")";
+                return "/dev/" + device.getDevice();
 
             case 2:
-                // duration
-                return dateFormat.format(new Date(result.getDuration()));
+                // vendor
+                device = result.getStorageDevice();
+                return device.getVendor();
 
             case 3:
+                // model
+                device = result.getStorageDevice();
+                return device.getModel();
+
+            case 4:
+                // serial number
+                device = result.getStorageDevice();
+                return device.getSerial();
+
+            case SIZE_COLUMN:
+                // size
+                device = result.getStorageDevice();
+                return device.getSize();
+
+            case 6:
+                // duration
+                long duration = result.getDuration();
+                if (duration == -1) {
+                    // in progress
+                    return "";
+                }
+                return dateFormat.format(new Date(duration));
+
+            case 7:
                 // status
                 String errorMessage = result.getErrorMessage();
                 if (errorMessage == null) {
-                    return "<html><font color=\"green\">OK</font></html>";
+                    if (result.getDuration() == -1) {
+                        return "<html><font color=\"green\">"
+                                + STRINGS.getString("In_Progress")
+                                + "</font></html>";
+                    } else {
+                        return "<html><font color=\"green\">"
+                                + STRINGS.getString("OK")
+                                + "</font></html>";
+                    }
                 } else {
                     return "<html><font color=\"red\">"
                             + errorMessage + "</font></html>";
@@ -109,6 +153,6 @@ public class ResultsTableModel extends PreferredSizesTableModel {
     public void setList(List<StorageDeviceResult> resultList) {
         this.resultList = resultList;
         fireTableDataChanged();
-        initSizes();
+        updateTableColumnWidths();
     }
 }

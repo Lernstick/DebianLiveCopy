@@ -1,9 +1,9 @@
-dlcopy (201404082004-1) unstable; urgency=low
+dlcopy (201404091425-1) unstable; urgency=low
 
   * added checkbox for NTFS quick format
   * skip errors and show final results list
 
- -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 08 Apr 2014 20:04:03 +0200
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 09 Apr 2014 14:25:03 +0200
 
 dlcopy (201404031920-1) unstable; urgency=low
 
