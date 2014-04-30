@@ -4113,7 +4113,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private Partitions getPartitions(StorageDevice storageDevice) {
         long size = storageDevice.getSize();
-        long overhead = size - systemSizeEnlarged;
+        long overhead
+                = size - (BOOT_PARTITION_SIZE * MEGA) - systemSizeEnlarged;
         int overheadMB = (int) (overhead / MEGA);
         PartitionState partitionState
                 = getPartitionState(size, systemSizeEnlarged);

@@ -1,3 +1,9 @@
+dlcopy (201404301516-1) unstable; urgency=low
+
+  * fixed partition size calculation
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 30 Apr 2014 15:16:05 +0200
+
 dlcopy (201404091747-1) unstable; urgency=low
 
   * added checkbox for NTFS quick format
