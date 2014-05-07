@@ -1,3 +1,9 @@
+dlcopy (201405071144-1) unstable; urgency=low
+
+  * use different partitioning schema for removable USB flash drives
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 07 May 2014 11:44:02 +0200
+
 dlcopy (201404301516-1) unstable; urgency=low
 
   * fixed partition size calculation

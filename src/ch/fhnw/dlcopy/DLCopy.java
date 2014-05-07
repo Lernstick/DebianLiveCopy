@@ -4737,11 +4737,15 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }
 
     private CopyJobsInfo prepareBootAndSystemCopyJobs(
+            StorageDevice storageDevice,
             Partition destinationBootPartition,
+            Partition destinationExchangePartition,
             Partition destinationSystemPartition) throws DBusException {
 
         String destinationBootPath
                 = destinationBootPartition.mount().getMountPath();
+        String destinationExchangePath
+                = destinationExchangePartition.mount().getMountPath();
         String destinationSystemPath
                 = destinationSystemPartition.mount().getMountPath();
         boolean sourceBootTempMounted = false;
@@ -4769,12 +4773,20 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 new Source[]{bootCopyJobSource},
                 new String[]{destinationBootPath});
 
+        CopyJob exchangeCopyJob = null;
+        if (storageDevice.isRemovable()) {
+            exchangeCopyJob = new CopyJob(
+                    new Source[]{bootCopyJobSource},
+                    new String[]{destinationExchangePath});
+        }
+
         CopyJob systemCopyJob = new CopyJob(
                 new Source[]{systemCopyJobSource},
                 new String[]{destinationSystemPath});
 
         return new CopyJobsInfo(sourceBootTempMounted, destinationBootPath,
-                destinationSystemPath, bootCopyJob, systemCopyJob);
+                destinationSystemPath, bootCopyJob, exchangeCopyJob,
+                systemCopyJob);
     }
 
     private class Installer extends Thread implements PropertyChangeListener {
@@ -4989,35 +5001,46 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     == StorageDevice.Type.SDMemoryCard);
 
             // determine devices
-            String destinationBootDevice = device + (sdDevice ? "p1" : '1');
+            String destinationBootDevice = null;
             String destinationExchangeDevice = null;
             String destinationDataDevice = null;
             String destinationSystemDevice;
             switch (partitionState) {
                 case ONLY_SYSTEM:
+                    destinationBootDevice = device + (sdDevice ? "p1" : '1');
                     destinationSystemDevice = device + (sdDevice ? "p2" : '2');
                     break;
 
                 case PERSISTENCE:
+                    destinationBootDevice = device + (sdDevice ? "p1" : '1');
                     destinationDataDevice = device + (sdDevice ? "p2" : '2');
                     destinationSystemDevice = device + (sdDevice ? "p3" : '3');
                     break;
 
                 case EXCHANGE:
                     if (exchangeMB == 0) {
+                        destinationBootDevice
+                                = device + (sdDevice ? "p1" : '1');
                         destinationDataDevice
                                 = device + (sdDevice ? "p2" : '2');
                         destinationSystemDevice
                                 = device + (sdDevice ? "p3" : '3');
                     } else {
-                        if (partitions.getPersistenceMB() == 0) {
+                        if (storageDevice.isRemovable()) {
+                            destinationExchangeDevice
+                                    = device + (sdDevice ? "p1" : '1');
+                            destinationBootDevice
+                                    = device + (sdDevice ? "p2" : '2');
+                        } else {
+                            destinationBootDevice
+                                    = device + (sdDevice ? "p1" : '1');
                             destinationExchangeDevice
                                     = device + (sdDevice ? "p2" : '2');
+                        }
+                        if (partitions.getPersistenceMB() == 0) {
                             destinationSystemDevice
                                     = device + (sdDevice ? "p3" : '3');
                         } else {
-                            destinationExchangeDevice
-                                    = device + (sdDevice ? "p2" : '2');
                             destinationDataDevice
                                     = device + (sdDevice ? "p3" : '3');
                             destinationSystemDevice
@@ -5111,8 +5134,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             destinationSystemDevice.substring(5), systemSize);
 
             // copy operating system files
-            copyExchangeBootAndSystem(destinationExchangePartition,
-                    destinationBootPartition, destinationSystemPartition);
+            copyExchangeBootAndSystem(storageDevice,
+                    destinationExchangePartition, destinationBootPartition,
+                    destinationSystemPartition);
 
             // copy persistence layer
             if (destinationDataPartition != null) {
@@ -5210,6 +5234,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     String bootBorder = BOOT_PARTITION_SIZE + "MiB";
                     mkpart(partedCommandList, "0%", bootBorder);
                     mkpart(partedCommandList, bootBorder, "100%");
+                    setFlag(partedCommandList, "1", "boot", "on");
+                    setFlag(partedCommandList, "1", "lba", "on");
                     break;
 
                 case PERSISTENCE:
@@ -5220,6 +5246,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     mkpart(partedCommandList, "0%", bootBorder);
                     mkpart(partedCommandList, bootBorder, persistenceBorder);
                     mkpart(partedCommandList, persistenceBorder, "100%");
+                    setFlag(partedCommandList, "1", "boot", "on");
+                    setFlag(partedCommandList, "1", "lba", "on");
                     break;
 
                 case EXCHANGE:
@@ -5229,26 +5257,45 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         persistenceBorder
                                 = (BOOT_PARTITION_SIZE + persistenceMB) + "MiB";
                         mkpart(partedCommandList, "0%", bootBorder);
-                        mkpart(partedCommandList, bootBorder, persistenceBorder);
+                        mkpart(partedCommandList,
+                                bootBorder, persistenceBorder);
                         mkpart(partedCommandList, persistenceBorder, "100%");
+                        setFlag(partedCommandList, "1", "boot", "on");
+                        setFlag(partedCommandList, "1", "lba", "on");
 
                     } else {
-                        bootBorder = BOOT_PARTITION_SIZE + "MiB";
-                        String exchangeBorder
-                                = (BOOT_PARTITION_SIZE + exchangeMB) + "MiB";
-                        mkpart(partedCommandList, "0%", bootBorder);
-                        mkpart(partedCommandList, bootBorder, exchangeBorder);
-                        if (persistenceMB == 0) {
-                            // create three partitions: boot, exchange, system
-                            mkpart(partedCommandList, exchangeBorder, "100%");
+                        String secondBorder;
+                        if (storageDevice.isRemovable()) {
+                            String exchangeBorder = exchangeMB + "MiB";
+                            bootBorder = (exchangeMB + BOOT_PARTITION_SIZE)
+                                    + "MiB";
+                            secondBorder = bootBorder;
+                            mkpart(partedCommandList, "0%", exchangeBorder);
+                            mkpart(partedCommandList,
+                                    exchangeBorder, bootBorder);
+                            setFlag(partedCommandList, "2", "boot", "on");
                         } else {
-                            // create four partitions:
-                            //   boot, exchange, persistence, system
+                            bootBorder = BOOT_PARTITION_SIZE + "MiB";
+                            String exchangeBorder
+                                    = (BOOT_PARTITION_SIZE + exchangeMB)
+                                    + "MiB";
+                            secondBorder = exchangeBorder;
+                            mkpart(partedCommandList, "0%", bootBorder);
+                            mkpart(partedCommandList,
+                                    bootBorder, exchangeBorder);
+                            setFlag(partedCommandList, "1", "boot", "on");
+                        }
+                        if (persistenceMB == 0) {
+                            mkpart(partedCommandList, secondBorder, "100%");
+                        } else {
                             persistenceBorder = (BOOT_PARTITION_SIZE
                                     + exchangeMB + persistenceMB) + "MiB";
-                            mkpart(partedCommandList, exchangeBorder, persistenceBorder);
-                            mkpart(partedCommandList, persistenceBorder, "100%");
+                            mkpart(partedCommandList,
+                                    secondBorder, persistenceBorder);
+                            mkpart(partedCommandList,
+                                    persistenceBorder, "100%");
                         }
+                        setFlag(partedCommandList, "1", "lba", "on");
                         setFlag(partedCommandList, "2", "lba", "on");
                     }
                     break;
@@ -5259,8 +5306,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     LOGGER.severe(errorMessage);
                     throw new IOException(errorMessage);
             }
-            setFlag(partedCommandList, "1", "boot", "on");
-            setFlag(partedCommandList, "1", "lba", "on");
 
             // safety wait in case of device scanning
             // 5 seconds were not enough...
@@ -5323,24 +5368,26 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             // The partition types assigned by parted are mosty garbage.
             // We must fix them here...
-            // boot partition (actually FAT32, but "hidden" by using the EFI
-            // partition type)
-            processExecutor.executeProcess("/sbin/sfdisk",
-                    "--id", device, "1", "ef");
+            // The boot partition is actually formatted with FAT32, but "hidden"
+            // by using the EFI partition type.
             switch (partitionState) {
                 case ONLY_SYSTEM:
                     // create two partitions:
-                    //  1) boot
+                    //  1) boot (EFI)
                     //  2) system (Linux)
+                    processExecutor.executeProcess("/sbin/sfdisk",
+                            "--id", device, "1", "ef");
                     processExecutor.executeProcess("/sbin/sfdisk",
                             "--id", device, "2", "83");
                     break;
 
                 case PERSISTENCE:
                     // create three partitions:
-                    //  1) boot
+                    //  1) boot (EFI)
                     //  2) persistence (Linux)
                     //  3) system (Linux)
+                    processExecutor.executeProcess("/sbin/sfdisk",
+                            "--id", device, "1", "ef");
                     processExecutor.executeProcess("/sbin/sfdisk",
                             "--id", device, "2", "83");
                     processExecutor.executeProcess("/sbin/sfdisk",
@@ -5350,9 +5397,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 case EXCHANGE:
                     if (exchangeMB == 0) {
                         // create three partitions:
-                        //  1) boot
+                        //  1) boot (EFI)
                         //  2) persistence (Linux)
                         //  3) system (Linux)
+                        processExecutor.executeProcess("/sbin/sfdisk",
+                                "--id", device, "1", "ef");
                         processExecutor.executeProcess("/sbin/sfdisk",
                                 "--id", device, "2", "83");
                         processExecutor.executeProcess("/sbin/sfdisk",
@@ -5371,23 +5420,29 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             exchangePartitionID = "7";
                         }
 
-                        if (persistenceMB == 0) {
-                            // create three partitions:
-                            //  1) boot
+                        if (storageDevice.isRemovable()) {
+                            //  1) exchange (exFAT, FAT32 or NTFS)
+                            //  2) boot (EFI)
+                            processExecutor.executeProcess("/sbin/sfdisk",
+                                    "--id", device, "1", exchangePartitionID);
+                            processExecutor.executeProcess("/sbin/sfdisk",
+                                    "--id", device, "2", "ef");
+                        } else {
+                            //  1) boot (EFI)
                             //  2) exchange (exFAT, FAT32 or NTFS)
-                            //  3) system (Linux)
+                            processExecutor.executeProcess("/sbin/sfdisk",
+                                    "--id", device, "1", "ef");
                             processExecutor.executeProcess("/sbin/sfdisk",
                                     "--id", device, "2", exchangePartitionID);
+                        }
+
+                        if (persistenceMB == 0) {
+                            //  3) system (Linux)
                             processExecutor.executeProcess("/sbin/sfdisk",
                                     "--id", device, "3", "83");
                         } else {
-                            // create four partitions:
-                            //  1) boot
-                            //  2) exchange (exFAT, FAT32 or NTFS)
                             //  3) persistence (Linux)
                             //  4) system (Linux)
-                            processExecutor.executeProcess("/sbin/sfdisk",
-                                    "--id", device, "2", exchangePartitionID);
                             processExecutor.executeProcess("/sbin/sfdisk",
                                     "--id", device, "3", "83");
                             processExecutor.executeProcess("/sbin/sfdisk",
@@ -5496,6 +5551,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         private void copyExchangeBootAndSystem(
+                StorageDevice storageDevice,
                 Partition destinationExchangePartition,
                 Partition destinationBootPartition,
                 Partition destinationSystemPartition)
@@ -5530,9 +5586,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             // define CopyJobs for boot and system parititions
             CopyJobsInfo copyJobsInfo = prepareBootAndSystemCopyJobs(
-                    destinationBootPartition, destinationSystemPartition);
+                    storageDevice, destinationBootPartition,
+                    destinationExchangePartition, destinationSystemPartition);
             fileCopier.copy(exchangeCopyJob,
                     copyJobsInfo.getBootCopyJob(),
+                    copyJobsInfo.getExchangeCopyJob(),
                     copyJobsInfo.getSystemCopyJob());
 
             // update GUI
@@ -5974,6 +6032,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             String device = storageDevice.getDevice();
             String devicePath = "/dev/" + device;
             Partition bootPartition = storageDevice.getBootPartition();
+            Partition exchangePartition = storageDevice.getExchangePartition();
             Partition dataPartition = storageDevice.getDataPartition();
             Partition systemPartition = storageDevice.getSystemPartition();
             int systemPartitionNumber = systemPartition.getNumber();
@@ -6148,7 +6207,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             // define CopyJobs for boot and system parititions
             CopyJobsInfo copyJobsInfo = prepareBootAndSystemCopyJobs(
-                    bootPartition, systemPartition);
+                    storageDevice, bootPartition, exchangePartition,
+                    systemPartition);
             File bootMountPointFile = new File(
                     copyJobsInfo.getDestinationBootPath());
             LOGGER.log(Level.INFO, "recursively deleting {0}",
@@ -6171,6 +6231,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 }
             });
             fileCopier.copy(copyJobsInfo.getBootCopyJob(),
+                    copyJobsInfo.getExchangeCopyJob(),
                     copyJobsInfo.getSystemCopyJob());
 
             SwingUtilities.invokeLater(new Runnable() {
@@ -7298,15 +7359,18 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         private final String destinationBootPath;
         private final String destinationSystemPath;
         private final CopyJob bootCopyJob;
+        private final CopyJob exchangeCopyJob;
         private final CopyJob systemCopyJob;
 
         public CopyJobsInfo(boolean bootTempMount,
                 String destinationBootPath, String destinationSystemPath,
-                CopyJob bootCopyJob, CopyJob systemCopyJob) {
+                CopyJob bootCopyJob, CopyJob exchangeCopyJob,
+                CopyJob systemCopyJob) {
             this.bootTempMount = bootTempMount;
             this.destinationBootPath = destinationBootPath;
             this.destinationSystemPath = destinationSystemPath;
             this.bootCopyJob = bootCopyJob;
+            this.exchangeCopyJob = exchangeCopyJob;
             this.systemCopyJob = systemCopyJob;
         }
 
@@ -7324,6 +7388,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         public CopyJob getBootCopyJob() {
             return bootCopyJob;
+        }
+
+        public CopyJob getExchangeCopyJob() {
+            return exchangeCopyJob;
         }
 
         public CopyJob getSystemCopyJob() {

@@ -254,9 +254,17 @@ public class InstallStorageDeviceRenderer
                 systemText = LernstickFileTools.getDataVolumeString(
                         systemSize, 1);
 
-                bootPartitionX = iconGap + OFFSET;
-                int exchangePartitionX = bootPartitionX + bootWidth;
-                persistentPartitionX = exchangePartitionX + exchangeWidth;
+
+                int exchangePartitionX;
+                if (storageDevice.isRemovable()) {
+                    exchangePartitionX = iconGap + OFFSET;
+                    bootPartitionX = exchangePartitionX + exchangeWidth;
+                    persistentPartitionX = bootPartitionX + bootWidth;
+                } else {
+                    bootPartitionX = iconGap + OFFSET;
+                    exchangePartitionX = bootPartitionX + bootWidth;
+                    persistentPartitionX = exchangePartitionX + exchangeWidth;
+                }
 
                 // paint color blocks first and texts later
                 // this way the persistent color block can not overwrite the
