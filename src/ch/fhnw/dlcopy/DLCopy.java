@@ -4744,8 +4744,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         String destinationBootPath
                 = destinationBootPartition.mount().getMountPath();
-        String destinationExchangePath
-                = destinationExchangePartition.mount().getMountPath();
+        String destinationExchangePath = null;
+        if (destinationExchangePartition != null) {
+            destinationExchangePath
+                    = destinationExchangePartition.mount().getMountPath();
+        }
         String destinationSystemPath
                 = destinationSystemPartition.mount().getMountPath();
         boolean sourceBootTempMounted = false;
@@ -4774,10 +4777,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 new String[]{destinationBootPath});
 
         CopyJob exchangeCopyJob = null;
-        if (storageDevice.isRemovable()) {
-            exchangeCopyJob = new CopyJob(
-                    new Source[]{bootCopyJobSource},
-                    new String[]{destinationExchangePath});
+        if (destinationExchangePartition != null) {
+            if (storageDevice.isRemovable()) {
+                exchangeCopyJob = new CopyJob(
+                        new Source[]{bootCopyJobSource},
+                        new String[]{destinationExchangePath});
+            }
         }
 
         CopyJob systemCopyJob = new CopyJob(

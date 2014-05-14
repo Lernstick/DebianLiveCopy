@@ -1,3 +1,9 @@
+dlcopy (201405142032-1) unstable; urgency=low
+
+  * fixed NPE
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 14 May 2014 20:32:33 +0200
+
 dlcopy (201405071144-1) unstable; urgency=low
 
   * use different partitioning schema for removable USB flash drives
