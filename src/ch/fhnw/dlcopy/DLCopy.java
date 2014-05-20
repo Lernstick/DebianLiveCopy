@@ -4776,9 +4776,15 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 new Source[]{bootCopyJobSource},
                 new String[]{destinationBootPath});
 
+        // Only if we have an FAT32 exchange partition on a removable media we
+        // have to copy the boot files also to the exchange partition.
         CopyJob exchangeCopyJob = null;
-        if (destinationExchangePartition != null) {
-            if (storageDevice.isRemovable()) {
+        if ((destinationExchangePartition != null)
+                && (storageDevice.isRemovable())) {
+            Object selectedFileSystem
+                    = exchangePartitionFileSystemComboBox.getSelectedItem();
+            String exFS = selectedFileSystem.toString();
+            if (exFS.equalsIgnoreCase("fat32")) {
                 exchangeCopyJob = new CopyJob(
                         new Source[]{bootCopyJobSource},
                         new String[]{destinationExchangePath});
