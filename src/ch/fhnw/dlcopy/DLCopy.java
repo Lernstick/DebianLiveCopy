@@ -4740,15 +4740,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             StorageDevice storageDevice,
             Partition destinationBootPartition,
             Partition destinationExchangePartition,
-            Partition destinationSystemPartition) throws DBusException {
+            Partition destinationSystemPartition,
+            String destinationExchangePartitionFileSystem)
+            throws DBusException {
 
         String destinationBootPath
                 = destinationBootPartition.mount().getMountPath();
-        String destinationExchangePath = null;
-        if (destinationExchangePartition != null) {
-            destinationExchangePath
-                    = destinationExchangePartition.mount().getMountPath();
-        }
         String destinationSystemPath
                 = destinationSystemPartition.mount().getMountPath();
         boolean sourceBootTempMounted = false;
@@ -4778,14 +4775,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         // Only if we have an FAT32 exchange partition on a removable media we
         // have to copy the boot files also to the exchange partition.
-        CopyJob exchangeCopyJob = null;
+        CopyJob bootFilesCopyJob = null;
         if ((destinationExchangePartition != null)
                 && (storageDevice.isRemovable())) {
-            Object selectedFileSystem
-                    = exchangePartitionFileSystemComboBox.getSelectedItem();
-            String exFS = selectedFileSystem.toString();
-            if (exFS.equalsIgnoreCase("fat32")) {
-                exchangeCopyJob = new CopyJob(
+            if (destinationExchangePartitionFileSystem.equalsIgnoreCase("fat32")) {
+                String destinationExchangePath
+                        = destinationExchangePartition.mount().getMountPath();
+                bootFilesCopyJob = new CopyJob(
                         new Source[]{bootCopyJobSource},
                         new String[]{destinationExchangePath});
             }
@@ -4796,8 +4792,21 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 new String[]{destinationSystemPath});
 
         return new CopyJobsInfo(sourceBootTempMounted, destinationBootPath,
-                destinationSystemPath, bootCopyJob, exchangeCopyJob,
+                destinationSystemPath, bootCopyJob, bootFilesCopyJob,
                 systemCopyJob);
+    }
+
+    private void hideBootFiles(CopyJob bootFilesCopyJob,
+            String destinationExchangePath) {
+        Source bootFilesSource = bootFilesCopyJob.getSources()[0];
+        File bootFilesBaseDir = bootFilesSource.getBaseDirectory();
+        String[] bootFiles = bootFilesBaseDir.list();
+        if (bootFiles != null) {
+            for (String bootFile : bootFiles) {
+                processExecutor.executeProcess("fatattr", "+h",
+                        destinationExchangePath + '/' + bootFile);
+            }
+        }
     }
 
     private class Installer extends Thread implements PropertyChangeListener {
@@ -5568,17 +5577,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 Partition destinationSystemPartition)
                 throws InterruptedException, IOException, DBusException {
 
-            installFileCopierPanel.setFileCopier(fileCopier);
-            fileCopier.addPropertyChangeListener(
-                    FileCopier.BYTE_COUNTER_PROPERTY, this);
-
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    showCard(installCardPanel, "installCopyPanel");
-                }
-            });
-
             // define CopyJob for exchange paritition
             boolean sourceExchangeTempMounted = false;
             String destinationExchangePath = null;
@@ -5596,13 +5594,40 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
 
             // define CopyJobs for boot and system parititions
+            Object selectedFileSystem
+                    = exchangePartitionFileSystemComboBox.getSelectedItem();
+            String destinationExchangePartitionFileSystem
+                    = selectedFileSystem.toString();
             CopyJobsInfo copyJobsInfo = prepareBootAndSystemCopyJobs(
                     storageDevice, destinationBootPartition,
-                    destinationExchangePartition, destinationSystemPartition);
-            fileCopier.copy(exchangeCopyJob,
+                    destinationExchangePartition, destinationSystemPartition,
+                    destinationExchangePartitionFileSystem);
+
+            // copy all files
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    showCard(installCardPanel, "installCopyPanel");
+                }
+            });
+            installFileCopierPanel.setFileCopier(fileCopier);
+            fileCopier.addPropertyChangeListener(
+                    FileCopier.BYTE_COUNTER_PROPERTY, this);
+            CopyJob bootFilesCopyJob = copyJobsInfo.getBootFilesCopyJob();
+            fileCopier.copy(exchangeCopyJob, bootFilesCopyJob,
                     copyJobsInfo.getBootCopyJob(),
-                    copyJobsInfo.getExchangeCopyJob(),
                     copyJobsInfo.getSystemCopyJob());
+
+            // hide boot files in exchange partition
+            // (only necessary with FAT32 on removable media...)
+            if (bootFilesCopyJob != null) {
+                if (destinationExchangePath == null) {
+                    // user did not select to copy the exchange partition
+                    destinationExchangePath
+                            = destinationExchangePartition.getMountPath();
+                }
+                hideBootFiles(bootFilesCopyJob, destinationExchangePath);
+            }
 
             // update GUI
             SwingUtilities.invokeLater(new Runnable() {
@@ -6217,9 +6242,15 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             });
 
             // define CopyJobs for boot and system parititions
+            String exchangePartitionFS = null;
+            if ("vfat".equals(exchangePartition.getIdType())) {
+                exchangePartitionFS = "fat32";
+            }
+            // TODO: mapping of other file systems
+            
             CopyJobsInfo copyJobsInfo = prepareBootAndSystemCopyJobs(
                     storageDevice, bootPartition, exchangePartition,
-                    systemPartition);
+                    systemPartition, exchangePartitionFS);
             File bootMountPointFile = new File(
                     copyJobsInfo.getDestinationBootPath());
             LOGGER.log(Level.INFO, "recursively deleting {0}",
@@ -6241,9 +6272,17 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     showCard(upgradeCardPanel, "upgradeCopyPanel");
                 }
             });
+            CopyJob bootFilesCopyJob = copyJobsInfo.getBootFilesCopyJob();
             fileCopier.copy(copyJobsInfo.getBootCopyJob(),
-                    copyJobsInfo.getExchangeCopyJob(),
-                    copyJobsInfo.getSystemCopyJob());
+                    bootFilesCopyJob, copyJobsInfo.getSystemCopyJob());
+
+            // hide boot files in exchange partition
+            // (only necessary with FAT32 on removable media...)
+            if (bootFilesCopyJob != null) {
+                String exchangePath = exchangePartition.getMountPath();
+                hideBootFiles(bootFilesCopyJob, exchangePath);
+                umount(exchangePartition);
+            }
 
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -7370,18 +7409,18 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         private final String destinationBootPath;
         private final String destinationSystemPath;
         private final CopyJob bootCopyJob;
-        private final CopyJob exchangeCopyJob;
+        private final CopyJob bootFilesCopyJob;
         private final CopyJob systemCopyJob;
 
         public CopyJobsInfo(boolean bootTempMount,
                 String destinationBootPath, String destinationSystemPath,
-                CopyJob bootCopyJob, CopyJob exchangeCopyJob,
+                CopyJob bootCopyJob, CopyJob bootFilesCopyJob,
                 CopyJob systemCopyJob) {
             this.bootTempMount = bootTempMount;
             this.destinationBootPath = destinationBootPath;
             this.destinationSystemPath = destinationSystemPath;
             this.bootCopyJob = bootCopyJob;
-            this.exchangeCopyJob = exchangeCopyJob;
+            this.bootFilesCopyJob = bootFilesCopyJob;
             this.systemCopyJob = systemCopyJob;
         }
 
@@ -7401,8 +7440,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             return bootCopyJob;
         }
 
-        public CopyJob getExchangeCopyJob() {
-            return exchangeCopyJob;
+        public CopyJob getBootFilesCopyJob() {
+            return bootFilesCopyJob;
         }
 
         public CopyJob getSystemCopyJob() {

@@ -1,3 +1,9 @@
+dlcopy (201405241509-1) unstable; urgency=low
+
+  * hide boot files in exchange partition
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Sat, 24 May 2014 15:09:12 +0200
+
 dlcopy (201405201114-1) unstable; urgency=low
 
   * copy boot files to exchange partition only when it is using FAT32
