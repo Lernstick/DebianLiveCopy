@@ -4801,12 +4801,26 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         Source bootFilesSource = bootFilesCopyJob.getSources()[0];
         File bootFilesBaseDir = bootFilesSource.getBaseDirectory();
         String[] bootFiles = bootFilesBaseDir.list();
+
+        // use FAT attributes to hide boot files in Windows
         if (bootFiles != null) {
             for (String bootFile : bootFiles) {
                 processExecutor.executeProcess("fatattr", "+h",
                         destinationExchangePath + '/' + bootFile);
             }
         }
+
+        // use ".hidden"-File to hide boot files in OS X
+        String osxHiddenFilePath = destinationExchangePath + "/.hidden";
+        try (FileWriter fileWriter = new FileWriter(osxHiddenFilePath)) {
+            String lineSeperator = System.lineSeparator();
+            for (String bootFile : bootFiles) {
+                fileWriter.write(bootFile + lineSeperator);
+            }
+        } catch (IOException ex) {
+            LOGGER.log(Level.WARNING, "", ex);
+        }
+        processExecutor.executeProcess("fatattr", "+h", osxHiddenFilePath);
     }
 
     private class Installer extends Thread implements PropertyChangeListener {
@@ -6247,7 +6261,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 exchangePartitionFS = "fat32";
             }
             // TODO: mapping of other file systems
-            
+
             CopyJobsInfo copyJobsInfo = prepareBootAndSystemCopyJobs(
                     storageDevice, bootPartition, exchangePartition,
                     systemPartition, exchangePartitionFS);

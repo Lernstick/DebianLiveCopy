@@ -1,6 +1,12 @@
+dlcopy (201406041113-1) unstable; urgency=low
+
+  * hide boot files also in OS X with a .hidden file
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 04 Jun 2014 11:13:52 +0200
+
 dlcopy (201405241509-1) unstable; urgency=low
 
-  * hide boot files in exchange partition
+  * hide boot files in exchange partition in Windows with FAT attributes
 
  -- Ronny Standtke <ronny.standtke@fhnw.ch>  Sat, 24 May 2014 15:09:12 +0200
 
