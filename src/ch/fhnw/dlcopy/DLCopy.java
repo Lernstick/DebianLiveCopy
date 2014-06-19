@@ -6257,7 +6257,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             // define CopyJobs for boot and system parititions
             String exchangePartitionFS = null;
-            if ("vfat".equals(exchangePartition.getIdType())) {
+            if ((exchangePartition != null)
+                    && "vfat".equals(exchangePartition.getIdType())) {
                 exchangePartitionFS = "fat32";
             }
             // TODO: mapping of other file systems
