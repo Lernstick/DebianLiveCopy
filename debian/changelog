@@ -4,6 +4,12 @@ dlcopy (201407081730-1) unstable; urgency=low
 
  -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 08 Jul 2014 17:30:17 +0200
 
+dlcopy (201406192246-1) unstable; urgency=medium
+
+  * fixed NPE when upgrading a system without exchange partition
+
+ -- Ronny Standtke <ronny@ronny>  Thu, 19 Jun 2014 22:46:45 +0200
+
 dlcopy (201406041113-1) unstable; urgency=low
 
   * hide boot files also in OS X with a .hidden file
