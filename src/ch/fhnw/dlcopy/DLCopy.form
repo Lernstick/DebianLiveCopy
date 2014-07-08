@@ -615,7 +615,7 @@
                             <Container class="javax.swing.JPanel" name="exchangePartitionPanel">
                               <Constraints>
                                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                                  <JTabbedPaneConstraints tabName="Exchange partition (optional)">
+                                  <JTabbedPaneConstraints tabName="Austauschpartition (optional)">
                                     <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                                       <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.exchangePartitionPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                     </Property>
@@ -736,7 +736,7 @@
                                       <Properties>
                                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                                           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                                            <TitledBorder title="Automatic Numbering">
+                                            <TitledBorder title="Automatische Nummerierung">
                                               <ResourceString PropertyName="titleX" bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.autoNumberPanel.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                             </TitledBorder>
                                           </Border>
@@ -910,7 +910,7 @@
                             <Container class="javax.swing.JPanel" name="dataPartitionPanel">
                               <Constraints>
                                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                                  <JTabbedPaneConstraints tabName="Data partition">
+                                  <JTabbedPaneConstraints tabName="Datenpartition">
                                     <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                                       <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.dataPartitionPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                     </Property>
@@ -1032,7 +1032,7 @@
                 <Container class="javax.swing.JPanel" name="installCurrentPanel">
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                      <JTabbedPaneConstraints tabName="Current installation">
+                      <JTabbedPaneConstraints tabName="Aktuelle Installation">
                         <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                           <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.installCurrentPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
@@ -1252,7 +1252,7 @@
                 <Container class="javax.swing.JPanel" name="installReportPanel">
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                      <JTabbedPaneConstraints tabName="Installation report">
+                      <JTabbedPaneConstraints tabName="Installationsbericht">
                         <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                           <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="Installation_Report" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
@@ -1430,7 +1430,7 @@
                     <Container class="javax.swing.JPanel" name="upgradeSelectionCardPanel">
                       <Constraints>
                         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                          <JTabbedPaneConstraints tabName="Selection">
+                          <JTabbedPaneConstraints tabName="Auswahl">
                             <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                               <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeSelectionCardPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
@@ -1622,11 +1622,17 @@
                                               <Group type="102" alignment="0" attributes="0">
                                                   <EmptySpace min="21" pref="21" max="21" attributes="0"/>
                                                   <Group type="103" groupAlignment="0" attributes="0">
-                                                      <Component id="automaticBackupRemoveCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
                                                       <Group type="102" alignment="0" attributes="0">
                                                           <Component id="automaticBackupLabel" min="-2" max="-2" attributes="0"/>
                                                           <EmptySpace max="-2" attributes="0"/>
-                                                          <Component id="automaticBackupTextField" pref="426" max="32767" attributes="0"/>
+                                                          <Component id="automaticBackupTextField" max="32767" attributes="0"/>
+                                                      </Group>
+                                                      <Group type="102" attributes="0">
+                                                          <Group type="103" groupAlignment="0" attributes="0">
+                                                              <Component id="automaticBackupRemoveCheckBox" min="-2" max="-2" attributes="0"/>
+                                                              <Component id="automaticBackupHiddenCheckBox" min="-2" max="-2" attributes="0"/>
+                                                          </Group>
+                                                          <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                                       </Group>
                                                   </Group>
                                               </Group>
@@ -1642,23 +1648,25 @@
                         <DimensionLayout dim="1">
                           <Group type="103" groupAlignment="0" attributes="0">
                               <Group type="102" alignment="0" attributes="0">
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="upgradeSystemPartitionCheckBox" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="reactivateWelcomeCheckBox" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="keepPrinterSettingsCheckBox" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="automaticBackupCheckBox" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Group type="103" groupAlignment="2" attributes="0">
                                       <Component id="automaticBackupLabel" alignment="2" min="-2" max="-2" attributes="0"/>
                                       <Component id="automaticBackupTextField" alignment="2" min="-2" max="-2" attributes="0"/>
                                       <Component id="automaticBackupButton" alignment="2" min="-2" max="-2" attributes="0"/>
                                   </Group>
-                                  <EmptySpace max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
+                                  <Component id="automaticBackupHiddenCheckBox" min="-2" max="-2" attributes="0"/>
+                                  <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="automaticBackupRemoveCheckBox" min="-2" max="-2" attributes="0"/>
-                                  <EmptySpace type="separate" max="-2" attributes="0"/>
+                                  <EmptySpace type="unrelated" max="-2" attributes="0"/>
                                   <Component id="upgradeOverwritePanel" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                               </Group>
@@ -1727,6 +1735,15 @@
                             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="automaticBackupButtonActionPerformed"/>
                           </Events>
                         </Component>
+                        <Component class="javax.swing.JCheckBox" name="automaticBackupHiddenCheckBox">
+                          <Properties>
+                            <Property name="selected" type="boolean" value="true"/>
+                            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.automaticBackupHiddenCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                            </Property>
+                            <Property name="enabled" type="boolean" value="false"/>
+                          </Properties>
+                        </Component>
                         <Component class="javax.swing.JCheckBox" name="automaticBackupRemoveCheckBox">
                           <Properties>
                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
@@ -1739,7 +1756,7 @@
                           <Properties>
                             <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                               <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                                <TitledBorder title="Always overwrite">
+                                <TitledBorder title="Immer &#xfc;berschreiben">
                                   <ResourceString PropertyName="titleX" bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeOverwritePanel.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </TitledBorder>
                               </Border>
@@ -1760,7 +1777,7 @@
                                           <Component id="sortDescendingButton" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="upgradeOverwriteScrollPane" pref="530" max="32767" attributes="0"/>
+                                      <Component id="upgradeOverwriteScrollPane" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Component id="upgradeOverwriteAddButton" alignment="1" min="-2" max="-2" attributes="0"/>
@@ -1775,31 +1792,26 @@
                             </DimensionLayout>
                             <DimensionLayout dim="1">
                               <Group type="103" groupAlignment="0" attributes="0">
-                                  <Group type="102" attributes="0">
-                                      <Group type="103" groupAlignment="0" attributes="0">
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="upgradeOverwriteAddButton" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="upgradeOverwriteEditButton" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="upgradeOverwriteRemoveButton" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="upgradeOverwriteExportButton" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="upgradeOverwriteImportButton" min="-2" max="-2" attributes="0"/>
-                                          </Group>
-                                          <Component id="upgradeOverwriteScrollPane" alignment="0" min="0" max="32767" attributes="2"/>
-                                          <Group type="102" alignment="0" attributes="0">
-                                              <Component id="upgradeMoveUpButton" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="upgradeMoveDownButton" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="sortAscendingButton" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace max="-2" attributes="0"/>
-                                              <Component id="sortDescendingButton" min="-2" max="-2" attributes="0"/>
-                                          </Group>
-                                      </Group>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="upgradeOverwriteAddButton" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="upgradeOverwriteEditButton" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="upgradeOverwriteRemoveButton" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="upgradeOverwriteExportButton" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="upgradeOverwriteImportButton" min="-2" max="-2" attributes="0"/>
+                                  </Group>
+                                  <Component id="upgradeOverwriteScrollPane" alignment="0" min="0" max="32767" attributes="2"/>
+                                  <Group type="102" alignment="0" attributes="0">
+                                      <Component id="upgradeMoveUpButton" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="upgradeMoveDownButton" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="sortAscendingButton" min="-2" max="-2" attributes="0"/>
+                                      <EmptySpace max="-2" attributes="0"/>
+                                      <Component id="sortDescendingButton" min="-2" max="-2" attributes="0"/>
                                   </Group>
                               </Group>
                             </DimensionLayout>
@@ -1990,7 +2002,7 @@
                 <Container class="javax.swing.JPanel" name="upgradePanel">
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                      <JTabbedPaneConstraints tabName="Current upgrade">
+                      <JTabbedPaneConstraints tabName="Aktuelle Aktualisierung">
                         <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                           <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradePanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
@@ -2179,7 +2191,7 @@
                 <Container class="javax.swing.JPanel" name="upgradeReportPanel">
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
-                      <JTabbedPaneConstraints tabName="Upgrade report">
+                      <JTabbedPaneConstraints tabName="Aktualisierungsbericht">
                         <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                           <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="Upgrade_Report" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
@@ -2739,7 +2751,7 @@
                   <Properties>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                        <TitledBorder title="When no data partition is used">
+                        <TitledBorder title="Wenn keine Datenpartition benutzt wird">
                           <ResourceString PropertyName="titleX" bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.isoOptionsPanel.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
@@ -2924,7 +2936,7 @@
                   <Properties>
                     <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                       <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
-                        <TitledBorder title="Installation report">
+                        <TitledBorder title="Installationsbericht">
                           <ResourceString PropertyName="titleX" bundle="ch/fhnw/dlcopy/Strings.properties" key="Installation_Report" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </TitledBorder>
                       </Border>
