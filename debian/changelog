@@ -1,8 +1,8 @@
-dlcopy (201407081730-1) unstable; urgency=low
+dlcopy (201407081828-1) unstable; urgency=low
 
   * added option to exclude hidden files from backup
 
- -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 08 Jul 2014 17:30:17 +0200
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 08 Jul 2014 18:28:17 +0200
 
 dlcopy (201406192246-1) unstable; urgency=medium
 
