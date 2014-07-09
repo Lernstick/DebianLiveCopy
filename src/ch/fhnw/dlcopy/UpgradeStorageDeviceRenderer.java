@@ -187,21 +187,39 @@ public class UpgradeStorageDeviceRenderer
 
             // upgrade info text
             try {
-                if (storageDevice.canBeUpgraded()) {
-                    if (storageDevice.needsRepartitioning()) {
-                        upgradeInfoLabel.setIcon(warningIcon);
-                        upgradeInfoLabel.setText(DLCopy.STRINGS.getString(
-                                "Warning_Repartitioning"));
-                    } else {
+                StorageDevice.UpgradeVariant upgradeVariant
+                        = storageDevice.getUpgradeVariant();
+                switch (upgradeVariant) {
+                    case REGULAR:
                         upgradeInfoLabel.setIcon(okIcon);
                         upgradeInfoLabel.setText(DLCopy.STRINGS.getString(
                                 "Upgrading_Possible"));
-                    }
-                } else {
-                    upgradeInfoLabel.setIcon(cancelIcon);
-                    upgradeInfoLabel.setText(
-                            DLCopy.STRINGS.getString("Upgrading_Impossible")
-                            + ": " + storageDevice.getNoUpgradeReason());
+                        break;
+                    case REPARTITION:
+                        upgradeInfoLabel.setIcon(warningIcon);
+                        upgradeInfoLabel.setText(DLCopy.STRINGS.getString(
+                                "Warning_Repartitioning"));
+                        break;
+                    case BACKUP:
+                        upgradeInfoLabel.setIcon(warningIcon);
+                        upgradeInfoLabel.setText(DLCopy.STRINGS.getString(
+                                "Warning_Upgrade_Backup"));
+                        break;
+                    case INSTALLATION:
+                        upgradeInfoLabel.setIcon(warningIcon);
+                        upgradeInfoLabel.setText(DLCopy.STRINGS.getString(
+                                "Warning_Upgrade_By_Installation"));
+                        break;
+                    case IMPOSSIBLE:
+                        upgradeInfoLabel.setIcon(cancelIcon);
+                        upgradeInfoLabel.setText(
+                                DLCopy.STRINGS.getString("Upgrading_Impossible")
+                                + ": " + storageDevice.getNoUpgradeReason());
+                        break;
+                    default:
+                        LOGGER.log(Level.WARNING,
+                                "unsupported upgradeVariant {0}",
+                                upgradeVariant);
                 }
             } catch (DBusException ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
