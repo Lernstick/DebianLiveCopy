@@ -5987,9 +5987,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             backupUserData(dataMountPoint, getBackupDestination(storageDevice));
             backupExchangeParitition();
 
-            copyToStorageDevice(fileCopier, storageDevice, 
+            copyToStorageDevice(fileCopier, storageDevice,
                     exchangePartitionTextField.getText());
-            
+
             restoreUserData();
             restoreExchangePartition();
         }
@@ -5997,11 +5997,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         private void restoreUserData() {
             // TODO
         }
-        
+
         private void restoreExchangePartition() {
             // TODO
         }
-        
+
         private void backupExchangeParitition() {
             // TODO
         }
@@ -6607,8 +6607,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
                 String xorrisoScript = "#!/bin/sh\n"
                         + "cd " + targetDirectory + '\n'
-                        + "xorriso -dev " + isoPath
-                        + " -volid LERNSTICK";
+                        + "xorriso -dev \"" + isoPath + "\" -volid LERNSTICK";
                 if (!(isoLabel.isEmpty())) {
                     xorrisoScript += " -application_id \"" + isoLabel + "\"";
                 }
