@@ -268,6 +268,8 @@ public class DLCopy extends JFrame
         environment.put("LC_ALL", "C");
         processExecutor.setEnvironment(environment);
 
+        ToolTipManager.sharedInstance().setDismissDelay(60000);
+
         timeFormat = new SimpleDateFormat("HH:mm:ss");
         timeFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
 
@@ -479,10 +481,8 @@ public class DLCopy extends JFrame
                         new String[]{"exFAT", "FAT32", "NTFS"});
                 exchangePartitionFileSystemComboBox.setModel(model);
                 exchangePartitionFileSystemComboBox.setSelectedItem("exFAT");
-                exchangePartitionFileSystemComboBox.setToolTipText(
-                        STRINGS.getString("DLCopy."
-                                + "exchangePartitionFileSystemComboBox."
-                                + "toolTipText"));
+                exchangePartitionFileSystemComboBox.setToolTipText(STRINGS.getString(
+                        "DLCopy.exchangePartitionFileSystemComboBox.toolTipText"));
                 break;
             case lernstick_pu:
                 isoLabelTextField.setText("lernstick");
@@ -492,9 +492,8 @@ public class DLCopy extends JFrame
                         new String[]{"FAT32", "exFAT", "NTFS"});
                 exchangePartitionFileSystemComboBox.setModel(model);
                 exchangePartitionFileSystemComboBox.setSelectedItem("FAT32");
-                exchangePartitionFileSystemComboBox.setToolTipText(
-                        STRINGS.getString(
-                                "DLCopy.exchangePartitionFileSystemComboBox.toolTipText.pu"));
+                exchangePartitionFileSystemComboBox.setToolTipText(STRINGS.getString(
+                        "DLCopy.exchangePartitionFileSystemComboBox.toolTipText.pu"));
                 break;
         }
 
