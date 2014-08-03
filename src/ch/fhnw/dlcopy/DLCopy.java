@@ -493,9 +493,8 @@ public class DLCopy extends JFrame
                 exchangePartitionFileSystemComboBox.setModel(model);
                 exchangePartitionFileSystemComboBox.setSelectedItem("FAT32");
                 exchangePartitionFileSystemComboBox.setToolTipText(
-                        STRINGS.getString("DLCopy."
-                                + "exchangePartitionFileSystemComboBox."
-                                + "toolTipText.pu"));
+                        STRINGS.getString(
+                                "DLCopy.exchangePartitionFileSystemComboBox.toolTipText.pu"));
                 break;
         }
 
@@ -529,13 +528,16 @@ public class DLCopy extends JFrame
         // default to ext4 for data partition
         dataPartitionFilesystemComboBox.setSelectedItem("ext4");
 
-        // init data partition mode
-        dataPartitionModeComboBox.setModel(new DefaultComboBoxModel(
-                new String[]{
-                    STRINGS.getString("Read_Write"),
-                    STRINGS.getString("Read_Only"),
-                    STRINGS.getString("Not_Used")
-                }));
+        // init data partition modes
+        String[] dataPartitionModes = new String[]{
+            STRINGS.getString("Read_Write"),
+            STRINGS.getString("Read_Only"),
+            STRINGS.getString("Not_Used")
+        };
+        dataPartitionModeComboBox.setModel(
+                new DefaultComboBoxModel(dataPartitionModes));
+        isoDataPartitionModeComboBox.setModel(
+                new DefaultComboBoxModel(dataPartitionModes));
 
         // determine mode of data partition
         if (bootBootPartition == null) {
@@ -555,25 +557,25 @@ public class DLCopy extends JFrame
         }
 
         if (sourceDataPartitionMode != null) {
+            String selectedItem = null;
             switch (sourceDataPartitionMode) {
                 case NotUsed:
-                    dataPartitionModeComboBox.setSelectedItem(
-                            STRINGS.getString("Not_Used"));
+                    selectedItem = STRINGS.getString("Not_Used");
                     break;
 
                 case ReadOnly:
-                    dataPartitionModeComboBox.setSelectedItem(
-                            STRINGS.getString("Read_Only"));
+                    selectedItem = STRINGS.getString("Read_Only");
                     break;
 
                 case ReadWrite:
-                    dataPartitionModeComboBox.setSelectedItem(
-                            STRINGS.getString("Read_Write"));
+                    selectedItem = STRINGS.getString("Read_Write");
                     break;
 
                 default:
                     LOGGER.warning("Unsupported data partition mode!");
             }
+            dataPartitionModeComboBox.setSelectedItem(selectedItem);
+            isoDataPartitionModeComboBox.setSelectedItem(selectedItem);
         }
 
         // set colums for spinners
@@ -753,6 +755,7 @@ public class DLCopy extends JFrame
         java.awt.GridBagConstraints gridBagConstraints;
 
         repairButtonGroup = new javax.swing.ButtonGroup();
+        isoButtonGroup = new javax.swing.ButtonGroup();
         choicePanel = new javax.swing.JPanel();
         choiceLabel = new javax.swing.JLabel();
         buttonGridPanel = new javax.swing.JPanel();
@@ -934,9 +937,16 @@ public class DLCopy extends JFrame
         writableTextField = new javax.swing.JTextField();
         isoLabelLabel = new javax.swing.JLabel();
         isoLabelTextField = new javax.swing.JTextField();
-        isoOptionsPanel = new javax.swing.JPanel();
+        bootMediumRadioButton = new javax.swing.JRadioButton();
+        systemMediumRadioButton = new javax.swing.JRadioButton();
+        isoOptionsCardPanel = new javax.swing.JPanel();
+        systemMediumPanel = new javax.swing.JPanel();
+        isoDataPartitionModeLabel = new javax.swing.JLabel();
+        isoDataPartitionModeComboBox = new javax.swing.JComboBox();
+        systemMediumPanelx = new javax.swing.JPanel();
         showNotUsedDialogCheckBox = new javax.swing.JCheckBox();
         autoStartInstallerCheckBox = new javax.swing.JCheckBox();
+        bootMediumPanel = new javax.swing.JPanel();
         toISOProgressPanel = new javax.swing.JPanel();
         jLabel6 = new javax.swing.JLabel();
         toISOProgressBar = new javax.swing.JProgressBar();
@@ -1153,7 +1163,7 @@ public class DLCopy extends JFrame
                 .addComponent(selectionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(executionLabel)
-                .addContainerGap(316, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         cardPanel.setLayout(new java.awt.CardLayout());
@@ -1463,7 +1473,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(installSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 109, Short.MAX_VALUE)
+                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(exchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1630,21 +1640,21 @@ public class DLCopy extends JFrame
         donePanel.setLayout(donePanelLayout);
         donePanelLayout.setHorizontalGroup(
             donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 657, Short.MAX_VALUE)
+            .addGap(0, 641, Short.MAX_VALUE)
             .addGroup(donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(donePanelLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(doneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 633, Short.MAX_VALUE)
+                    .addComponent(doneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         donePanelLayout.setVerticalGroup(
             donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 409, Short.MAX_VALUE)
+            .addGap(0, 472, Short.MAX_VALUE)
             .addGroup(donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(donePanelLayout.createSequentialGroup()
                     .addGap(83, 83, 83)
                     .addComponent(doneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(160, Short.MAX_VALUE)))
+                    .addContainerGap(223, Short.MAX_VALUE)))
         );
 
         cardPanel.add(donePanel, "donePanel");
@@ -1909,7 +1919,7 @@ public class DLCopy extends JFrame
                     .addComponent(sortAscendingButton)
                     .addComponent(sortDescendingButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(upgradeOverwriteScrollPane)
+                .addComponent(upgradeOverwriteScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 514, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(upgradeOverwriteAddButton, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -1931,7 +1941,7 @@ public class DLCopy extends JFrame
                 .addComponent(upgradeOverwriteExportButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(upgradeOverwriteImportButton))
-            .addComponent(upgradeOverwriteScrollPane, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(upgradeOverwriteScrollPane, 0, 183, Short.MAX_VALUE)
             .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
                 .addComponent(upgradeMoveUpButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2214,7 +2224,7 @@ public class DLCopy extends JFrame
             .addGroup(repairSelectionDeviceListPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(repairSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 633, Short.MAX_VALUE)
+                    .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE)
                     .addComponent(repairSelectionCountLabel)
                     .addComponent(repairDataDefinitionLabel)
                     .addComponent(repairExchangeDefinitionLabel)
@@ -2234,7 +2244,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(repairSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 173, Short.MAX_VALUE)
+                .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(repairExchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2328,31 +2338,77 @@ public class DLCopy extends JFrame
 
         isoLabelLabel.setText(bundle.getString("DLCopy.isoLabelLabel.text")); // NOI18N
 
-        isoOptionsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopy.isoOptionsPanel.border.title"))); // NOI18N
+        isoButtonGroup.add(bootMediumRadioButton);
+        bootMediumRadioButton.setText(bundle.getString("DLCopy.bootMediumRadioButton.text")); // NOI18N
+        bootMediumRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                bootMediumRadioButtonActionPerformed(evt);
+            }
+        });
+
+        isoButtonGroup.add(systemMediumRadioButton);
+        systemMediumRadioButton.setSelected(true);
+        systemMediumRadioButton.setText(bundle.getString("DLCopy.systemMediumRadioButton.text")); // NOI18N
+        systemMediumRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                systemMediumRadioButtonActionPerformed(evt);
+            }
+        });
+
+        isoOptionsCardPanel.setLayout(new java.awt.CardLayout());
+
+        systemMediumPanel.setLayout(new java.awt.GridBagLayout());
+
+        isoDataPartitionModeLabel.setText(bundle.getString("DLCopy.isoDataPartitionModeLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
+        systemMediumPanel.add(isoDataPartitionModeLabel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
+        systemMediumPanel.add(isoDataPartitionModeComboBox, gridBagConstraints);
+
+        systemMediumPanelx.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopy.systemMediumPanelx.border.title"))); // NOI18N
 
         showNotUsedDialogCheckBox.setText(bundle.getString("DLCopy.showNotUsedDialogCheckBox.text")); // NOI18N
 
         autoStartInstallerCheckBox.setText(bundle.getString("DLCopy.autoStartInstallerCheckBox.text")); // NOI18N
 
-        javax.swing.GroupLayout isoOptionsPanelLayout = new javax.swing.GroupLayout(isoOptionsPanel);
-        isoOptionsPanel.setLayout(isoOptionsPanelLayout);
-        isoOptionsPanelLayout.setHorizontalGroup(
-            isoOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(isoOptionsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(isoOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(showNotUsedDialogCheckBox)
-                    .addComponent(autoStartInstallerCheckBox))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        javax.swing.GroupLayout systemMediumPanelxLayout = new javax.swing.GroupLayout(systemMediumPanelx);
+        systemMediumPanelx.setLayout(systemMediumPanelxLayout);
+        systemMediumPanelxLayout.setHorizontalGroup(
+            systemMediumPanelxLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addComponent(showNotUsedDialogCheckBox)
+            .addComponent(autoStartInstallerCheckBox)
         );
-        isoOptionsPanelLayout.setVerticalGroup(
-            isoOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(isoOptionsPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+        systemMediumPanelxLayout.setVerticalGroup(
+            systemMediumPanelxLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(systemMediumPanelxLayout.createSequentialGroup()
                 .addComponent(showNotUsedDialogCheckBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(autoStartInstallerCheckBox))
         );
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 5);
+        systemMediumPanel.add(systemMediumPanelx, gridBagConstraints);
+
+        isoOptionsCardPanel.add(systemMediumPanel, "systemMediumPanel");
+
+        javax.swing.GroupLayout bootMediumPanelLayout = new javax.swing.GroupLayout(bootMediumPanel);
+        bootMediumPanel.setLayout(bootMediumPanelLayout);
+        bootMediumPanelLayout.setHorizontalGroup(
+            bootMediumPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 432, Short.MAX_VALUE)
+        );
+        bootMediumPanelLayout.setVerticalGroup(
+            bootMediumPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 101, Short.MAX_VALUE)
+        );
+
+        isoOptionsCardPanel.add(bootMediumPanel, "bootMediumPanel");
 
         javax.swing.GroupLayout toISOSelectionPanelLayout = new javax.swing.GroupLayout(toISOSelectionPanel);
         toISOSelectionPanel.setLayout(toISOSelectionPanelLayout);
@@ -2361,26 +2417,31 @@ public class DLCopy extends JFrame
             .addGroup(toISOSelectionPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(isoOptionsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(tmpDriveInfoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 633, Short.MAX_VALUE)
+                    .addComponent(tmpDriveInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, toISOSelectionPanelLayout.createSequentialGroup()
-                        .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, toISOSelectionPanelLayout.createSequentialGroup()
+                        .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(toISOSelectionPanelLayout.createSequentialGroup()
                                 .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                                     .addComponent(writableLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                                     .addComponent(isoLabelLabel))
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                 .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(writableTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 445, Short.MAX_VALUE)
-                                    .addComponent(isoLabelTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 445, Short.MAX_VALUE)))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, toISOSelectionPanelLayout.createSequentialGroup()
+                                    .addComponent(writableTextField)
+                                    .addComponent(isoLabelTextField)))
+                            .addGroup(toISOSelectionPanelLayout.createSequentialGroup()
                                 .addComponent(freeSpaceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(freeSpaceTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 445, Short.MAX_VALUE))
-                            .addGroup(javax.swing.GroupLayout.Alignment.LEADING, toISOSelectionPanelLayout.createSequentialGroup()
+                                .addComponent(freeSpaceTextField))
+                            .addGroup(toISOSelectionPanelLayout.createSequentialGroup()
                                 .addComponent(tmpDirLabel)
                                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tmpDirTextField, javax.swing.GroupLayout.DEFAULT_SIZE, 445, Short.MAX_VALUE)))
+                                .addComponent(tmpDirTextField))
+                            .addGroup(toISOSelectionPanelLayout.createSequentialGroup()
+                                .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                                    .addComponent(systemMediumRadioButton)
+                                    .addComponent(bootMediumRadioButton))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(isoOptionsCardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(tmpDirSelectButton)))
                 .addContainerGap())
@@ -2411,8 +2472,13 @@ public class DLCopy extends JFrame
                     .addComponent(isoLabelTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(isoLabelLabel))
                 .addGap(18, 18, 18)
-                .addComponent(isoOptionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(38, Short.MAX_VALUE))
+                .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(toISOSelectionPanelLayout.createSequentialGroup()
+                        .addComponent(bootMediumRadioButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(systemMediumRadioButton))
+                    .addComponent(isoOptionsCardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         cardPanel.add(toISOSelectionPanel, "toISOSelectionPanel");
@@ -2448,21 +2514,21 @@ public class DLCopy extends JFrame
         toISODonePanel.setLayout(toISODonePanelLayout);
         toISODonePanelLayout.setHorizontalGroup(
             toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 657, Short.MAX_VALUE)
+            .addGap(0, 641, Short.MAX_VALUE)
             .addGroup(toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(toISODonePanelLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(isoDoneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 633, Short.MAX_VALUE)
+                    .addComponent(isoDoneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         toISODonePanelLayout.setVerticalGroup(
             toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 409, Short.MAX_VALUE)
+            .addGap(0, 472, Short.MAX_VALUE)
             .addGroup(toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(toISODonePanelLayout.createSequentialGroup()
                     .addGap(83, 83, 83)
                     .addComponent(isoDoneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(130, Short.MAX_VALUE)))
+                    .addContainerGap(193, Short.MAX_VALUE)))
         );
 
         cardPanel.add(toISODonePanel, "toISODonePanel");
@@ -2486,7 +2552,7 @@ public class DLCopy extends JFrame
         resultsPanel.setLayout(resultsPanelLayout);
         resultsPanelLayout.setHorizontalGroup(
             resultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(resultsTitledPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 657, Short.MAX_VALUE)
+            .addComponent(resultsTitledPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 641, Short.MAX_VALUE)
             .addGroup(resultsPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(resultsInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
@@ -2498,7 +2564,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(resultsInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(resultsTitledPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 331, Short.MAX_VALUE))
+                .addComponent(resultsTitledPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE))
         );
 
         cardPanel.add(resultsPanel, "resultsPanel");
@@ -2550,7 +2616,7 @@ public class DLCopy extends JFrame
                     .addGroup(executionPanelLayout.createSequentialGroup()
                         .addComponent(stepsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 657, Short.MAX_VALUE))
+                        .addComponent(cardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 641, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, executionPanelLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(previousButton)
@@ -3026,6 +3092,23 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         quickFormatCheckBox.setEnabled(exFS.equalsIgnoreCase("ntfs"));
     }//GEN-LAST:event_exchangePartitionFileSystemComboBoxActionPerformed
 
+    private void bootMediumRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bootMediumRadioButtonActionPerformed
+        showMediumPanel();
+    }//GEN-LAST:event_bootMediumRadioButtonActionPerformed
+
+    private void systemMediumRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_systemMediumRadioButtonActionPerformed
+        showMediumPanel();
+    }//GEN-LAST:event_systemMediumRadioButtonActionPerformed
+
+    private void showMediumPanel() {
+        CardLayout cardLayout = (CardLayout) isoOptionsCardPanel.getLayout();
+        if (systemMediumRadioButton.isSelected()) {
+            cardLayout.show(isoOptionsCardPanel, "systemMediumPanel");
+        } else {
+            cardLayout.show(isoOptionsCardPanel, "bootMediumPanel");
+        }
+    }
+
     private Node getPersistenceNode(org.w3c.dom.Document xmlBootDocument) {
         Node configsNode
                 = xmlBootDocument.getElementsByTagName("configs").item(0);
@@ -3089,8 +3172,26 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         return null;
     }
 
-    private void setDataPartitionMode(
-            String imagePath, DataPartitionMode dataPartitionMode) {
+    private void setDataPartitionMode(JComboBox comboBox, String imagePath) {
+
+        DataPartitionMode destinationDataPartitionMode = null;
+        String dstString = (String) comboBox.getSelectedItem();
+        if (dstString.equals(STRINGS.getString("Not_Used"))) {
+            destinationDataPartitionMode = DataPartitionMode.NotUsed;
+        } else if (dstString.equals(STRINGS.getString("Read_Only"))) {
+            destinationDataPartitionMode = DataPartitionMode.ReadOnly;
+        } else if (dstString.equals(STRINGS.getString("Read_Write"))) {
+            destinationDataPartitionMode = DataPartitionMode.ReadWrite;
+        } else {
+            LOGGER.log(Level.WARNING,
+                    "unsupported data partition mode: {0}", dstString);
+            return;
+        }
+        if (sourceDataPartitionMode == destinationDataPartitionMode) {
+            // nothing to do here...
+            return;
+        }
+
         // xmlboot
         try {
             File xmlBootConfigFile = getXmlBootConfigFile(new File(imagePath));
@@ -3115,7 +3216,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     LOGGER.log(Level.FINER, "id: \"{0}\"", id);
                     switch (id) {
                         case "rw":
-                            if (dataPartitionMode
+                            if (destinationDataPartitionMode
                                     == DataPartitionMode.ReadWrite) {
                                 selectNode(childNode);
                             } else {
@@ -3123,7 +3224,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             }
                             break;
                         case "ro":
-                            if (dataPartitionMode
+                            if (destinationDataPartitionMode
                                     == DataPartitionMode.ReadOnly) {
                                 selectNode(childNode);
                             } else {
@@ -3131,7 +3232,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             }
                             break;
                         case "no":
-                            if (dataPartitionMode
+                            if (destinationDataPartitionMode
                                     == DataPartitionMode.NotUsed) {
                                 selectNode(childNode);
                             } else {
@@ -3158,7 +3259,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         // grub
         String persistenceString = "";
-        switch (dataPartitionMode) {
+        switch (destinationDataPartitionMode) {
             case ReadOnly:
                 persistenceString = "persistence persistence-read-only";
                 break;
@@ -3167,13 +3268,16 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 persistenceString = "persistence";
                 break;
 
+            case NotUsed:
+                break;
+
             default:
                 LOGGER.log(Level.WARNING, "unsupported dataPartitionMode: {0}",
-                        dataPartitionMode);
+                        destinationDataPartitionMode);
         }
         processExecutor.executeProcess("sed", "-i", "-e",
-                "s|set PERSISTENCE=.*|set PERSISTENCE=\"" + persistenceString + "\"|1",
-                imagePath + "/boot/grub/grub.cfg");
+                "s|set PERSISTENCE=.*|set PERSISTENCE=\"" + persistenceString
+                + "\"|1", imagePath + "/boot/grub/grub.cfg");
     }
 
     private void selectNode(Node node) {
@@ -5432,22 +5536,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         isolinuxToSyslinux(destinationBootPath);
 
         // change data partition mode on target (if needed)
-        DataPartitionMode destinationDataPartitionMode = null;
-        String dstString = (String) dataPartitionModeComboBox.getSelectedItem();
-        if (dstString.equals(STRINGS.getString("Not_Used"))) {
-            destinationDataPartitionMode = DataPartitionMode.NotUsed;
-        } else if (dstString.equals(STRINGS.getString("Read_Only"))) {
-            destinationDataPartitionMode = DataPartitionMode.ReadOnly;
-        } else if (dstString.equals(STRINGS.getString("Read_Write"))) {
-            destinationDataPartitionMode = DataPartitionMode.ReadWrite;
-        } else {
-            LOGGER.log(Level.WARNING,
-                    "unsupported data partition mode: {0}", dstString);
-        }
-        if (sourceDataPartitionMode != destinationDataPartitionMode) {
-            setDataPartitionMode(
-                    destinationBootPath, destinationDataPartitionMode);
-        }
+        setDataPartitionMode(dataPartitionModeComboBox, destinationBootPath);
     }
 
     private void copyPersistence(Partition destinationDataPartition)
@@ -6441,118 +6530,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     }
                 }
 
-                // assemble new squashfs
-                publish(STRINGS.getString("Mounting_Partitions"));
-                File tmpDir = createTempDir("usb2iso");
-
-                // get a list of all available squashfs
-                FilenameFilter squashFsFilter = new FilenameFilter() {
-                    @Override
-                    public boolean accept(File dir, String name) {
-                        return name.endsWith(".squashfs");
-                    }
-                };
-                File liveDir = new File(DEBIAN_LIVE_SYSTEM_PATH, "live");
-                File[] squashFileSystems = liveDir.listFiles(squashFsFilter);
-
-                // mount all squashfs read-only in temporary directories
-                List<String> readOnlyMountPoints = new ArrayList<>();
-                for (int i = 0; i < squashFileSystems.length; i++) {
-                    File roDir = new File(tmpDir, "ro" + (i + 1));
-                    roDir.mkdirs();
-                    String roPath = roDir.getPath();
-                    readOnlyMountPoints.add(roPath);
-                    String filePath = squashFileSystems[i].getPath();
-                    processExecutor.executeProcess(
-                            "mount", "-o", "loop", filePath, roPath);
+                if (systemMediumRadioButton.isSelected()) {
+                    createSquashFS(targetDirectory);
                 }
 
-                // mount persistence
-                MountInfo dataMountInfo = bootDataPartition.mount();
-                String dataPartitionPath = dataMountInfo.getMountPath();
-
-                // union base image with persistence
-                // rwDir and cowDir are placed in /run/ because it is one of
-                // the few directories that are not aufs itself
-                // nested aufs is not (yet) supported...
-                File runDir = new File("/run/");
-                File rwDir = LernstickFileTools.createTempDirectory(
-                        runDir, "rw");
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("br=");
-                stringBuilder.append(rwDir.getPath());
-                stringBuilder.append(':');
-                stringBuilder.append(dataPartitionPath);
-                for (String readOnlyMountPoint : readOnlyMountPoints) {
-                    stringBuilder.append(':');
-                    stringBuilder.append(readOnlyMountPoint);
-                }
-                String branchDefinition = stringBuilder.toString();
-
-                // To create the file system union, we need a temporary and
-                // writable xino file that must not reside in an aufs. Therefore
-                // we use a file in the /run directory, which is a writable
-                // tmpfs.
-                File xinoTmpFile = File.createTempFile(
-                        ".aufs.xino", "", new File("/run/"));
-                xinoTmpFile.delete();
-                File cowDir = LernstickFileTools.createTempDirectory(
-                        runDir, "cow");
-                String cowPath = cowDir.getPath();
-                processExecutor.executeProcess("mount", "-t", "aufs",
-                        "-o", "xino=" + xinoTmpFile.getPath(),
-                        "-o", branchDefinition, "none", cowPath);
-
-                // apply settings (temporarily) in cow directory
-                Properties lernstickWelcomeProperties = new Properties();
-                File propertiesFile = new File(cowDir, "/etc/lernstickWelcome");
-                try (FileReader reader = new FileReader(propertiesFile)) {
-                    lernstickWelcomeProperties.load(reader);
-                } catch (IOException iOException) {
-                    LOGGER.log(Level.WARNING, "", iOException);
-                }
-                lernstickWelcomeProperties.setProperty("ShowNotUsedInfo",
-                        showNotUsedDialogCheckBox.isSelected()
-                        ? "true" : "false");
-                lernstickWelcomeProperties.setProperty("AutoStartInstaller",
-                        autoStartInstallerCheckBox.isSelected()
-                        ? "true" : "false");
-                try (FileWriter writer = new FileWriter(propertiesFile)) {
-                    lernstickWelcomeProperties.store(
-                            writer, "lernstick Welcome properties");
-                } catch (IOException iOException) {
-                    LOGGER.log(Level.WARNING, "", iOException);
-                }
-
-                // create new squashfs image
-                step = IsoStep.MKSQUASHFS;
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        toISOProgressBar.setIndeterminate(false);
-                    }
-                });
-                publish(STRINGS.getString("Compressing_Filesystem"));
-                processExecutor.addPropertyChangeListener(this);
-                processExecutor.executeProcess("mksquashfs", cowPath,
-                        targetDirectory + "/live/filesystem.squashfs",
-                        "-comp", "xz");
-                processExecutor.removePropertyChangeListener(this);
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        toISOProgressBar.setIndeterminate(true);
-                    }
-                });
-
-                // umount all partitions
-                umount(cowPath);
-                if (!dataMountInfo.alreadyMounted()) {
-                    bootDataPartition.umount();
-                }
-                for (String readOnlyMountPoint : readOnlyMountPoints) {
-                    umount(readOnlyMountPoint);
-                }
+                setDataPartitionMode(
+                        isoDataPartitionModeComboBox, targetDirectory);
 
                 // syslinux -> isolinux
                 final String ISOLINUX_DIR = targetDirectory + "/isolinux";
@@ -6728,6 +6711,119 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     default:
                         LOGGER.log(Level.WARNING, "unsupported step {0}", step);
                 }
+            }
+        }
+
+        private void createSquashFS(String targetDirectory)
+                throws IOException, DBusException {
+            publish(STRINGS.getString("Mounting_Partitions"));
+            File tmpDir = createTempDir("usb2iso");
+
+            // get a list of all available squashfs
+            FilenameFilter squashFsFilter = new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    return name.endsWith(".squashfs");
+                }
+            };
+            File liveDir = new File(DEBIAN_LIVE_SYSTEM_PATH, "live");
+            File[] squashFileSystems = liveDir.listFiles(squashFsFilter);
+
+            // mount all squashfs read-only in temporary directories
+            List<String> readOnlyMountPoints = new ArrayList<>();
+            for (int i = 0; i < squashFileSystems.length; i++) {
+                File roDir = new File(tmpDir, "ro" + (i + 1));
+                roDir.mkdirs();
+                String roPath = roDir.getPath();
+                readOnlyMountPoints.add(roPath);
+                String filePath = squashFileSystems[i].getPath();
+                processExecutor.executeProcess(
+                        "mount", "-o", "loop", filePath, roPath);
+            }
+
+            // mount persistence
+            MountInfo dataMountInfo = bootDataPartition.mount();
+            String dataPartitionPath = dataMountInfo.getMountPath();
+
+            // union base image with persistence
+            // rwDir and cowDir are placed in /run/ because it is one of
+            // the few directories that are not aufs itself
+            // nested aufs is not (yet) supported...
+            File runDir = new File("/run/");
+            File rwDir = LernstickFileTools.createTempDirectory(runDir, "rw");
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("br=");
+            stringBuilder.append(rwDir.getPath());
+            stringBuilder.append(':');
+            stringBuilder.append(dataPartitionPath);
+            for (String readOnlyMountPoint : readOnlyMountPoints) {
+                stringBuilder.append(':');
+                stringBuilder.append(readOnlyMountPoint);
+            }
+            String branchDefinition = stringBuilder.toString();
+
+            // To create the file system union, we need a temporary and
+            // writable xino file that must not reside in an aufs. Therefore
+            // we use a file in the /run directory, which is a writable
+            // tmpfs.
+            File xinoTmpFile = File.createTempFile(
+                    ".aufs.xino", "", new File("/run/"));
+            xinoTmpFile.delete();
+            File cowDir = LernstickFileTools.createTempDirectory(runDir, "cow");
+            String cowPath = cowDir.getPath();
+            processExecutor.executeProcess("mount", "-t", "aufs",
+                    "-o", "xino=" + xinoTmpFile.getPath(),
+                    "-o", branchDefinition, "none", cowPath);
+
+            // apply settings (temporarily) in cow directory
+            Properties lernstickWelcomeProperties = new Properties();
+            File propertiesFile = new File(cowDir, "/etc/lernstickWelcome");
+            try (FileReader reader = new FileReader(propertiesFile)) {
+                lernstickWelcomeProperties.load(reader);
+            } catch (IOException iOException) {
+                LOGGER.log(Level.WARNING, "", iOException);
+            }
+            lernstickWelcomeProperties.setProperty("ShowNotUsedInfo",
+                    showNotUsedDialogCheckBox.isSelected()
+                    ? "true" : "false");
+            lernstickWelcomeProperties.setProperty("AutoStartInstaller",
+                    autoStartInstallerCheckBox.isSelected()
+                    ? "true" : "false");
+            try (FileWriter writer = new FileWriter(propertiesFile)) {
+                lernstickWelcomeProperties.store(
+                        writer, "lernstick Welcome properties");
+            } catch (IOException iOException) {
+                LOGGER.log(Level.WARNING, "", iOException);
+            }
+
+            // create new squashfs image
+            step = IsoStep.MKSQUASHFS;
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    toISOProgressBar.setIndeterminate(false);
+                }
+            });
+            publish(STRINGS.getString("Compressing_Filesystem"));
+            processExecutor.addPropertyChangeListener(this);
+            processExecutor.executeProcess("mksquashfs", cowPath,
+                    targetDirectory + "/live/filesystem.squashfs",
+                    "-comp", "xz");
+            processExecutor.removePropertyChangeListener(this);
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    toISOProgressBar.setIndeterminate(true);
+                }
+            });
+
+            // umount all partitions
+            umount(cowPath);
+            if (!dataMountInfo.alreadyMounted()) {
+                bootDataPartition.umount();
+            }
+            for (String readOnlyMountPoint : readOnlyMountPoints) {
+                umount(readOnlyMountPoint);
             }
         }
     }
@@ -7547,6 +7643,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JCheckBox automaticBackupRemoveCheckBox;
     private javax.swing.JTextField automaticBackupTextField;
     private javax.swing.JLabel bootDefinitionLabel;
+    private javax.swing.JPanel bootMediumPanel;
+    private javax.swing.JRadioButton bootMediumRadioButton;
     private javax.swing.JPanel buttonGridPanel;
     private javax.swing.JPanel cardPanel;
     private javax.swing.JLabel choiceLabel;
@@ -7612,10 +7710,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JTabbedPane installTabbedPane;
     private javax.swing.JScrollPane installationResultsScrollPane;
     private javax.swing.JTable installationResultsTable;
+    private javax.swing.ButtonGroup isoButtonGroup;
+    private javax.swing.JComboBox isoDataPartitionModeComboBox;
+    private javax.swing.JLabel isoDataPartitionModeLabel;
     private javax.swing.JLabel isoDoneLabel;
     private javax.swing.JLabel isoLabelLabel;
     private javax.swing.JTextField isoLabelTextField;
-    private javax.swing.JPanel isoOptionsPanel;
+    private javax.swing.JPanel isoOptionsCardPanel;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
@@ -7670,6 +7771,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JScrollPane storageDeviceListScrollPane;
     private javax.swing.JLabel systemDefinitionLabel;
     private javax.swing.JCheckBox systemFilesCheckBox;
+    private javax.swing.JPanel systemMediumPanel;
+    private javax.swing.JPanel systemMediumPanelx;
+    private javax.swing.JRadioButton systemMediumRadioButton;
     private javax.swing.JLabel tmpDirLabel;
     private javax.swing.JButton tmpDirSelectButton;
     private javax.swing.JTextField tmpDirTextField;

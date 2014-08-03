@@ -1,3 +1,10 @@
+dlcopy (201408031330-1) unstable; urgency=low
+
+  * added option to create boot medium
+  * added option to select data partition mode of ISO
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Sun, 03 Aug 2014 13:30:12 +0200
+
 dlcopy (201407081828-1) unstable; urgency=low
 
   * added option to exclude hidden files from backup
