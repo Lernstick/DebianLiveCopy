@@ -1,3 +1,9 @@
+dlcopy (201408061849-1) unstable; urgency=low
+
+  * backup -> install -> restore
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 06 Aug 2014 18:49:01 +0200
+
 dlcopy (201408031625-1) unstable; urgency=low
 
   * added option to create boot medium

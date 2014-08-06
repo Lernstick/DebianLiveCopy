@@ -10,10 +10,13 @@ import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.filecopier.Source;
 import ch.fhnw.jbackpack.JSqueezedLabel;
 import ch.fhnw.jbackpack.RdiffBackupRestore;
+import ch.fhnw.jbackpack.chooser.Increment;
+import ch.fhnw.jbackpack.chooser.RdiffFile;
+import ch.fhnw.jbackpack.chooser.RdiffFileDatabase;
 import ch.fhnw.jbackpack.chooser.SelectBackupDirectoryDialog;
-import ch.fhnw.util.MountInfo;
 import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.ModalDialogHandler;
+import ch.fhnw.util.MountInfo;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
@@ -29,12 +32,13 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.net.URL;
+import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.List;
 import java.util.*;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -481,8 +485,6 @@ public class DLCopy extends JFrame
                         new String[]{"exFAT", "FAT32", "NTFS"});
                 exchangePartitionFileSystemComboBox.setModel(model);
                 exchangePartitionFileSystemComboBox.setSelectedItem("exFAT");
-                exchangePartitionFileSystemComboBox.setToolTipText(STRINGS.getString(
-                        "DLCopy.exchangePartitionFileSystemComboBox.toolTipText"));
                 break;
             case lernstick_pu:
                 isoLabelTextField.setText("lernstick");
@@ -492,8 +494,6 @@ public class DLCopy extends JFrame
                         new String[]{"FAT32", "exFAT", "NTFS"});
                 exchangePartitionFileSystemComboBox.setModel(model);
                 exchangePartitionFileSystemComboBox.setSelectedItem("FAT32");
-                exchangePartitionFileSystemComboBox.setToolTipText(STRINGS.getString(
-                        "DLCopy.exchangePartitionFileSystemComboBox.toolTipText.pu"));
                 break;
         }
 
@@ -2940,6 +2940,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         automaticBackupButton.setEnabled(automaticBackup);
         automaticBackupHiddenCheckBox.setEnabled(automaticBackup);
         automaticBackupRemoveCheckBox.setEnabled(automaticBackup);
+        updateUpgradeNextButton();
     }//GEN-LAST:event_automaticBackupCheckBoxItemStateChanged
 
     private void automaticBackupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_automaticBackupButtonActionPerformed
@@ -3748,7 +3749,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }
 
     private void upgradeStorageDeviceListSelectionChanged() {
+        updateUpgradeNextButton();
+    }
 
+    private void updateUpgradeNextButton() {
         // early return
         if (state != State.UPGRADE_SELECTION) {
             return;
@@ -4261,7 +4265,19 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 return new Partitions(0, 0);
 
             case EXCHANGE:
-                int exchangeMB = exchangePartitionSizeSlider.getValue();
+                int exchangeMB = 0;
+                if (state == State.UPGRADE) {
+                    // in case of upgrading we want to have the new exchange
+                    // partition to be the same size as in the current
+                    // partitioning of the storage device
+                    Partition exchangePartition
+                            = storageDevice.getExchangePartition();
+                    if (exchangePartition != null) {
+                        exchangeMB = (int) (exchangePartition.getSize() / MEGA);
+                    }
+                } else {
+                    exchangeMB = exchangePartitionSizeSlider.getValue();
+                }
                 int persistenceMB = overheadMB - exchangeMB;
                 return new Partitions(exchangeMB, persistenceMB);
 
@@ -6066,32 +6082,33 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         private void backupInstallRestore(StorageDevice storageDevice)
-                throws InterruptedException, IOException, DBusException {
+                throws InterruptedException, IOException, DBusException,
+                SQLException {
 
             Partition dataPartition = storageDevice.getDataPartition();
             MountInfo mountInfo = dataPartition.mount();
             String dataMountPoint = mountInfo.getMountPath();
 
-            backupUserData(dataMountPoint, getBackupDestination(storageDevice));
-            backupExchangeParitition();
+            File userDataDestination
+                    = new File(getBackupDestination(storageDevice), "userData");
+            userDataDestination.mkdirs();
+            File exchangeDestination
+                    = new File(getBackupDestination(storageDevice), "exchange");
+            exchangeDestination.mkdirs();
+
+            backupUserData(dataMountPoint, userDataDestination);
+            backupExchangeParitition(storageDevice, exchangeDestination);
 
             copyToStorageDevice(fileCopier, storageDevice,
                     exchangePartitionTextField.getText());
 
-            restoreUserData();
-            restoreExchangePartition();
-        }
+            // !!! update reference to storage device !!!
+            // copyToStorageDevice() may change the storage device completely
+            storageDevice = new StorageDevice(
+                    storageDevice.getDevice(), systemSize);
 
-        private void restoreUserData() {
-            // TODO
-        }
-
-        private void restoreExchangePartition() {
-            // TODO
-        }
-
-        private void backupExchangeParitition() {
-            // TODO
+            restoreUserData(storageDevice, userDataDestination);
+            restoreExchangePartition(storageDevice, exchangeDestination);
         }
 
         private void backupUserData(String mountPoint, File backupDestination)
@@ -6131,9 +6148,80 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             });
         }
 
+        private void backupExchangeParitition(StorageDevice storageDevice,
+                File exchangeDestination) throws DBusException, IOException {
+
+            Partition exchangePartition = storageDevice.getExchangePartition();
+            if (exchangePartition == null) {
+                LOGGER.warning("there is no exchange partition!");
+                return;
+            }
+            String mountPath = exchangePartition.mount().getMountPath();
+
+            // TODO: show copy progress
+            // Unfortunately, rdiffbackup does not work with exFAT or NTFS.
+            // Both filesystems are possible on the exchange partition.
+            // Therefore we just use plain old cp.
+            String backupScript = "#!/bin/sh\n"
+                    + "cp -a "
+                    + mountPath + "/* " + exchangeDestination.getPath();
+            processExecutor.executeScript(backupScript);
+        }
+
+        private void restoreUserData(
+                StorageDevice storageDevice, File restoreSourceDir)
+                throws DBusException, IOException, SQLException {
+
+            Partition dataPartition = storageDevice.getDataPartition();
+            if (dataPartition == null) {
+                LOGGER.warning("there is no data partition!");
+                return;
+            }
+
+            String mountPath = dataPartition.mount().getMountPath();
+            File restoreDestinationDir = new File(mountPath + "/home/user/");
+            restoreDestinationDir.mkdirs();
+            processExecutor.executeProcess(
+                    "chown", "user.user", restoreDestinationDir.getPath());
+
+            RdiffFile[] rdiffRoot = getRdiffRoot(restoreSourceDir);
+            rdiffBackupRestore.restore("now", rdiffRoot,
+                    restoreSourceDir, restoreDestinationDir, null, false);
+
+            dataPartition.umount();
+        }
+
+        private void restoreExchangePartition(
+                StorageDevice storageDevice, File restoreSourceDir)
+                throws DBusException, IOException, SQLException {
+
+            Partition exchangePartition = storageDevice.getExchangePartition();
+            if (exchangePartition == null) {
+                LOGGER.warning("there is no data partition!");
+                return;
+            }
+
+            // TODO: show copy progress
+            String mountPath = exchangePartition.mount().getMountPath();
+            String restoreScript = "#!/bin/sh\n"
+                    + "cp -a "
+                    + restoreSourceDir.getPath() + "/* " + mountPath;
+            processExecutor.executeScript(restoreScript);
+            exchangePartition.umount();
+        }
+
+        private RdiffFile[] getRdiffRoot(File backupDir)
+                throws SQLException, IOException {
+            RdiffFileDatabase rdiffFileDatabase
+                    = RdiffFileDatabase.getInstance(backupDir);
+            rdiffFileDatabase.sync();
+            List<Increment> increments = rdiffFileDatabase.getIncrements();
+            Increment increment = increments.get(0);
+            return new RdiffFile[]{increment.getRdiffRoot()};
+        }
+
         private boolean upgradeDataPartition(StorageDevice storageDevice,
-                File backupDestination)
-                throws DBusException, IOException {
+                File backupDestination) throws DBusException, IOException {
 
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
