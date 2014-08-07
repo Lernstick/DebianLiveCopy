@@ -6242,6 +6242,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             rdiffBackupRestore.restore("now", rdiffRoot,
                     restoreSourceDir, restoreDestinationDir, null, false);
 
+            // reactivate welcome, overwrite files...
+            finalizeDataPartition(mountPath);
+
             // cleanup
             dataPartition.umount();
             backupTimer.stop();
@@ -6324,23 +6327,45 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         "-exec", "rm", "-rf", "{}", ";");
             }
 
+            finalizeDataPartition(dataMountPoint);
+
+            // umount
+            if ((!mountInfo.alreadyMounted()) && (!umount(dataPartition))) {
+                return false;
+            }
+
+            // upgrade label (if necessary)
+            if (!(dataPartition.getIdLabel().equals(
+                    Partition.PERSISTENCE_LABEL))) {
+                processExecutor.executeProcess("e2label",
+                        "/dev/" + dataPartition.getDeviceAndNumber(),
+                        Partition.PERSISTENCE_LABEL);
+            }
+
+            return true;
+        }
+
+        private void finalizeDataPartition(String dataMountPoint)
+                throws IOException {
             // welcome application reactivation
             if (reactivateWelcomeCheckBox.isSelected()) {
-                try {
-                    File propertiesFile = new File(dataMountPoint
-                            + "/etc/lernstickWelcome");
-                    FileWriter writer;
+                File propertiesFile = new File(
+                        dataMountPoint + "/etc/lernstickWelcome");
+                Properties lernstickWelcomeProperties = new Properties();
+                if (propertiesFile.exists()) {
                     try (FileReader reader = new FileReader(propertiesFile)) {
-                        Properties lernstickWelcomeProperties
-                                = new Properties();
                         lernstickWelcomeProperties.load(reader);
-                        lernstickWelcomeProperties.setProperty(
-                                "ShowWelcome", "true");
-                        writer = new FileWriter(propertiesFile);
-                        lernstickWelcomeProperties.store(
-                                writer, "lernstick Welcome properties");
+                    } catch (IOException iOException) {
+                        LOGGER.log(Level.WARNING, "", iOException);
                     }
-                    writer.close();
+                } else {
+                    propertiesFile.getParentFile().mkdirs();
+                    propertiesFile.createNewFile();
+                }
+                lernstickWelcomeProperties.setProperty("ShowWelcome", "true");
+                try (FileWriter writer = new FileWriter(propertiesFile)) {
+                    lernstickWelcomeProperties.store(
+                            writer, "lernstick Welcome properties");
                 } catch (IOException iOException) {
                     LOGGER.log(Level.WARNING, "", iOException);
                 }
@@ -6358,21 +6383,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 processExecutor.executeProcess(true, true,
                         "cp", "-a", "--parents", sourcePath, dataMountPoint);
             }
-
-            // umount
-            if ((!mountInfo.alreadyMounted()) && (!umount(dataPartition))) {
-                return false;
-            }
-
-            // upgrade label (if necessary)
-            if (!(dataPartition.getIdLabel().equals(
-                    Partition.PERSISTENCE_LABEL))) {
-                processExecutor.executeProcess("e2label",
-                        "/dev/" + dataPartition.getDeviceAndNumber(),
-                        Partition.PERSISTENCE_LABEL);
-            }
-
-            return true;
         }
 
         private boolean upgradeSystemPartition(StorageDevice storageDevice)

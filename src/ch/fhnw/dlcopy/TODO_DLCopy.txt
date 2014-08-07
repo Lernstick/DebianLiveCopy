@@ -2,6 +2,8 @@
 kdesudo "java -Djava.library.path=/usr/lib/jni -jar dist/DLCopy_orig.jar --variant lernstick"
 ********************************************************************************
 
+- Backup/Install/Restore: Druckereinstellungen beibehalten?
+
 - Berechnung der Partitionsgrössen bei Installation und Upgrade nochmal genauer ansehen
 
 - ISO-Erstellung
