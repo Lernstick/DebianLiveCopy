@@ -7,6 +7,7 @@ package ch.fhnw.dlcopy;
 
 import ch.fhnw.filecopier.CopyJob;
 import ch.fhnw.filecopier.FileCopier;
+import ch.fhnw.filecopier.FileCopierPanel;
 import ch.fhnw.filecopier.Source;
 import ch.fhnw.jbackpack.JSqueezedLabel;
 import ch.fhnw.jbackpack.RdiffBackupRestore;
@@ -826,7 +827,7 @@ public class DLCopy extends JFrame
         installIndeterminateProgressPanel = new javax.swing.JPanel();
         installIndeterminateProgressBar = new javax.swing.JProgressBar();
         installCopyPanel = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
+        installCopyLabel = new javax.swing.JLabel();
         installFileCopierPanel = new ch.fhnw.filecopier.FileCopierPanel();
         rsyncPanel = new javax.swing.JPanel();
         jLabel3 = new javax.swing.JLabel();
@@ -889,7 +890,7 @@ public class DLCopy extends JFrame
         upgradeIndeterminateProgressPanel = new javax.swing.JPanel();
         upgradeIndeterminateProgressBar = new javax.swing.JProgressBar();
         upgradeCopyPanel = new javax.swing.JPanel();
-        jLabel2 = new javax.swing.JLabel();
+        upgradeCopyLabel = new javax.swing.JLabel();
         upgradeFileCopierPanel = new ch.fhnw.filecopier.FileCopierPanel();
         upgradeBackupPanel = new javax.swing.JPanel();
         upgradeBackupLabel = new javax.swing.JLabel();
@@ -1535,10 +1536,10 @@ public class DLCopy extends JFrame
 
         installCopyPanel.setLayout(new java.awt.GridBagLayout());
 
-        jLabel1.setText(bundle.getString("DLCopy.jLabel1.text")); // NOI18N
+        installCopyLabel.setText(bundle.getString("DLCopy.installCopyLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        installCopyPanel.add(jLabel1, gridBagConstraints);
+        installCopyPanel.add(installCopyLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
@@ -2047,10 +2048,10 @@ public class DLCopy extends JFrame
 
         upgradeCopyPanel.setLayout(new java.awt.GridBagLayout());
 
-        jLabel2.setText(bundle.getString("DLCopy.jLabel2.text")); // NOI18N
+        upgradeCopyLabel.setText(bundle.getString("DLCopy.upgradeCopyLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        upgradeCopyPanel.add(jLabel2, gridBagConstraints);
+        upgradeCopyPanel.add(upgradeCopyLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
@@ -4273,7 +4274,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     Partition exchangePartition
                             = storageDevice.getExchangePartition();
                     if (exchangePartition != null) {
+                        LOGGER.log(Level.INFO,
+                                "exchangePartition: {0}", exchangePartition);
                         exchangeMB = (int) (exchangePartition.getSize() / MEGA);
+                        LOGGER.log(Level.INFO, "exchangeMB = {0}", exchangeMB);
                     }
                 } else {
                     exchangeMB = exchangePartitionSizeSlider.getValue();
@@ -4975,7 +4979,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }
 
     private void copyToStorageDevice(FileCopier fileCopier,
-            StorageDevice storageDevice, String exchangePartitionLabel)
+            StorageDevice storageDevice, String exchangePartitionLabel,
+            final Container cardPanel, String copyPanelName, JLabel copyLabel,
+            FileCopierPanel fileCopierPanel,
+            final String indeterminatePanelName,
+            final JProgressBar indeterminateProgressBar)
             throws InterruptedException, IOException, DBusException {
 
         // determine size and state
@@ -5047,7 +5055,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             createPartitions(storageDevice, partitions, size, exchangeMB,
                     partitionState, destinationExchangeDevice,
                     exchangePartitionLabel, destinationDataDevice,
-                    destinationBootDevice, destinationSystemDevice);
+                    destinationBootDevice, destinationSystemDevice, cardPanel,
+                    indeterminatePanelName, indeterminateProgressBar);
         } catch (IOException iOException) {
             // On some Corsair Flash Voyager GT drives the first sfdisk try
             // failes with the following output:
@@ -5096,7 +5105,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             createPartitions(storageDevice, partitions, size, exchangeMB,
                     partitionState, destinationExchangeDevice,
                     exchangePartitionLabel, destinationDataDevice,
-                    destinationBootDevice, destinationSystemDevice);
+                    destinationBootDevice, destinationSystemDevice, cardPanel,
+                    indeterminatePanelName, indeterminateProgressBar);
         }
 
         // the partitions now really exist
@@ -5122,10 +5132,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         // copy operating system files
         copyExchangeBootAndSystem(fileCopier, storageDevice,
                 destinationExchangePartition, destinationBootPartition,
-                destinationSystemPartition);
+                destinationSystemPartition, cardPanel, copyPanelName, copyLabel,
+                fileCopierPanel, indeterminatePanelName,
+                indeterminateProgressBar);
 
         // copy persistence layer
-        if (destinationDataPartition != null) {
+        if ((state != State.UPGRADE) && (destinationDataPartition != null)) {
             copyPersistence(destinationDataPartition);
         }
 
@@ -5133,9 +5145,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                showCard(installCardPanel,
-                        "installIndeterminateProgressPanel");
-                installIndeterminateProgressBar.setString(
+                showCard(cardPanel, indeterminatePanelName);
+                indeterminateProgressBar.setString(
                         STRINGS.getString("Writing_Boot_Sector"));
             }
         });
@@ -5157,21 +5168,20 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             Partitions partitions, long storageDeviceSize, int exchangeMB,
             final PartitionState partitionState, String exchangeDevice,
             String exchangePartitionLabel, String persistenceDevice,
-            String bootDevice, String systemDevice)
+            String bootDevice, String systemDevice, final Container cardPanel,
+            final String cardName, final JProgressBar progressBar)
             throws InterruptedException, IOException, DBusException {
 
         // update GUI
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                showCard(installCardPanel, "installIndeterminateProgressPanel");
+                showCard(cardPanel, cardName);
                 boolean severalPartitions
                         = (partitionState == PartitionState.PERSISTENCE)
                         || (partitionState == PartitionState.EXCHANGE);
-                installIndeterminateProgressBar.setString(
-                        STRINGS.getString(severalPartitions
-                                ? "Creating_File_Systems"
-                                : "Creating_File_System"));
+                progressBar.setString(STRINGS.getString(severalPartitions
+                        ? "Creating_File_Systems" : "Creating_File_System"));
             }
         });
 
@@ -5468,7 +5478,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private void copyExchangeBootAndSystem(FileCopier fileCopier,
             StorageDevice storageDevice, Partition destinationExchangePartition,
             Partition destinationBootPartition,
-            Partition destinationSystemPartition)
+            Partition destinationSystemPartition,
+            final Container cardPanel, final String copyCardName,
+            final JLabel copyLabel, FileCopierPanel fileCopyPanel,
+            final String umountCardName, final JProgressBar progressBar)
             throws InterruptedException, IOException, DBusException {
 
         // define CopyJob for exchange paritition
@@ -5501,12 +5514,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                showCard(installCardPanel, "installCopyPanel");
+                copyLabel.setText(STRINGS.getString("Copying_Files"));
+                showCard(cardPanel, copyCardName);
             }
         });
-        installFileCopierPanel.setFileCopier(fileCopier);
-        fileCopier.addPropertyChangeListener(
-                FileCopier.BYTE_COUNTER_PROPERTY, this);
+        fileCopyPanel.setFileCopier(fileCopier);
+
         CopyJob bootFilesCopyJob = copyJobsInfo.getBootFilesCopyJob();
         fileCopier.copy(exchangeCopyJob, bootFilesCopyJob,
                 copyJobsInfo.getBootCopyJob(), copyJobsInfo.getSystemCopyJob());
@@ -5526,8 +5539,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                showCard(installCardPanel, "installIndeterminateProgressPanel");
-                installIndeterminateProgressBar.setString(
+                showCard(cardPanel, umountCardName);
+                progressBar.setString(
                         STRINGS.getString("Unmounting_File_Systems"));
             }
         });
@@ -5762,8 +5775,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
                 String errorMessage = null;
                 try {
-                    copyToStorageDevice(
-                            fileCopier, storageDevice, exchangePartitionLabel);
+                    copyToStorageDevice(fileCopier, storageDevice,
+                            exchangePartitionLabel, installCardPanel,
+                            "installCopyPanel", installCopyLabel,
+                            installFileCopierPanel,
+                            "installIndeterminateProgressPanel",
+                            installIndeterminateProgressBar);
                 } catch (InterruptedException | IOException |
                         DBusException exception) {
                     errorMessage = exception.getMessage();
@@ -5985,7 +6002,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
                         case INSTALLATION:
                             copyToStorageDevice(fileCopier, storageDevice,
-                                    exchangePartitionTextField.getText());
+                                    exchangePartitionTextField.getText(),
+                                    upgradeCardPanel, "upgradeCopyPanel",
+                                    upgradeCopyLabel, upgradeFileCopierPanel,
+                                    "upgradeIndeterminateProgressPanel",
+                                    upgradeIndeterminateProgressBar);
                             break;
 
                         default:
@@ -6085,10 +6106,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 throws InterruptedException, IOException, DBusException,
                 SQLException {
 
-            Partition dataPartition = storageDevice.getDataPartition();
-            MountInfo mountInfo = dataPartition.mount();
-            String dataMountPoint = mountInfo.getMountPath();
-
+            // prepare backup destination directories
             File userDataDestination
                     = new File(getBackupDestination(storageDevice), "userData");
             userDataDestination.mkdirs();
@@ -6096,17 +6114,24 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     = new File(getBackupDestination(storageDevice), "exchange");
             exchangeDestination.mkdirs();
 
+            // backup
+            Partition dataPartition = storageDevice.getDataPartition();
+            String dataMountPoint = dataPartition.mount().getMountPath();
             backupUserData(dataMountPoint, userDataDestination);
+            dataPartition.umount();
             backupExchangeParitition(storageDevice, exchangeDestination);
 
+            // installation
             copyToStorageDevice(fileCopier, storageDevice,
-                    exchangePartitionTextField.getText());
+                    exchangePartitionTextField.getText(), upgradeCardPanel,
+                    "upgradeCopyPanel", upgradeCopyLabel,
+                    upgradeFileCopierPanel, "upgradeIndeterminateProgressPanel",
+                    upgradeIndeterminateProgressBar);
 
             // !!! update reference to storage device !!!
             // copyToStorageDevice() may change the storage device completely
             storageDevice = new StorageDevice(
                     storageDevice.getDevice(), systemSize);
-
             restoreUserData(storageDevice, userDataDestination);
             restoreExchangePartition(storageDevice, exchangeDestination);
         }
@@ -6117,12 +6142,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // prepare backup run
             File backupSource = new File(mountPoint + "/home/user/");
             rdiffBackupRestore = new RdiffBackupRestore();
-            Timer backupTimer = new Timer(1000, new BackupActionListener());
+            Timer backupTimer = new Timer(1000, new BackupActionListener(true));
             backupTimer.setInitialDelay(0);
             backupTimer.start();
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
+                    upgradeBackupLabel.setText(
+                            STRINGS.getString("Backing_Up_User_Data"));
                     upgradeBackupTimeLabel.setText(
                             timeFormat.format(new Date(0)));
                     showCard(upgradeCardPanel, "upgradeBackupPanel");
@@ -6139,13 +6166,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             // cleanup
             backupTimer.stop();
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    showCard(upgradeCardPanel,
-                            "upgradeIndeterminateProgressPanel");
-                }
-            });
         }
 
         private void backupExchangeParitition(StorageDevice storageDevice,
@@ -6158,14 +6178,27 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
             String mountPath = exchangePartition.mount().getMountPath();
 
-            // TODO: show copy progress
+            // GUI update
+            upgradeCopyLabel.setText(STRINGS.getString(
+                    "Backing_Up_Exchange_Partition"));
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    showCard(upgradeCardPanel, "upgradeCopyPanel");
+                }
+            });
+
             // Unfortunately, rdiffbackup does not work with exFAT or NTFS.
             // Both filesystems are possible on the exchange partition.
-            // Therefore we just use plain old cp.
-            String backupScript = "#!/bin/sh\n"
-                    + "cp -a "
-                    + mountPath + "/* " + exchangeDestination.getPath();
-            processExecutor.executeScript(backupScript);
+            // Therefore we just make a simple copy.
+            // clean-up destination
+            LernstickFileTools.recursiveDelete(exchangeDestination, false);
+
+            // copy files from exchange partition to backup destination
+            Source[] sources = new Source[]{new Source(mountPath, ".*")};
+            String[] destinations = new String[]{exchangeDestination.getPath()};
+            upgradeFileCopierPanel.setFileCopier(fileCopier);
+            fileCopier.copy(new CopyJob(sources, destinations));
         }
 
         private void restoreUserData(
@@ -6178,17 +6211,40 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 return;
             }
 
+            Timer backupTimer = new Timer(
+                    1000, new BackupActionListener(false));
+            backupTimer.setInitialDelay(0);
+            backupTimer.start();
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    upgradeBackupLabel.setText(
+                            STRINGS.getString("Restoring_User_Data"));
+                    upgradeBackupTimeLabel.setText(
+                            timeFormat.format(new Date(0)));
+                    showCard(upgradeCardPanel, "upgradeBackupPanel");
+                }
+            });
+
             String mountPath = dataPartition.mount().getMountPath();
             File restoreDestinationDir = new File(mountPath + "/home/user/");
             restoreDestinationDir.mkdirs();
             processExecutor.executeProcess(
                     "chown", "user.user", restoreDestinationDir.getPath());
 
-            RdiffFile[] rdiffRoot = getRdiffRoot(restoreSourceDir);
+            RdiffFileDatabase rdiffFileDatabase
+                    = RdiffFileDatabase.getInstance(restoreSourceDir);
+            rdiffFileDatabase.sync();
+            List<Increment> increments = rdiffFileDatabase.getIncrements();
+            Increment increment = increments.get(0);
+            RdiffFile[] rdiffRoot = new RdiffFile[]{increment.getRdiffRoot()};
+
             rdiffBackupRestore.restore("now", rdiffRoot,
                     restoreSourceDir, restoreDestinationDir, null, false);
 
+            // cleanup
             dataPartition.umount();
+            backupTimer.stop();
         }
 
         private void restoreExchangePartition(
@@ -6201,23 +6257,23 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 return;
             }
 
-            // TODO: show copy progress
-            String mountPath = exchangePartition.mount().getMountPath();
-            String restoreScript = "#!/bin/sh\n"
-                    + "cp -a "
-                    + restoreSourceDir.getPath() + "/* " + mountPath;
-            processExecutor.executeScript(restoreScript);
-            exchangePartition.umount();
-        }
+            upgradeCopyLabel.setText(STRINGS.getString(
+                    "Restoring_Exchange_Partition"));
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    showCard(upgradeCardPanel, "upgradeCopyPanel");
+                }
+            });
 
-        private RdiffFile[] getRdiffRoot(File backupDir)
-                throws SQLException, IOException {
-            RdiffFileDatabase rdiffFileDatabase
-                    = RdiffFileDatabase.getInstance(backupDir);
-            rdiffFileDatabase.sync();
-            List<Increment> increments = rdiffFileDatabase.getIncrements();
-            Increment increment = increments.get(0);
-            return new RdiffFile[]{increment.getRdiffRoot()};
+            Source[] sources = new Source[]{
+                new Source(restoreSourceDir.getPath(), ".*")};
+            String[] destinations = new String[]{
+                exchangePartition.mount().getMountPath()};
+            upgradeFileCopierPanel.setFileCopier(fileCopier);
+            fileCopier.copy(new CopyJob(sources, destinations));
+
+            exchangePartition.umount();
         }
 
         private boolean upgradeDataPartition(StorageDevice storageDevice,
@@ -6521,9 +6577,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             LernstickFileTools.recursiveDelete(systemMountPointFile, false);
 
             LOGGER.info("starting copy job");
+            upgradeCopyLabel.setText(STRINGS.getString("Copying_Files"));
             upgradeFileCopierPanel.setFileCopier(fileCopier);
-            fileCopier.addPropertyChangeListener(
-                    FileCopier.BYTE_COUNTER_PROPERTY, this);
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -6893,9 +6948,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             });
             publish(STRINGS.getString("Compressing_Filesystem"));
             processExecutor.addPropertyChangeListener(this);
-            processExecutor.executeProcess("mksquashfs", cowPath,
-                    targetDirectory + "/live/filesystem.squashfs",
+            int exitValue = processExecutor.executeProcess("mksquashfs",
+                    cowPath, targetDirectory + "/live/filesystem.squashfs",
                     "-comp", "xz");
+            if (exitValue != 0) {
+                throw new IOException(
+                        STRINGS.getString("Error_Creating_Squashfs"));
+            }
             processExecutor.removePropertyChangeListener(this);
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -7596,11 +7655,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private class BackupActionListener implements ActionListener {
 
+        private final boolean backup;
         private final long start;
         private final ResourceBundle BUNDLE = ResourceBundle.getBundle(
                 "ch/fhnw/jbackpack/Strings");
 
-        public BackupActionListener() {
+        public BackupActionListener(boolean backup) {
+            this.backup = backup;
             start = System.currentTimeMillis();
         }
 
@@ -7608,7 +7669,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         public void actionPerformed(ActionEvent e) {
             long fileCounter = rdiffBackupRestore.getFileCounter();
             if (fileCounter > 0) {
-                String string = BUNDLE.getString("Backing_Up_File");
+                String string = BUNDLE.getString(
+                        backup
+                        ? "Backing_Up_File"
+                        : "Restoring_File_Not_Counted");
                 string = MessageFormat.format(string, fileCounter);
                 upgradeBackupProgressLabel.setText(string);
                 String currentFile = rdiffBackupRestore.getCurrentFile();
@@ -7776,6 +7840,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel infoStepLabel;
     private javax.swing.JButton installButton;
     private javax.swing.JPanel installCardPanel;
+    private javax.swing.JLabel installCopyLabel;
     private javax.swing.JPanel installCopyPanel;
     private javax.swing.JPanel installCurrentPanel;
     private ch.fhnw.filecopier.FileCopierPanel installFileCopierPanel;
@@ -7804,8 +7869,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel isoLabelLabel;
     private javax.swing.JTextField isoLabelTextField;
     private javax.swing.JPanel isoOptionsCardPanel;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
@@ -7881,6 +7944,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel upgradeBootDefinitionLabel;
     private javax.swing.JButton upgradeButton;
     private javax.swing.JPanel upgradeCardPanel;
+    private javax.swing.JLabel upgradeCopyLabel;
     private javax.swing.JPanel upgradeCopyPanel;
     private javax.swing.JLabel upgradeDataDefinitionLabel;
     private javax.swing.JLabel upgradeExchangeDefinitionLabel;
