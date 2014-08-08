@@ -1,8 +1,8 @@
-dlcopy (201408071915-1) unstable; urgency=low
+dlcopy (201408082112-1) unstable; urgency=low
 
   * backup -> install -> restore
 
- -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 07 Aug 2014 19:15:01 +0200
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 08 Aug 2014 21:12:01 +0200
 
 dlcopy (201408031625-1) unstable; urgency=low
 

@@ -221,9 +221,9 @@ public class DLCopy extends JFrame
     private final static String UPGRADE_SYSTEM_PARTITION = "upgradeSystemPartition";
     private final static String REACTIVATE_WELCOME = "reactivateWelcome";
     private final static String KEEP_PRINTER_SETTINGS = "keepPrinterSettings";
+    private final static String KEEP_HIDDEN_FILES = "keepHiddenFiles";
     private final static String AUTOMATIC_BACKUP = "automaticBackup";
     private final static String BACKUP_DESTINATION = "backupDestination";
-    private final static String BACKUP_HIDDEN_FILES = "backupHiddenFiles";
     private final static String AUTO_REMOVE_BACKUP = "autoRemoveBackup";
     private final static String UPGRADE_OVERWRITE_LIST = "upgradeOverwriteList";
 
@@ -517,8 +517,8 @@ public class DLCopy extends JFrame
                 preferences.getBoolean(AUTOMATIC_BACKUP, false));
         automaticBackupTextField.setText(
                 preferences.get(BACKUP_DESTINATION, null));
-        automaticBackupHiddenCheckBox.setSelected(
-                preferences.getBoolean(BACKUP_HIDDEN_FILES, true));
+        keepHiddenFilesCheckBox.setSelected(
+                preferences.getBoolean(KEEP_HIDDEN_FILES, true));
         automaticBackupRemoveCheckBox.setSelected(
                 preferences.getBoolean(AUTO_REMOVE_BACKUP, false));
         String upgradeOverWriteList = preferences.get(
@@ -864,11 +864,11 @@ public class DLCopy extends JFrame
         upgradeSystemPartitionCheckBox = new javax.swing.JCheckBox();
         reactivateWelcomeCheckBox = new javax.swing.JCheckBox();
         keepPrinterSettingsCheckBox = new javax.swing.JCheckBox();
+        keepHiddenFilesCheckBox = new javax.swing.JCheckBox();
         automaticBackupCheckBox = new javax.swing.JCheckBox();
         automaticBackupLabel = new javax.swing.JLabel();
         automaticBackupTextField = new javax.swing.JTextField();
         automaticBackupButton = new javax.swing.JButton();
-        automaticBackupHiddenCheckBox = new javax.swing.JCheckBox();
         automaticBackupRemoveCheckBox = new javax.swing.JCheckBox();
         upgradeOverwritePanel = new javax.swing.JPanel();
         upgradeMoveUpButton = new javax.swing.JButton();
@@ -1777,6 +1777,9 @@ public class DLCopy extends JFrame
         keepPrinterSettingsCheckBox.setSelected(true);
         keepPrinterSettingsCheckBox.setText(bundle.getString("DLCopy.keepPrinterSettingsCheckBox.text")); // NOI18N
 
+        keepHiddenFilesCheckBox.setSelected(true);
+        keepHiddenFilesCheckBox.setText(bundle.getString("DLCopy.keepHiddenFilesCheckBox.text")); // NOI18N
+
         automaticBackupCheckBox.setText(bundle.getString("DLCopy.automaticBackupCheckBox.text")); // NOI18N
         automaticBackupCheckBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -1797,10 +1800,6 @@ public class DLCopy extends JFrame
                 automaticBackupButtonActionPerformed(evt);
             }
         });
-
-        automaticBackupHiddenCheckBox.setSelected(true);
-        automaticBackupHiddenCheckBox.setText(bundle.getString("DLCopy.automaticBackupHiddenCheckBox.text")); // NOI18N
-        automaticBackupHiddenCheckBox.setEnabled(false);
 
         automaticBackupRemoveCheckBox.setText(bundle.getString("DLCopy.automaticBackupRemoveCheckBox.text")); // NOI18N
         automaticBackupRemoveCheckBox.setEnabled(false);
@@ -1941,7 +1940,7 @@ public class DLCopy extends JFrame
                 .addComponent(upgradeOverwriteExportButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(upgradeOverwriteImportButton))
-            .addComponent(upgradeOverwriteScrollPane, 0, 183, Short.MAX_VALUE)
+            .addComponent(upgradeOverwriteScrollPane, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
                 .addComponent(upgradeMoveUpButton)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1959,9 +1958,6 @@ public class DLCopy extends JFrame
             .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(upgradeSystemPartitionCheckBox)
-                    .addComponent(reactivateWelcomeCheckBox)
-                    .addComponent(keepPrinterSettingsCheckBox)
                     .addComponent(upgradeOverwritePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
                         .addGroup(upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1974,12 +1970,17 @@ public class DLCopy extends JFrame
                                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                                         .addComponent(automaticBackupTextField))
                                     .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
-                                        .addGroup(upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                            .addComponent(automaticBackupRemoveCheckBox)
-                                            .addComponent(automaticBackupHiddenCheckBox))
-                                        .addGap(0, 0, Short.MAX_VALUE)))))
+                                        .addComponent(automaticBackupRemoveCheckBox)
+                                        .addGap(0, 330, Short.MAX_VALUE)))))
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(automaticBackupButton)))
+                        .addComponent(automaticBackupButton))
+                    .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
+                        .addGroup(upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(keepHiddenFilesCheckBox)
+                            .addComponent(upgradeSystemPartitionCheckBox)
+                            .addComponent(reactivateWelcomeCheckBox)
+                            .addComponent(keepPrinterSettingsCheckBox))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         upgradeSelectionConfigPanelLayout.setVerticalGroup(
@@ -1992,6 +1993,8 @@ public class DLCopy extends JFrame
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(keepPrinterSettingsCheckBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(keepHiddenFilesCheckBox)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(automaticBackupCheckBox)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
@@ -1999,10 +2002,8 @@ public class DLCopy extends JFrame
                     .addComponent(automaticBackupTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(automaticBackupButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(automaticBackupHiddenCheckBox)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(automaticBackupRemoveCheckBox)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
+                .addGap(18, 18, 18)
                 .addComponent(upgradeOverwritePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                 .addContainerGap())
         );
@@ -2939,7 +2940,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         automaticBackupLabel.setEnabled(automaticBackup);
         automaticBackupTextField.setEnabled(automaticBackup);
         automaticBackupButton.setEnabled(automaticBackup);
-        automaticBackupHiddenCheckBox.setEnabled(automaticBackup);
         automaticBackupRemoveCheckBox.setEnabled(automaticBackup);
         updateUpgradeNextButton();
     }//GEN-LAST:event_automaticBackupCheckBoxItemStateChanged
@@ -3614,8 +3614,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 automaticBackupCheckBox.isSelected());
         preferences.put(BACKUP_DESTINATION,
                 automaticBackupTextField.getText());
-        preferences.putBoolean(BACKUP_HIDDEN_FILES,
-                automaticBackupHiddenCheckBox.isSelected());
+        preferences.putBoolean(KEEP_HIDDEN_FILES,
+                keepHiddenFilesCheckBox.isSelected());
         preferences.putBoolean(AUTO_REMOVE_BACKUP,
                 automaticBackupRemoveCheckBox.isSelected());
         preferences.put(UPGRADE_OVERWRITE_LIST,
@@ -6107,9 +6107,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 SQLException {
 
             // prepare backup destination directories
-            File userDataDestination
-                    = new File(getBackupDestination(storageDevice), "userData");
-            userDataDestination.mkdirs();
+            File dataDestination
+                    = new File(getBackupDestination(storageDevice), "data");
+            dataDestination.mkdirs();
             File exchangeDestination
                     = new File(getBackupDestination(storageDevice), "exchange");
             exchangeDestination.mkdirs();
@@ -6117,7 +6117,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // backup
             Partition dataPartition = storageDevice.getDataPartition();
             String dataMountPoint = dataPartition.mount().getMountPath();
-            backupUserData(dataMountPoint, userDataDestination);
+            backupUserData(dataMountPoint, dataDestination);
             dataPartition.umount();
             backupExchangeParitition(storageDevice, exchangeDestination);
 
@@ -6132,7 +6132,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // copyToStorageDevice() may change the storage device completely
             storageDevice = new StorageDevice(
                     storageDevice.getDevice(), systemSize);
-            restoreUserData(storageDevice, userDataDestination);
+            restoreDataPartition(storageDevice, dataDestination);
             restoreExchangePartition(storageDevice, exchangeDestination);
         }
 
@@ -6140,7 +6140,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 throws IOException {
 
             // prepare backup run
-            File backupSource = new File(mountPoint + "/home/user/");
+            File backupSource = new File(mountPoint);
             rdiffBackupRestore = new RdiffBackupRestore();
             Timer backupTimer = new Timer(1000, new BackupActionListener(true));
             backupTimer.setInitialDelay(0);
@@ -6156,12 +6156,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 }
             });
 
-            String excludes = automaticBackupHiddenCheckBox.isSelected()
-                    ? null : "**/.*";
+            String includes = mountPoint + "/home/user/";
+            if (keepPrinterSettingsCheckBox.isSelected()) {
+                includes += '\n' + mountPoint + "/etc/cups/";
+            }
 
             // run the actual backup process
             rdiffBackupRestore.backupViaFileSystem(backupSource,
-                    backupDestination, null, excludes, null, true, null,
+                    backupDestination, null, mountPoint, includes, true, null,
                     null, false, false, false, false, false);
 
             // cleanup
@@ -6191,17 +6193,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // Unfortunately, rdiffbackup does not work with exFAT or NTFS.
             // Both filesystems are possible on the exchange partition.
             // Therefore we just make a simple copy.
-            // clean-up destination
             LernstickFileTools.recursiveDelete(exchangeDestination, false);
-
-            // copy files from exchange partition to backup destination
             Source[] sources = new Source[]{new Source(mountPath, ".*")};
             String[] destinations = new String[]{exchangeDestination.getPath()};
             upgradeFileCopierPanel.setFileCopier(fileCopier);
             fileCopier.copy(new CopyJob(sources, destinations));
         }
 
-        private void restoreUserData(
+        private void restoreDataPartition(
                 StorageDevice storageDevice, File restoreSourceDir)
                 throws DBusException, IOException, SQLException {
 
@@ -6211,10 +6210,38 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 return;
             }
 
-            Timer backupTimer = new Timer(
+            String mountPath = dataPartition.mount().getMountPath();
+
+            // reactivate welcome, overwrite files...
+            finalizeDataPartition(mountPath);
+
+            // restore data
+            SwingUtilities.invokeLater(new Runnable() {
+                @Override
+                public void run() {
+                    showCard(upgradeCardPanel,
+                            "upgradeIndeterminateProgressPanel");
+                    upgradeIndeterminateProgressBar.setString(
+                            STRINGS.getString("Reading_Backup"));
+                }
+            });
+            RdiffFileDatabase rdiffFileDatabase
+                    = RdiffFileDatabase.getInstance(restoreSourceDir);
+            rdiffFileDatabase.sync();
+            List<Increment> increments = rdiffFileDatabase.getIncrements();
+            if ((increments == null) || increments.isEmpty()) {
+                throw new IOException(
+                        "could not restore user data, no backup found");
+            }
+            Increment increment = increments.get(0);
+            RdiffFile[] rdiffRoot = new RdiffFile[]{increment.getRdiffRoot()};
+
+            Timer restoreTimer = new Timer(
                     1000, new BackupActionListener(false));
-            backupTimer.setInitialDelay(0);
-            backupTimer.start();
+            restoreTimer.setInitialDelay(0);
+            restoreTimer.start();
+            // create a new RdiffBackupRestore instance to reset its counters
+            rdiffBackupRestore = new RdiffBackupRestore();
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -6225,29 +6252,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     showCard(upgradeCardPanel, "upgradeBackupPanel");
                 }
             });
-
-            String mountPath = dataPartition.mount().getMountPath();
-            File restoreDestinationDir = new File(mountPath + "/home/user/");
-            restoreDestinationDir.mkdirs();
-            processExecutor.executeProcess(
-                    "chown", "user.user", restoreDestinationDir.getPath());
-
-            RdiffFileDatabase rdiffFileDatabase
-                    = RdiffFileDatabase.getInstance(restoreSourceDir);
-            rdiffFileDatabase.sync();
-            List<Increment> increments = rdiffFileDatabase.getIncrements();
-            Increment increment = increments.get(0);
-            RdiffFile[] rdiffRoot = new RdiffFile[]{increment.getRdiffRoot()};
-
             rdiffBackupRestore.restore("now", rdiffRoot,
-                    restoreSourceDir, restoreDestinationDir, null, false);
+                    restoreSourceDir, new File(mountPath), null, false);
 
-            // reactivate welcome, overwrite files...
-            finalizeDataPartition(mountPath);
+            processHiddenFiles(mountPath);
 
             // cleanup
             dataPartition.umount();
-            backupTimer.stop();
+            restoreTimer.stop();
         }
 
         private void restoreExchangePartition(
@@ -6328,6 +6340,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
 
             finalizeDataPartition(dataMountPoint);
+            processHiddenFiles(dataMountPoint);
 
             // umount
             if ((!mountInfo.alreadyMounted()) && (!umount(dataPartition))) {
@@ -6347,6 +6360,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         private void finalizeDataPartition(String dataMountPoint)
                 throws IOException {
+
             // welcome application reactivation
             if (reactivateWelcomeCheckBox.isSelected()) {
                 File propertiesFile = new File(
@@ -6382,6 +6396,22 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // recursive copy
                 processExecutor.executeProcess(true, true,
                         "cp", "-a", "--parents", sourcePath, dataMountPoint);
+            }
+        }
+
+        private void processHiddenFiles(String dataMountPoint)
+                throws IOException {
+            if (!keepHiddenFilesCheckBox.isSelected()) {
+                // remove hidden files from user directory
+                File userDir = new File(dataMountPoint + "/home/user/");
+                File[] files = userDir.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.getName().startsWith(".")) {
+                            LernstickFileTools.recursiveDelete(file, true);
+                        }
+                    }
+                }
             }
         }
 
@@ -7678,7 +7708,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         @Override
         public void actionPerformed(ActionEvent e) {
             long fileCounter = rdiffBackupRestore.getFileCounter();
-            if (fileCounter > 0) {
+            if (fileCounter == 0) {
+                // preparation is still running
+                upgradeBackupProgressLabel.setText(" ");
+                upgradeBackupFilenameLabel.setText(" ");
+            } else {
+                // files are processed
                 String string = BUNDLE.getString(
                         backup
                         ? "Backing_Up_File"
@@ -7799,7 +7834,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JCheckBox autoStartInstallerCheckBox;
     private javax.swing.JButton automaticBackupButton;
     private javax.swing.JCheckBox automaticBackupCheckBox;
-    private javax.swing.JCheckBox automaticBackupHiddenCheckBox;
     private javax.swing.JLabel automaticBackupLabel;
     private javax.swing.JCheckBox automaticBackupRemoveCheckBox;
     private javax.swing.JTextField automaticBackupTextField;
@@ -7887,6 +7921,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JCheckBox keepHiddenFilesCheckBox;
     private javax.swing.JCheckBox keepPrinterSettingsCheckBox;
     private javax.swing.JButton nextButton;
     private javax.swing.JPanel northEastPanel;
