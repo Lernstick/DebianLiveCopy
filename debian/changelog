@@ -1,3 +1,10 @@
+dlcopy (201408111832-1) unstable; urgency=low
+
+  * added option to remove or create exchange partition while repartitioning
+  * changed layout of upgrade details
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Mon, 11 Aug 2014 18:32:03 +0200
+
 dlcopy (201408082112-1) unstable; urgency=low
 
   * backup -> install -> restore

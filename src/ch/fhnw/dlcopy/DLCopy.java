@@ -221,7 +221,7 @@ public class DLCopy extends JFrame
     private final static String UPGRADE_SYSTEM_PARTITION = "upgradeSystemPartition";
     private final static String REACTIVATE_WELCOME = "reactivateWelcome";
     private final static String KEEP_PRINTER_SETTINGS = "keepPrinterSettings";
-    private final static String KEEP_HIDDEN_FILES = "keepHiddenFiles";
+    private final static String REMOVE_HIDDEN_FILES = "removeHiddenFiles";
     private final static String AUTOMATIC_BACKUP = "automaticBackup";
     private final static String BACKUP_DESTINATION = "backupDestination";
     private final static String AUTO_REMOVE_BACKUP = "autoRemoveBackup";
@@ -517,8 +517,8 @@ public class DLCopy extends JFrame
                 preferences.getBoolean(AUTOMATIC_BACKUP, false));
         automaticBackupTextField.setText(
                 preferences.get(BACKUP_DESTINATION, null));
-        keepHiddenFilesCheckBox.setSelected(
-                preferences.getBoolean(KEEP_HIDDEN_FILES, true));
+        removeHiddenFilesCheckBox.setSelected(
+                preferences.getBoolean(REMOVE_HIDDEN_FILES, false));
         automaticBackupRemoveCheckBox.setSelected(
                 preferences.getBoolean(AUTO_REMOVE_BACKUP, false));
         String upgradeOverWriteList = preferences.get(
@@ -756,6 +756,7 @@ public class DLCopy extends JFrame
 
         repairButtonGroup = new javax.swing.ButtonGroup();
         isoButtonGroup = new javax.swing.ButtonGroup();
+        exchangeButtonGroup = new javax.swing.ButtonGroup();
         choicePanel = new javax.swing.JPanel();
         choiceLabel = new javax.swing.JLabel();
         buttonGridPanel = new javax.swing.JPanel();
@@ -860,16 +861,23 @@ public class DLCopy extends JFrame
         upgradeOsDefinitionLabel = new javax.swing.JLabel();
         upgradeNoMediaPanel = new javax.swing.JPanel();
         upgradeNoMediaLabel = new javax.swing.JLabel();
-        upgradeSelectionConfigPanel = new javax.swing.JPanel();
+        upgradeDetailsTabbedPane = new javax.swing.JTabbedPane();
+        upgradeOptionsPanel = new javax.swing.JPanel();
         upgradeSystemPartitionCheckBox = new javax.swing.JCheckBox();
         reactivateWelcomeCheckBox = new javax.swing.JCheckBox();
         keepPrinterSettingsCheckBox = new javax.swing.JCheckBox();
-        keepHiddenFilesCheckBox = new javax.swing.JCheckBox();
+        removeHiddenFilesCheckBox = new javax.swing.JCheckBox();
         automaticBackupCheckBox = new javax.swing.JCheckBox();
         automaticBackupLabel = new javax.swing.JLabel();
         automaticBackupTextField = new javax.swing.JTextField();
         automaticBackupButton = new javax.swing.JButton();
         automaticBackupRemoveCheckBox = new javax.swing.JCheckBox();
+        repartitionExchangeOptionsPanel = new javax.swing.JPanel();
+        removeExchangeRadioButton = new javax.swing.JRadioButton();
+        originalExchangeRadioButton = new javax.swing.JRadioButton();
+        resizeExchangeRadioButton = new javax.swing.JRadioButton();
+        resizeExchangeTextField = new javax.swing.JTextField();
+        resizeExchangeLabel = new javax.swing.JLabel();
         upgradeOverwritePanel = new javax.swing.JPanel();
         upgradeMoveUpButton = new javax.swing.JButton();
         upgradeMoveDownButton = new javax.swing.JButton();
@@ -1777,8 +1785,7 @@ public class DLCopy extends JFrame
         keepPrinterSettingsCheckBox.setSelected(true);
         keepPrinterSettingsCheckBox.setText(bundle.getString("DLCopy.keepPrinterSettingsCheckBox.text")); // NOI18N
 
-        keepHiddenFilesCheckBox.setSelected(true);
-        keepHiddenFilesCheckBox.setText(bundle.getString("DLCopy.keepHiddenFilesCheckBox.text")); // NOI18N
+        removeHiddenFilesCheckBox.setText(bundle.getString("DLCopy.removeHiddenFilesCheckBox.text")); // NOI18N
 
         automaticBackupCheckBox.setText(bundle.getString("DLCopy.automaticBackupCheckBox.text")); // NOI18N
         automaticBackupCheckBox.addItemListener(new java.awt.event.ItemListener() {
@@ -1804,7 +1811,117 @@ public class DLCopy extends JFrame
         automaticBackupRemoveCheckBox.setText(bundle.getString("DLCopy.automaticBackupRemoveCheckBox.text")); // NOI18N
         automaticBackupRemoveCheckBox.setEnabled(false);
 
-        upgradeOverwritePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopy.upgradeOverwritePanel.border.title"))); // NOI18N
+        repartitionExchangeOptionsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopy.repartitionExchangeOptionsPanel.border.title"))); // NOI18N
+
+        exchangeButtonGroup.add(removeExchangeRadioButton);
+        removeExchangeRadioButton.setText(bundle.getString("DLCopy.removeExchangeRadioButton.text")); // NOI18N
+
+        exchangeButtonGroup.add(originalExchangeRadioButton);
+        originalExchangeRadioButton.setSelected(true);
+        originalExchangeRadioButton.setText(bundle.getString("DLCopy.originalExchangeRadioButton.text")); // NOI18N
+
+        exchangeButtonGroup.add(resizeExchangeRadioButton);
+        resizeExchangeRadioButton.setText(bundle.getString("DLCopy.resizeExchangeRadioButton.text")); // NOI18N
+
+        resizeExchangeTextField.setColumns(4);
+        resizeExchangeTextField.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+
+        resizeExchangeLabel.setText(bundle.getString("DLCopy.resizeExchangeLabel.text")); // NOI18N
+
+        javax.swing.GroupLayout repartitionExchangeOptionsPanelLayout = new javax.swing.GroupLayout(repartitionExchangeOptionsPanel);
+        repartitionExchangeOptionsPanel.setLayout(repartitionExchangeOptionsPanelLayout);
+        repartitionExchangeOptionsPanelLayout.setHorizontalGroup(
+            repartitionExchangeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(repartitionExchangeOptionsPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(repartitionExchangeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(removeExchangeRadioButton)
+                    .addComponent(originalExchangeRadioButton)
+                    .addGroup(repartitionExchangeOptionsPanelLayout.createSequentialGroup()
+                        .addComponent(resizeExchangeRadioButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(resizeExchangeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(resizeExchangeLabel)))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+        );
+        repartitionExchangeOptionsPanelLayout.setVerticalGroup(
+            repartitionExchangeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(repartitionExchangeOptionsPanelLayout.createSequentialGroup()
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addComponent(removeExchangeRadioButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addComponent(originalExchangeRadioButton)
+                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                .addGroup(repartitionExchangeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
+                    .addComponent(resizeExchangeRadioButton)
+                    .addComponent(resizeExchangeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addComponent(resizeExchangeLabel)))
+        );
+
+        javax.swing.GroupLayout upgradeOptionsPanelLayout = new javax.swing.GroupLayout(upgradeOptionsPanel);
+        upgradeOptionsPanel.setLayout(upgradeOptionsPanelLayout);
+        upgradeOptionsPanelLayout.setHorizontalGroup(
+            upgradeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(upgradeOptionsPanelLayout.createSequentialGroup()
+                .addContainerGap()
+                .addGroup(upgradeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(repartitionExchangeOptionsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addGroup(upgradeOptionsPanelLayout.createSequentialGroup()
+                        .addGroup(upgradeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(upgradeOptionsPanelLayout.createSequentialGroup()
+                                .addGroup(upgradeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
+                                    .addComponent(automaticBackupLabel)
+                                    .addComponent(automaticBackupCheckBox))
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(automaticBackupTextField)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
+                            .addGroup(upgradeOptionsPanelLayout.createSequentialGroup()
+                                .addGap(14, 14, 14)
+                                .addComponent(automaticBackupRemoveCheckBox)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(automaticBackupButton))
+                    .addGroup(upgradeOptionsPanelLayout.createSequentialGroup()
+                        .addGroup(upgradeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(upgradeSystemPartitionCheckBox)
+                            .addComponent(reactivateWelcomeCheckBox)
+                            .addComponent(keepPrinterSettingsCheckBox)
+                            .addComponent(removeHiddenFilesCheckBox))
+                        .addGap(0, 136, Short.MAX_VALUE)))
+                .addContainerGap())
+        );
+        upgradeOptionsPanelLayout.setVerticalGroup(
+            upgradeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(upgradeOptionsPanelLayout.createSequentialGroup()
+                .addGroup(upgradeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(upgradeOptionsPanelLayout.createSequentialGroup()
+                        .addContainerGap()
+                        .addComponent(upgradeSystemPartitionCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(reactivateWelcomeCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(keepPrinterSettingsCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(removeHiddenFilesCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(automaticBackupCheckBox)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addGroup(upgradeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
+                            .addComponent(automaticBackupButton)
+                            .addComponent(automaticBackupTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(automaticBackupRemoveCheckBox))
+                    .addGroup(upgradeOptionsPanelLayout.createSequentialGroup()
+                        .addGap(127, 127, 127)
+                        .addComponent(automaticBackupLabel)))
+                .addGap(18, 18, 18)
+                .addComponent(repartitionExchangeOptionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addContainerGap(81, Short.MAX_VALUE))
+        );
+
+        upgradeDetailsTabbedPane.addTab(bundle.getString("DLCopy.upgradeOptionsPanel.TabConstraints.tabTitle"), upgradeOptionsPanel); // NOI18N
+
+        upgradeOverwritePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
 
         upgradeMoveUpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/arrow-up.png"))); // NOI18N
         upgradeMoveUpButton.setToolTipText(bundle.getString("DLCopy.upgradeMoveUpButton.toolTipText")); // NOI18N
@@ -1918,7 +2035,7 @@ public class DLCopy extends JFrame
                     .addComponent(sortAscendingButton)
                     .addComponent(sortDescendingButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(upgradeOverwriteScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 514, Short.MAX_VALUE)
+                .addComponent(upgradeOverwriteScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 640, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(upgradeOverwriteAddButton, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -1931,84 +2048,37 @@ public class DLCopy extends JFrame
         upgradeOverwritePanelLayout.setVerticalGroup(
             upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
-                .addComponent(upgradeOverwriteAddButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(upgradeOverwriteEditButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(upgradeOverwriteRemoveButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(upgradeOverwriteExportButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(upgradeOverwriteImportButton))
-            .addComponent(upgradeOverwriteScrollPane, 0, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-            .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
-                .addComponent(upgradeMoveUpButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(upgradeMoveDownButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(sortAscendingButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(sortDescendingButton))
-        );
-
-        javax.swing.GroupLayout upgradeSelectionConfigPanelLayout = new javax.swing.GroupLayout(upgradeSelectionConfigPanel);
-        upgradeSelectionConfigPanel.setLayout(upgradeSelectionConfigPanelLayout);
-        upgradeSelectionConfigPanelLayout.setHorizontalGroup(
-            upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(upgradeOverwritePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
-                        .addGroup(upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(automaticBackupCheckBox)
-                            .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
-                                .addGap(21, 21, 21)
-                                .addGroup(upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
-                                        .addComponent(automaticBackupLabel)
-                                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                        .addComponent(automaticBackupTextField))
-                                    .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
-                                        .addComponent(automaticBackupRemoveCheckBox)
-                                        .addGap(0, 330, Short.MAX_VALUE)))))
+                .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
+                        .addComponent(upgradeOverwriteAddButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(automaticBackupButton))
-                    .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
-                        .addGroup(upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(keepHiddenFilesCheckBox)
-                            .addComponent(upgradeSystemPartitionCheckBox)
-                            .addComponent(reactivateWelcomeCheckBox)
-                            .addComponent(keepPrinterSettingsCheckBox))
-                        .addGap(0, 0, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        upgradeSelectionConfigPanelLayout.setVerticalGroup(
-            upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(upgradeSelectionConfigPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(upgradeSystemPartitionCheckBox)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(reactivateWelcomeCheckBox)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(keepPrinterSettingsCheckBox)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(keepHiddenFilesCheckBox)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(automaticBackupCheckBox)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(upgradeSelectionConfigPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(automaticBackupLabel)
-                    .addComponent(automaticBackupTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(automaticBackupButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(automaticBackupRemoveCheckBox)
-                .addGap(18, 18, 18)
-                .addComponent(upgradeOverwritePanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addContainerGap())
+                        .addComponent(upgradeOverwriteEditButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(upgradeOverwriteRemoveButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(upgradeOverwriteExportButton)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(upgradeOverwriteImportButton)
+                        .addGap(0, 154, Short.MAX_VALUE))
+                    .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
+                        .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addComponent(upgradeOverwriteScrollPane)
+                            .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
+                                .addComponent(upgradeMoveUpButton, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(upgradeMoveDownButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(sortAscendingButton)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(sortDescendingButton)
+                                .addGap(0, 0, Short.MAX_VALUE)))
+                        .addContainerGap())))
         );
 
-        upgradeSelectionTabbedPane.addTab(bundle.getString("DLCopy.upgradeSelectionConfigPanel.TabConstraints.tabTitle"), upgradeSelectionConfigPanel); // NOI18N
+        upgradeDetailsTabbedPane.addTab(bundle.getString("DLCopy.upgradeOverwritePanel.TabConstraints.tabTitle"), upgradeOverwritePanel); // NOI18N
+
+        upgradeSelectionTabbedPane.addTab(bundle.getString("DLCopy.upgradeDetailsTabbedPane.TabConstraints.tabTitle"), upgradeDetailsTabbedPane); // NOI18N
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -2565,7 +2635,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(resultsInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(resultsTitledPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 379, Short.MAX_VALUE))
+                .addComponent(resultsTitledPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE))
         );
 
         cardPanel.add(resultsPanel, "resultsPanel");
@@ -3614,8 +3684,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 automaticBackupCheckBox.isSelected());
         preferences.put(BACKUP_DESTINATION,
                 automaticBackupTextField.getText());
-        preferences.putBoolean(KEEP_HIDDEN_FILES,
-                keepHiddenFilesCheckBox.isSelected());
+        preferences.putBoolean(REMOVE_HIDDEN_FILES,
+                removeHiddenFilesCheckBox.isSelected());
         preferences.putBoolean(AUTO_REMOVE_BACKUP,
                 automaticBackupRemoveCheckBox.isSelected());
         preferences.put(UPGRADE_OVERWRITE_LIST,
@@ -4268,20 +4338,27 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             case EXCHANGE:
                 int exchangeMB = 0;
                 if (state == State.UPGRADE) {
-                    // in case of upgrading we want to have the new exchange
-                    // partition to be the same size as in the current
-                    // partitioning of the storage device
-                    Partition exchangePartition
-                            = storageDevice.getExchangePartition();
-                    if (exchangePartition != null) {
-                        LOGGER.log(Level.INFO,
-                                "exchangePartition: {0}", exchangePartition);
-                        exchangeMB = (int) (exchangePartition.getSize() / MEGA);
-                        LOGGER.log(Level.INFO, "exchangeMB = {0}", exchangeMB);
+                    if (originalExchangeRadioButton.isSelected()) {
+                        Partition exchangePartition
+                                = storageDevice.getExchangePartition();
+                        if (exchangePartition != null) {
+                            LOGGER.log(Level.INFO, "exchangePartition: {0}",
+                                    exchangePartition);
+                            exchangeMB = (int) (exchangePartition.getSize()
+                                    / MEGA);
+                        }
+                    } else if (resizeExchangeRadioButton.isSelected()) {
+                        String newSizeText = resizeExchangeTextField.getText();
+                        try {
+                            exchangeMB = Integer.parseInt(newSizeText);
+                        } catch (NumberFormatException ex) {
+                            LOGGER.log(Level.WARNING, "", ex);
+                        }
                     }
                 } else {
                     exchangeMB = exchangePartitionSizeSlider.getValue();
                 }
+                LOGGER.log(Level.INFO, "exchangeMB = {0}", exchangeMB);
                 int persistenceMB = overheadMB - exchangeMB;
                 return new Partitions(exchangeMB, persistenceMB);
 
@@ -4525,6 +4602,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             // file checks
             String errorMessage = null;
+            JTextField textField = automaticBackupTextField;
             if (destinationDirectory == null
                     || destinationDirectory.getPath().length() == 0) {
                 errorMessage = STRINGS.getString(
@@ -4538,15 +4616,29 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             } else if (!destinationDirectory.canRead()) {
                 errorMessage = STRINGS.getString(
                         "Error_Automatic_Backup_Directory_Unreadable");
+            } else if (resizeExchangeRadioButton.isSelected()) {
+                String newSizeText = resizeExchangeTextField.getText();
+                try {
+                    Integer.parseInt(newSizeText);
+                } catch (NumberFormatException ex) {
+                    errorMessage = STRINGS.getString("Invalid_Partition_Size");
+                    errorMessage = MessageFormat.format(
+                            errorMessage, newSizeText);
+                    textField = resizeExchangeTextField;
+                }
             }
             if (errorMessage != null) {
                 upgradeSelectionTabbedPane.setSelectedComponent(
-                        upgradeSelectionConfigPanel);
-                automaticBackupTextField.requestFocusInWindow();
+                        upgradeDetailsTabbedPane);
+                upgradeDetailsTabbedPane.setSelectedComponent(
+                        upgradeOptionsPanel);
+                textField.requestFocusInWindow();
+                textField.selectAll();
                 showErrorMessage(errorMessage);
                 return;
             }
         }
+
         Object[] selectedDevices = upgradeStorageDeviceList.getSelectedValues();
         int noDataPartitionCounter = 0;
         for (Object object : selectedDevices) {
@@ -5985,12 +6077,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                                         && !upgradeSystemPartition(storageDevice)) {
                                     return false;
                                 }
-                                // automatic removal of (temporary) backup
-                                if (automaticBackupCheckBox.isSelected()
-                                        && automaticBackupRemoveCheckBox.isSelected()) {
-                                    LernstickFileTools.recursiveDelete(
-                                            backupDestination, true);
-                                }
                             } else {
                                 return false;
                             }
@@ -6013,6 +6099,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             LOGGER.log(Level.WARNING,
                                     "Unsupported variant {0}", upgradeVariant);
                     }
+
+                    // automatic removal of (temporary) backup
+                    if (automaticBackupCheckBox.isSelected()
+                            && automaticBackupRemoveCheckBox.isSelected()) {
+                        LernstickFileTools.recursiveDelete(
+                                backupDestination, true);
+                    }
                 } catch (DBusException | IOException |
                         InterruptedException ex) {
                     LOGGER.log(Level.WARNING, "", ex);
@@ -6034,7 +6127,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         storageDevice, duration, errorMessage));
                 installationResultsTableModel.setList(resultsList);
                 resultsTableModel.setList(resultsList);
-
             }
 
             return true;
@@ -6212,9 +6304,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             String mountPath = dataPartition.mount().getMountPath();
 
-            // reactivate welcome, overwrite files...
-            finalizeDataPartition(mountPath);
-
             // restore data
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -6236,12 +6325,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             Increment increment = increments.get(0);
             RdiffFile[] rdiffRoot = new RdiffFile[]{increment.getRdiffRoot()};
 
+            // create a new RdiffBackupRestore instance to reset its counters
+            rdiffBackupRestore = new RdiffBackupRestore();
             Timer restoreTimer = new Timer(
                     1000, new BackupActionListener(false));
             restoreTimer.setInitialDelay(0);
             restoreTimer.start();
-            // create a new RdiffBackupRestore instance to reset its counters
-            rdiffBackupRestore = new RdiffBackupRestore();
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -6255,7 +6344,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             rdiffBackupRestore.restore("now", rdiffRoot,
                     restoreSourceDir, new File(mountPath), null, false);
 
-            processHiddenFiles(mountPath);
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // !!! This must happen *after* restoring the files above.       !!!
+            // !!! otherwise the changes would be overwritten by the restore !!!
+            // !!! process (rdiff-backup)!                                   !!!
+            // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+            // reactivate welcome, overwrite files...
+            finalizeDataPartition(mountPath);
 
             // cleanup
             dataPartition.umount();
@@ -6268,7 +6363,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             Partition exchangePartition = storageDevice.getExchangePartition();
             if (exchangePartition == null) {
-                LOGGER.warning("there is no data partition!");
+                LOGGER.warning("there is no exchange partition!");
                 return;
             }
 
@@ -6340,7 +6435,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
 
             finalizeDataPartition(dataMountPoint);
-            processHiddenFiles(dataMountPoint);
 
             // umount
             if ((!mountInfo.alreadyMounted()) && (!umount(dataPartition))) {
@@ -6385,6 +6479,19 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 }
             }
 
+            // remove hidden files from user directory
+            if (removeHiddenFilesCheckBox.isSelected()) {
+                File userDir = new File(dataMountPoint + "/home/user/");
+                File[] files = userDir.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.getName().startsWith(".")) {
+                            LernstickFileTools.recursiveDelete(file, true);
+                        }
+                    }
+                }
+            }
+
             // process list of files (or directories) to overwrite
             for (int i = 0, size = upgradeOverwriteListModel.size();
                     i < size; i++) {
@@ -6396,22 +6503,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // recursive copy
                 processExecutor.executeProcess(true, true,
                         "cp", "-a", "--parents", sourcePath, dataMountPoint);
-            }
-        }
-
-        private void processHiddenFiles(String dataMountPoint)
-                throws IOException {
-            if (!keepHiddenFilesCheckBox.isSelected()) {
-                // remove hidden files from user directory
-                File userDir = new File(dataMountPoint + "/home/user/");
-                File[] files = userDir.listFiles();
-                if (files != null) {
-                    for (File file : files) {
-                        if (file.getName().startsWith(".")) {
-                            LernstickFileTools.recursiveDelete(file, true);
-                        }
-                    }
-                }
             }
         }
 
@@ -7861,6 +7952,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JPanel dataPartitionPanel;
     private javax.swing.JLabel doneLabel;
     private javax.swing.JPanel donePanel;
+    private javax.swing.ButtonGroup exchangeButtonGroup;
     private javax.swing.JLabel exchangeDefinitionLabel;
     private javax.swing.JPanel exchangePartitionBottomPanel;
     private javax.swing.JComboBox exchangePartitionFileSystemComboBox;
@@ -7921,15 +8013,17 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
-    private javax.swing.JCheckBox keepHiddenFilesCheckBox;
     private javax.swing.JCheckBox keepPrinterSettingsCheckBox;
     private javax.swing.JButton nextButton;
     private javax.swing.JPanel northEastPanel;
     private javax.swing.JPanel northWestPanel;
+    private javax.swing.JRadioButton originalExchangeRadioButton;
     private javax.swing.JButton previousButton;
     private javax.swing.JCheckBox quickFormatCheckBox;
     private javax.swing.JCheckBox reactivateWelcomeCheckBox;
+    private javax.swing.JRadioButton removeExchangeRadioButton;
     private javax.swing.JRadioButton removeFilesRadioButton;
+    private javax.swing.JCheckBox removeHiddenFilesCheckBox;
     private javax.swing.JButton repairButton;
     private javax.swing.ButtonGroup repairButtonGroup;
     private javax.swing.JLabel repairDataDefinitionLabel;
@@ -7949,6 +8043,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JCheckBox repairShowHarddisksCheckBox;
     private javax.swing.JList repairStorageDeviceList;
     private javax.swing.JScrollPane repairStorageDeviceListScrollPane;
+    private javax.swing.JPanel repartitionExchangeOptionsPanel;
+    private javax.swing.JLabel resizeExchangeLabel;
+    private javax.swing.JRadioButton resizeExchangeRadioButton;
+    private javax.swing.JTextField resizeExchangeTextField;
     private javax.swing.JLabel resultsInfoLabel;
     private javax.swing.JPanel resultsPanel;
     private javax.swing.JScrollPane resultsScrollPane;
@@ -7992,6 +8090,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel upgradeCopyLabel;
     private javax.swing.JPanel upgradeCopyPanel;
     private javax.swing.JLabel upgradeDataDefinitionLabel;
+    private javax.swing.JTabbedPane upgradeDetailsTabbedPane;
     private javax.swing.JLabel upgradeExchangeDefinitionLabel;
     private ch.fhnw.filecopier.FileCopierPanel upgradeFileCopierPanel;
     private javax.swing.JProgressBar upgradeIndeterminateProgressBar;
@@ -8003,6 +8102,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JButton upgradeMoveUpButton;
     private javax.swing.JLabel upgradeNoMediaLabel;
     private javax.swing.JPanel upgradeNoMediaPanel;
+    private javax.swing.JPanel upgradeOptionsPanel;
     private javax.swing.JLabel upgradeOsDefinitionLabel;
     private javax.swing.JButton upgradeOverwriteAddButton;
     private javax.swing.JButton upgradeOverwriteEditButton;
@@ -8017,7 +8117,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JScrollPane upgradeResultsScrollPane;
     private javax.swing.JTable upgradeResultsTable;
     private javax.swing.JPanel upgradeSelectionCardPanel;
-    private javax.swing.JPanel upgradeSelectionConfigPanel;
     private javax.swing.JLabel upgradeSelectionCountLabel;
     private javax.swing.JPanel upgradeSelectionDeviceListPanel;
     private javax.swing.JLabel upgradeSelectionHeaderLabel;
