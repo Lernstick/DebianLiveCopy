@@ -4949,12 +4949,16 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         if (mountPath == null) {
             throw new IOException("could not mount persistence partition");
         }
+        writePersistenceConf(mountPath);
+        persistencePartition.umount();
+    }
+
+    private void writePersistenceConf(String mountPath) throws IOException {
         try (FileWriter writer
                 = new FileWriter(mountPath + "/persistence.conf")) {
             writer.write("/ union,source=.\n");
             writer.flush();
         }
-        persistencePartition.umount();
     }
 
     private void addDeviceToList(JList list, StorageDevice newDevice) {
@@ -5205,13 +5209,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         // -> instantiate them as objects
         Partition destinationExchangePartition
                 = (destinationExchangeDevice == null) ? null
-                : Partition.getPartitionFromDeviceAndNumber(
-                        destinationExchangeDevice.substring(5), systemSize);
+                        : Partition.getPartitionFromDeviceAndNumber(
+                                destinationExchangeDevice.substring(5), systemSize);
 
         Partition destinationDataPartition
                 = (destinationDataDevice == null) ? null
-                : Partition.getPartitionFromDeviceAndNumber(
-                        destinationDataDevice.substring(5), systemSize);
+                        : Partition.getPartitionFromDeviceAndNumber(
+                                destinationDataDevice.substring(5), systemSize);
 
         Partition destinationBootPartition
                 = Partition.getPartitionFromDeviceAndNumber(
@@ -6504,6 +6508,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 processExecutor.executeProcess(true, true,
                         "cp", "-a", "--parents", sourcePath, dataMountPoint);
             }
+
+            // when upgrading from very old versions, the persistence.conf file
+            // is still missing and we have to add it now
+            File persistenceConf = new File(dataMountPoint, "persistence.conf");
+            if (!persistenceConf.exists()) {
+                writePersistenceConf(dataMountPoint);
+            }
         }
 
         private boolean upgradeSystemPartition(StorageDevice storageDevice)
@@ -7058,10 +7069,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
             lernstickWelcomeProperties.setProperty("ShowNotUsedInfo",
                     showNotUsedDialogCheckBox.isSelected()
-                    ? "true" : "false");
+                            ? "true" : "false");
             lernstickWelcomeProperties.setProperty("AutoStartInstaller",
                     autoStartInstallerCheckBox.isSelected()
-                    ? "true" : "false");
+                            ? "true" : "false");
             try (FileWriter writer = new FileWriter(propertiesFile)) {
                 lernstickWelcomeProperties.store(
                         writer, "lernstick Welcome properties");
@@ -7807,8 +7818,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // files are processed
                 String string = BUNDLE.getString(
                         backup
-                        ? "Backing_Up_File"
-                        : "Restoring_File_Not_Counted");
+                                ? "Backing_Up_File"
+                                : "Restoring_File_Not_Counted");
                 string = MessageFormat.format(string, fileCounter);
                 upgradeBackupProgressLabel.setText(string);
                 String currentFile = rdiffBackupRestore.getCurrentFile();
