@@ -7030,9 +7030,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             String dataPartitionPath = dataMountInfo.getMountPath();
 
             // union base image with persistence
+            // ---------------------------------
+            // We need an rwDir so that we can change some settings in the
+            // lernstickWelcome properties below without affecting the current
+            // data partition.
             // rwDir and cowDir are placed in /run/ because it is one of
-            // the few directories that are not aufs itself
-            // nested aufs is not (yet) supported...
+            // the few directories that are not aufs itself.
+            // Nested aufs is not (yet) supported...
             File runDir = new File("/run/");
             File rwDir = LernstickFileTools.createTempDirectory(runDir, "rw");
             StringBuilder stringBuilder = new StringBuilder();
@@ -7040,6 +7044,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             stringBuilder.append(rwDir.getPath());
             stringBuilder.append(':');
             stringBuilder.append(dataPartitionPath);
+            // The additional option "=ro+wh" for the data partition is
+            // absolutely neccessary! Otherwise the whiteouts (info about
+            // deleted files) in the data partition are not applied!!!
+            stringBuilder.append("=ro+wh");
             for (String readOnlyMountPoint : readOnlyMountPoints) {
                 stringBuilder.append(':');
                 stringBuilder.append(readOnlyMountPoint);
@@ -7059,7 +7067,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     "-o", "xino=" + xinoTmpFile.getPath(),
                     "-o", branchDefinition, "none", cowPath);
 
-            // apply settings (temporarily) in cow directory
+            // apply settings in cow directory
             Properties lernstickWelcomeProperties = new Properties();
             File propertiesFile = new File(cowDir, "/etc/lernstickWelcome");
             try (FileReader reader = new FileReader(propertiesFile)) {
