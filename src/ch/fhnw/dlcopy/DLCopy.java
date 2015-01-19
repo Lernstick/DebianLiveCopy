@@ -5029,7 +5029,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         CopyJob bootFilesCopyJob = null;
         if ((destinationExchangePartition != null)
                 && (storageDevice.isRemovable())) {
-            if (destinationExchangePartitionFileSystem.equalsIgnoreCase("fat32")) {
+            if ("fat32".equalsIgnoreCase(destinationExchangePartitionFileSystem)) {
                 String destinationExchangePath
                         = destinationExchangePartition.mount().getMountPath();
                 bootFilesCopyJob = new CopyJob(
