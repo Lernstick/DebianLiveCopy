@@ -15,6 +15,7 @@ import ch.fhnw.jbackpack.chooser.Increment;
 import ch.fhnw.jbackpack.chooser.RdiffFile;
 import ch.fhnw.jbackpack.chooser.RdiffFileDatabase;
 import ch.fhnw.jbackpack.chooser.SelectBackupDirectoryDialog;
+import ch.fhnw.util.DbusTools;
 import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.ModalDialogHandler;
 import ch.fhnw.util.MountInfo;
@@ -3977,46 +3978,56 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             boolean includeHarddisks, boolean includeBootDevice)
             throws IOException, DBusException {
 
+        // parse /proc/partitions
+        //
+        // the format of the /proc/partitions file looks like this:
+        // major minor  #blocks  name
+        // 11        0    4097694 sr0        
+        List<String> lines = LernstickFileTools.readFile(
+                new File("/proc/partitions"));
+        Pattern pattern = Pattern.compile("\\p{Space}*\\p{Digit}+\\p{Space}+"
+                + "\\p{Digit}+\\p{Space}+\\p{Digit}+\\p{Space}+(\\p{Alnum}+)");
+        List<String> partitions = new ArrayList<>();
+        for (String line : lines) {
+            Matcher matcher = pattern.matcher(line);
+            if (matcher.matches()) {
+                LOGGER.log(Level.FINE,
+                        "line \"{0}\" matches pattern", line);
+                partitions.add(matcher.group(1));
+            } else {
+                LOGGER.log(Level.FINE,
+                        "line \"{0}\" does not match pattern", line);
+            }
+        }
+
         List<StorageDevice> storageDevices = new ArrayList<>();
 
-        // using libdbus-java here fails on Debian Live
-        // therefore we parse the command line output
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        // ! We must a local ProcessExecutor here, otherwise concurrent !
-        // ! calls to processExecutor.executeProcess() clean the stdout !
-        // ! we want to parse here...                                   !
-        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-        ProcessExecutor udisksExecutor = new ProcessExecutor();
-        int returnValue = udisksExecutor.executeProcess(true, true,
-                "udisks", "--enumerate");
-        if (returnValue != 0) {
-            throw new IOException("calling \"udisks --enumerate\" failed with "
-                    + "the following output: " + udisksExecutor.getOutput());
-        }
-        List<String> udisksObjectPaths = udisksExecutor.getStdOutList();
-        LOGGER.log(Level.INFO, "udisks --enumerate returned {0} paths",
-                udisksObjectPaths.size());
-        for (String path : udisksObjectPaths) {
-            LOGGER.log(Level.FINE, "checking path \"{0}\"", path);
+        for (String partition : partitions) {
+            LOGGER.log(Level.FINE, "checking partition \"{0}\"", partition);
 
             if (!includeBootDevice) {
-                String pathTrail = path.substring(path.lastIndexOf("/") + 1);
-                if (pathTrail.equals(bootStorageDevice.getDevice())) {
+                if (partition.equals(bootStorageDevice.getDevice())) {
                     // this is the boot device, skip it
                     LOGGER.log(Level.INFO,
-                            "skipping {0}, it''s the boot device", path);
+                            "skipping {0}, it''s the boot device", partition);
                     continue;
                 }
             }
 
-            StorageDevice storageDevice
-                    = getStorageDevice(path, includeHarddisks);
+            String pathPrefix = "/org/freedesktop/";
+            if (DbusTools.DBUS_VERSION == DbusTools.DbusVersion.V1) {
+                pathPrefix += "UDisks/devices/";
+            } else {
+                pathPrefix += "UDisks2/block_devices/";
+            }
+            StorageDevice storageDevice = getStorageDevice(
+                    pathPrefix + partition, includeHarddisks);
             if (storageDevice != null) {
                 if (storageDevice.getType() == StorageDevice.Type.OpticalDisc) {
                     LOGGER.log(Level.INFO,
                             "skipping optical disk {0}", storageDevice);
                 } else {
-                    LOGGER.log(Level.INFO, "adding {0}", path);
+                    LOGGER.log(Level.INFO, "adding {0}", partition);
                     storageDevices.add(storageDevice);
                 }
             }
@@ -4027,27 +4038,56 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private StorageDevice getStorageDevice(String path,
             boolean includeHarddisks) throws DBusException {
+
         LOGGER.log(Level.FINE, "path: {0}", path);
 
-        DBus.Properties deviceProperties = dbusSystemConnection.getRemoteObject(
-                "org.freedesktop.UDisks", path, DBus.Properties.class);
+        String busName;
+        Boolean isDrive = null;
+        Boolean isLoop = null;
+        long size;
+        String deviceFile;
+        if (DbusTools.DBUS_VERSION == DbusTools.DbusVersion.V1) {
+            busName = "org.freedesktop.UDisks";
+            String interfaceName = "org.freedesktop.UDisks";
+            DBus.Properties deviceProperties
+                    = dbusSystemConnection.getRemoteObject(
+                            busName, path, DBus.Properties.class);
+            isDrive = deviceProperties.Get(interfaceName, "DeviceIsDrive");
+            isLoop = deviceProperties.Get(interfaceName, "DeviceIsLinuxLoop");
+            UInt64 size64 = deviceProperties.Get(interfaceName, "DeviceSize");
+            size = size64.longValue();
+            deviceFile = deviceProperties.Get(interfaceName, "DeviceFile");
+        } else {
+            String prefix = "org.freedesktop.UDisks2.";
+            try {
+                List<String> interfaceNames = DbusTools.getInterfaceNames(path);
+                isDrive = !interfaceNames.contains(prefix + "Partition");
+                isLoop = interfaceNames.contains(prefix + "Loop");
+            } catch (IOException | SAXException |
+                    ParserConfigurationException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
+            }
+            size = DbusTools.getLongProperty(path, prefix + "Block", "Size");
+            // the device is a char array terminated with a 0 byte
+            // we need to remove the 0 byte!
+            byte[] array = DbusTools.getByteArrayProperty(path,
+                    prefix + "Block", "Device");
+            byte[] array2 = new byte[array.length - 1];
+            System.arraycopy(array, 0, array2, 0, array2.length);
+            deviceFile = new String(array2);
+        }
 
-        Boolean isDrive = deviceProperties.Get(
-                "org.freedesktop.UDisks", "DeviceIsDrive");
-        Boolean isLoop = deviceProperties.Get(
-                "org.freedesktop.UDisks", "DeviceIsLinuxLoop");
-        UInt64 size64 = deviceProperties.Get(
-                "org.freedesktop.UDisks", "DeviceSize");
-        long size = size64.longValue();
+        LOGGER.log(Level.FINE, "{0} isDrive: {1}", new Object[]{path, isDrive});
+        LOGGER.log(Level.FINE, "{0} isLoop: {1}", new Object[]{path, isLoop});
+        LOGGER.log(Level.FINE, "{0} size: {1}", new Object[]{path, size});
+        LOGGER.log(Level.FINE, "{0} deviceFile: {1}", 
+                new Object[]{path, deviceFile});
 
         // early return for non-drives
         // (partitions, loop devices, empty optical drives, ...)
         if ((!isDrive) || isLoop || (size <= 0)) {
             return null;
         }
-
-        String deviceFile = deviceProperties.Get(
-                "org.freedesktop.UDisks", "DeviceFile");
 
         StorageDevice storageDevice
                 = new StorageDevice(deviceFile.substring(5), systemSize);
@@ -7355,8 +7395,18 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         @Override
         public void run() {
+            String binaryName = null;
+            String parameter = null;
+            if (DbusTools.DBUS_VERSION == DbusTools.DBUS_VERSION.V1) {
+                binaryName = "udisks";
+                parameter = "--monitor";
+            } else {
+                binaryName = "udisksctl";
+                parameter = "monitor";
+
+            }
             executor.addPropertyChangeListener(DLCopy.this);
-            executor.executeProcess("udisks", "--monitor");
+            executor.executeProcess(binaryName, parameter);
         }
 
         public void stopMonitoring() {
