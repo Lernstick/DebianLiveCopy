@@ -5459,11 +5459,42 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         // NOTE 2:
         // "--print-reply" is needed in the call to dbus-send below to make
         // the call synchronous
-        int exitValue = processExecutor.executeProcess("dbus-send", "--system",
-                "--print-reply", "--dest=org.freedesktop.UDisks",
-                "/org/freedesktop/UDisks/devices/" + device.substring(5),
-                "org.freedesktop.UDisks.Device.PartitionTableCreate",
-                "string:mbr", "array:string:");
+        int exitValue;
+        if (DbusTools.DBUS_VERSION == DbusTools.DbusVersion.V1) {
+            exitValue = processExecutor.executeProcess("dbus-send",
+                    "--system", "--print-reply",
+                    "--dest=org.freedesktop.UDisks",
+                    "/org/freedesktop/UDisks/devices/" + device.substring(5),
+                    "org.freedesktop.UDisks.Device.PartitionTableCreate",
+                    "string:mbr", "array:string:");
+
+        } else {
+            // Even more fun with udisks2! :-)
+            // 
+            // Now whe have to call org.freedesktop.UDisks2.Block.Format
+            // This function has the signature 'sa{sv}'.
+            // dbus-send is unable to send messages with this signature.
+            // To quote the dbus-send manpage:
+            // ****************************
+            //  D-Bus supports more types than these, but dbus-send currently
+            //  does not. Also, dbus-send does not permit empty containers or
+            //  nested containers (e.g. arrays of variants).
+            // ****************************
+            // 
+            // creating a Java interface also fails, see here:
+            // https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=777241
+            //
+            // So we have to create a script that calls python.
+            // This utterly sucks but our options are limited...
+            exitValue = processExecutor.executeScript("python -c "
+                    + "'import dbus; "
+                    + "dbus.SystemBus().call_blocking("
+                    + "\"org.freedesktop.UDisks2\", "
+                    + "\"/org/freedesktop/UDisks2/block_devices/"
+                    + device.substring(5) + "\", "
+                    + "\"org.freedesktop.UDisks2.Block\", "
+                    + "\"Format\", \"sa{sv}\", (\"dos\", {}))'");
+        }
         if (exitValue != 0) {
             String errorMessage
                     = STRINGS.getString("Error_Creating_Partition_Table");
