@@ -170,7 +170,7 @@ public class DLCopy extends JFrame
     private final String DEBIAN_6_LIVE_SYSTEM_PATH = "/live/image";
     private final String DEBIAN_7_LIVE_SYSTEM_PATH = "/lib/live/mount/medium";
     private final String DEBIAN_LIVE_SYSTEM_PATH;
-    private final String SYSLINUX_MBR_PATH = "/usr/lib/syslinux/mbr.bin";
+    private final String SYSLINUX_MBR_PATH;
     private final DateFormat timeFormat;
 
     private enum State {
@@ -269,6 +269,18 @@ public class DLCopy extends JFrame
         globalLogger.setUseParentHandlers(false);
         LOGGER.info("*********** Starting dlcopy ***********");
 
+        // find path to mbr file
+        String wheezyMbrPath = "/usr/lib/syslinux/mbr.bin";
+        String jessieMbrPath = "/usr/lib/syslinux/mbr/mbr.bin";
+        if (new File(wheezyMbrPath).exists()) {
+            SYSLINUX_MBR_PATH = wheezyMbrPath;
+        } else if (new File(jessieMbrPath).exists()) {
+            SYSLINUX_MBR_PATH = jessieMbrPath;
+        } else {
+            LOGGER.severe("path to syslinux mbr.bin file not found");
+            SYSLINUX_MBR_PATH = null;
+        }
+        
         // prepare processExecutor to always use the POSIX locale
         Map<String, String> environment = new HashMap<>();
         environment.put("LC_ALL", "C");
@@ -3978,28 +3990,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             boolean includeHarddisks, boolean includeBootDevice)
             throws IOException, DBusException {
 
-        // parse /proc/partitions
-        //
-        // the format of the /proc/partitions file looks like this:
-        // major minor  #blocks  name
-        // 11        0    4097694 sr0        
-        List<String> lines = LernstickFileTools.readFile(
-                new File("/proc/partitions"));
-        Pattern pattern = Pattern.compile("\\p{Space}*\\p{Digit}+\\p{Space}+"
-                + "\\p{Digit}+\\p{Space}+\\p{Digit}+\\p{Space}+(\\p{Alnum}+)");
-        List<String> partitions = new ArrayList<>();
-        for (String line : lines) {
-            Matcher matcher = pattern.matcher(line);
-            if (matcher.matches()) {
-                LOGGER.log(Level.FINE,
-                        "line \"{0}\" matches pattern", line);
-                partitions.add(matcher.group(1));
-            } else {
-                LOGGER.log(Level.FINE,
-                        "line \"{0}\" does not match pattern", line);
-            }
-        }
-
+        List<String> partitions = DbusTools.getPartitions();
         List<StorageDevice> storageDevices = new ArrayList<>();
 
         for (String partition : partitions) {
@@ -4072,15 +4063,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // we need to remove the 0 byte!
             byte[] array = DbusTools.getByteArrayProperty(path,
                     prefix + "Block", "Device");
-            byte[] array2 = new byte[array.length - 1];
-            System.arraycopy(array, 0, array2, 0, array2.length);
-            deviceFile = new String(array2);
+            deviceFile = new String(DbusTools.removeNullByte(array));
         }
 
         LOGGER.log(Level.FINE, "{0} isDrive: {1}", new Object[]{path, isDrive});
         LOGGER.log(Level.FINE, "{0} isLoop: {1}", new Object[]{path, isLoop});
         LOGGER.log(Level.FINE, "{0} size: {1}", new Object[]{path, size});
-        LOGGER.log(Level.FINE, "{0} deviceFile: {1}", 
+        LOGGER.log(Level.FINE, "{0} deviceFile: {1}",
                 new Object[]{path, deviceFile});
 
         // early return for non-drives
@@ -5486,8 +5475,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             //
             // So we have to create a script that calls python.
             // This utterly sucks but our options are limited...
-            exitValue = processExecutor.executeScript("python -c "
-                    + "'import dbus; "
+            exitValue = processExecutor.executeScript(true, true,
+                    "python -c 'import dbus; "
                     + "dbus.SystemBus().call_blocking("
                     + "\"org.freedesktop.UDisks2\", "
                     + "\"/org/freedesktop/UDisks2/block_devices/"
@@ -5950,6 +5939,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             installIndeterminateProgressBar);
                 } catch (InterruptedException | IOException |
                         DBusException exception) {
+                    LOGGER.log(Level.WARNING, "", exception);
                     errorMessage = exception.getMessage();
                 }
 
@@ -7432,9 +7422,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 binaryName = "udisks";
                 parameter = "--monitor";
             } else {
-                binaryName = "udisksctl";
-                parameter = "monitor";
-
+                // TODO!
+//                binaryName = "udisksctl";
+//                parameter = "monitor";
             }
             executor.addPropertyChangeListener(DLCopy.this);
             executor.executeProcess(binaryName, parameter);
