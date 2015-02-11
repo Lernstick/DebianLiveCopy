@@ -280,7 +280,7 @@ public class DLCopy extends JFrame
             LOGGER.severe("path to syslinux mbr.bin file not found");
             SYSLINUX_MBR_PATH = null;
         }
-        
+
         // prepare processExecutor to always use the POSIX locale
         Map<String, String> environment = new HashMap<>();
         environment.put("LC_ALL", "C");
@@ -405,8 +405,8 @@ public class DLCopy extends JFrame
 
         tmpDirTextField.getDocument().addDocumentListener(this);
         if (bootStorageDevice.getType() == StorageDevice.Type.USBFlashDrive) {
-            Icon usb2usbIcon = new ImageIcon(
-                    getClass().getResource("/ch/fhnw/dlcopy/icons/usb2usb.png"));
+            Icon usb2usbIcon = new ImageIcon(getClass().getResource(
+                    "/ch/fhnw/dlcopy/icons/usb2usb.png"));
             infoLabel.setIcon(usb2usbIcon);
             installButton.setIcon(usb2usbIcon);
         }
@@ -3008,9 +3008,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         boolean selected = selectedIndices.length > 0;
         upgradeMoveUpButton.setEnabled(selected && (selectedIndices[0] != 0));
         if (selected) {
-            int lastSelectionIndex = selectedIndices[selectedIndices.length - 1];
+            int lastSelectionIndex
+                    = selectedIndices[selectedIndices.length - 1];
             int lastListIndex = upgradeOverwriteListModel.getSize() - 1;
-            upgradeMoveDownButton.setEnabled(lastSelectionIndex != lastListIndex);
+            upgradeMoveDownButton.setEnabled(
+                    lastSelectionIndex != lastListIndex);
         } else {
             upgradeMoveDownButton.setEnabled(false);
         }
@@ -3456,8 +3458,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         // restore original selection
         for (Object selectedValue : selectedValues) {
-            int selectedIndex = upgradeOverwriteListModel.indexOf(selectedValue);
-            upgradeOverwriteList.addSelectionInterval(selectedIndex, selectedIndex);
+            int selectedIndex
+                    = upgradeOverwriteListModel.indexOf(selectedValue);
+            upgradeOverwriteList.addSelectionInterval(
+                    selectedIndex, selectedIndex);
         }
     }
 
@@ -3543,10 +3547,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 }
 
                 for (int i = 0, size = listModel.getSize(); i < size; i++) {
-                    StorageDevice storageDevice = (StorageDevice) listModel.get(i);
+                    StorageDevice storageDevice
+                            = (StorageDevice) listModel.get(i);
                     if (storageDevice.getDevice().equals(device)) {
                         listModel.remove(i);
-                        LOGGER.log(Level.INFO, "removed from storage device list: {0}", device);
+                        LOGGER.log(Level.INFO,
+                                "removed from storage device list: {0}",
+                                device);
                         switch (state) {
                             case INSTALL_SELECTION:
                                 installStorageDeviceListChanged();
@@ -5058,7 +5065,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         CopyJob bootFilesCopyJob = null;
         if ((destinationExchangePartition != null)
                 && (storageDevice.isRemovable())) {
-            if ("fat32".equalsIgnoreCase(destinationExchangePartitionFileSystem)) {
+            if ("fat32".equalsIgnoreCase(
+                    destinationExchangePartitionFileSystem)) {
                 String destinationExchangePath
                         = destinationExchangePartition.mount().getMountPath();
                 bootFilesCopyJob = new CopyJob(
@@ -5239,7 +5247,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         Partition destinationExchangePartition
                 = (destinationExchangeDevice == null) ? null
                         : Partition.getPartitionFromDeviceAndNumber(
-                                destinationExchangeDevice.substring(5), systemSize);
+                                destinationExchangeDevice.substring(5),
+                                systemSize);
 
         Partition destinationDataPartition
                 = (destinationDataDevice == null) ? null
@@ -5414,8 +5423,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 break;
 
             default:
-                String errorMessage
-                        = "unsupported partitionState \"" + partitionState + '\"';
+                String errorMessage = "unsupported partitionState \""
+                        + partitionState + '\"';
                 LOGGER.severe(errorMessage);
                 throw new IOException(errorMessage);
         }
@@ -5594,8 +5603,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 break;
 
             default:
-                String errorMessage
-                        = "unsupported partitionState \"" + partitionState + '\"';
+                String errorMessage = "unsupported partitionState \""
+                        + partitionState + '\"';
                 LOGGER.log(Level.SEVERE, errorMessage);
                 throw new IOException(errorMessage);
         }
@@ -6934,7 +6943,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 String isoLabel = isoLabelTextField.getText();
 
                 String xorrisoScript = "#!/bin/sh\n"
-                        + "cd " + targetDirectory + '\n'
+                        + "cd \"" + targetDirectory + "\"\n"
                         + "xorriso -dev \"" + isoPath + "\" -volid LERNSTICK";
                 if (!(isoLabel.isEmpty())) {
                     xorrisoScript += " -application_id \"" + isoLabel + "\"";
@@ -7377,8 +7386,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     if (matcher.matches()) {
                         memFree += Long.valueOf(matcher.group(1)) * 1024;
                     } else {
-                        String warningMessage
-                                = "Could not parse meminfo line:\n" + meminfoLine;
+                        String warningMessage = "Could not parse meminfo line:\n"
+                                + meminfoLine;
                         LOGGER.warning(warningMessage);
                         throw new IOException(warningMessage);
                     }
