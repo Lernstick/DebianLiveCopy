@@ -1,12 +1,14 @@
 
-
-
 import ch.fhnw.util.ProcessExecutor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import org.freedesktop.DBus;
-import org.freedesktop.UDisks;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Set;
 import org.freedesktop.dbus.DBusConnection;
+import org.freedesktop.dbus.DBusInterface;
+import org.freedesktop.dbus.ObjectManager;
+import org.freedesktop.dbus.Variant;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 public class DbusTest implements PropertyChangeListener {
@@ -15,6 +17,25 @@ public class DbusTest implements PropertyChangeListener {
     private final static String UDISKS_REMOVED = "removed:";
 
     public DbusTest() {
+
+        String binaryName = null;
+        String parameter = null;
+        Runtime runtime = Runtime.getRuntime();
+        try {
+            runtime.exec("udisks -h");
+            binaryName = "udisks";
+            parameter = "--monitor";
+        } catch (IOException ex) {
+            try {
+                runtime.exec("udisksctl help");
+                binaryName = "udisksctl";
+                parameter = "monitor";
+            } catch (IOException ex1) {
+            }
+        }
+        final String finalBinaryName = binaryName;
+        final String finalParameter = parameter;
+
         // monitor udisks changes
         Thread udisksMonitorThread = new Thread() {
 
@@ -22,24 +43,27 @@ public class DbusTest implements PropertyChangeListener {
             public void run() {
                 ProcessExecutor executor = new ProcessExecutor();
                 executor.addPropertyChangeListener(DbusTest.this);
-                executor.executeProcess("udisks", "--monitor");
+                executor.executeProcess(finalBinaryName, finalParameter);
             }
         };
         udisksMonitorThread.start();
 
         try {
-            DBusConnection connection =
-                    DBusConnection.getConnection(DBusConnection.SYSTEM);
-            UDisks uDisks = (UDisks) connection.getRemoteObject(
-                    "org.freedesktop.UDisks", "/org/freedesktop/UDisks");
+            DBusConnection connection
+                    = DBusConnection.getConnection(DBusConnection.SYSTEM);
 
-            // test properties
-            DBus.Properties properties = connection.getRemoteObject(
-                    "org.freedesktop.UDisks",
-                    "/org/freedesktop/UDisks", DBus.Properties.class);
-            Boolean supportsLuksDevices = properties.Get(
-                    "org.freedesktop.UDisks", "SupportsLuksDevices");
-            System.out.println("SupportsLuksDevices: " + supportsLuksDevices);
+            // test method call
+            ObjectManager objectManager = connection.getRemoteObject(
+                    "org.freedesktop.UDisks2", "/org/freedesktop/UDisks2",
+                    ObjectManager.class);
+            Map<DBusInterface, Map<String, Map<String, Variant>>> managedObjects
+                    = objectManager.GetManagedObjects();
+            
+            // this fails!!!
+//            Set<DBusInterface> keySet = managedObjects.keySet();
+//            for (DBusInterface key : keySet) {
+//                System.out.println("key: " + key);
+//            }
 
         } catch (DBusException ex) {
             ex.printStackTrace();
@@ -59,7 +83,7 @@ public class DbusTest implements PropertyChangeListener {
                 System.out.println("path: \"" + path + '\"');
             } else if (line.startsWith(UDISKS_REMOVED)) {
                 String path = line.substring(UDISKS_REMOVED.length()).trim();
-                System.out.println("path: \"" + path + '\"');                
+                System.out.println("path: \"" + path + '\"');
             }
         }
     }

@@ -1,3 +1,9 @@
+dlcopy (201501201035-1) unstable; urgency=low
+
+  * fixed NPE
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Tue, 20 Jan 2015 10:35:00 +0100
+
 dlcopy (201410021908-1) unstable; urgency=low
 
   * fixed whiteout handling when creating an image
