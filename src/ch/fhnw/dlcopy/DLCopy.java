@@ -5042,11 +5042,16 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // our source medium has NO separate boot partition
             // copy everything but the squashfs file(s) to the boot
             // partition
+//            bootCopyJobSource = new Source(DEBIAN_LIVE_SYSTEM_PATH,
+//                    "^((?!live/filesystem.*\\.squashfs).)*$");
+//            systemCopyJobSource = new Source(DEBIAN_LIVE_SYSTEM_PATH,
+//                    "live/filesystem.*\\.squashfs");
             bootCopyJobSource = new Source(DEBIAN_LIVE_SYSTEM_PATH,
-                    "^((?!live/filesystem.*\\.squashfs).)*$");
+                    "boot.*|efi.*|isolinux.*|"
+                    + "live/initrd*|live/memtest|live/vmlinuz*|efi.img");
             // copy squashfs file(s) to the system partition
             systemCopyJobSource = new Source(DEBIAN_LIVE_SYSTEM_PATH,
-                    "live/filesystem.*\\.squashfs");
+                    "\\.disk.*|live/filesystem.*|md5sum.txt");
         } else {
             // our source medium already has a separate boot partition
             MountInfo bootMountInfo = bootBootPartition.mount();
