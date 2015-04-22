@@ -1,8 +1,8 @@
-dlcopy (201504221852-1) unstable; urgency=low
+dlcopy (201504221902-1) unstable; urgency=low
 
   * copy directory ".disk" to system partition
 
- -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 22 Apr 2015 18:50:38 +0200
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Wed, 22 Apr 2015 19:02:38 +0200
 
 dlcopy (201502071904-1) unstable; urgency=low
 

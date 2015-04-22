@@ -5048,7 +5048,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 //                    "live/filesystem.*\\.squashfs");
             bootCopyJobSource = new Source(DEBIAN_LIVE_SYSTEM_PATH,
                     "boot.*|efi.*|isolinux.*|"
-                    + "live/initrd*|live/memtest|live/vmlinuz*|efi.img");
+                    + "live/initrd.*|live/memtest|live/vmlinuz.*|efi.img");
             // copy squashfs file(s) to the system partition
             systemCopyJobSource = new Source(DEBIAN_LIVE_SYSTEM_PATH,
                     "\\.disk.*|live/filesystem.*|md5sum.txt");
