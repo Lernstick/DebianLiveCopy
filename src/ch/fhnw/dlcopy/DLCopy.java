@@ -6690,8 +6690,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
                 long dataPartitionOffset = dataPartition.getOffset();
                 long newSystemPartitionOffset = systemPartition.getOffset()
-                        + systemPartition.getSize()
-                        - (long) (systemSize * 1.01);
+                        + systemPartition.getSize() - systemSizeEnlarged;
                 // align newSystemPartitionOffset on a MiB boundary
                 newSystemPartitionOffset /= MEGA;
                 String dataPartitionStart
