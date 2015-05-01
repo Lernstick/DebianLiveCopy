@@ -1,9 +1,10 @@
-dlcopy (201505011719-1) unstable; urgency=low
+dlcopy (201505011759-1) unstable; urgency=low
 
   [ ronnystandtke ]
   * [a72b] umount data partition before trying to resize it
+  * [e6b9] fixed upgrade partition offset
 
- -- ronnystandtke <ronny.standtke@gmx.net>  Fri, 01 May 2015 17:19:53 +0200
+ -- ronnystandtke <ronny.standtke@gmx.net>  Fri, 01 May 2015 17:59:53 +0200
 
 dlcopy (201504221902-1) unstable; urgency=low
 
