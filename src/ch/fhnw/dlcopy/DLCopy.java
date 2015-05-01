@@ -6620,6 +6620,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
                 // TODO: search partition that needs to be shrinked
                 // (for now we simply assume it's the data partition)
+                if (!umount(dataPartition)) {
+                    return false;
+                }
                 String dataDevPath
                         = "/dev/" + dataPartition.getDeviceAndNumber();
                 int returnValue = processExecutor.executeProcess(true, true,
