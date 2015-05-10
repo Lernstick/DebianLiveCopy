@@ -5489,14 +5489,26 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             //
             // So we have to create a script that calls python.
             // This utterly sucks but our options are limited...
-            exitValue = processExecutor.executeScript(true, true,
-                    "python -c 'import dbus; "
-                    + "dbus.SystemBus().call_blocking("
-                    + "\"org.freedesktop.UDisks2\", "
-                    + "\"/org/freedesktop/UDisks2/block_devices/"
-                    + device.substring(5) + "\", "
-                    + "\"org.freedesktop.UDisks2.Block\", "
-                    + "\"Format\", \"sa{sv}\", (\"dos\", {}))'");
+            // exitValue = processExecutor.executeScript(true, true,
+            //         "python -c 'import dbus; "
+            //         + "dbus.SystemBus().call_blocking("
+            //         + "\"org.freedesktop.UDisks2\", "
+            //         + "\"/org/freedesktop/UDisks2/block_devices/"
+            //         + device.substring(5) + "\", "
+            //         + "\"org.freedesktop.UDisks2.Block\", "
+            //         + "\"Format\", \"sa{sv}\", (\"dos\", {}))'");
+            //
+            // It gets even better. The call above very often just fails with
+            // the following error message:
+            // Traceback (most recent call last):
+            // File "<string>", line 1, in <module>
+            // File "/usr/lib/python2.7/dist-packages/dbus/connection.py", line 651, in call_blocking message, timeout)
+            // dbus.exceptions.DBusException: org.freedesktop.UDisks2.Error.Failed: Error synchronizing after initial wipe: Timed out waiting for object
+            //
+            // So, for Debian 8 we retry with good old parted and hope for the
+            // best...
+            exitValue = processExecutor.executeProcess(true, true,
+                    "parted", "-s", device, "mklabel", "msdos");
         }
         if (exitValue != 0) {
             String errorMessage
