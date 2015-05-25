@@ -1,3 +1,9 @@
+dlcopy (201505251636-1) lernstick-8; urgency=medium
+
+  * support for udisks2 device changes
+
+ --  Ronny Standtke <ronny.standtke@gmx.net>  Mon, 25 May 2015 16:36:16 +0200
+
 dlcopy (201505102002-1) unstable; urgency=medium
 
   * use parted to create mbr
