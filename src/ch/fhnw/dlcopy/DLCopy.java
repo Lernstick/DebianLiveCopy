@@ -243,6 +243,9 @@ public class DLCopy extends JFrame
     private final static Pattern REMOVED_PATTERN = Pattern.compile(
             ".*: Removed (/org/freedesktop/UDisks2/block_devices/.*)");
 
+    private final StorageDeviceListUpdateDialogHandler storageDeviceListUpdateDialogHandler
+            = new StorageDeviceListUpdateDialogHandler(this);
+
     /**
      * Creates new form DLCopy
      *
@@ -403,7 +406,7 @@ public class DLCopy extends JFrame
 
         // do not show initial "{0}" placeholder
         String countString = STRINGS.getString("Selection_Count");
-        countString = MessageFormat.format(countString, 0);
+        countString = MessageFormat.format(countString, 0, 0);
         installSelectionCountLabel.setText(countString);
         upgradeSelectionCountLabel.setText(countString);
         repairSelectionCountLabel.setText(countString);
@@ -676,15 +679,6 @@ public class DLCopy extends JFrame
         }
 
         if (deviceAdded) {
-            // It has happened that "udisks --enumerate" returns a valid storage
-            // device but not yet its partitions. Therefore we give the system
-            // a little break when storage devices have been added.
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException ex) {
-                LOGGER.log(Level.SEVERE, "", ex);
-            }
-
             String addedPath;
             if (DbusTools.DBUS_VERSION == DbusTools.DbusVersion.V1) {
                 addedPath = line.substring(UDISKS_ADDED.length()).trim();
@@ -3828,7 +3822,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         String countString = STRINGS.getString("Selection_Count");
-        countString = MessageFormat.format(countString, selectionCount);
+        countString = MessageFormat.format(countString,
+                selectionCount, installStorageDeviceListModel.size());
         installSelectionCountLabel.setText(countString);
 
         exchangePartitionSizeLabel.setEnabled(exchange);
@@ -3909,7 +3904,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         int selectionCount = selectedIndices.length;
         String countString = STRINGS.getString("Selection_Count");
-        countString = MessageFormat.format(countString, selectionCount);
+        countString = MessageFormat.format(countString,
+                selectionCount, upgradeStorageDeviceListModel.size());
         upgradeSelectionCountLabel.setText(countString);
 
         // update nextButton state
@@ -3949,7 +3945,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         int selectionCount = selectedIndices.length;
         String countString = STRINGS.getString("Selection_Count");
-        countString = MessageFormat.format(countString, selectionCount);
+        countString = MessageFormat.format(countString,
+                selectionCount, repairStorageDeviceListModel.size());
         repairSelectionCountLabel.setText(countString);
 
         // update nextButton state
@@ -7487,61 +7484,44 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }
 
+    private StorageDevice getStorageDeviceAfterTimeout(
+            String path, boolean includeHardDisks) throws DBusException {
+        // It has happened that "udisks --enumerate" returns a valid storage
+        // device but not yet its partitions. Therefore we give the system
+        // a little break after storage devices have been added.
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+        }
+        StorageDevice storageDevice = getStorageDevice(path, includeHardDisks);
+        LOGGER.log(Level.INFO,
+                "storage device of path {0}: {1}",
+                new Object[]{path, storageDevice});
+        return storageDevice;
+    }
+
     private class InstallStorageDeviceAdder extends SwingWorker<Void, Void> {
 
-        private ModalDialogHandler dialogHandler;
+        private final String addedPath;
         private StorageDevice addedDevice;
-        private boolean parsed;
-        private final Lock lock = new ReentrantLock();
-        private final Condition parsedCondition = lock.newCondition();
 
-        public InstallStorageDeviceAdder(final String addedPath) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    lock.lock();
-                    try {
-                        addedDevice = getStorageDevice(addedPath,
-                                installShowHarddisksCheckBox.isSelected());
-                        LOGGER.log(Level.INFO,
-                                "storage device of path {0}: {1}",
-                                new Object[]{addedPath, addedDevice});
-                        if (addedDevice != null) {
-                            StorageDeviceListUpdateDialog dialog
-                                    = new StorageDeviceListUpdateDialog(
-                                            DLCopy.this);
-                            dialogHandler = new ModalDialogHandler(dialog);
-                            dialogHandler.show();
-                        }
-                        parsed = true;
-                        parsedCondition.signalAll();
-                    } catch (DBusException ex) {
-                        LOGGER.log(Level.SEVERE, "", ex);
-                    } finally {
-                        lock.unlock();
-                    }
-                }
-            });
+        public InstallStorageDeviceAdder(String addedPath) {
+            this.addedPath = addedPath;
+            storageDeviceListUpdateDialogHandler.addPath(addedPath);
         }
 
         @Override
         protected Void doInBackground() throws Exception {
-            lock.lock();
-            try {
-                while (!parsed) {
-                    parsedCondition.await();
-                }
-                if (addedDevice != null) {
-                    // nothing to do right now...
-                }
-            } finally {
-                lock.unlock();
-            }
+            addedDevice = getStorageDeviceAfterTimeout(addedPath,
+                    installShowHarddisksCheckBox.isSelected());
             return null;
         }
 
         @Override
         protected void done() {
+            storageDeviceListUpdateDialogHandler.removePath(addedPath);
+
             if (addedDevice == null) {
                 return;
             }
@@ -7554,7 +7534,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     installStorageDeviceListSelectionChanged();
                 }
             }
-            dialogHandler.hide();
         }
     }
 
@@ -7614,74 +7593,45 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private class UpgradeStorageDeviceAdder extends SwingWorker<Void, Void> {
 
-        private ModalDialogHandler dialogHandler;
+        private final String addedPath;
         private StorageDevice addedDevice;
-        private boolean parsed;
-        private final Lock lock = new ReentrantLock();
-        private final Condition parsedCondition = lock.newCondition();
 
-        public UpgradeStorageDeviceAdder(final String addedPath) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    lock.lock();
-                    try {
-                        addedDevice = getStorageDevice(addedPath,
-                                upgradeShowHarddisksCheckBox.isSelected());
-                        LOGGER.log(Level.INFO,
-                                "storage device of path {0}: {1}",
-                                new Object[]{addedPath, addedDevice});
-                        if (addedDevice != null) {
-                            StorageDeviceListUpdateDialog dialog
-                                    = new StorageDeviceListUpdateDialog(
-                                            DLCopy.this);
-                            dialogHandler = new ModalDialogHandler(dialog);
-                            dialogHandler.show();
-                        }
-                        parsed = true;
-                        parsedCondition.signalAll();
-                    } catch (DBusException ex) {
-                        LOGGER.log(Level.SEVERE, "", ex);
-                    } finally {
-                        lock.unlock();
-                    }
-                }
-            });
+        public UpgradeStorageDeviceAdder(String addedPath) {
+            this.addedPath = addedPath;
+            storageDeviceListUpdateDialogHandler.addPath(addedPath);
         }
 
         @Override
         protected Void doInBackground() throws Exception {
-            lock.lock();
-            try {
-                while (!parsed) {
-                    parsedCondition.await();
-                }
-                if (addedDevice != null) {
-                    // init all infos so that later rendering does not block
-                    // in Swing Event Thread
-                    addedDevice.getUpgradeVariant();
-                    // safety wait, otherwise the call below to getPartitions()
-                    // fails very often
-                    Thread.sleep(7000);
-                    for (Partition partition : addedDevice.getPartitions()) {
-                        try {
-                            if (partition.isPersistencePartition()) {
-                                partition.getUsedSpace(true);
-                            } else {
-                                partition.getUsedSpace(false);
-                            }
-                        } catch (Exception ignored) {
+
+            addedDevice = getStorageDeviceAfterTimeout(addedPath,
+                    upgradeShowHarddisksCheckBox.isSelected());
+
+            if (addedDevice != null) {
+                // init all infos so that later rendering does not block
+                // in Swing Event Thread
+                addedDevice.getUpgradeVariant();
+                // safety wait, otherwise the call below to getPartitions()
+                // fails very often
+                Thread.sleep(7000);
+                for (Partition partition : addedDevice.getPartitions()) {
+                    try {
+                        if (partition.isPersistencePartition()) {
+                            partition.getUsedSpace(true);
+                        } else {
+                            partition.getUsedSpace(false);
                         }
+                    } catch (Exception ignored) {
                     }
                 }
-            } finally {
-                lock.unlock();
             }
             return null;
         }
 
         @Override
         protected void done() {
+            storageDeviceListUpdateDialogHandler.removePath(addedPath);
+
             if (addedDevice == null) {
                 return;
             }
@@ -7694,7 +7644,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     upgradeStorageDeviceListSelectionChanged();
                 }
             }
-            dialogHandler.hide();
         }
     }
 
@@ -7770,70 +7719,41 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private class RepairStorageDeviceAdder extends SwingWorker<Void, Void> {
 
-        private ModalDialogHandler dialogHandler;
+        private final String addedPath;
         private StorageDevice addedDevice;
-        private boolean parsed;
-        private final Lock lock = new ReentrantLock();
-        private final Condition parsedCondition = lock.newCondition();
 
         public RepairStorageDeviceAdder(final String addedPath) {
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    lock.lock();
-                    try {
-                        addedDevice = getStorageDevice(addedPath,
-                                repairShowHarddisksCheckBox.isSelected());
-                        LOGGER.log(Level.INFO,
-                                "storage device of path {0}: {1}",
-                                new Object[]{addedPath, addedDevice});
-                        if (addedDevice != null) {
-                            StorageDeviceListUpdateDialog dialog
-                                    = new StorageDeviceListUpdateDialog(
-                                            DLCopy.this);
-                            dialogHandler = new ModalDialogHandler(dialog);
-                            dialogHandler.show();
-                        }
-                        parsed = true;
-                        parsedCondition.signalAll();
-                    } catch (DBusException ex) {
-                        LOGGER.log(Level.SEVERE, "", ex);
-                    } finally {
-                        lock.unlock();
-                    }
-                }
-            });
+            this.addedPath = addedPath;
+            storageDeviceListUpdateDialogHandler.addPath(addedPath);
         }
 
         @Override
         protected Void doInBackground() throws Exception {
-            lock.lock();
-            try {
-                while (!parsed) {
-                    parsedCondition.await();
-                }
-                if (addedDevice != null) {
-                    // init all infos so that later rendering does not block
-                    // in Swing Event Thread
-                    // safety wait, otherwise the call below to getPartitions()
-                    // fails very often
-                    Thread.sleep(7000);
-                    addedDevice.getUpgradeVariant();
-                    for (Partition partition : addedDevice.getPartitions()) {
-                        try {
-                            partition.getUsedSpace(false);
-                        } catch (Exception ignored) {
-                        }
+            
+            addedDevice = getStorageDeviceAfterTimeout(addedPath,
+                    repairShowHarddisksCheckBox.isSelected());
+
+            if (addedDevice != null) {
+                // init all infos so that later rendering does not block
+                // in Swing Event Thread
+                // safety wait, otherwise the call below to getPartitions()
+                // fails very often
+                Thread.sleep(7000);
+                addedDevice.getUpgradeVariant();
+                for (Partition partition : addedDevice.getPartitions()) {
+                    try {
+                        partition.getUsedSpace(false);
+                    } catch (Exception ignored) {
                     }
                 }
-            } finally {
-                lock.unlock();
             }
             return null;
         }
 
         @Override
         protected void done() {
+            storageDeviceListUpdateDialogHandler.removePath(addedPath);
+
             if (addedDevice == null) {
                 return;
             }
@@ -7846,7 +7766,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     repairStorageDeviceListSelectionChanged();
                 }
             }
-            dialogHandler.hide();
         }
     }
 

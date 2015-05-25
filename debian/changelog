@@ -1,3 +1,10 @@
+dlcopy (201505251920-1) lernstick-8; urgency=medium
+
+  * improved info about list selections
+  * improved dialog handling when updating device lists
+
+ --  Ronny Standtke <ronny.standtke@gmx.net>  Mon, 25 May 2015 19:20:34 +0200
+
 dlcopy (201505251636-1) lernstick-8; urgency=medium
 
   * support for udisks2 device changes
