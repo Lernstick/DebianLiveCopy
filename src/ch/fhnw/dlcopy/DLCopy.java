@@ -42,9 +42,6 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.*;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
@@ -5728,15 +5725,25 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         fileCopier.copy(exchangeCopyJob, bootFilesCopyJob,
                 copyJobsInfo.getBootCopyJob(), copyJobsInfo.getSystemCopyJob());
 
-        // hide boot files in exchange partition
-        // (only necessary with FAT32 on removable media...)
         if (bootFilesCopyJob != null) {
+            // The exchange partition is FAT32 on a removable media and
+            // therefore we copied the boot files not only to the boot partition
+            // but also to the exchange partition.
+
             if (destinationExchangePath == null) {
-                // user did not select to copy the exchange partition
+                // The user did not select to copy the exchange partition but it
+                // was already mounted in prepareBootAndSystemCopyJobs().
+                // Just get the reference here...
                 destinationExchangePath
                         = destinationExchangePartition.getMountPath();
             }
+
+            // hide boot files
             hideBootFiles(bootFilesCopyJob, destinationExchangePath);
+
+            // change data partition mode (if needed)
+            setDataPartitionMode(dataPartitionModeComboBox,
+                    destinationExchangePath);
         }
 
         // update GUI
@@ -7729,7 +7736,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         @Override
         protected Void doInBackground() throws Exception {
-            
+
             addedDevice = getStorageDeviceAfterTimeout(addedPath,
                     repairShowHarddisksCheckBox.isSelected());
 
