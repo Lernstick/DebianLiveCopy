@@ -3,7 +3,7 @@ dlcopy (201505281527-1) lernstick-8; urgency=medium
   * update data partition mode also on exchange partition
   * disable DTD validation so that working offline is possible
 
- -- Ronny Standtke <ronny@debian>  Thu, 28 May 2015 15:27:41 +0200
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 28 May 2015 15:27:41 +0200
 
 dlcopy (201505251920-1) lernstick-8; urgency=medium
 
