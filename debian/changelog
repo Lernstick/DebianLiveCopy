@@ -1,3 +1,9 @@
+dlcopy (201505292113-1) lernstick-8; urgency=medium
+
+  * added safety timeout
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 29 May 2015 21:13:55 +0200
+
 dlcopy (201505281527-1) lernstick-8; urgency=medium
 
   * update data partition mode also on exchange partition

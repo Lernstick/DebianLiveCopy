@@ -42,6 +42,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
@@ -4994,6 +4995,17 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     = STRINGS.getString("Error_Tune_Data_Partition");
             LOGGER.severe(errorMessage);
             throw new IOException(errorMessage);
+        }
+
+        // We have to wait a little for dbus to get to know the new filesystem.
+        // Otherwise we will sometimes get the following exception in the calls
+        // below:
+        // org.freedesktop.dbus.exceptions.DBusExecutionException:
+        // No such interface 'org.freedesktop.UDisks2.Filesystem'
+        try {
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
         }
 
         // create default persistence configuration file
