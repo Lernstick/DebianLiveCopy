@@ -1,3 +1,9 @@
+dlcopy (201506070120-1) lernstick-8; urgency=medium
+
+  * added mac volume icon to boot copy items
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 07 Jun 2015 01:20:16 +0200
+
 dlcopy (201505292113-1) lernstick-8; urgency=medium
 
   * added safety timeout
