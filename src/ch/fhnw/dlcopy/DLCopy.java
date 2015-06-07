@@ -5122,29 +5122,31 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private void hideBootFiles(CopyJob bootFilesCopyJob,
             String destinationExchangePath) {
-        Source bootFilesSource = bootFilesCopyJob.getSources()[0];
-        File bootFilesBaseDir = bootFilesSource.getBaseDirectory();
-        String[] bootFiles = bootFilesBaseDir.list();
 
-        // use FAT attributes to hide boot files in Windows
+        Source bootFilesSource = bootFilesCopyJob.getSources()[0];
+        String[] bootFiles = bootFilesSource.getBaseDirectory().list();
+
         if (bootFiles != null) {
+            // use FAT attributes to hide boot files in Windows
             for (String bootFile : bootFiles) {
                 processExecutor.executeProcess("fatattr", "+h",
                         destinationExchangePath + '/' + bootFile);
             }
-        }
 
-        // use ".hidden"-File to hide boot files in OS X
-        String osxHiddenFilePath = destinationExchangePath + "/.hidden";
-        try (FileWriter fileWriter = new FileWriter(osxHiddenFilePath)) {
-            String lineSeperator = System.lineSeparator();
-            for (String bootFile : bootFiles) {
-                fileWriter.write(bootFile + lineSeperator);
+            // use ".hidden" file to hide boot files in OS X
+            String osxHiddenFilePath = destinationExchangePath + "/.hidden";
+            try (FileWriter fileWriter = new FileWriter(osxHiddenFilePath)) {
+                String lineSeperator = System.lineSeparator();
+                for (String bootFile : bootFiles) {
+                    fileWriter.write(bootFile + lineSeperator);
+                }
+            } catch (IOException ex) {
+                LOGGER.log(Level.WARNING, "", ex);
             }
-        } catch (IOException ex) {
-            LOGGER.log(Level.WARNING, "", ex);
+            
+            // use FAT attributes again to hide OS X ".hidden" file in Windows
+            processExecutor.executeProcess("fatattr", "+h", osxHiddenFilePath);
         }
-        processExecutor.executeProcess("fatattr", "+h", osxHiddenFilePath);
     }
 
     private void copyToStorageDevice(FileCopier fileCopier,
