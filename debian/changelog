@@ -1,4 +1,4 @@
-dlcopy (201506170005-2) UNRELEASED; urgency=medium
+dlcopy (201506170055-1) UNRELEASED; urgency=medium
 
   * [d7da] made safety wait longer and added more logging
 
