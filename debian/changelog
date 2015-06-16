@@ -1,3 +1,10 @@
+dlcopy (201506170005-1) lernstick-8; urgency=medium
+
+  * [e49e] small code cleanup
+  * [025d] added another safety wait
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Wed, 17 Jun 2015 00:05:34 +0200
+
 dlcopy (201506070120-1) lernstick-8; urgency=medium
 
   * added mac volume icon to boot copy items
