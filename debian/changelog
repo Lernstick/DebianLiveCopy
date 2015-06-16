@@ -1,3 +1,9 @@
+dlcopy (201506170005-2) UNRELEASED; urgency=medium
+
+  * [d7da] made safety wait longer and added more logging
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Wed, 17 Jun 2015 00:55:13 +0200
+
 dlcopy (201506170005-1) lernstick-8; urgency=medium
 
   * [e49e] small code cleanup
