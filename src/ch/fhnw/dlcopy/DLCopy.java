@@ -5286,7 +5286,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         // org.freedesktop.dbus.exceptions.DBusExecutionException:
         // No such interface 'org.freedesktop.UDisks2.Filesystem'
         try {
-            TimeUnit.SECONDS.sleep(5);
+            // 5 seconds were not enough!
+            LOGGER.fine("starting safety wait...");
+            TimeUnit.SECONDS.sleep(7);
+            LOGGER.fine("...done with safety wait");
         } catch (InterruptedException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
         }
