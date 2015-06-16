@@ -1,4 +1,4 @@
-dlcopy (201506170055-1) UNRELEASED; urgency=medium
+dlcopy (201506170055-1) lernstick-8; urgency=medium
 
   * [d7da] made safety wait longer and added more logging
 
