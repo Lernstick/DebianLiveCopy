@@ -5280,6 +5280,17 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     indeterminatePanelName, indeterminateProgressBar);
         }
 
+        // We have to wait a little for dbus to get to know the new filesystems.
+        // Otherwise we will sometimes get the following exception in the calls
+        // below:
+        // org.freedesktop.dbus.exceptions.DBusExecutionException:
+        // No such interface 'org.freedesktop.UDisks2.Filesystem'
+        try {
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+        }
+        
         // the partitions now really exist
         // -> instantiate them as objects
         Partition destinationExchangePartition
