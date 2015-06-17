@@ -5957,6 +5957,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         @Override
         public void run() {
+            LogindInhibit inhibit = new LogindInhibit("Installing");
+
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -6078,6 +6080,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     toFront();
                 }
             });
+            inhibit.delete();
         }
 
         @Override
@@ -6152,11 +6155,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             implements PropertyChangeListener {
 
         private final FileCopier fileCopier = new FileCopier();
+        private LogindInhibit inhibit = null;
         private int selectionCount;
         private int currentDevice;
 
         @Override
         protected Boolean doInBackground() throws Exception {
+            inhibit = new LogindInhibit("Upgrading");
 
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
@@ -6300,6 +6305,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         @Override
         protected void done() {
+            if (inhibit != null)
+                inhibit.delete();
             setTitle(STRINGS.getString("DLCopy.title"));
             try {
                 if (get()) {
@@ -6923,9 +6930,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         private IsoStep step;
         private String isoPath;
+        private LogindInhibit inhibit = null;
 
         @Override
         protected Boolean doInBackground() throws Exception {
+            inhibit = new LogindInhibit("Creating ISO");
+
             try {
                 publish(STRINGS.getString("Copying_Files"));
                 String tmpDirectory = tmpDirTextField.getText();
@@ -7050,6 +7060,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         @Override
         protected void done() {
+            if (inhibit != null)
+                inhibit.delete();
+
             String message = null;
             try {
                 if (get()) {
