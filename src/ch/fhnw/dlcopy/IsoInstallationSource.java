@@ -62,14 +62,13 @@ public class IsoInstallationSource implements InstallationSource {
     @Override
     public Source getBootCopySource() {
         return new Source(rootPath,
-                    "boot.*|efi.*|isolinux.*|.VolumeIcon.icns|"
-                    + "live/initrd.*|live/memtest|live/vmlinuz.*|efi.img");
+                InstallationSource.BOOT_COPY_PATTERN);
     }
 
     @Override
     public Source getSystemCopySource() {
-        return new Source(rootPath, "md5sum.txt"
-                    + "\\.disk.*|live/filesystem.*|md5sum.txt");
+        return new Source(rootPath,
+                InstallationSource.SYSTEM_COPY_PATTERM);
     }
 
     @Override

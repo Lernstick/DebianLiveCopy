@@ -9,6 +9,13 @@ import org.freedesktop.dbus.exceptions.DBusException;
  * Encapsulate the source of an install or update operation
  */
 public interface InstallationSource {
+    public final static String BOOT_COPY_PATTERN
+            = "boot.*|efi.*|isolinux.*|.VolumeIcon.icns|"
+            + "live/initrd.*|live/memtest|live/vmlinuz.*|efi.img";
+    public final static String SYSTEM_COPY_PATTERM
+            = "md5sum.txt"
+            + "\\.disk.*|live/filesystem.*|md5sum.txt";
+    
     public  enum DataPartitionMode {
 
         ReadWrite, ReadOnly, NotUsed

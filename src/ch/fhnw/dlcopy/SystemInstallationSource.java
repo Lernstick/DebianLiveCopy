@@ -112,8 +112,7 @@ public final class SystemInstallationSource implements InstallationSource {
         } else {
             // shared medium - need to copy select targets explicitly
             return new Source(getSystemPath(),
-                    "boot.*|efi.*|isolinux.*|"
-                    + "live/initrd.*|live/memtest|live/vmlinuz.*|efi.img");
+                    InstallationSource.BOOT_COPY_PATTERN);
         }
     }
 
@@ -124,7 +123,7 @@ public final class SystemInstallationSource implements InstallationSource {
         } else {
             // shared medium - copy squashfs filesystem image only
             return new Source(getSystemPath(),
-                    "\\.disk.*|live/filesystem.*|md5sum.txt");
+                    InstallationSource.SYSTEM_COPY_PATTERM);
         }
     }
 
