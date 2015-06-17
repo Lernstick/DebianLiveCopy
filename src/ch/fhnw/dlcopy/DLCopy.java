@@ -5,6 +5,7 @@
  */
 package ch.fhnw.dlcopy;
 
+import ch.fhnw.dlcopy.InstallationSource.DataPartitionMode;
 import ch.fhnw.filecopier.CopyJob;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.filecopier.FileCopierPanel;
@@ -57,23 +58,11 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.table.TableColumn;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.OutputKeys;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import org.freedesktop.DBus;
 import org.freedesktop.dbus.DBusConnection;
 import org.freedesktop.dbus.UInt64;
 import org.freedesktop.dbus.exceptions.DBusException;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
@@ -101,10 +90,6 @@ public class DLCopy extends JFrame
      * the size of the boot partition (given in MiB)
      */
     public final static long BOOT_PARTITION_SIZE = 100;
-    /**
-     * the current Linux distribution
-     */
-    public static Distribution distribution;
 
     /**
      * the known partition states for a drive
@@ -130,20 +115,6 @@ public class DLCopy extends JFrame
         EXCHANGE
     }
 
-    /**
-     * the known supported Distributions
-     */
-    public enum Distribution {
-
-        /**
-         * Debian 6 (squeeze)
-         */
-        DEBIAN_6,
-        /**
-         * Debian 7 (wheezy)
-         */
-        DEBIAN_7
-    }
     private final static ProcessExecutor processExecutor
             = new ProcessExecutor();
     private final static FileFilter NO_HIDDEN_FILES_FILTER
@@ -165,11 +136,10 @@ public class DLCopy extends JFrame
     private final RepairStorageDeviceRenderer repairStorageDeviceRenderer;
     private long systemSize = -1;
     private long systemSizeEnlarged = -1;
-    private final String DEBIAN_6_LIVE_SYSTEM_PATH = "/live/image";
-    private final String DEBIAN_7_LIVE_SYSTEM_PATH = "/lib/live/mount/medium";
-    private final String DEBIAN_LIVE_SYSTEM_PATH;
-    private final String SYSLINUX_MBR_PATH;
     private final DateFormat timeFormat;
+
+    private final XmlBootConfigUtil xmlBootConfigUtil
+            = new XmlBootConfigUtil(processExecutor);
 
     private enum State {
 
@@ -184,12 +154,15 @@ public class DLCopy extends JFrame
 
         MKSQUASHFS, GENISOIMAGE
     }
-    private StorageDevice bootStorageDevice;
-    private Partition bootExchangePartition;
-    private Partition bootDataPartition;
-    private Partition bootBootPartition;
+
+    // Information about currently running system image
+    private InstallationSource systemSource;
+    private InstallationSource source = null;
+
     private boolean persistenceBoot;
     private boolean textFieldTriggeredSliderChange;
+
+    private String isoImagePath;
 
     private enum DebianLiveDistribution {
 
@@ -226,10 +199,6 @@ public class DLCopy extends JFrame
     private final static String AUTO_REMOVE_BACKUP = "autoRemoveBackup";
     private final static String UPGRADE_OVERWRITE_LIST = "upgradeOverwriteList";
 
-    private enum DataPartitionMode {
-
-        ReadWrite, ReadOnly, NotUsed
-    }
     private DataPartitionMode sourceDataPartitionMode;
     private final ResultsTableModel installationResultsTableModel;
     private final ResultsTableModel upgradeResultsTableModel;
@@ -275,18 +244,6 @@ public class DLCopy extends JFrame
         globalLogger.setUseParentHandlers(false);
         LOGGER.info("*********** Starting dlcopy ***********");
 
-        // find path to mbr file
-        String wheezyMbrPath = "/usr/lib/syslinux/mbr.bin";
-        String jessieMbrPath = "/usr/lib/syslinux/mbr/mbr.bin";
-        if (new File(wheezyMbrPath).exists()) {
-            SYSLINUX_MBR_PATH = wheezyMbrPath;
-        } else if (new File(jessieMbrPath).exists()) {
-            SYSLINUX_MBR_PATH = jessieMbrPath;
-        } else {
-            LOGGER.severe("path to syslinux mbr.bin file not found");
-            SYSLINUX_MBR_PATH = null;
-        }
-
         // prepare processExecutor to always use the POSIX locale
         Map<String, String> environment = new HashMap<>();
         environment.put("LC_ALL", "C");
@@ -312,6 +269,7 @@ public class DLCopy extends JFrame
 
         // parse command line arguments
         debianLiveDistribution = DebianLiveDistribution.Default;
+        isoImagePath = null;
         for (int i = 0, length = arguments.length; i < length; i++) {
 
             if (arguments[i].equals("--variant")
@@ -323,6 +281,9 @@ public class DLCopy extends JFrame
                     && (i != length - 1)
                     && (arguments[i + 1].equals("lernstick-pu"))) {
                 debianLiveDistribution = DebianLiveDistribution.lernstick_pu;
+            }
+            if (arguments[i].equals("--iso") && (i != length - 1)) {
+                isoImagePath = arguments[i + 1];
             }
         }
         if (LOGGER.isLoggable(Level.INFO)) {
@@ -351,27 +312,6 @@ public class DLCopy extends JFrame
                 systemPartitionLabel = "DEBIAN_LIVE";
         }
 
-        // determine system path
-        File testFile = new File(DEBIAN_6_LIVE_SYSTEM_PATH);
-        if (testFile.exists()) {
-            DEBIAN_LIVE_SYSTEM_PATH = DEBIAN_6_LIVE_SYSTEM_PATH;
-            LOGGER.log(Level.INFO, "Debian Live system path: {0}",
-                    DEBIAN_LIVE_SYSTEM_PATH);
-            distribution = Distribution.DEBIAN_6;
-        } else {
-            testFile = new File(DEBIAN_7_LIVE_SYSTEM_PATH);
-            if (testFile.exists()) {
-                DEBIAN_LIVE_SYSTEM_PATH = DEBIAN_7_LIVE_SYSTEM_PATH;
-                LOGGER.log(Level.INFO, "Debian Live system path: {0}",
-                        DEBIAN_LIVE_SYSTEM_PATH);
-                distribution = Distribution.DEBIAN_7;
-            } else {
-                DEBIAN_LIVE_SYSTEM_PATH = null;
-                LOGGER.severe("Debian Live system path not found!");
-                System.exit(-1);
-            }
-        }
-
         try {
             dbusSystemConnection = DBusConnection.getConnection(
                     DBusConnection.SYSTEM);
@@ -380,24 +320,14 @@ public class DLCopy extends JFrame
         }
 
         try {
-            bootStorageDevice = StorageTools.getSystemStorageDevice();
-
-            LOGGER.log(Level.INFO,
-                    "boot storage device: {0}", bootStorageDevice);
-
-            bootExchangePartition = bootStorageDevice.getExchangePartition();
-            LOGGER.log(Level.INFO,
-                    "boot exchange partition: {0}", bootExchangePartition);
-
-            bootDataPartition = bootStorageDevice.getDataPartition();
-            LOGGER.log(Level.INFO,
-                    "boot data partition: {0}", bootDataPartition);
-
-            bootBootPartition = bootStorageDevice.getBootPartition();
-            LOGGER.log(Level.INFO,
-                    "boot boot partition: {0}", bootBootPartition);
+            systemSource = new SystemInstallationSource(xmlBootConfigUtil);
+            source = systemSource;
         } catch (IOException | DBusException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
+
+        }
+        if (isoImagePath != null) {
+            source = new IsoInstallationSource(isoImagePath, systemSource);
         }
 
         initComponents();
@@ -410,7 +340,7 @@ public class DLCopy extends JFrame
         repairSelectionCountLabel.setText(countString);
 
         tmpDirTextField.getDocument().addDocumentListener(this);
-        if (bootStorageDevice.getType() == StorageDevice.Type.USBFlashDrive) {
+        if (StorageDevice.Type.USBFlashDrive == source.getDeviceType()) {
             Icon usb2usbIcon = new ImageIcon(getClass().getResource(
                     "/ch/fhnw/dlcopy/icons/usb2usb.png"));
             infoLabel.setIcon(usb2usbIcon);
@@ -448,13 +378,13 @@ public class DLCopy extends JFrame
         upgradeSelectionHeaderLabel.setText(text);
 
         // detect if system has an exchange partition
-        if (bootExchangePartition == null) {
+        if (!source.hasExchangePartition()) {
             copyExchangeCheckBox.setEnabled(false);
             copyExchangeCheckBox.setToolTipText(
                     STRINGS.getString("No_Exchange_Partition"));
         }
 
-        if (bootDataPartition != null) {
+        if (source.getDataPartitionMode() != DataPartitionMode.NotUsed) {
             final String CMD_LINE_FILENAME = "/proc/cmdline";
             try {
                 String cmdLine = readOneLineFile(new File(CMD_LINE_FILENAME));
@@ -469,8 +399,7 @@ public class DLCopy extends JFrame
             copyPersistenceCheckBox.setEnabled(true);
 
             String checkBoxText = STRINGS.getString("Copy_Data_Partition")
-                    + " (" + LernstickFileTools.getDataVolumeString(
-                            bootDataPartition.getUsedSpace(false), 1) + ')';
+                    + " (" + LernstickFileTools.getDataVolumeString(source.getDataPartition().getUsedSpace(false), 1) + ')';
             copyPersistenceCheckBox.setText(checkBoxText);
 
         } else {
@@ -557,23 +486,6 @@ public class DLCopy extends JFrame
                 new DefaultComboBoxModel(dataPartitionModes));
         isoDataPartitionModeComboBox.setModel(
                 new DefaultComboBoxModel(dataPartitionModes));
-
-        // determine mode of data partition
-        if (bootBootPartition == null) {
-            sourceDataPartitionMode
-                    = getDataPartitionMode(DEBIAN_LIVE_SYSTEM_PATH);
-        } else {
-            try {
-                MountInfo bootMountInfo = bootBootPartition.mount();
-                sourceDataPartitionMode
-                        = getDataPartitionMode(bootMountInfo.getMountPath());
-                if (!bootMountInfo.alreadyMounted()) {
-                    bootBootPartition.umount();
-                }
-            } catch (DBusException ex) {
-                LOGGER.log(Level.WARNING, "", ex);
-            }
-        }
 
         if (sourceDataPartitionMode != null) {
             String selectedItem = null;
@@ -3212,71 +3124,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }
 
-    private Node getPersistenceNode(org.w3c.dom.Document xmlBootDocument) {
-        Node configsNode
-                = xmlBootDocument.getElementsByTagName("configs").item(0);
-        NodeList childNodes = configsNode.getChildNodes();
-        for (int i = 0, length = childNodes.getLength(); i < length; i++) {
-            Node childNode = childNodes.item(i);
-            String childNodeName = childNode.getNodeName();
-            LOGGER.log(Level.FINER, "childNodeName: \"{0}\"", childNodeName);
-            if ("config".equals(childNodeName)) {
-                Node idNode = childNode.getAttributes().getNamedItem("id");
-                String idNodeValue = idNode.getNodeValue();
-                LOGGER.log(Level.FINER, "idNodeValue: \"{0}\"", idNodeValue);
-                if ("persistence".equals(idNodeValue)) {
-                    return childNode;
-                }
-            }
-        }
-        return null;
-    }
-
-    private DataPartitionMode getDataPartitionMode(String imagePath) {
-        try {
-            File xmlBootConfigFile = getXmlBootConfigFile(new File(imagePath));
-            if (xmlBootConfigFile == null) {
-                return null;
-            }
-            org.w3c.dom.Document xmlBootDocument
-                    = parseXmlFile(xmlBootConfigFile);
-            xmlBootDocument.getDocumentElement().normalize();
-            Node persistenceNode = getPersistenceNode(xmlBootDocument);
-            NodeList childNodes = persistenceNode.getChildNodes();
-            for (int i = 0, length = childNodes.getLength(); i < length; i++) {
-                Node childNode = childNodes.item(i);
-                String childNodeName = childNode.getNodeName();
-                LOGGER.log(Level.FINER,
-                        "childNodeName: \"{0}\"", childNodeName);
-                if ("option".equals(childNodeName)) {
-                    NamedNodeMap optionAttributes = childNode.getAttributes();
-                    Node selectedNode
-                            = optionAttributes.getNamedItem("selected");
-                    if (selectedNode != null) {
-                        Node idNode = optionAttributes.getNamedItem("id");
-                        String selectedPersistence = idNode.getNodeValue();
-                        LOGGER.log(Level.FINER, "selectedPersistence: \"{0}\"",
-                                selectedPersistence);
-                        switch (selectedPersistence) {
-                            case "rw":
-                                return DataPartitionMode.ReadWrite;
-                            case "ro":
-                                return DataPartitionMode.ReadOnly;
-                            case "no":
-                                return DataPartitionMode.NotUsed;
-                        }
-                    }
-                }
-            }
-        } catch (ParserConfigurationException | SAXException | IOException ex) {
-            LOGGER.log(Level.WARNING, "could not parse xmlboot config", ex);
-        }
-        LOGGER.warning("could not determine data partition mode");
-        return null;
-    }
-
     private void setDataPartitionMode(JComboBox comboBox, String imagePath) {
-
         DataPartitionMode destinationDataPartitionMode = null;
         String dstString = (String) comboBox.getSelectedItem();
         if (dstString.equals(STRINGS.getString("Not_Used"))) {
@@ -3294,129 +3142,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // nothing to do here...
             return;
         }
-
-        // xmlboot
-        try {
-            File xmlBootConfigFile = getXmlBootConfigFile(new File(imagePath));
-            if (xmlBootConfigFile == null) {
-                LOGGER.warning("xmlBootConfigFile == null");
-                return;
-            }
-            org.w3c.dom.Document xmlBootDocument
-                    = parseXmlFile(xmlBootConfigFile);
-            xmlBootDocument.getDocumentElement().normalize();
-            Node persistenceNode = getPersistenceNode(xmlBootDocument);
-            NodeList childNodes = persistenceNode.getChildNodes();
-            for (int i = 0, length = childNodes.getLength(); i < length; i++) {
-                Node childNode = childNodes.item(i);
-                String childNodeName = childNode.getNodeName();
-                LOGGER.log(Level.FINER,
-                        "childNodeName: \"{0}\"", childNodeName);
-                if ("option".equals(childNodeName)) {
-                    NamedNodeMap optionAttributes = childNode.getAttributes();
-                    Node idNode = optionAttributes.getNamedItem("id");
-                    String id = idNode.getNodeValue();
-                    LOGGER.log(Level.FINER, "id: \"{0}\"", id);
-                    switch (id) {
-                        case "rw":
-                            if (destinationDataPartitionMode
-                                    == DataPartitionMode.ReadWrite) {
-                                selectNode(childNode);
-                            } else {
-                                unselectNode(childNode);
-                            }
-                            break;
-                        case "ro":
-                            if (destinationDataPartitionMode
-                                    == DataPartitionMode.ReadOnly) {
-                                selectNode(childNode);
-                            } else {
-                                unselectNode(childNode);
-                            }
-                            break;
-                        case "no":
-                            if (destinationDataPartitionMode
-                                    == DataPartitionMode.NotUsed) {
-                                selectNode(childNode);
-                            } else {
-                                unselectNode(childNode);
-                            }
-                            break;
-                    }
-                }
-            }
-
-            TransformerFactory transformerFactory
-                    = TransformerFactory.newInstance();
-            Transformer transformer = transformerFactory.newTransformer();
-            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-            DOMSource source = new DOMSource(xmlBootDocument);
-            StreamResult result = new StreamResult(xmlBootConfigFile);
-            transformer.transform(source, result);
-
-        } catch (ParserConfigurationException | SAXException | IOException ex) {
-            LOGGER.log(Level.WARNING, "could not parse xmlboot config", ex);
-        } catch (TransformerException ex) {
-            LOGGER.log(Level.WARNING, "could not save xmlboot config", ex);
-        }
-
-        // grub
-        String persistenceString = "";
-        switch (destinationDataPartitionMode) {
-            case ReadOnly:
-                persistenceString = "persistence persistence-read-only";
-                break;
-
-            case ReadWrite:
-                persistenceString = "persistence";
-                break;
-
-            case NotUsed:
-                break;
-
-            default:
-                LOGGER.log(Level.WARNING, "unsupported dataPartitionMode: {0}",
-                        destinationDataPartitionMode);
-        }
-        processExecutor.executeProcess("sed", "-i", "-e",
-                "s|set PERSISTENCE=.*|set PERSISTENCE=\"" + persistenceString
-                + "\"|1", imagePath + "/boot/grub/grub.cfg");
-    }
-
-    private void selectNode(Node node) {
-        Element element = (Element) node;
-        element.setAttribute("selected", "true");
-    }
-
-    private void unselectNode(Node node) {
-        Element element = (Element) node;
-        element.removeAttribute("selected");
-    }
-
-    private File getXmlBootConfigFile(File imageDirectory) {
-        File configFile = new File(imageDirectory, "isolinux/xmlboot.config");
-        if (configFile.exists()) {
-            LOGGER.log(Level.INFO, "xmlboot config file: {0}", configFile);
-            return configFile;
-        } else {
-            configFile = new File(imageDirectory, "syslinux/xmlboot.config");
-            if (configFile.exists()) {
-                LOGGER.log(Level.INFO, "xmlboot config file: {0}", configFile);
-                return configFile;
-            } else {
-                LOGGER.warning("xmlboot config file not found!");
-                return null;
-            }
-        }
-    }
-
-    private org.w3c.dom.Document parseXmlFile(File file)
-            throws ParserConfigurationException, SAXException, IOException {
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setIgnoringComments(true);
-        factory.setIgnoringElementContentWhitespace(true);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        return builder.parse(file);
+        xmlBootConfigUtil.setDataPartitionMode(destinationDataPartitionMode,
+                imagePath);
     }
 
     private void resetNextButton() {
@@ -3772,8 +3499,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         new InstallStorageDeviceListUpdater().execute();
 
         // update copyExchangeCheckBox
-        if (bootExchangePartition != null) {
-            long exchangeSize = bootExchangePartition.getUsedSpace(false);
+        if (source.hasExchangePartition()) {
+            long exchangeSize = source.getExchangePartition()
+                    .getUsedSpace(false);
             String dataVolumeString
                     = LernstickFileTools.getDataVolumeString(exchangeSize, 1);
             copyExchangeCheckBox.setText(
@@ -3851,7 +3579,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         exchangePartitionFileSystemLabel.setEnabled(exchange);
         exchangePartitionFileSystemComboBox.setEnabled(exchange);
         copyExchangeCheckBox.setEnabled(exchange
-                && (bootExchangePartition != null));
+                && (source.hasExchangePartition()));
 
         // enable nextButton?
         updateInstallNextButton();
@@ -4024,7 +3752,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             LOGGER.log(Level.FINE, "checking partition \"{0}\"", partition);
 
             if (!includeBootDevice) {
-                if (partition.equals(bootStorageDevice.getDevice())) {
+                if (partition.equals(systemSource.getDeviceName())) {
                     // this is the boot device, skip it
                     LOGGER.log(Level.INFO,
                             "skipping {0}, it''s the boot device", partition);
@@ -4517,8 +4245,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             LOGGER.severe(errorMessage);
             throw new IOException(errorMessage);
         }
-        exitValue = processExecutor.executeScript(
-                "cat " + SYSLINUX_MBR_PATH + " > " + device + '\n'
+        exitValue = processExecutor.executeScript("cat " + source.getMbrPath() + " > " + device + '\n'
                 + "sync");
         if (exitValue != 0) {
             String errorMessage = "could not copy syslinux Master Boot Record "
@@ -4746,7 +4473,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         // check that target partition is large enough
-        long sourceExchangeSize = bootExchangePartition.getUsedSpace(false);
+        long sourceExchangeSize = source.getExchangePartition()
+                .getUsedSpace(false);
         long targetExchangeSize
                 = (long) partitions.getExchangeMB() * (long) MEGA;
         if (sourceExchangeSize > targetExchangeSize) {
@@ -4763,7 +4491,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private boolean isUnmountedPersistenceAvailable()
             throws IOException, DBusException {
         // check that persistence is available
-        if (bootDataPartition == null) {
+        if (DataPartitionMode.NotUsed == source.getDataPartitionMode()) {
             JOptionPane.showMessageDialog(this,
                     STRINGS.getString("Error_No_Persistence"),
                     STRINGS.getString("Error"), JOptionPane.ERROR_MESSAGE);
@@ -4772,7 +4500,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         // ensure that the persistence partition is not mounted read-write
         String dataPartitionDevice
-                = "/dev/" + bootDataPartition.getDeviceAndNumber();
+                = "/dev/" + source.getDataPartition().getDeviceAndNumber();
         boolean mountedReadWrite = false;
         List<String> mounts = LernstickFileTools.readFile(
                 new File("/proc/mounts"));
@@ -4809,7 +4537,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         STRINGS.getString("Warning"), JOptionPane.YES_NO_OPTION,
                         JOptionPane.WARNING_MESSAGE);
                 if (returnValue == JOptionPane.YES_OPTION) {
-                    bootDataPartition.umount();
+                    source.getDataPartition().umount();
                     return isUnmountedPersistenceAvailable();
                 } else {
                     return false;
@@ -4840,7 +4568,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         // check that target partition is large enough
-        long persistenceSize = bootDataPartition.getUsedSpace(false);
+        long persistenceSize = source.getDataPartition()
+                .getUsedSpace(false);
         long targetPersistenceSize
                 = (long) partitions.getPersistenceMB() * (long) MEGA;
         if (persistenceSize > targetPersistenceSize) {
@@ -5067,30 +4796,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         String destinationSystemPath
                 = destinationSystemPartition.mount().getMountPath();
         boolean sourceBootTempMounted = false;
-        Source bootCopyJobSource;
-        Source systemCopyJobSource;
-        if (bootBootPartition == null) {
-            // our source medium has NO separate boot partition
-            // copy everything but the squashfs file(s) to the boot
-            // partition
-//            bootCopyJobSource = new Source(DEBIAN_LIVE_SYSTEM_PATH,
-//                    "^((?!live/filesystem.*\\.squashfs).)*$");
-//            systemCopyJobSource = new Source(DEBIAN_LIVE_SYSTEM_PATH,
-//                    "live/filesystem.*\\.squashfs");
-            bootCopyJobSource = new Source(DEBIAN_LIVE_SYSTEM_PATH,
-                    "boot.*|efi.*|isolinux.*|.VolumeIcon.icns|"
-                    + "live/initrd.*|live/memtest|live/vmlinuz.*|efi.img");
-            // copy squashfs file(s) to the system partition
-            systemCopyJobSource = new Source(DEBIAN_LIVE_SYSTEM_PATH,
-                    "\\.disk.*|live/filesystem.*|md5sum.txt");
-        } else {
-            // our source medium already has a separate boot partition
-            MountInfo bootMountInfo = bootBootPartition.mount();
-            String bootPath = bootMountInfo.getMountPath();
-            sourceBootTempMounted = bootMountInfo.alreadyMounted();
-            bootCopyJobSource = new Source(bootPath, ".*");
-            systemCopyJobSource = new Source(DEBIAN_LIVE_SYSTEM_PATH, ".*");
-        }
+
+        Source bootCopyJobSource = source.getBootCopySource();
+        Source systemCopyJobSource = source.getSystemCopySource();
 
         CopyJob bootCopyJob = new CopyJob(
                 new Source[]{bootCopyJobSource},
@@ -5143,7 +4851,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             } catch (IOException ex) {
                 LOGGER.log(Level.WARNING, "", ex);
             }
-            
+
             // use FAT attributes again to hide OS X ".hidden" file in Windows
             processExecutor.executeProcess("fatattr", "+h", osxHiddenFilePath);
         }
@@ -5293,7 +5001,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         } catch (InterruptedException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
         }
-        
+
         // the partitions now really exist
         // -> instantiate them as objects
         Partition destinationExchangePartition
@@ -5718,14 +5426,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         String destinationExchangePath = null;
         CopyJob exchangeCopyJob = null;
         if (copyExchangeCheckBox.isSelected()) {
-            MountInfo mountInfo = bootExchangePartition.mount();
-            String sourceExchangePath = mountInfo.getMountPath();
-            sourceExchangeTempMounted = !mountInfo.alreadyMounted();
             destinationExchangePath
                     = destinationExchangePartition.mount().getMountPath();
 
             exchangeCopyJob = new CopyJob(
-                    new Source[]{new Source(sourceExchangePath, ".*")},
+                    new Source[]{source.getExchangeCopySource()},
                     new String[]{destinationExchangePath});
         }
 
@@ -5784,15 +5489,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
         });
 
-        // umount temporarily mounted partitions
-        if (sourceExchangeTempMounted) {
-            bootExchangePartition.umount();
-        }
+        source.unmountTmpPartitions();
         if (destinationExchangePath != null) {
             destinationExchangePartition.umount();
-        }
-        if (copyJobsInfo.isBootTempMounted()) {
-            bootBootPartition.umount();
         }
 
         String destinationBootPath = copyJobsInfo.getDestinationBootPath();
@@ -5812,7 +5511,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         if (copyPersistenceCheckBox.isSelected()) {
 
             // mount persistence source
-            MountInfo sourceDataMountInfo = bootDataPartition.mount();
+            MountInfo sourceDataMountInfo
+                    = source.getDataPartition().mount();
             String sourceDataPath = sourceDataMountInfo.getMountPath();
             if (sourceDataPath == null) {
                 String errorMessage = "could not mount source data partition";
@@ -5847,7 +5547,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // umount both source and destination persistence partitions
             //  (only if there were not mounted before)
             if (!sourceDataMountInfo.alreadyMounted()) {
-                bootDataPartition.umount();
+                source.getDataPartition().umount();
             }
             if (!destinationDataMountInfo.alreadyMounted()) {
                 destinationDataPartition.umount();
@@ -6053,7 +5753,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 public void run() {
                     setTitle(STRINGS.getString("DLCopy.title"));
                     String key;
-                    switch (bootStorageDevice.getType()) {
+                    switch (source.getDeviceType()) {
                         case HardDrive:
                         case OpticalDisc:
                             key = "Done_Message_From_Non_Removable_Boot_Device";
@@ -6304,7 +6004,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             try {
                 if (get()) {
                     String key;
-                    switch (bootStorageDevice.getType()) {
+                    switch (source.getDeviceType()) {
                         case HardDrive:
                         case OpticalDisc:
                             key = "Upgrade_Done_From_Non_Removable_Device";
@@ -6907,9 +6607,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             makeBootable(devicePath, bootPartition);
 
             // cleanup
-            if (copyJobsInfo.isBootTempMounted()) {
-                bootBootPartition.umount();
-            }
+            source.unmountTmpPartitions();
             if (!umount(bootPartition)) {
                 return false;
             }
@@ -6938,26 +6636,22 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 new File(targetDirectory).mkdirs();
 
                 // copy boot files
-                if (bootBootPartition == null) {
+                if (!source.hasBootPartition()) {
                     // legacy system without separate boot partition
                     String copyScript = "#!/bin/sh" + '\n'
-                            + "cd " + DEBIAN_LIVE_SYSTEM_PATH + '\n'
+                            + "cd " + source.getSystemPath() + '\n'
                             + "find -not -name filesystem*.squashfs | cpio -pvdum \""
                             + targetDirectory + "\"";
                     processExecutor.executeScript(copyScript);
 
                 } else {
                     // system with a separate boot partition
-                    MountInfo bootMountInfo = bootBootPartition.mount();
-                    String bootPath = bootMountInfo.getMountPath();
                     CopyJob bootCopyJob = new CopyJob(
-                            new Source[]{new Source(bootPath, ".*")},
+                            new Source[]{source.getBootCopySource()},
                             new String[]{targetDirectory});
                     FileCopier fileCopier = new FileCopier();
                     fileCopier.copy(bootCopyJob);
-                    if (!bootMountInfo.alreadyMounted()) {
-                        bootBootPartition.umount();
-                    }
+                    source.unmountTmpPartitions();
                 }
 
                 if (systemMediumRadioButton.isSelected()) {
@@ -7156,7 +6850,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     return name.endsWith(".squashfs");
                 }
             };
-            File liveDir = new File(DEBIAN_LIVE_SYSTEM_PATH, "live");
+            File liveDir = new File(source.getSystemPath(), "live");
             File[] squashFileSystems = liveDir.listFiles(squashFsFilter);
 
             // mount all squashfs read-only in temporary directories
@@ -7172,7 +6866,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
 
             // mount persistence
-            MountInfo dataMountInfo = bootDataPartition.mount();
+            MountInfo dataMountInfo = source.getDataPartition().mount();
             String dataPartitionPath = dataMountInfo.getMountPath();
 
             // union base image with persistence
@@ -7262,7 +6956,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // umount all partitions
             umount(cowPath);
             if (!dataMountInfo.alreadyMounted()) {
-                bootDataPartition.umount();
+                source.getDataPartition().umount();
             }
             for (String readOnlyMountPoint : readOnlyMountPoints) {
                 umount(readOnlyMountPoint);

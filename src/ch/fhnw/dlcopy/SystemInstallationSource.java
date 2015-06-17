@@ -1,0 +1,203 @@
+package ch.fhnw.dlcopy;
+
+import ch.fhnw.filecopier.Source;
+import ch.fhnw.util.MountInfo;
+import ch.fhnw.util.Partition;
+import ch.fhnw.util.StorageDevice;
+import ch.fhnw.util.StorageTools;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import org.freedesktop.dbus.exceptions.DBusException;
+
+/**
+ * Install from the currently running live system
+ */
+public final class SystemInstallationSource implements InstallationSource {
+    private final static Logger LOGGER
+            = Logger.getLogger(SystemInstallationSource.class.getName());
+    
+    private final DebianLiveVersion runningVersion;
+    private final InstallationSource.DataPartitionMode dataPartitionMode;
+    private final StorageDevice storageDevice;
+    private final Partition exchangePartition;
+    private final Partition dataPartition;
+    private final Partition bootPartition;
+    
+    private String bootPath = null;
+    private boolean isBootTmpMounted = false;
+    
+    private String exchangePath = null;
+    private boolean isExchangeTmpMounted = false;
+    
+    public SystemInstallationSource(XmlBootConfigUtil xmlBootConfigUtil)
+            throws DBusException, IOException {
+        runningVersion = DebianLiveVersion.getRunningVersion();
+        if (runningVersion == null) {
+            throw new IllegalArgumentException(
+                    "Unable to detect running system version");
+        }
+        storageDevice = StorageTools.getSystemStorageDevice();
+
+        LOGGER.log(Level.INFO,
+                "boot storage device: {0}", storageDevice);
+
+        exchangePartition = storageDevice.getExchangePartition();
+        LOGGER.log(Level.INFO,
+                "boot exchange partition: {0}", exchangePartition);
+
+        dataPartition = storageDevice.getDataPartition();
+        LOGGER.log(Level.INFO,
+                "boot data partition: {0}", dataPartition);
+
+        bootPartition = storageDevice.getBootPartition();
+        LOGGER.log(Level.INFO,
+                "boot boot partition: {0}", bootPartition);
+
+        // determine mode of data partition
+        if (hasBootPartition()) {
+            MountInfo bootMountInfo = bootPartition.mount();
+            dataPartitionMode
+                    = xmlBootConfigUtil.getDataPartitionMode(
+                            bootMountInfo.getMountPath());
+            if (!bootMountInfo.alreadyMounted()) {
+                bootPartition.umount();
+            }
+        } else {
+            dataPartitionMode
+                    = xmlBootConfigUtil.getDataPartitionMode(getSystemPath());
+        }
+    }
+
+    @Override
+    public String getDeviceName() {
+        return storageDevice.getDevice();
+    }
+
+    @Override
+    public StorageDevice.Type getDeviceType() {
+        return storageDevice.getType();
+    }
+
+    @Override
+    public boolean hasBootPartition() {
+        return bootPartition != null;
+    }
+
+    @Override
+    public boolean hasExchangePartition() {
+        return exchangePartition != null;
+    }
+
+    @Override
+    public DataPartitionMode getDataPartitionMode() {
+        return dataPartitionMode;
+    }
+
+    @Override
+    public DebianLiveVersion getSystemVersion() {
+        return runningVersion;
+    }
+
+    @Override
+    public String getSystemPath() {
+        return runningVersion.getLiveSystemPath();
+    }
+
+    @Override
+    public Source getBootCopySource() throws DBusException {
+        if (hasBootPartition()) {
+            mountBootIfNeeded();
+            return new Source(bootPath, ".*");
+        } else {
+            // shared medium - need to copy select targets explicitly
+            return new Source(getSystemPath(),
+                    "boot.*|efi.*|isolinux.*|"
+                    + "live/initrd.*|live/memtest|live/vmlinuz.*|efi.img");
+        }
+    }
+
+    @Override
+    public Source getSystemCopySource() {
+        if (hasBootPartition()) {
+            return new Source(getSystemPath(), ".*");
+        } else {
+            // shared medium - copy squashfs filesystem image only
+            return new Source(getSystemPath(),
+                    "\\.disk.*|live/filesystem.*|md5sum.txt");
+        }
+    }
+
+    @Override
+    public Source getPersistentCopySource() {
+        // not yet support for copy job
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public Source getExchangeCopySource() throws DBusException {
+        if (hasExchangePartition()) {
+            mountExchangeIfNeeded();
+            return new Source(exchangePath, ".*");
+        }
+        return null;
+    }
+
+    @Override
+    public Partition getBootPartition() {
+        return bootPartition;
+    }
+
+    @Override
+    public Partition getExchangePartition() {
+        return exchangePartition;
+    }
+
+    @Override
+    public Partition getDataPartition() {
+        return dataPartition;
+    }
+
+    @Override
+    public String getMbrPath() {
+        return runningVersion.getMbrFilePath();
+    }
+
+    @Override
+    public void unmountTmpPartitions() {
+        if (isBootTmpMounted && bootPath != null) {
+            try {
+                bootPartition.umount();
+            } catch (DBusException ex) {
+                LOGGER.log(Level.SEVERE, "unmount boot", ex);
+            }
+            bootPath = null;
+        }
+        if (isExchangeTmpMounted && exchangePath != null) {
+            try {
+                exchangePartition.umount();
+            } catch (DBusException ex) {
+                LOGGER.log(Level.SEVERE, "unmount exchange", ex);
+            }
+            exchangePath = null;
+        }
+        
+    }
+    
+    private void mountBootIfNeeded() throws DBusException {
+        if (bootPath == null) {
+            MountInfo bootMountInfo = bootPartition.mount();
+            bootPath = bootMountInfo.getMountPath();
+            isBootTmpMounted = bootMountInfo.alreadyMounted();
+        }
+    }
+    
+    private void mountExchangeIfNeeded() throws DBusException {
+         if (exchangePath == null) {
+            MountInfo bootMountInfo = exchangePartition.mount();
+            exchangePath = bootMountInfo.getMountPath();
+            isExchangeTmpMounted = bootMountInfo.alreadyMounted();
+        }
+    }
+    
+}
