@@ -68,8 +68,8 @@ public class IsoInstallationSource implements InstallationSource {
 
     @Override
     public Source getSystemCopySource() {
-        return new Source(rootPath, "md5sum.txt");
-                    //"\\.disk.*|live/filesystem.*|md5sum.txt");
+        return new Source(rootPath, "md5sum.txt"
+                    + "\\.disk.*|live/filesystem.*|md5sum.txt");
     }
 
     @Override
