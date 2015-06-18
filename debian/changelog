@@ -1,3 +1,9 @@
+dlcopy (201506181901-1) lernstick-8; urgency=medium
+
+  * [0a14] updated French translation
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Thu, 18 Jun 2015 19:01:09 +0200
+
 dlcopy (201506170055-1) lernstick-8; urgency=medium
 
   * [d7da] made safety wait longer and added more logging
