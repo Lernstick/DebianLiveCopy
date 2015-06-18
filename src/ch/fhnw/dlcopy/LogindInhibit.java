@@ -47,14 +47,17 @@ public class LogindInhibit {
                     "-c",
                     "exec systemd-inhibit "
                     + "--mode=block "
-                    + "--what=" + INHIBIT_WHAT + " "
+                    + "--what=" + INHIBIT_WHAT + ' '
                     + "--who=DLCopy "
                     + "--why=\"" + reason + "\" "
-                    + "/bin/sh -c \"while [ -d /proc/$PPID ] && [ -z \\`grep zombie /proc/$PPID/status\\` ]; do sleep 1; done\"");
+                    + "/bin/sh -c \"while [ -d /proc/$PPID ] && "
+                    + "[ -z \\`grep zombie /proc/$PPID/status\\` ]; "
+                    + "do sleep 1; done\"");
             probuilder.inheritIO();
             process = probuilder.start();
         } catch (IOException e) {
-            LOGGER.log(Level.SEVERE, "Could not inhibit shutdowns: %s", e.getMessage());
+            LOGGER.log(Level.SEVERE,
+                    "Could not inhibit shutdowns: %s", e.getMessage());
         }
     }
 
@@ -65,6 +68,8 @@ public class LogindInhibit {
 
         // Killing the systemd-inhibit process kills the file descriptor which
         // logind uses for the inhibit, which removes the inhibit.
-        process.destroyForcibly();
+        process.destroy();
+        // TODO: use destroyForcibly() after switching to Java 8
+        //process.destroyForcibly();
     }
 }

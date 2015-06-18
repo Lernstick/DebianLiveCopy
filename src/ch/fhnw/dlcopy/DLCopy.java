@@ -5143,7 +5143,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             } catch (IOException ex) {
                 LOGGER.log(Level.WARNING, "", ex);
             }
-            
+
             // use FAT attributes again to hide OS X ".hidden" file in Windows
             processExecutor.executeProcess("fatattr", "+h", osxHiddenFilePath);
         }
@@ -5293,7 +5293,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         } catch (InterruptedException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
         }
-        
+
         // the partitions now really exist
         // -> instantiate them as objects
         Partition destinationExchangePartition
@@ -6305,8 +6305,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         @Override
         protected void done() {
-            if (inhibit != null)
+            if (inhibit != null) {
                 inhibit.delete();
+            }
             setTitle(STRINGS.getString("DLCopy.title"));
             try {
                 if (get()) {
@@ -7060,8 +7061,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         @Override
         protected void done() {
-            if (inhibit != null)
+            if (inhibit != null) {
                 inhibit.delete();
+            }
 
             String message = null;
             try {
