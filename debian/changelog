@@ -1,6 +1,16 @@
+dlcopy (201506182015-1) lernstick-8; urgency=medium
+
+  [ Michael Stapelberg ]
+  * [a999] Add logind inhibits around all big operations.
+
+  [ Ronny Standtke ]
+  * [4c90] small code cleanup
+
+ -- Michael Stapelberg <stapelberg@debian.org>  Thu, 18 Jun 2015 20:15:41 +0200
+
 dlcopy (201506181901-1) lernstick-8; urgency=medium
 
-  * [0a14] updated French translation
+  * [0a14] updated French translation (thanks to Arnaud Troël)
 
  -- Ronny Standtke <ronny.standtke@fhnw.ch>  Thu, 18 Jun 2015 19:01:09 +0200
 
