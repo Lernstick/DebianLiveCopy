@@ -1049,6 +1049,7 @@ public class DLCopy extends JFrame
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         northWestPanel.add(installButton, gridBagConstraints);
 
         installLabel.setFont(installLabel.getFont().deriveFont(installLabel.getFont().getStyle() & ~java.awt.Font.BOLD, installLabel.getFont().getSize()-1));
@@ -1201,7 +1202,7 @@ public class DLCopy extends JFrame
                 .addComponent(selectionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(executionLabel)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addContainerGap(302, Short.MAX_VALUE))
         );
 
         cardPanel.setLayout(new java.awt.CardLayout());
@@ -1511,7 +1512,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(installSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 172, Short.MAX_VALUE)
+                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 95, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(exchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1678,21 +1679,21 @@ public class DLCopy extends JFrame
         donePanel.setLayout(donePanelLayout);
         donePanelLayout.setHorizontalGroup(
             donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 641, Short.MAX_VALUE)
+            .addGap(0, 575, Short.MAX_VALUE)
             .addGroup(donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(donePanelLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(doneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE)
+                    .addComponent(doneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 551, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         donePanelLayout.setVerticalGroup(
             donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 472, Short.MAX_VALUE)
+            .addGap(0, 395, Short.MAX_VALUE)
             .addGroup(donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(donePanelLayout.createSequentialGroup()
                     .addGap(83, 83, 83)
                     .addComponent(doneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(223, Short.MAX_VALUE)))
+                    .addContainerGap(146, Short.MAX_VALUE)))
         );
 
         cardPanel.add(donePanel, "donePanel");
@@ -1917,7 +1918,7 @@ public class DLCopy extends JFrame
                             .addComponent(reactivateWelcomeCheckBox)
                             .addComponent(keepPrinterSettingsCheckBox)
                             .addComponent(removeHiddenFilesCheckBox))
-                        .addGap(0, 136, Short.MAX_VALUE)))
+                        .addGap(0, 70, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         upgradeOptionsPanelLayout.setVerticalGroup(
@@ -1946,7 +1947,7 @@ public class DLCopy extends JFrame
                         .addComponent(automaticBackupLabel)))
                 .addGap(18, 18, 18)
                 .addComponent(repartitionExchangeOptionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(81, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         upgradeDetailsTabbedPane.addTab(bundle.getString("DLCopy.upgradeOptionsPanel.TabConstraints.tabTitle"), upgradeOptionsPanel); // NOI18N
@@ -2065,7 +2066,7 @@ public class DLCopy extends JFrame
                     .addComponent(sortAscendingButton)
                     .addComponent(sortDescendingButton))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(upgradeOverwriteScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 640, Short.MAX_VALUE)
+                .addComponent(upgradeOverwriteScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 475, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addComponent(upgradeOverwriteAddButton, javax.swing.GroupLayout.Alignment.TRAILING)
@@ -2090,7 +2091,7 @@ public class DLCopy extends JFrame
                         .addComponent(upgradeOverwriteExportButton)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                         .addComponent(upgradeOverwriteImportButton)
-                        .addGap(0, 154, Short.MAX_VALUE))
+                        .addGap(0, 128, Short.MAX_VALUE))
                     .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
                         .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                             .addComponent(upgradeOverwriteScrollPane)
@@ -2325,7 +2326,7 @@ public class DLCopy extends JFrame
             .addGroup(repairSelectionDeviceListPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(repairSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(repairStorageDeviceListScrollPane)
+                    .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 551, Short.MAX_VALUE)
                     .addComponent(repairSelectionCountLabel)
                     .addComponent(repairDataDefinitionLabel)
                     .addComponent(repairExchangeDefinitionLabel)
@@ -2345,7 +2346,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(repairSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 236, Short.MAX_VALUE)
+                .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 159, Short.MAX_VALUE)
                 .addGap(18, 18, 18)
                 .addComponent(repairExchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -2502,11 +2503,11 @@ public class DLCopy extends JFrame
         bootMediumPanel.setLayout(bootMediumPanelLayout);
         bootMediumPanelLayout.setHorizontalGroup(
             bootMediumPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 432, Short.MAX_VALUE)
+            .addGap(0, 366, Short.MAX_VALUE)
         );
         bootMediumPanelLayout.setVerticalGroup(
             bootMediumPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 101, Short.MAX_VALUE)
+            .addGap(0, 111, Short.MAX_VALUE)
         );
 
         isoOptionsCardPanel.add(bootMediumPanel, "bootMediumPanel");
@@ -2615,21 +2616,21 @@ public class DLCopy extends JFrame
         toISODonePanel.setLayout(toISODonePanelLayout);
         toISODonePanelLayout.setHorizontalGroup(
             toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 641, Short.MAX_VALUE)
+            .addGap(0, 575, Short.MAX_VALUE)
             .addGroup(toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(toISODonePanelLayout.createSequentialGroup()
                     .addContainerGap()
-                    .addComponent(isoDoneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 617, Short.MAX_VALUE)
+                    .addComponent(isoDoneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 551, Short.MAX_VALUE)
                     .addContainerGap()))
         );
         toISODonePanelLayout.setVerticalGroup(
             toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 472, Short.MAX_VALUE)
+            .addGap(0, 395, Short.MAX_VALUE)
             .addGroup(toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                 .addGroup(toISODonePanelLayout.createSequentialGroup()
                     .addGap(83, 83, 83)
                     .addComponent(isoDoneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(193, Short.MAX_VALUE)))
+                    .addContainerGap(116, Short.MAX_VALUE)))
         );
 
         cardPanel.add(toISODonePanel, "toISODonePanel");
@@ -2653,7 +2654,7 @@ public class DLCopy extends JFrame
         resultsPanel.setLayout(resultsPanelLayout);
         resultsPanelLayout.setHorizontalGroup(
             resultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(resultsTitledPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 641, Short.MAX_VALUE)
+            .addComponent(resultsTitledPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 575, Short.MAX_VALUE)
             .addGroup(resultsPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(resultsInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
@@ -2665,7 +2666,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(resultsInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(resultsTitledPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 409, Short.MAX_VALUE))
+                .addComponent(resultsTitledPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE))
         );
 
         cardPanel.add(resultsPanel, "resultsPanel");
@@ -2717,7 +2718,7 @@ public class DLCopy extends JFrame
                     .addGroup(executionPanelLayout.createSequentialGroup()
                         .addComponent(stepsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 641, Short.MAX_VALUE))
+                        .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 575, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, executionPanelLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(previousButton)
