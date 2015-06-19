@@ -16,20 +16,20 @@ import org.freedesktop.dbus.exceptions.DBusException;
 public final class SystemInstallationSource implements InstallationSource {
     private final static Logger LOGGER
             = Logger.getLogger(SystemInstallationSource.class.getName());
-    
+
     private final DebianLiveVersion runningVersion;
     private final InstallationSource.DataPartitionMode dataPartitionMode;
     private final StorageDevice storageDevice;
     private final Partition exchangePartition;
     private final Partition dataPartition;
     private final Partition bootPartition;
-    
+
     private String bootPath = null;
     private boolean isBootTmpMounted = false;
-    
+
     private String exchangePath = null;
     private boolean isExchangeTmpMounted = false;
-    
+
     public SystemInstallationSource(XmlBootConfigUtil xmlBootConfigUtil)
             throws DBusException, IOException {
         runningVersion = DebianLiveVersion.getRunningVersion();
@@ -117,6 +117,18 @@ public final class SystemInstallationSource implements InstallationSource {
     }
 
     @Override
+    public Source getExchangeBootCopySource() throws DBusException {
+        if (hasBootPartition()) {
+            mountBootIfNeeded();
+            return new Source(bootPath,
+                    InstallationSource.EXCHANGE_BOOT_COPY_PATTERN);
+        } else {
+            return new Source(getSystemPath(),
+                    InstallationSource.EXCHANGE_BOOT_COPY_PATTERN);
+        }
+    }
+
+    @Override
     public Source getSystemCopySource() {
         if (hasBootPartition()) {
             return new Source(getSystemPath(), ".*");
@@ -180,9 +192,9 @@ public final class SystemInstallationSource implements InstallationSource {
             }
             exchangePath = null;
         }
-        
+
     }
-    
+
     private void mountBootIfNeeded() throws DBusException {
         if (bootPath == null) {
             MountInfo bootMountInfo = bootPartition.mount();
@@ -190,13 +202,13 @@ public final class SystemInstallationSource implements InstallationSource {
             isBootTmpMounted = bootMountInfo.alreadyMounted();
         }
     }
-    
+
     private void mountExchangeIfNeeded() throws DBusException {
-         if (exchangePath == null) {
+        if (exchangePath == null) {
             MountInfo bootMountInfo = exchangePartition.mount();
             exchangePath = bootMountInfo.getMountPath();
             isExchangeTmpMounted = bootMountInfo.alreadyMounted();
         }
     }
-    
+
 }

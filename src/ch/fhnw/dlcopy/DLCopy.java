@@ -327,7 +327,7 @@ public class DLCopy extends JFrame
 
         }
         if (isoImagePath != null) {
-            source = new IsoInstallationSource(isoImagePath, systemSource);
+            source = new IsoInstallationSource(isoImagePath, processExecutor);
         }
 
         initComponents();
@@ -4814,7 +4814,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 String destinationExchangePath
                         = destinationExchangePartition.mount().getMountPath();
                 bootFilesCopyJob = new CopyJob(
-                        new Source[]{bootCopyJobSource},
+                        new Source[]{source.getExchangeBootCopySource()},
                         new String[]{destinationExchangePath});
             }
         }
