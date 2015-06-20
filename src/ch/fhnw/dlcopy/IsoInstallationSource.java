@@ -120,11 +120,59 @@ public class IsoInstallationSource implements InstallationSource {
 
     @Override
     public String getMbrPath() {
-        return version.getMbrFilePath();
+        mountSystemImageIfNeeded();
+        return rootFsPath + version.getMbrFilePath();
+    }
+
+    @Override
+    public int installSyslinux(String bootDevice) throws IOException {
+        mountSystemImageIfNeeded();
+        processExecutor.executeProcess("sync");
+        return processExecutor.executeProcess(true, true,
+                "chroot", rootFsPath,
+                "syslinux", "-d", "syslinux", bootDevice);
     }
 
     @Override
     public void unmountTmpPartitions() {
+        if (rootFsPath != null) {
+            try {
+                processExecutor.executeScript(String.format(
+                        "umount %s/dev\n"
+                        + "umount %s/proc\n"
+                        + "umount %s/sys\n"
+                        + "umount %s/tmp\n"
+                        + "umount %s\n"
+                        + "rmdir %s\n",
+                        rootFsPath, rootFsPath, rootFsPath,
+                        rootFsPath, rootFsPath, rootFsPath));
+            } catch (IOException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+            rootFsPath = null;
+        }
+    }
+
+    private void mountSystemImageIfNeeded() {
+        try {
+            if (rootFsPath != null) {
+                return;
+            }
+            rootFsPath = LernstickFileTools.createTempDirectory(new File("/tmp/"),
+                    "DLCopy").getCanonicalPath();
+            // Create sandbox environment from install system image.
+            // Should be sufficient to run syslinux in chroot environment.
+            processExecutor.executeScript(String.format(
+                    "mount %s/live/filesystem.squashfs %s\n"
+                    + "mount -o bind /proc %s/proc/\n"
+                    + "mount -o bind /sys %s/sys\n"
+                    + "mount -o bind /dev %s/dev\n"
+                    + "mount -o size=10m -t tmpfs tmpfs %s/tmp\n",
+                    mediaPath, rootFsPath, rootFsPath, rootFsPath,
+                    rootFsPath, rootFsPath));
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+        }
     }
 
     private DebianLiveVersion validateIsoImage() {

@@ -3,6 +3,7 @@ package ch.fhnw.dlcopy;
 import ch.fhnw.filecopier.Source;
 import ch.fhnw.util.MountInfo;
 import ch.fhnw.util.Partition;
+import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
 import ch.fhnw.util.StorageTools;
 import java.io.IOException;
@@ -14,9 +15,11 @@ import org.freedesktop.dbus.exceptions.DBusException;
  * Install from the currently running live system
  */
 public final class SystemInstallationSource implements InstallationSource {
+
     private final static Logger LOGGER
             = Logger.getLogger(SystemInstallationSource.class.getName());
 
+    private final ProcessExecutor processExecutor;
     private final DebianLiveVersion runningVersion;
     private final InstallationSource.DataPartitionMode dataPartitionMode;
     private final StorageDevice storageDevice;
@@ -30,8 +33,10 @@ public final class SystemInstallationSource implements InstallationSource {
     private String exchangePath = null;
     private boolean isExchangeTmpMounted = false;
 
-    public SystemInstallationSource(XmlBootConfigUtil xmlBootConfigUtil)
+    public SystemInstallationSource(ProcessExecutor processExecutor,
+            XmlBootConfigUtil xmlBootConfigUtil)
             throws DBusException, IOException {
+        this.processExecutor = processExecutor;
         runningVersion = DebianLiveVersion.getRunningVersion();
         if (runningVersion == null) {
             throw new IllegalArgumentException(
@@ -172,6 +177,12 @@ public final class SystemInstallationSource implements InstallationSource {
     @Override
     public String getMbrPath() {
         return runningVersion.getMbrFilePath();
+    }
+
+    @Override
+    public int installSyslinux(String bootDevice) {
+        return processExecutor.executeProcess(true, true,
+                "syslinux", "-d", "syslinux", bootDevice);
     }
 
     @Override

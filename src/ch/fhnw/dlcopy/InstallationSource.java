@@ -3,6 +3,7 @@ package ch.fhnw.dlcopy;
 import ch.fhnw.filecopier.Source;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.StorageDevice.Type;
+import java.io.IOException;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 /**
@@ -17,8 +18,7 @@ public interface InstallationSource {
             = EXCHANGE_BOOT_COPY_PATTERN
             + "|isolinux.*|.VolumeIcon.icns|live/memtest";
     public final static String SYSTEM_COPY_PATTERM
-            = "md5sum.txt"
-            + "\\.disk.*|live/filesystem.*|md5sum.txt";
+            = "\\.disk.*|live/filesystem.*|md5sum.txt";
 
     public enum DataPartitionMode {
 
@@ -58,6 +58,8 @@ public interface InstallationSource {
     public Partition getDataPartition();
 
     public String getMbrPath();
+
+    public int installSyslinux(String bootDevice) throws IOException;
 
     // Unmount any partitions that were mounted by any get*CopySource()
     public void unmountTmpPartitions();

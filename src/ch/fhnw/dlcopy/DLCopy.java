@@ -320,7 +320,8 @@ public class DLCopy extends JFrame
         }
 
         try {
-            systemSource = new SystemInstallationSource(xmlBootConfigUtil);
+            systemSource = new SystemInstallationSource(processExecutor, 
+                    xmlBootConfigUtil);
             source = systemSource;
         } catch (IOException | DBusException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
@@ -4219,6 +4220,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     }
                 }
                 writeFile(md5sumFile, lines);
+                processExecutor.executeProcess("sync");
             } else {
                 LOGGER.log(Level.WARNING,
                         "file \"{0}\" does not exist!", md5sumFileName);
@@ -4236,8 +4238,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         String bootDevice
                 = "/dev/" + destinationBootPartition.getDeviceAndNumber();
-        int exitValue = processExecutor.executeProcess(true, true,
-                "syslinux", "-d", "syslinux", bootDevice);
+        int exitValue = source.installSyslinux(bootDevice);
         if (exitValue != 0) {
             String errorMessage = STRINGS.getString("Make_Bootable_Failed");
             errorMessage = MessageFormat.format(
@@ -5056,6 +5057,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     = "could not umount destination system partition";
             throw new IOException(errorMessage);
         }
+        source.unmountTmpPartitions();
     }
 
     private void createPartitions(StorageDevice storageDevice,
