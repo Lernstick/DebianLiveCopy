@@ -1,3 +1,22 @@
+dlcopy (201506251939-1) lernstick-8; urgency=medium
+
+  [ kugelfish42 ]
+  * [ce78] initial checkpoint
+  * [f23d] undo avoid copy of squashfs image
+  * [22e9] extract boot/system file copy pattern
+
+  [ Ronny Standtke ]
+  * [79a4] small layout fix
+
+  [ kugelfish42 ]
+  * [be93] Detect version from ISO image signature and differentiate copy source for booting from boot vs. FAT exchange partition
+  * [bf58] hermetic syslinux installer using env from ISO system image.
+
+  [ Ronny Standtke ]
+  * [01cd] rescan partitions after creating them so that udisks knows them for sure
+
+ -- kugelfish42 <kugelfish42@users.noreply.github.com>  Thu, 25 Jun 2015 19:39:46 +0200
+
 dlcopy (201506182015-1) lernstick-8; urgency=medium
 
   [ Michael Stapelberg ]
