@@ -1,3 +1,9 @@
+dlcopy (201506252008-1) lernstick-8; urgency=medium
+
+  * [a365] re-added safety wait for udisks
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 25 Jun 2015 20:08:07 +0200
+
 dlcopy (201506251939-1) lernstick-8; urgency=medium
 
   [ kugelfish42 ]
