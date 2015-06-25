@@ -4990,19 +4990,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     indeterminatePanelName, indeterminateProgressBar);
         }
 
-        // We have to wait a little for dbus to get to know the new filesystems.
-        // Otherwise we will sometimes get the following exception in the calls
-        // below:
+        // Here have to trigger a rescan of the device partitions. Otherwise
+        // udisks sometimes just doesn't know about the new partitions and we
+        // will get the following exception in the calls below:
         // org.freedesktop.dbus.exceptions.DBusExecutionException:
         // No such interface 'org.freedesktop.UDisks2.Filesystem'
-        try {
-            // 5 seconds were not enough!
-            LOGGER.fine("starting safety wait...");
-            TimeUnit.SECONDS.sleep(7);
-            LOGGER.fine("...done with safety wait");
-        } catch (InterruptedException ex) {
-            LOGGER.log(Level.SEVERE, "", ex);
-        }
+        processExecutor.executeProcess("partprobe", device);
 
         // the partitions now really exist
         // -> instantiate them as objects
