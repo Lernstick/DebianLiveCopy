@@ -320,7 +320,7 @@ public class DLCopy extends JFrame
         }
 
         try {
-            systemSource = new SystemInstallationSource(processExecutor, 
+            systemSource = new SystemInstallationSource(processExecutor,
                     xmlBootConfigUtil);
             source = systemSource;
         } catch (IOException | DBusException ex) {
@@ -4992,10 +4992,19 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         // Here have to trigger a rescan of the device partitions. Otherwise
         // udisks sometimes just doesn't know about the new partitions and we
-        // will get the following exception in the calls below:
+        // will later get exceptions similar to this one:
         // org.freedesktop.dbus.exceptions.DBusExecutionException:
         // No such interface 'org.freedesktop.UDisks2.Filesystem'
         processExecutor.executeProcess("partprobe", device);
+        // Sigh... even after partprobe exits, we have to give udisks even more
+        // time to get its act together and finally know about the new
+        // partitions.
+        try {
+            // 5 seconds were not enough!
+            TimeUnit.SECONDS.sleep(7);
+        } catch (InterruptedException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+        }
 
         // the partitions now really exist
         // -> instantiate them as objects
