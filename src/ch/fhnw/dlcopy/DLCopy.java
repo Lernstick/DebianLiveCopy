@@ -399,9 +399,13 @@ public class DLCopy extends JFrame
 
             copyPersistenceCheckBox.setEnabled(true);
 
-            String checkBoxText = STRINGS.getString("Copy_Data_Partition")
-                    + " (" + LernstickFileTools.getDataVolumeString(source.getDataPartition().getUsedSpace(false), 1) + ')';
-            copyPersistenceCheckBox.setText(checkBoxText);
+            Partition dataPartition = source.getDataPartition();
+            if (dataPartition != null) {
+                String checkBoxText = STRINGS.getString("Copy_Data_Partition")
+                        + " (" + LernstickFileTools.getDataVolumeString(
+                                dataPartition.getUsedSpace(false), 1) + ')';
+                copyPersistenceCheckBox.setText(checkBoxText);
+            }
 
         } else {
             copyPersistenceCheckBox.setEnabled(false);
