@@ -4710,9 +4710,19 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         // formatting
         String fileSystem
                 = dataPartitionFilesystemComboBox.getSelectedItem().toString();
+        // If we want to create a partition at the exact same location of
+        // another type of partition mkfs becomes interactive.
+        // For instance if we first install with an exchange partition and later
+        // without one, mkfs asks the following question:
+        // ------------
+        // /dev/sda2 contains a exfat file system labelled 'Austausch'
+        // Proceed anyway? (y,n)
+        // ------------
+        // To make a long story short, this is the reason we have to use the
+        // force flag "-F" here.
         int exitValue = processExecutor.executeProcess(
                 "/sbin/mkfs." + fileSystem,
-                "-L", Partition.PERSISTENCE_LABEL, device);
+                "-F", "-L", Partition.PERSISTENCE_LABEL, device);
         if (exitValue != 0) {
             LOGGER.severe(processExecutor.getOutput());
             String errorMessage
