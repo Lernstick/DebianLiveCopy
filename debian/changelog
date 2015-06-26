@@ -1,3 +1,12 @@
+dlcopy (201506261632-1) lernstick-8; urgency=medium
+
+  [ Ronny Standtke ]
+  * [4dad] Create README.md
+  * [445f] removed deprecated backup script
+  * [714c] fixed NPE
+
+ -- ronnystandtke <ronny.standtke@gmx.net>  Fri, 26 Jun 2015 16:32:07 +0200
+
 dlcopy (201506252008-1) lernstick-8; urgency=medium
 
   * [a365] re-added safety wait for udisks
