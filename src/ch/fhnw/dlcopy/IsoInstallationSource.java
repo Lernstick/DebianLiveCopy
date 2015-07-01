@@ -5,6 +5,7 @@ import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
+import ch.fhnw.util.StorageTools;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -73,6 +74,12 @@ public class IsoInstallationSource implements InstallationSource {
     @Override
     public String getSystemPath() {
         return mediaPath;
+    }
+
+    @Override
+    public long getSystemSize() {
+        File system = new File(getSystemPath());
+        return system.getTotalSpace() - system.getFreeSpace();
     }
 
     @Override
