@@ -110,12 +110,16 @@ public final class SystemInstallationSource implements InstallationSource {
     }
 
     @Override
+    public long getSystemSize() {
+        return StorageTools.getSystemSize();
+    }
+
+    @Override
     public Source getBootCopySource() throws DBusException {
         if (hasBootPartition()) {
             mountBootIfNeeded();
-            return new Source(bootPath, ".*");
+            return new Source(bootPath, InstallationSource.BOOT_COPY_PATTERN);
         } else {
-            // shared medium - need to copy select targets explicitly
             return new Source(getSystemPath(),
                     InstallationSource.BOOT_COPY_PATTERN);
         }
@@ -135,13 +139,8 @@ public final class SystemInstallationSource implements InstallationSource {
 
     @Override
     public Source getSystemCopySource() {
-        if (hasBootPartition()) {
-            return new Source(getSystemPath(), ".*");
-        } else {
-            // shared medium - copy squashfs filesystem image only
-            return new Source(getSystemPath(),
-                    InstallationSource.SYSTEM_COPY_PATTERM);
-        }
+        return new Source(getSystemPath(),
+                InstallationSource.SYSTEM_COPY_PATTERM);
     }
 
     @Override

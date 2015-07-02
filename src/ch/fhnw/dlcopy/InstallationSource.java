@@ -16,7 +16,7 @@ public interface InstallationSource {
             + "|efi.img|lernstick.ico|autorun.inf";
     public final static String BOOT_COPY_PATTERN
             = EXCHANGE_BOOT_COPY_PATTERN
-            + "|isolinux.*|.VolumeIcon.icns|live/memtest";
+            + "|syslinux.*|isolinux.*|.VolumeIcon.icns|live/memtest";
     public final static String SYSTEM_COPY_PATTERM
             = "\\.disk.*|live/filesystem.*|md5sum.txt";
 
@@ -38,6 +38,8 @@ public interface InstallationSource {
     public DebianLiveVersion getSystemVersion();
 
     public String getSystemPath();
+
+    public long getSystemSize();
 
     // Source definitions for copy jobs
     // Partitions may be mounted as needed if not already available

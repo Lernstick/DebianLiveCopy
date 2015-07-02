@@ -23,7 +23,6 @@ import ch.fhnw.util.MountInfo;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
-import ch.fhnw.util.StorageTools;
 import java.applet.Applet;
 import java.applet.AudioClip;
 import java.awt.*;
@@ -90,6 +89,11 @@ public class DLCopy extends JFrame
      * the size of the boot partition (given in MiB)
      */
     public final static long BOOT_PARTITION_SIZE = 100;
+
+    /**
+     * Scale factor for system partition sizing.
+     */
+    public static final float SYSTEM_SIZE_FACTOR = 1.1f;
 
     /**
      * the known partition states for a drive
@@ -354,8 +358,8 @@ public class DLCopy extends JFrame
                 "/ch/fhnw/dlcopy/icons/usbpendrive_unmount.png");
         setIconImage(new ImageIcon(imageURL).getImage());
 
-        systemSize = StorageTools.getSystemSize();
-        systemSizeEnlarged = StorageTools.getEnlargedSystemSize();
+        systemSize = source.getSystemSize();
+        systemSizeEnlarged = (long) (systemSize * SYSTEM_SIZE_FACTOR);
         String sizeString = LernstickFileTools.getDataVolumeString(
                 systemSizeEnlarged, 1);
 
