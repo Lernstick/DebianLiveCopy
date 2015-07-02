@@ -1,3 +1,10 @@
+dlcopy (201507021510-1) lernstick-8; urgency=medium
+
+  [ kugelfish42 ]
+  * [89f3] fix system size calculation for iso install and de-optimize to always use explicit install file pattern
+
+ -- kugelfish42 <kugelfish42@users.noreply.github.com>  Thu, 02 Jul 2015 15:10:00 +0200
+
 dlcopy (201506261747-1) lernstick-8; urgency=medium
 
   * [1743] prevent interactive mkfs
