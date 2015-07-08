@@ -50,7 +50,7 @@ install: build
 
 	# standard package (binary and desktop file)
 	mkdir -p $(APPDIR)
-	cp usr/share/applications/dlcopy.desktop $(APPDIR)
+	cp usr/share/applications/ch-fhnw-dlcopy-dlcopy.desktop $(APPDIR)
 	mkdir -p $(BINDIR)
 	cp usr/bin/dlcopy $(BINDIR)
 
