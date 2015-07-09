@@ -7,5 +7,5 @@ Icon=/usr/share/icons/dlcopy.png
 Name=Storage media management
 Name[de]=Speichermedienverwaltung
 StartupNotify=true
-StartupWMClass=sun-awt-X11-XFramePeer
+StartupWMClass=ch-fhnw-dlcopy-DLCopy
 Type=Application
