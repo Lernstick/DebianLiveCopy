@@ -1,4 +1,11 @@
-dlcopy (201507021938-1) lernstick-8; urgency=medium
+dlcopy (201507091734-1) lernstick-8; urgency=medium
+
+  * [20c8b4] fixed rules file
+  * [8cd0e8] fixed wmclass in exam environment desktop file
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 09 Jul 2015 17:34:07 +0200
+
+dlcopy (201507081938-1) lernstick-8; urgency=medium
 
   * [32ac20] changed desktop file to please GNOME
 
