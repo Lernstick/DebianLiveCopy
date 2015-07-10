@@ -1,3 +1,9 @@
+dlcopy (201507101213-1) lernstick-8; urgency=medium
+
+  * [e4bce2] use higher resolution icon
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Fri, 10 Jul 2015 12:13:23 +0200
+
 dlcopy (201507091734-1) lernstick-8; urgency=medium
 
   * [20c8b4] fixed rules file
