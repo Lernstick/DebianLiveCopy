@@ -2825,14 +2825,12 @@ public class DLCopy extends JFrame
     }//GEN-LAST:event_installButtonActionPerformed
 
     private void toISOButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toISOButtonActionPerformed
-        try {
-            if (isUnmountedPersistenceAvailable()) {
-                globalShow("executionPanel");
-                switchToISOInformation();
-            }
-        } catch (IOException | DBusException ex) {
-            LOGGER.log(Level.SEVERE, "", ex);
-        }
+        // We don't need to check for unmounted persistence here
+        // because a valid use case is to produce a simple boot image from
+        // a full system image.
+        // In this use case there is no persistence partition available...
+        globalShow("executionPanel");
+        switchToISOInformation();
     }//GEN-LAST:event_toISOButtonActionPerformed
 
     private void tmpDirSelectButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_tmpDirSelectButtonActionPerformed
