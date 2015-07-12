@@ -6670,22 +6670,25 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 new File(targetDirectory).mkdirs();
 
                 // copy boot files
-                if (!source.hasBootPartition()) {
+                if (source.hasBootPartition()) {
+                    // system with a separate boot partition
+                    CopyJob bootCopyJob = new CopyJob(
+                            new Source[]{
+                                source.getBootCopySource(),
+                                new Source(source.getSystemPath(), "\\.disk.*")
+                            },
+                            new String[]{targetDirectory});
+                    FileCopier fileCopier = new FileCopier();
+                    fileCopier.copy(bootCopyJob);
+                    source.unmountTmpPartitions();
+
+                } else {
                     // legacy system without separate boot partition
                     String copyScript = "#!/bin/sh" + '\n'
                             + "cd " + source.getSystemPath() + '\n'
                             + "find -not -name filesystem*.squashfs | cpio -pvdum \""
                             + targetDirectory + "\"";
                     processExecutor.executeScript(copyScript);
-
-                } else {
-                    // system with a separate boot partition
-                    CopyJob bootCopyJob = new CopyJob(
-                            new Source[]{source.getBootCopySource()},
-                            new String[]{targetDirectory});
-                    FileCopier fileCopier = new FileCopier();
-                    fileCopier.copy(bootCopyJob);
-                    source.unmountTmpPartitions();
                 }
 
                 if (systemMediumRadioButton.isSelected()) {

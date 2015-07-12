@@ -14,8 +14,7 @@ public interface InstallationSource {
     public final static String EXCHANGE_BOOT_COPY_PATTERN
             = "boot.*|efi.*|live/initrd.*|live/vmlinuz.*"
             + "|efi.img|lernstick.ico|autorun.inf";
-    public final static String BOOT_COPY_PATTERN
-            = EXCHANGE_BOOT_COPY_PATTERN
+    public final static String BOOT_COPY_PATTERN = EXCHANGE_BOOT_COPY_PATTERN
             + "|syslinux.*|isolinux.*|.VolumeIcon.icns|live/memtest";
     public final static String SYSTEM_COPY_PATTERM
             = "\\.disk.*|live/filesystem.*|md5sum.txt";
