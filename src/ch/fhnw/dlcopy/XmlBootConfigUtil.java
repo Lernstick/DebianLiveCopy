@@ -25,6 +25,7 @@ import org.xml.sax.SAXException;
  * Manipulate XML boot config files.
  */
 public class XmlBootConfigUtil {
+
     private final static Logger LOGGER
             = Logger.getLogger(XmlBootConfigUtil.class.getName());
 
@@ -190,20 +191,22 @@ public class XmlBootConfigUtil {
     }
 
     private File getXmlBootConfigFile(File imageDirectory) {
-        File configFile = new File(imageDirectory, "isolinux/xmlboot.config");
-        if (configFile.exists()) {
-            LOGGER.log(Level.INFO, "xmlboot config file: {0}", configFile);
-            return configFile;
-        } else {
-            configFile = new File(imageDirectory, "syslinux/xmlboot.config");
-            if (configFile.exists()) {
-                LOGGER.log(Level.INFO, "xmlboot config file: {0}", configFile);
-                return configFile;
-            } else {
-                LOGGER.warning("xmlboot config file not found!");
-                return null;
+        // search through all known variants
+        String[] dirs = new String[]{"isolinux", "syslinux"};
+        String[] subdirs = new String[]{"/", "/bootlogo.dir/"};
+        for (String dir : dirs) {
+            for (String subdir : subdirs) {
+                File configFile = new File(
+                        imageDirectory, dir + subdir + "xmlboot.config");
+                if (configFile.exists()) {
+                    LOGGER.log(Level.INFO,
+                            "xmlboot config file: {0}", configFile);
+                    return configFile;
+                }
             }
         }
+        LOGGER.warning("xmlboot config file not found!");
+        return null;
     }
 
     private org.w3c.dom.Document parseXmlFile(File file)
