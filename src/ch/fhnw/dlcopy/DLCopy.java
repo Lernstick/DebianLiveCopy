@@ -4500,6 +4500,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private boolean isUnmountedPersistenceAvailable()
             throws IOException, DBusException {
+
         // check that persistence is available
         if (DataPartitionMode.NotUsed == source.getDataPartitionMode()) {
             JOptionPane.showMessageDialog(this,
@@ -4509,8 +4510,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         // ensure that the persistence partition is not mounted read-write
+        Partition dataPartition = source.getDataPartition();
+        if (dataPartition == null) {
+            return false;
+        }
+
         String dataPartitionDevice
-                = "/dev/" + source.getDataPartition().getDeviceAndNumber();
+                = "/dev/" + dataPartition.getDeviceAndNumber();
         boolean mountedReadWrite = false;
         List<String> mounts = LernstickFileTools.readFile(
                 new File("/proc/mounts"));
