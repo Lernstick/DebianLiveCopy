@@ -6704,23 +6704,27 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
                 // syslinux -> isolinux
                 final String ISOLINUX_DIR = targetDirectory + "/isolinux";
-                moveFile(targetDirectory + "/syslinux", ISOLINUX_DIR);
-                final String syslinuxBinPath = ISOLINUX_DIR + "/syslinux.bin";
-                File syslinuxBinFile = new File(syslinuxBinPath);
-                if (syslinuxBinFile.exists()) {
-                    moveFile(syslinuxBinPath, ISOLINUX_DIR + "/isolinux.bin");
-                }
-                moveFile(ISOLINUX_DIR + "/syslinux.cfg",
-                        ISOLINUX_DIR + "/isolinux.cfg");
+                if (new File(ISOLINUX_DIR).exists()) {
+                    moveFile(targetDirectory + "/syslinux", ISOLINUX_DIR);
+                    final String syslinuxBinPath
+                            = ISOLINUX_DIR + "/syslinux.bin";
+                    File syslinuxBinFile = new File(syslinuxBinPath);
+                    if (syslinuxBinFile.exists()) {
+                        moveFile(syslinuxBinPath,
+                                ISOLINUX_DIR + "/isolinux.bin");
+                    }
+                    moveFile(ISOLINUX_DIR + "/syslinux.cfg",
+                            ISOLINUX_DIR + "/isolinux.cfg");
 
-                // replace "syslinux" with "isolinux" in some files
-                Pattern pattern = Pattern.compile("syslinux");
-                replaceText(ISOLINUX_DIR + "/exithelp.cfg",
-                        pattern, "isolinux");
-                replaceText(ISOLINUX_DIR + "/stdmenu.cfg",
-                        pattern, "isolinux");
-                replaceText(ISOLINUX_DIR + "/isolinux.cfg",
-                        pattern, "isolinux");
+                    // replace "syslinux" with "isolinux" in some files
+                    Pattern pattern = Pattern.compile("syslinux");
+                    replaceText(ISOLINUX_DIR + "/exithelp.cfg",
+                            pattern, "isolinux");
+                    replaceText(ISOLINUX_DIR + "/stdmenu.cfg",
+                            pattern, "isolinux");
+                    replaceText(ISOLINUX_DIR + "/isolinux.cfg",
+                            pattern, "isolinux");
+                }
 
                 // update md5sum
                 publish(STRINGS.getString("Updating_Checksums"));
