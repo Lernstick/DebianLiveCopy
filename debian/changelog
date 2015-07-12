@@ -1,3 +1,9 @@
+dlcopy (201507122046-1) lernstick-8; urgency=medium
+
+  * [0a37f4] fixed syslinux dir detection
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Sun, 12 Jul 2015 20:46:40 +0200
+
 dlcopy (201507122041-1) lernstick-8; urgency=medium
 
   * [f646ae] convert from syslinux to isolinux only when necessary (not needed when creating a boot image from a system image)
