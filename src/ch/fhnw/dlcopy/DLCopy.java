@@ -887,6 +887,7 @@ public class DLCopy extends JFrame
         toISOInfoLabel = new javax.swing.JLabel();
         toISOSelectionPanel = new javax.swing.JPanel();
         tmpDriveInfoLabel = new javax.swing.JLabel();
+        toIsoGridBagPanel = new javax.swing.JPanel();
         tmpDirLabel = new javax.swing.JLabel();
         tmpDirTextField = new javax.swing.JTextField();
         tmpDirSelectButton = new javax.swing.JButton();
@@ -896,6 +897,7 @@ public class DLCopy extends JFrame
         writableTextField = new javax.swing.JTextField();
         isoLabelLabel = new javax.swing.JLabel();
         isoLabelTextField = new javax.swing.JTextField();
+        radioButtonPanel = new javax.swing.JPanel();
         bootMediumRadioButton = new javax.swing.JRadioButton();
         systemMediumRadioButton = new javax.swing.JRadioButton();
         isoOptionsPanel = new javax.swing.JPanel();
@@ -2336,10 +2338,21 @@ public class DLCopy extends JFrame
         tmpDriveInfoLabel.setText(bundle.getString("DLCopy.tmpDriveInfoLabel.text")); // NOI18N
         tmpDriveInfoLabel.setIconTextGap(15);
 
+        toIsoGridBagPanel.setLayout(new java.awt.GridBagLayout());
+
         tmpDirLabel.setText(bundle.getString("DLCopy.tmpDirLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);
+        toIsoGridBagPanel.add(tmpDirLabel, gridBagConstraints);
 
         tmpDirTextField.setColumns(20);
         tmpDirTextField.setText("/media/");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        toIsoGridBagPanel.add(tmpDirTextField, gridBagConstraints);
 
         tmpDirSelectButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/fileopen.png"))); // NOI18N
         tmpDirSelectButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -2348,18 +2361,54 @@ public class DLCopy extends JFrame
                 tmpDirSelectButtonActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        toIsoGridBagPanel.add(tmpDirSelectButton, gridBagConstraints);
 
         freeSpaceLabel.setText(bundle.getString("DLCopy.freeSpaceLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 3, 0, 0);
+        toIsoGridBagPanel.add(freeSpaceLabel, gridBagConstraints);
 
         freeSpaceTextField.setEditable(false);
         freeSpaceTextField.setColumns(20);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
+        toIsoGridBagPanel.add(freeSpaceTextField, gridBagConstraints);
 
         writableLabel.setText(bundle.getString("DLCopy.writableLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 3, 0, 0);
+        toIsoGridBagPanel.add(writableLabel, gridBagConstraints);
 
         writableTextField.setEditable(false);
         writableTextField.setColumns(20);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
+        toIsoGridBagPanel.add(writableTextField, gridBagConstraints);
 
         isoLabelLabel.setText(bundle.getString("DLCopy.isoLabelLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(10, 3, 0, 0);
+        toIsoGridBagPanel.add(isoLabelLabel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 0);
+        toIsoGridBagPanel.add(isoLabelTextField, gridBagConstraints);
+
+        radioButtonPanel.setLayout(new java.awt.GridBagLayout());
 
         isoButtonGroup.add(bootMediumRadioButton);
         bootMediumRadioButton.setText(bundle.getString("DLCopy.bootMediumRadioButton.text")); // NOI18N
@@ -2368,6 +2417,9 @@ public class DLCopy extends JFrame
                 bootMediumRadioButtonActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        radioButtonPanel.add(bootMediumRadioButton, gridBagConstraints);
 
         isoButtonGroup.add(systemMediumRadioButton);
         systemMediumRadioButton.setSelected(true);
@@ -2377,6 +2429,14 @@ public class DLCopy extends JFrame
                 systemMediumRadioButtonActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        radioButtonPanel.add(systemMediumRadioButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+        toIsoGridBagPanel.add(radioButtonPanel, gridBagConstraints);
 
         isoOptionsPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -2418,7 +2478,7 @@ public class DLCopy extends JFrame
         bootMediumPanel.setLayout(bootMediumPanelLayout);
         bootMediumPanelLayout.setHorizontalGroup(
             bootMediumPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 497, Short.MAX_VALUE)
+            .addGap(0, 319, Short.MAX_VALUE)
         );
         bootMediumPanelLayout.setVerticalGroup(
             bootMediumPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -2434,6 +2494,11 @@ public class DLCopy extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         isoOptionsPanel.add(isoOptionsCardPanel, gridBagConstraints);
 
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
+        toIsoGridBagPanel.add(isoOptionsPanel, gridBagConstraints);
+
         javax.swing.GroupLayout toISOSelectionPanelLayout = new javax.swing.GroupLayout(toISOSelectionPanel);
         toISOSelectionPanel.setLayout(toISOSelectionPanelLayout);
         toISOSelectionPanelLayout.setHorizontalGroup(
@@ -2441,68 +2506,18 @@ public class DLCopy extends JFrame
             .addGroup(toISOSelectionPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tmpDriveInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, toISOSelectionPanelLayout.createSequentialGroup()
-                        .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(toISOSelectionPanelLayout.createSequentialGroup()
-                                .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(writableLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                    .addComponent(isoLabelLabel))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(writableTextField)
-                                    .addComponent(isoLabelTextField)))
-                            .addGroup(toISOSelectionPanelLayout.createSequentialGroup()
-                                .addComponent(freeSpaceLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 126, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(freeSpaceTextField))
-                            .addGroup(toISOSelectionPanelLayout.createSequentialGroup()
-                                .addComponent(tmpDirLabel)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(tmpDirTextField))
-                            .addGroup(toISOSelectionPanelLayout.createSequentialGroup()
-                                .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                                    .addComponent(bootMediumRadioButton)
-                                    .addComponent(systemMediumRadioButton))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                                .addComponent(isoOptionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 497, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(tmpDirSelectButton))))
+                    .addComponent(tmpDriveInfoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 655, Short.MAX_VALUE)
+                    .addComponent(toIsoGridBagPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 655, Short.MAX_VALUE))
+                .addContainerGap())
         );
-
-        toISOSelectionPanelLayout.linkSize(javax.swing.SwingConstants.HORIZONTAL, new java.awt.Component[] {freeSpaceLabel, tmpDirLabel, writableLabel});
-
         toISOSelectionPanelLayout.setVerticalGroup(
             toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(toISOSelectionPanelLayout.createSequentialGroup()
                 .addContainerGap()
                 .addComponent(tmpDriveInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(18, 18, 18)
-                .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                    .addComponent(tmpDirLabel)
-                    .addComponent(tmpDirTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(tmpDirSelectButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(freeSpaceLabel)
-                    .addComponent(freeSpaceTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(writableLabel)
-                    .addComponent(writableTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(isoLabelTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(isoLabelLabel))
-                .addGap(18, 18, 18)
-                .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(toISOSelectionPanelLayout.createSequentialGroup()
-                        .addComponent(bootMediumRadioButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(systemMediumRadioButton))
-                    .addComponent(isoOptionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                .addComponent(toIsoGridBagPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                .addContainerGap())
         );
 
         cardPanel.add(toISOSelectionPanel, "toISOSelectionPanel");
@@ -7851,6 +7866,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JRadioButton originalExchangeRadioButton;
     private javax.swing.JButton previousButton;
     private javax.swing.JCheckBox quickFormatCheckBox;
+    private javax.swing.JPanel radioButtonPanel;
     private javax.swing.JCheckBox reactivateWelcomeCheckBox;
     private javax.swing.JRadioButton removeExchangeRadioButton;
     private javax.swing.JRadioButton removeFilesRadioButton;
@@ -7908,6 +7924,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JProgressBar toISOProgressBar;
     private javax.swing.JPanel toISOProgressPanel;
     private javax.swing.JPanel toISOSelectionPanel;
+    private javax.swing.JPanel toIsoGridBagPanel;
     private javax.swing.JLabel upgradeBackupFilenameLabel;
     private javax.swing.JLabel upgradeBackupLabel;
     private javax.swing.JPanel upgradeBackupPanel;
