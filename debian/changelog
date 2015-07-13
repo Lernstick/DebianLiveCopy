@@ -1,3 +1,9 @@
+dlcopy (201507131837-1) lernstick-8; urgency=medium
+
+  * [5d3ce5] more layout fixes
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Mon, 13 Jul 2015 18:37:44 +0200
+
 dlcopy (201507131822-1) lernstick-8; urgency=medium
 
   * [918c9f] layout fixes
