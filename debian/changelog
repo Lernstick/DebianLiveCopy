@@ -1,3 +1,9 @@
+dlcopy (201507131822-1) lernstick-8; urgency=medium
+
+  * [918c9f] layout fixes
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Mon, 13 Jul 2015 18:22:44 +0200
+
 dlcopy (201507131752-1) lernstick-8; urgency=medium
 
   * [975ad8] show data partition mode combobox also when creating boot image
