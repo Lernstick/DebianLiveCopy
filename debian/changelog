@@ -1,3 +1,9 @@
+dlcopy (201507131752-1) lernstick-8; urgency=medium
+
+  * [975ad8] show data partition mode combobox also when creating boot image
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Mon, 13 Jul 2015 17:52:42 +0200
+
 dlcopy (201507122046-1) lernstick-8; urgency=medium
 
   * [0a37f4] fixed syslinux dir detection
