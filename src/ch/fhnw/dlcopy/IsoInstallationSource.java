@@ -5,7 +5,6 @@ import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
-import ch.fhnw.util.StorageTools;
 import java.io.File;
 import java.io.IOException;
 import java.util.logging.Level;
@@ -20,20 +19,21 @@ public class IsoInstallationSource implements InstallationSource {
     private final static Logger LOGGER
             = Logger.getLogger(IsoInstallationSource.class.getName());
 
-    private final String mediaPath;
+    private final String imagePath;
     private final ProcessExecutor processExecutor;
     private final DebianLiveVersion version;
 
+    private String mediaPath;
     private String rootFsPath = null;
 
-    public IsoInstallationSource(String mediaPath,
+    public IsoInstallationSource(String imagePath,
             ProcessExecutor processExecutor) {
-        this.mediaPath = mediaPath;
+        this.imagePath = imagePath;
         this.processExecutor = processExecutor;
         this.version = validateIsoImage();
 
         if (version == null) {
-            throw new IllegalStateException(mediaPath
+            throw new IllegalStateException(imagePath
                     + " is not a valid LernStick distribution image");
         }
 
@@ -73,6 +73,7 @@ public class IsoInstallationSource implements InstallationSource {
 
     @Override
     public String getSystemPath() {
+        mountIsoImageIfNeeded();
         return mediaPath;
     }
 
@@ -84,19 +85,19 @@ public class IsoInstallationSource implements InstallationSource {
 
     @Override
     public Source getBootCopySource() {
-        return new Source(mediaPath,
+        return new Source(getSystemPath(),
                 InstallationSource.BOOT_COPY_PATTERN);
     }
 
     @Override
     public Source getExchangeBootCopySource() {
-        return new Source(mediaPath,
+        return new Source(getSystemPath(),
                 InstallationSource.EXCHANGE_BOOT_COPY_PATTERN);
     }
 
     @Override
     public Source getSystemCopySource() {
-        return new Source(mediaPath,
+        return new Source(getSystemPath(),
                 InstallationSource.SYSTEM_COPY_PATTERM);
     }
 
@@ -158,13 +159,38 @@ public class IsoInstallationSource implements InstallationSource {
             }
             rootFsPath = null;
         }
+        if (mediaPath != null) {
+            try {
+                processExecutor.executeScript(String.format("umount %s\n",
+                        mediaPath));
+            } catch (IOException ex) {
+                LOGGER.log(Level.SEVERE, null, ex);
+            }
+            mediaPath = null;
+        }
+    }
+
+    private void mountIsoImageIfNeeded() {
+        if (mediaPath != null) {
+            return;
+        }
+        try {
+            mediaPath = LernstickFileTools.createTempDirectory(new File("/tmp/"),
+                    "DLCopy").getCanonicalPath();
+            processExecutor.executeScript(String.format("mount -o loop %s %s\n",
+                    imagePath, mediaPath));
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, null, ex);
+            mediaPath = null;
+        }
     }
 
     private void mountSystemImageIfNeeded() {
+        mountIsoImageIfNeeded();
+        if (rootFsPath != null) {
+            return;
+        }
         try {
-            if (rootFsPath != null) {
-                return;
-            }
             rootFsPath = LernstickFileTools.createTempDirectory(new File("/tmp/"),
                     "DLCopy").getCanonicalPath();
             // Create sandbox environment from install system image.
@@ -179,10 +205,15 @@ public class IsoInstallationSource implements InstallationSource {
                     rootFsPath, rootFsPath));
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
+            rootFsPath = null;
         }
     }
 
     private DebianLiveVersion validateIsoImage() {
+        mountIsoImageIfNeeded();
+        if (mediaPath == null) {
+            return null;
+        }
         try {
             File infoFile = new File(mediaPath + "/.disk/info");
             if (!infoFile.exists()) {
