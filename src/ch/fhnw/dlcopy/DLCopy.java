@@ -3480,6 +3480,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         preferences.put(UPGRADE_OVERWRITE_LIST,
                 getUpgradeOverwriteListString());
 
+        source.unmountTmpPartitions();
+
         // stop monitoring thread
         udisksMonitorThread.stopMonitoring();
 
@@ -5272,7 +5274,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         } else {
             // Even more fun with udisks2! :-)
-            // 
+            //
             // Now whe have to call org.freedesktop.UDisks2.Block.Format
             // This function has the signature 'sa{sv}'.
             // dbus-send is unable to send messages with this signature.
@@ -5282,7 +5284,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             //  does not. Also, dbus-send does not permit empty containers or
             //  nested containers (e.g. arrays of variants).
             // ****************************
-            // 
+            //
             // creating a Java interface also fails, see here:
             // https://bugs.debian.org/cgi-bin/bugreport.cgi?bug=777241
             //
