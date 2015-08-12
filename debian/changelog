@@ -1,3 +1,10 @@
+dlcopy (201508121139-1) lernstick-8; urgency=medium
+
+  [ kugelfish42 ]
+  * [12d8b7] support for mounting/unmounting of ISO image install source on access
+
+ -- kugelfish42 <kugelfish42@users.noreply.github.com>  Wed, 12 Aug 2015 11:39:30 +0200
+
 dlcopy (201507131837-1) lernstick-8; urgency=medium
 
   * [5d3ce5] more layout fixes
