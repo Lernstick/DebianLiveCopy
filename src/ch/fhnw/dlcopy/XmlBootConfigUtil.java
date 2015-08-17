@@ -79,8 +79,7 @@ public class XmlBootConfigUtil {
     }
 
     public void setDataPartitionMode(
-            DataPartitionMode destinationDataPartitionMode,
-            String imagePath) {
+            DataPartitionMode destinationDataPartitionMode, String imagePath) {
 
         // xmlboot
         try {

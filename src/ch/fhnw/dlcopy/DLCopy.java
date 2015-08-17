@@ -203,7 +203,6 @@ public class DLCopy extends JFrame
     private final static String AUTO_REMOVE_BACKUP = "autoRemoveBackup";
     private final static String UPGRADE_OVERWRITE_LIST = "upgradeOverwriteList";
 
-    private DataPartitionMode sourceDataPartitionMode;
     private final ResultsTableModel installationResultsTableModel;
     private final ResultsTableModel upgradeResultsTableModel;
     private final ResultsTableModel resultsTableModel;
@@ -496,6 +495,8 @@ public class DLCopy extends JFrame
         isoDataPartitionModeComboBox.setModel(
                 new DefaultComboBoxModel(dataPartitionModes));
 
+        DataPartitionMode sourceDataPartitionMode
+                = source.getDataPartitionMode();
         if (sourceDataPartitionMode != null) {
             String selectedItem = null;
             switch (sourceDataPartitionMode) {
@@ -2720,6 +2721,14 @@ public class DLCopy extends JFrame
                 break;
 
             case ISO_SELECTION:
+                try {
+                    if (systemMediumRadioButton.isSelected() &&
+                            !isUnmountedPersistenceAvailable()) {
+                        return;
+                    }
+                } catch (IOException | DBusException ex) {
+                    LOGGER.log(Level.SEVERE, "", ex);
+                }
                 state = State.ISO_INSTALLATION;
                 setLabelHighlighted(infoStepLabel, false);
                 setLabelHighlighted(selectionLabel, false);
@@ -3150,7 +3159,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }
 
     private void setDataPartitionMode(JComboBox comboBox, String imagePath) {
-        DataPartitionMode destinationDataPartitionMode = null;
+        DataPartitionMode destinationDataPartitionMode;
         String dstString = (String) comboBox.getSelectedItem();
         if (dstString.equals(STRINGS.getString("Not_Used"))) {
             destinationDataPartitionMode = DataPartitionMode.NotUsed;
@@ -3163,7 +3172,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     "unsupported data partition mode: {0}", dstString);
             return;
         }
-        if (sourceDataPartitionMode == destinationDataPartitionMode) {
+        if (source.getDataPartitionMode() == destinationDataPartitionMode) {
             // nothing to do here...
             return;
         }
@@ -4518,8 +4527,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private boolean isUnmountedPersistenceAvailable()
             throws IOException, DBusException {
 
-        // check that persistence is available
-        if (DataPartitionMode.NotUsed == source.getDataPartitionMode()) {
+        // check that a persistence partition is available
+        Partition dataPartition = source.getDataPartition();
+        if (dataPartition == null) {
             JOptionPane.showMessageDialog(this,
                     STRINGS.getString("Error_No_Persistence"),
                     STRINGS.getString("Error"), JOptionPane.ERROR_MESSAGE);
@@ -4527,11 +4537,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         // ensure that the persistence partition is not mounted read-write
-        Partition dataPartition = source.getDataPartition();
-        if (dataPartition == null) {
-            return false;
-        }
-
         String dataPartitionDevice
                 = "/dev/" + dataPartition.getDeviceAndNumber();
         boolean mountedReadWrite = false;
