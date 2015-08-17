@@ -1,3 +1,9 @@
+dlcopy (201508171355-1) lernstick-8; urgency=medium
+
+  * [7da772] fixed data partition handling
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Mon, 17 Aug 2015 13:55:16 +0200
+
 dlcopy (201508121139-1) lernstick-8; urgency=medium
 
   [ kugelfish42 ]
