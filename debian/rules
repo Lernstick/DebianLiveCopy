@@ -10,14 +10,14 @@
 #export DH_VERBOSE=1
 
 DESTDIR               = $(CURDIR)/debian/dlcopy
-DESTDIR_PU            = $(CURDIR)/debian/dlcopy-pu
+DESTDIR_EXAM          = $(CURDIR)/debian/dlcopy-exam
 DESTDIR_COMMON        = $(CURDIR)/debian/dlcopy-common
 
 APPDIR                = $(DESTDIR)/usr/share/applications/
 BINDIR                = $(DESTDIR)/usr/bin/
 
-APPDIR_PU             = $(DESTDIR_PU)/usr/share/applications/
-BINDIR_PU             = $(DESTDIR_PU)/usr/bin/
+APPDIR_EXAM           = $(DESTDIR_EXAM)/usr/share/applications/
+BINDIR_EXAM           = $(DESTDIR_EXAM)/usr/bin/
 
 ICON_DIR              = $(DESTDIR_COMMON)/usr/share/icons/
 BINDIR_COMMON         = $(DESTDIR_COMMON)/usr/bin/
@@ -54,11 +54,11 @@ install: build
 	mkdir -p $(BINDIR)
 	cp usr/bin/dlcopy $(BINDIR)
 
-	# exam environment package  (binary and desktop file)
-	mkdir -p $(APPDIR_PU)
-	cp usr/share/applications/dlcopy_pu.desktop $(APPDIR_PU)
-	mkdir -p $(BINDIR_PU)
-	cp usr/bin/dlcopy_pu $(BINDIR_PU)
+	# exam environment package (binary and desktop file)
+	mkdir -p $(APPDIR_EXAM)
+	cp usr/share/applications/ch-fhnw-dlcopy-dlcopy-exam.desktop $(APPDIR_EXAM)/ch-fhnw-dlcopy-dlcopy.desktop
+	mkdir -p $(BINDIR_EXAM)
+	cp usr/bin/dlcopy_pu $(BINDIR_EXAM)
 
 	# common package (JAR and icon)
 	mkdir -p $(ICON_DIR)

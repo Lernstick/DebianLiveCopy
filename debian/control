@@ -16,7 +16,7 @@ Description: an application to copy Debian Live to other storage media
  provides a graphical copy progress feedback.
  This is the version for the standard Lernstick distribution.
 
-Package: dlcopy-pu
+Package: dlcopy-exam
 Architecture: all
 Depends: dlcopy-common
 Description: an application to copy Debian Live to other storage media
