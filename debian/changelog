@@ -1,3 +1,9 @@
+dlcopy (201508281417-1) lernstick-8; urgency=medium
+
+  * [ef40e5] renamed package and files for exam environment
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 28 Aug 2015 14:17:01 +0200
+
 dlcopy (201508171355-1) lernstick-8; urgency=medium
 
   * [7da772] fixed data partition handling
