@@ -1,3 +1,9 @@
+dlcopy (201509031210-1) lernstick-8; urgency=medium
+
+  * rebuild with newer/fixed lernstickTools libs
+
+ -- Ronny Standtke <ronny.standtke@fhnw.ch>  Thu, 03 Sep 2015 12:10:03 +0200
+
 dlcopy (201508281417-1) lernstick-8; urgency=medium
 
   * [ef40e5] renamed package and files for exam environment
