@@ -11,13 +11,23 @@ import org.freedesktop.dbus.exceptions.DBusException;
  */
 public interface InstallationSource {
 
+    /*
+     * "Removable" USB flash drives must have their exchange partition before
+     * the boot partition. Otherwise Windows can't read the exchange partition.
+     * On the other hand, some firmware (e.g. in the Lenovo B590) only looks at
+     * the very first FAT32 partition for boot files. But only when booting in
+     * UEFI mode...
+     * Therefore we copy the files for UEFI boot also to the exchange partition
+     * when the exchange partition is FAT32 and the stick is "removable".
+     * Here we define the patterns for the different copy operations:
+     */
     public final static String EXCHANGE_BOOT_COPY_PATTERN
             = "boot.*|efi.*|live/initrd.*|live/vmlinuz.*"
-            + "|efi.img|lernstick.ico|autorun.inf";
+            + "|lernstick.ico|autorun.inf|.VolumeIcon.icns|\\.disk.*";
     public final static String BOOT_COPY_PATTERN = EXCHANGE_BOOT_COPY_PATTERN
-            + "|syslinux.*|isolinux.*|.VolumeIcon.icns|live/memtest";
+            + "isolinux.*|syslinux.*|live/memtest";
     public final static String SYSTEM_COPY_PATTERM
-            = "\\.disk.*|live/filesystem.*|md5sum.txt";
+            = "live/filesystem.*|md5sum.txt";
 
     public enum DataPartitionMode {
 
