@@ -1,3 +1,9 @@
+dlcopy (201509071347-1) lernstick-8; urgency=medium
+
+  * [778fe7] fixed another regression in our copy patterns
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Mon, 07 Sep 2015 13:47:37 +0200
+
 dlcopy (201509061810-1) lernstick-8; urgency=medium
 
   * [cef156] fixed regression in copy pattern
