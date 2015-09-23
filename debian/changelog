@@ -1,3 +1,9 @@
+dlcopy (201509232020-1) lernstick-8; urgency=medium
+
+  * [fc18bc] rebuild bootlogo (if neccessary)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Wed, 23 Sep 2015 20:20:42 +0200
+
 dlcopy (201509231906-1) lernstick-8; urgency=medium
 
   * [2419c0] fixed regression in data partition handling
