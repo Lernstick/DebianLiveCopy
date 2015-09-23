@@ -3171,12 +3171,16 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     "unsupported data partition mode: {0}", dstString);
             return;
         }
-        if (source.getDataPartitionMode() == destinationDataPartitionMode) {
-            // nothing to do here...
-            return;
+        LOGGER.log(Level.INFO,
+                "data partition mode of installation source: {0}",
+                source.getDataPartitionMode());
+        LOGGER.log(Level.INFO,
+                "selected data partition mode for destination: {0}",
+                destinationDataPartitionMode);
+        if (source.getDataPartitionMode() != destinationDataPartitionMode) {
+            xmlBootConfigUtil.setDataPartitionMode(destinationDataPartitionMode,
+                    imagePath);
         }
-        xmlBootConfigUtil.setDataPartitionMode(destinationDataPartitionMode,
-                imagePath);
     }
 
     private void resetNextButton() {
@@ -5472,7 +5476,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             throws InterruptedException, IOException, DBusException {
 
         // define CopyJob for exchange paritition
-        boolean sourceExchangeTempMounted = false;
         String destinationExchangePath = null;
         CopyJob exchangeCopyJob = null;
         if (copyExchangeCheckBox.isSelected()) {

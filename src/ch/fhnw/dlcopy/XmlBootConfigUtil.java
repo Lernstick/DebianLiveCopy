@@ -140,6 +140,15 @@ public class XmlBootConfigUtil {
             StreamResult result = new StreamResult(xmlBootConfigFile);
             transformer.transform(source, result);
 
+            // rebuild bootlogo (if neccessary)
+            File parentDir = xmlBootConfigFile.getParentFile();
+            LOGGER.log(Level.INFO, "parentDir: {0}", parentDir);
+            if (parentDir.getName().equals("bootlogo.dir")) {
+                processExecutor.executeProcess(true, true, "gfxboot",
+                        "--archive", parentDir.getPath(),
+                        "--pack-archive", parentDir.getParent() + "/bootlogo");
+            }
+
         } catch (ParserConfigurationException | SAXException | IOException ex) {
             LOGGER.log(Level.WARNING, "could not parse xmlboot config", ex);
         } catch (TransformerException ex) {
