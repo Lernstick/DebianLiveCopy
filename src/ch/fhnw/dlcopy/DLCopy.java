@@ -388,7 +388,12 @@ public class DLCopy extends JFrame
                     STRINGS.getString("No_Exchange_Partition"));
         }
 
-        if (source.getDataPartitionMode() != DataPartitionMode.NotUsed) {
+        Partition dataPartition = source.getDataPartition();
+        if (dataPartition == null) {
+            copyPersistenceCheckBox.setEnabled(false);
+            copyPersistenceCheckBox.setToolTipText(
+                    STRINGS.getString("No_Data_Partition"));
+        } else {
             final String CMD_LINE_FILENAME = "/proc/cmdline";
             try {
                 String cmdLine = readOneLineFile(new File(CMD_LINE_FILENAME));
@@ -400,20 +405,14 @@ public class DLCopy extends JFrame
                         "could not read \"" + CMD_LINE_FILENAME + '\"', ex);
             }
 
+            // We don't just disable the copyPersistenceCheckBox in the case of
+            // persistenceBoot but show a more helpful error/hint dialog later.
             copyPersistenceCheckBox.setEnabled(true);
 
-            Partition dataPartition = source.getDataPartition();
-            if (dataPartition != null) {
-                String checkBoxText = STRINGS.getString("Copy_Data_Partition")
-                        + " (" + LernstickFileTools.getDataVolumeString(
-                                dataPartition.getUsedSpace(false), 1) + ')';
-                copyPersistenceCheckBox.setText(checkBoxText);
-            }
-
-        } else {
-            copyPersistenceCheckBox.setEnabled(false);
-            copyPersistenceCheckBox.setToolTipText(
-                    STRINGS.getString("No_Data_Partition"));
+            String checkBoxText = STRINGS.getString("Copy_Data_Partition")
+                    + " (" + LernstickFileTools.getDataVolumeString(
+                            dataPartition.getUsedSpace(false), 1) + ')';
+            copyPersistenceCheckBox.setText(checkBoxText);
         }
 
         installStorageDeviceList.setModel(installStorageDeviceListModel);
@@ -2722,8 +2721,8 @@ public class DLCopy extends JFrame
 
             case ISO_SELECTION:
                 try {
-                    if (systemMediumRadioButton.isSelected() &&
-                            !isUnmountedPersistenceAvailable()) {
+                    if (systemMediumRadioButton.isSelected()
+                            && !isUnmountedPersistenceAvailable()) {
                         return;
                     }
                 } catch (IOException | DBusException ex) {
