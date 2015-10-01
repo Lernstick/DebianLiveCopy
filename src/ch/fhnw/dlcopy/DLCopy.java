@@ -6418,12 +6418,17 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 public FileVisitResult visitFile(Path path,
                         BasicFileAttributes attributes) throws IOException {
                     if (Files.isSymbolicLink(path)) {
-                        // re-create symbolic link
+                        // recreate symbolic link
                         Path target = Files.readSymbolicLink(path);
+                        LOGGER.log(Level.INFO,
+                                "recreating symbolic link {0} > {1}",
+                                new Object[]{path, target});
                         Files.delete(path);
                         Files.createSymbolicLink(path, target);
                     } else {
-                        // change access time
+                        // change file access time
+                        LOGGER.log(Level.INFO,
+                                "updating access time of {0}", path);
                         BasicFileAttributeView attributeView
                                 = Files.getFileAttributeView(
                                         path, BasicFileAttributeView.class);
