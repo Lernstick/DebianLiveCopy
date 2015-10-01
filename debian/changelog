@@ -1,3 +1,10 @@
+dlcopy (201510011953-1) lernstick-8; urgency=medium
+
+  * [2fc211] try to preserve personal settings and data from old squashfs
+  * [a215ad] fix squashfs handling
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 01 Oct 2015 19:53:21 +0200
+
 dlcopy (201509232020-1) lernstick-8; urgency=medium
 
   * [fc18bc] rebuild bootlogo (if neccessary)
