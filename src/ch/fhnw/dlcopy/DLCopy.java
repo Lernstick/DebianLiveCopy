@@ -6378,18 +6378,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 backupUserData(cowPath, backupDestination);
             }
 
-            // remember user password
-            String userShadowLine = null;
-            List<String> shadowLines = LernstickFileTools.readFile(
-                    new File(cowDir, "/etc/shadow"));
-            for (String shadowLine : shadowLines) {
-                if (shadowLine.startsWith("user:")) {
-                    userShadowLine = shadowLine;
-                    break;
-                }
-            }
-
             // reset data partition
+            // first umount the aufs
+            // (otherwise we would wreak havoc on the aufs metadata)
+            umount(cowPath);
             if (keepPrinterSettingsCheckBox.isSelected()) {
                 processExecutor.executeProcess("find", dataMountPoint,
                         "!", "-regex", dataMountPoint,
@@ -6411,20 +6403,32 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         "!", "-regex", dataMountPoint + "/home.*",
                         "-exec", "rm", "-rf", "{}", ";");
             }
+            // re-mount aufs
+            cowDir = mountAufs(branchDefinition);
+            cowPath = cowDir.getPath();
 
             // Copy-up all personal data from old squashfs to data partition.
-            // For aufs it is enough to change the access file stamp to trigger
-            // a copy-up action.
+            // For aufs it is enough to change the access file stamp of files
+            // to trigger a copy-up action. Symbolic links have to be recreated
+            // to be "copied up" to the data partition.
             final FileTime fileTime = FileTime.fromMillis(
                     System.currentTimeMillis());
             FileVisitor copyUpFileVisitor = new SimpleFileVisitor<Path>() {
                 @Override
                 public FileVisitResult visitFile(Path path,
                         BasicFileAttributes attributes) throws IOException {
-                    BasicFileAttributeView attributeView
-                            = Files.getFileAttributeView(
-                                    path, BasicFileAttributeView.class);
-                    attributeView.setTimes(null, fileTime, null);
+                    if (Files.isSymbolicLink(path)) {
+                        // re-create symbolic link
+                        Path target = Files.readSymbolicLink(path);
+                        Files.delete(path);
+                        Files.createSymbolicLink(path, target);
+                    } else {
+                        // change access time
+                        BasicFileAttributeView attributeView
+                                = Files.getFileAttributeView(
+                                        path, BasicFileAttributeView.class);
+                        attributeView.setTimes(null, fileTime, null);
+                    }
                     return FileVisitResult.CONTINUE;
                 }
             };
@@ -6436,24 +6440,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             finalizeDataPartition(cowPath);
 
-            // disassemble old union
+            // disassemble union
             umount(cowPath);
-            for (String readOnlyMountPoint : readOnlyMountPoints) {
-                umount(readOnlyMountPoint);
-            }
-
-            // union data partition with *new* squashfs
-            readOnlyMountPoints = mountAllSquashFS(source.getSystemPath());
-            branchDefinition = getBranchDefinition(
-                    dataMountPoint, readOnlyMountPoints);
-            cowDir = mountAufs(branchDefinition);
-
-            if (userShadowLine != null) {
-                resetUserPassword(cowDir, userShadowLine);
-            }
-
-            // disassemble new union
-            umount(cowDir.getPath());
             for (String readOnlyMountPoint : readOnlyMountPoints) {
                 umount(readOnlyMountPoint);
             }
@@ -6474,36 +6462,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             return true;
         }
 
-        private void resetUserPassword(File cowDir, String userShadowLine)
-                throws IOException {
-            File shadowFile = new File(cowDir, "/etc/shadow");
-            List <String> shadowLines = LernstickFileTools.readFile(shadowFile);
-            for (int i = 0; i < shadowLines.size(); i++) {
-                String tmpLine = shadowLines.get(i);
-                if (tmpLine.startsWith("user:")) {
-                    if (!tmpLine.equals(userShadowLine)) {
-                        shadowLines.set(i, userShadowLine);
-                        try (FileWriter writer = new FileWriter(shadowFile)) {
-                            for (String shadowLine : shadowLines) {
-                                writer.write(shadowLine);
-                                writer.write(System.lineSeparator());
-                            }
-                        }
-                    }
-                    break;
-                }
-            }
-        }
-
         private String getBranchDefinition(
                 String dataMountPoint, List<String> readOnlyMountPoints) {
             StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append("br=");
             stringBuilder.append(dataMountPoint);
-            // The additional option "=ro+wh" for the data partition is
-            // absolutely neccessary! Otherwise the whiteouts (info about
-            // deleted files) in the data partition are not applied!!!
-            stringBuilder.append("=ro+wh");
             for (String readOnlyMountPoint : readOnlyMountPoints) {
                 stringBuilder.append(':');
                 stringBuilder.append(readOnlyMountPoint);
