@@ -34,6 +34,15 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.net.URL;
+import java.nio.file.FileVisitResult;
+import java.nio.file.FileVisitor;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.SimpleFileVisitor;
+import java.nio.file.attribute.BasicFileAttributeView;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.sql.SQLException;
 import java.text.DateFormat;
 import java.text.MessageFormat;
@@ -3080,21 +3089,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         JFileChooser fileChooser = new JFileChooser();
         if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
-            FileWriter fileWriter = null;
-            try {
-                fileWriter = new FileWriter(selectedFile);
+            try (FileWriter fileWriter = new FileWriter(selectedFile)) {
                 String listString = getUpgradeOverwriteListString();
                 fileWriter.write(listString);
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
-            } finally {
-                if (fileWriter != null) {
-                    try {
-                        fileWriter.close();
-                    } catch (IOException ex) {
-                        LOGGER.log(Level.SEVERE, "", ex);
-                    }
-                }
             }
         }
     }//GEN-LAST:event_upgradeOverwriteExportButtonActionPerformed
@@ -5702,6 +5701,53 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }
 
+    private List<String> mountAllSquashFS(String systemPath)
+            throws IOException {
+        // get a list of all available squashfs
+        FilenameFilter squashFsFilter = new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.endsWith(".squashfs");
+            }
+        };
+        File liveDir = new File(systemPath, "live");
+        File[] squashFileSystems = liveDir.listFiles(squashFsFilter);
+
+        // mount all squashfs read-only in temporary directories
+        List<String> readOnlyMountPoints = new ArrayList<>();
+        File tmpDir = createTempDir("usb2iso");
+        for (int i = 0; i < squashFileSystems.length; i++) {
+            File roDir = new File(tmpDir, "ro" + (i + 1));
+            roDir.mkdirs();
+            String roPath = roDir.getPath();
+            readOnlyMountPoints.add(roPath);
+            String filePath = squashFileSystems[i].getPath();
+            processExecutor.executeProcess(
+                    "mount", "-o", "loop", filePath, roPath);
+        }
+        return readOnlyMountPoints;
+    }
+
+    private File mountAufs(String branchDefinition) throws IOException {
+        // cowDir is placed in /run/ because it is one of
+        // the few directories that are not aufs itself.
+        // Nested aufs is not (yet) supported...
+        File runDir = new File("/run/");
+
+        // To create the file system union, we need a temporary and
+        // writable xino file that must not reside in an aufs. Therefore
+        // we use a file in the /run directory, which is a writable
+        // tmpfs.
+        File xinoTmpFile = File.createTempFile(".aufs.xino", "", runDir);
+        xinoTmpFile.delete();
+
+        File cowDir = LernstickFileTools.createTempDirectory(runDir, "cow");
+        processExecutor.executeProcess("mount", "-t", "aufs",
+                "-o", "xino=" + xinoTmpFile.getPath(),
+                "-o", branchDefinition, "none", cowDir.getPath());
+        return cowDir;
+    }
+
     private class Installer extends Thread implements PropertyChangeListener {
 
         private FileCopier fileCopier;
@@ -6107,6 +6153,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 throws InterruptedException, IOException, DBusException,
                 SQLException {
 
+            //TODO: union old squashfs and data partition!
             // prepare backup destination directories
             File dataDestination
                     = new File(getBackupDestination(storageDevice), "data");
@@ -6312,12 +6359,34 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         storageDevice.getDevice());
                 return true;
             }
-            MountInfo mountInfo = dataPartition.mount();
-            String dataMountPoint = mountInfo.getMountPath();
+
+            MountInfo dataMountInfo = dataPartition.mount();
+            String dataMountPoint = dataMountInfo.getMountPath();
+
+            // union old squashfs with data partitin
+            MountInfo systemMountInfo
+                    = storageDevice.getSystemPartition().mount();
+            List<String> readOnlyMountPoints = mountAllSquashFS(
+                    systemMountInfo.getMountPath());
+            String branchDefinition = getBranchDefinition(
+                    dataMountPoint, readOnlyMountPoints);
+            File cowDir = mountAufs(branchDefinition);
+            String cowPath = cowDir.getPath();
 
             // backup
             if (automaticBackupCheckBox.isSelected()) {
-                backupUserData(dataMountPoint, backupDestination);
+                backupUserData(cowPath, backupDestination);
+            }
+
+            // remember user password
+            String userShadowLine = null;
+            List<String> shadowLines = LernstickFileTools.readFile(
+                    new File(cowDir, "/etc/shadow"));
+            for (String shadowLine : shadowLines) {
+                if (shadowLine.startsWith("user:")) {
+                    userShadowLine = shadowLine;
+                    break;
+                }
             }
 
             // reset data partition
@@ -6343,10 +6412,54 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         "-exec", "rm", "-rf", "{}", ";");
             }
 
-            finalizeDataPartition(dataMountPoint);
+            // Copy-up all personal data from old squashfs to data partition.
+            // For aufs it is enough to change the access file stamp to trigger
+            // a copy-up action.
+            final FileTime fileTime = FileTime.fromMillis(
+                    System.currentTimeMillis());
+            FileVisitor copyUpFileVisitor = new SimpleFileVisitor<Path>() {
+                @Override
+                public FileVisitResult visitFile(Path path,
+                        BasicFileAttributes attributes) throws IOException {
+                    BasicFileAttributeView attributeView
+                            = Files.getFileAttributeView(
+                                    path, BasicFileAttributeView.class);
+                    attributeView.setTimes(null, fileTime, null);
+                    return FileVisitResult.CONTINUE;
+                }
+            };
+            Files.walkFileTree(Paths.get(cowPath, "home"), copyUpFileVisitor);
+            if (keepPrinterSettingsCheckBox.isSelected()) {
+                Files.walkFileTree(
+                        Paths.get(cowPath, "etc"), copyUpFileVisitor);
+            }
+
+            finalizeDataPartition(cowPath);
+
+            // disassemble old union
+            umount(cowPath);
+            for (String readOnlyMountPoint : readOnlyMountPoints) {
+                umount(readOnlyMountPoint);
+            }
+
+            // union data partition with *new* squashfs
+            readOnlyMountPoints = mountAllSquashFS(source.getSystemPath());
+            branchDefinition = getBranchDefinition(
+                    dataMountPoint, readOnlyMountPoints);
+            cowDir = mountAufs(branchDefinition);
+
+            if (userShadowLine != null) {
+                resetUserPassword(cowDir, userShadowLine);
+            }
+
+            // disassemble new union
+            umount(cowDir.getPath());
+            for (String readOnlyMountPoint : readOnlyMountPoints) {
+                umount(readOnlyMountPoint);
+            }
 
             // umount
-            if ((!mountInfo.alreadyMounted()) && (!umount(dataPartition))) {
+            if ((!dataMountInfo.alreadyMounted()) && (!umount(dataPartition))) {
                 return false;
             }
 
@@ -6359,6 +6472,43 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
 
             return true;
+        }
+
+        private void resetUserPassword(File cowDir, String userShadowLine)
+                throws IOException {
+            File shadowFile = new File(cowDir, "/etc/shadow");
+            List <String> shadowLines = LernstickFileTools.readFile(shadowFile);
+            for (int i = 0; i < shadowLines.size(); i++) {
+                String tmpLine = shadowLines.get(i);
+                if (tmpLine.startsWith("user:")) {
+                    if (!tmpLine.equals(userShadowLine)) {
+                        shadowLines.set(i, userShadowLine);
+                        try (FileWriter writer = new FileWriter(shadowFile)) {
+                            for (String shadowLine : shadowLines) {
+                                writer.write(shadowLine);
+                                writer.write(System.lineSeparator());
+                            }
+                        }
+                    }
+                    break;
+                }
+            }
+        }
+
+        private String getBranchDefinition(
+                String dataMountPoint, List<String> readOnlyMountPoints) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("br=");
+            stringBuilder.append(dataMountPoint);
+            // The additional option "=ro+wh" for the data partition is
+            // absolutely neccessary! Otherwise the whiteouts (info about
+            // deleted files) in the data partition are not applied!!!
+            stringBuilder.append("=ro+wh");
+            for (String readOnlyMountPoint : readOnlyMountPoints) {
+                stringBuilder.append(':');
+                stringBuilder.append(readOnlyMountPoint);
+            }
+            return stringBuilder.toString();
         }
 
         private void finalizeDataPartition(String dataMountPoint)
@@ -6916,36 +7066,18 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         private void createSquashFS(String targetDirectory)
                 throws IOException, DBusException {
+
             publish(STRINGS.getString("Mounting_Partitions"));
-            File tmpDir = createTempDir("usb2iso");
 
-            // get a list of all available squashfs
-            FilenameFilter squashFsFilter = new FilenameFilter() {
-                @Override
-                public boolean accept(File dir, String name) {
-                    return name.endsWith(".squashfs");
-                }
-            };
-            File liveDir = new File(source.getSystemPath(), "live");
-            File[] squashFileSystems = liveDir.listFiles(squashFsFilter);
+            // mount all readonly squashfs files
+            List<String> readOnlyMountPoints
+                    = mountAllSquashFS(source.getSystemPath());
 
-            // mount all squashfs read-only in temporary directories
-            List<String> readOnlyMountPoints = new ArrayList<>();
-            for (int i = 0; i < squashFileSystems.length; i++) {
-                File roDir = new File(tmpDir, "ro" + (i + 1));
-                roDir.mkdirs();
-                String roPath = roDir.getPath();
-                readOnlyMountPoints.add(roPath);
-                String filePath = squashFileSystems[i].getPath();
-                processExecutor.executeProcess(
-                        "mount", "-o", "loop", filePath, roPath);
-            }
-
-            // mount persistence
+            // mount persistence (data partition)
             MountInfo dataMountInfo = source.getDataPartition().mount();
             String dataPartitionPath = dataMountInfo.getMountPath();
 
-            // union base image with persistence
+            // create aufs union of squashfs files with persistence
             // ---------------------------------
             // We need an rwDir so that we can change some settings in the
             // lernstickWelcome properties below without affecting the current
@@ -6969,19 +7101,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 stringBuilder.append(readOnlyMountPoint);
             }
             String branchDefinition = stringBuilder.toString();
-
-            // To create the file system union, we need a temporary and
-            // writable xino file that must not reside in an aufs. Therefore
-            // we use a file in the /run directory, which is a writable
-            // tmpfs.
-            File xinoTmpFile = File.createTempFile(
-                    ".aufs.xino", "", new File("/run/"));
-            xinoTmpFile.delete();
-            File cowDir = LernstickFileTools.createTempDirectory(runDir, "cow");
-            String cowPath = cowDir.getPath();
-            processExecutor.executeProcess("mount", "-t", "aufs",
-                    "-o", "xino=" + xinoTmpFile.getPath(),
-                    "-o", branchDefinition, "none", cowPath);
+            File cowDir = mountAufs(branchDefinition);
 
             // apply settings in cow directory
             Properties lernstickWelcomeProperties = new Properties();
@@ -7014,6 +7134,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             });
             publish(STRINGS.getString("Compressing_Filesystem"));
             processExecutor.addPropertyChangeListener(this);
+            String cowPath = cowDir.getPath();
             int exitValue = processExecutor.executeProcess("mksquashfs",
                     cowPath, targetDirectory + "/live/filesystem.squashfs",
                     "-comp", "xz");
