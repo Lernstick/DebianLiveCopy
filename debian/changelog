@@ -2,7 +2,8 @@ dlcopy (201510021735-1) lernstick-8; urgency=medium
 
   * [2fc211] try to preserve personal settings and data from old squashfs
   * [a215ad] fix squashfs handling
-
+  * [a2382b] large code-cleanup
+ 
  -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 02 Oct 2015 17:35:21 +0200
 
 dlcopy (201509232020-1) lernstick-8; urgency=medium
