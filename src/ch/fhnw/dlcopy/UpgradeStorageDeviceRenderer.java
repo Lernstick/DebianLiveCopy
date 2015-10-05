@@ -9,6 +9,7 @@ import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.StorageDevice;
 import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -221,7 +222,7 @@ public class UpgradeStorageDeviceRenderer
                                 "unsupported upgradeVariant {0}",
                                 upgradeVariant);
                 }
-            } catch (DBusException ex) {
+            } catch (DBusException | IOException ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
             }
 

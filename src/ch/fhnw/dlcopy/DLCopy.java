@@ -1145,66 +1145,6 @@ public class DLCopy extends JFrame
         enableNextButton();
     }
 
-    /**
-     * mounts all squashfs found in a given systemPath
-     *
-     * @param systemPath the given systemPath
-     * @return a list of mount points
-     * @throws IOException
-     */
-    public List<String> mountAllSquashFS(String systemPath)
-            throws IOException {
-        // get a list of all available squashfs
-        FilenameFilter squashFsFilter = new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.endsWith(".squashfs");
-            }
-        };
-        File liveDir = new File(systemPath, "live");
-        File[] squashFileSystems = liveDir.listFiles(squashFsFilter);
-
-        // mount all squashfs read-only in temporary directories
-        List<String> readOnlyMountPoints = new ArrayList<>();
-        File tmpDir = createTempDir("usb2iso");
-        for (int i = 0; i < squashFileSystems.length; i++) {
-            File roDir = new File(tmpDir, "ro" + (i + 1));
-            roDir.mkdirs();
-            String roPath = roDir.getPath();
-            readOnlyMountPoints.add(roPath);
-            String filePath = squashFileSystems[i].getPath();
-            processExecutor.executeProcess(
-                    "mount", "-o", "loop", filePath, roPath);
-        }
-        return readOnlyMountPoints;
-    }
-
-    /**
-     * mounts an aufs file system with the given branch definition
-     *
-     * @param branchDefinition the given branch definition
-     * @return the mount point
-     * @throws IOException
-     */
-    public File mountAufs(String branchDefinition) throws IOException {
-        // cowDir is placed in /run/ because it is one of
-        // the few directories that are not aufs itself.
-        // Nested aufs is not (yet) supported...
-        File runDir = new File("/run/");
-
-        // To create the file system union, we need a temporary and
-        // writable xino file that must not reside in an aufs. Therefore
-        // we use a file in the /run directory, which is a writable
-        // tmpfs.
-        File xinoTmpFile = File.createTempFile(".aufs.xino", "", runDir);
-        xinoTmpFile.delete();
-
-        File cowDir = LernstickFileTools.createTempDirectory(runDir, "cow");
-        processExecutor.executeProcess("mount", "-t", "aufs",
-                "-o", "xino=" + xinoTmpFile.getPath(),
-                "-o", branchDefinition, "none", cowDir.getPath());
-        return cowDir;
-    }
 
     /**
      * unmounts a device or mountpoint
@@ -1488,7 +1428,7 @@ public class DLCopy extends JFrame
             LOGGER.severe(errorMessage);
             throw new IOException(errorMessage);
         }
-        
+
         // install MBR
         exitValue = processExecutor.executeScript(
                 "cat " + source.getMbrPath() + " > " + device + '\n'
@@ -4457,7 +4397,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 if (!canUpgrade) {
                     break;
                 }
-            } catch (DBusException ex) {
+            } catch (DBusException | IOException ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
             }
         }
@@ -6557,7 +6497,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             // mount all readonly squashfs files
             List<String> readOnlyMountPoints
-                    = mountAllSquashFS(source.getSystemPath());
+                    = LernstickFileTools.mountAllSquashFS(
+                            source.getSystemPath());
 
             // mount persistence (data partition)
             MountInfo dataMountInfo = source.getDataPartition().mount();
@@ -6587,7 +6528,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 stringBuilder.append(readOnlyMountPoint);
             }
             String branchDefinition = stringBuilder.toString();
-            File cowDir = mountAufs(branchDefinition);
+            File cowDir = LernstickFileTools.mountAufs(branchDefinition);
 
             // apply settings in cow directory
             Properties lernstickWelcomeProperties = new Properties();

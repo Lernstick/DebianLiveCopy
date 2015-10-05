@@ -413,11 +413,11 @@ public class Upgrader extends SwingWorker<Void, Void>
         // union old squashfs with data partitin
         MountInfo systemMountInfo
                 = storageDevice.getSystemPartition().mount();
-        List<String> readOnlyMountPoints = dlCopy.mountAllSquashFS(
+        List<String> readOnlyMountPoints = LernstickFileTools.mountAllSquashFS(
                 systemMountInfo.getMountPath());
-        String branchDefinition = getBranchDefinition(
+        String branchDefinition = LernstickFileTools.getBranchDefinition(
                 dataMountPoint, readOnlyMountPoints);
-        File cowDir = dlCopy.mountAufs(branchDefinition);
+        File cowDir = LernstickFileTools.mountAufs(branchDefinition);
         String cowPath = cowDir.getPath();
 
         // backup
@@ -452,7 +452,7 @@ public class Upgrader extends SwingWorker<Void, Void>
                     "-exec", "rm", "-rf", "{}", ";");
         }
         // re-mount aufs
-        cowDir = dlCopy.mountAufs(branchDefinition);
+        cowDir = LernstickFileTools.mountAufs(branchDefinition);
         cowPath = cowDir.getPath();
 
         // Copy-up all personal data from old squashfs to data partition.
@@ -526,18 +526,6 @@ public class Upgrader extends SwingWorker<Void, Void>
         }
 
         return true;
-    }
-
-    private String getBranchDefinition(
-            String dataMountPoint, List<String> readOnlyMountPoints) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("br=");
-        stringBuilder.append(dataMountPoint);
-        for (String readOnlyMountPoint : readOnlyMountPoints) {
-            stringBuilder.append(':');
-            stringBuilder.append(readOnlyMountPoint);
-        }
-        return stringBuilder.toString();
     }
 
     private void finalizeDataPartition(String dataMountPoint)
