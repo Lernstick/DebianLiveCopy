@@ -1,3 +1,9 @@
+dlcopy (201510051757-1) lernstick-8; urgency=medium
+
+  * [2e0c4e] moved some code to lernstickTools
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Mon, 05 Oct 2015 17:57:13 +0200
+
 dlcopy (201510021735-1) lernstick-8; urgency=medium
 
   * [2fc211] try to preserve personal settings and data from old squashfs
