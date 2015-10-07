@@ -1,3 +1,9 @@
+dlcopy (201510072317-1) lernstick-8; urgency=medium
+
+  * [aa2930] don't try to copy-up named pipes or unix domain sockets
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Wed, 07 Oct 2015 23:16:55 +0200
+
 dlcopy (201510051757-1) lernstick-8; urgency=medium
 
   * [2e0c4e] moved some code to lernstickTools
