@@ -474,8 +474,13 @@ public class Upgrader extends SwingWorker<Void, Void>
                     Files.delete(file);
                     Files.createSymbolicLink(file, target);
                 } else {
-                    // change file access time
-                    changeAccessTime(file);
+                    if (attributes.isOther()) {
+                        LOGGER.log(Level.WARNING, "skipping {0} (probably a "
+                                + "named pipe or unix domain socket, bot are "
+                                + "not supported!)", file);
+                    } else {
+                        changeAccessTime(file);
+                    }
                 }
                 return FileVisitResult.CONTINUE;
             }
@@ -489,8 +494,7 @@ public class Upgrader extends SwingWorker<Void, Void>
 
             private void changeAccessTime(Path path) throws IOException {
                 // change file access time
-                LOGGER.log(Level.INFO,
-                        "updating access time of {0}", path);
+                LOGGER.log(Level.INFO, "updating access time of {0}", path);
                 BasicFileAttributeView attributeView
                         = Files.getFileAttributeView(
                                 path, BasicFileAttributeView.class);
