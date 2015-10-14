@@ -78,6 +78,12 @@ public class XmlBootConfigUtil {
         return null;
     }
 
+    /**
+     * Sets the data partition mode in xmlboot and GRUB
+     *
+     * @param destinationDataPartitionMode the DataPartitionMode to set
+     * @param imagePath the path where the target image is mounted
+     */
     public void setDataPartitionMode(
             DataPartitionMode destinationDataPartitionMode, String imagePath) {
 
@@ -210,6 +216,9 @@ public class XmlBootConfigUtil {
                     LOGGER.log(Level.INFO,
                             "xmlboot config file: {0}", configFile);
                     return configFile;
+                } else {
+                    LOGGER.log(Level.FINE,
+                            "xmlboot config NOT found at {0}", configFile);
                 }
             }
         }

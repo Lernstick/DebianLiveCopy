@@ -31,6 +31,9 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.*;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
@@ -938,6 +941,18 @@ public class DLCopy extends JFrame
         });
     }
 
+    /**
+     * Installs the installation source to a storage device
+     *
+     * @param fileCopier the Filecopier used for copying the system partition
+     * @param storageDevice the target storage device
+     * @param exchangePartitionLabel the label of the exchange partition
+     * @param installerOrUpgrader the Installer or Upgrader that is calling this
+     * method
+     * @throws InterruptedException when the installation was interrupted
+     * @throws IOException when an I/O exception occurs
+     * @throws DBusException when there was a problem with DBus
+     */
     public void copyToStorageDevice(FileCopier fileCopier,
             StorageDevice storageDevice, String exchangePartitionLabel,
             InstallerOrUpgrader installerOrUpgrader)
@@ -1145,7 +1160,6 @@ public class DLCopy extends JFrame
         enableNextButton();
     }
 
-
     /**
      * unmounts a device or mountpoint
      *
@@ -1331,8 +1345,11 @@ public class DLCopy extends JFrame
 
         // use FAT attributes to hide boot files in Windows
         for (String bootFile : bootFiles) {
-            processExecutor.executeProcess("fatattr", "+h",
-                    destinationExchangePath + '/' + bootFile);
+            Path destinationPath = Paths.get(destinationExchangePath, bootFile);
+            if (Files.exists(destinationPath)) {
+                processExecutor.executeProcess(
+                        "fatattr", "+h", destinationPath.toString());
+            }
         }
 
         // use ".hidden" file to hide boot files in OS X
@@ -1340,7 +1357,11 @@ public class DLCopy extends JFrame
         try (FileWriter fileWriter = new FileWriter(osxHiddenFilePath)) {
             String lineSeperator = System.lineSeparator();
             for (String bootFile : bootFiles) {
-                fileWriter.write(bootFile + lineSeperator);
+                Path destinationPath = Paths.get(
+                        destinationExchangePath, bootFile);
+                if (Files.exists(destinationPath)) {
+                    fileWriter.write(bootFile + lineSeperator);
+                }
             }
         } catch (IOException ex) {
             LOGGER.log(Level.WARNING, "", ex);
@@ -3913,8 +3934,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 "selected data partition mode for destination: {0}",
                 destinationDataPartitionMode);
         if (source.getDataPartitionMode() != destinationDataPartitionMode) {
-            xmlBootConfigUtil.setDataPartitionMode(destinationDataPartitionMode,
-                    imagePath);
+            xmlBootConfigUtil.setDataPartitionMode(
+                    destinationDataPartitionMode, imagePath);
         }
     }
 
