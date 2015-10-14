@@ -1,3 +1,10 @@
+dlcopy (201510141203-1) lernstick-8; urgency=medium
+
+  * [b37f19] more comments and logging, added some checks to prevent unnecessary process calls
+  * [0c000e] reconfigure GRUB even when XMLboot config file is not found (important for GRUB on exchange partition) renamed XmlBootConfigUtil to BootConfigUtil
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Wed, 14 Oct 2015 12:03:12 +0200
+
 dlcopy (201510072317-1) lernstick-8; urgency=medium
 
   * [aa2930] don't try to copy-up named pipes or unix domain sockets
