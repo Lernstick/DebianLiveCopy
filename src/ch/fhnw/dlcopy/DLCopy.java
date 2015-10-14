@@ -142,8 +142,8 @@ public class DLCopy extends JFrame
     private long systemSizeEnlarged = -1;
     private final DateFormat timeFormat;
 
-    private final XmlBootConfigUtil xmlBootConfigUtil
-            = new XmlBootConfigUtil(processExecutor);
+    private final BootConfigUtil bootConfigUtil
+            = new BootConfigUtil(processExecutor);
 
     private enum State {
 
@@ -329,7 +329,7 @@ public class DLCopy extends JFrame
 
         try {
             systemSource = new SystemInstallationSource(processExecutor,
-                    xmlBootConfigUtil);
+                    bootConfigUtil);
             source = systemSource;
         } catch (IOException | DBusException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
@@ -3934,7 +3934,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 "selected data partition mode for destination: {0}",
                 destinationDataPartitionMode);
         if (source.getDataPartitionMode() != destinationDataPartitionMode) {
-            xmlBootConfigUtil.setDataPartitionMode(
+            bootConfigUtil.setDataPartitionMode(
                     destinationDataPartitionMode, imagePath);
         }
     }

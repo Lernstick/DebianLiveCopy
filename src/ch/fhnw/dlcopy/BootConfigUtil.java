@@ -22,16 +22,16 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 /**
- * Manipulate XML boot config files.
+ * Manipulate XMLboot and GRUB config files.
  */
-public class XmlBootConfigUtil {
+public class BootConfigUtil {
 
     private final static Logger LOGGER
-            = Logger.getLogger(XmlBootConfigUtil.class.getName());
+            = Logger.getLogger(BootConfigUtil.class.getName());
 
     private final ProcessExecutor processExecutor;
 
-    public XmlBootConfigUtil(ProcessExecutor processExecutor) {
+    public BootConfigUtil(ProcessExecutor processExecutor) {
         this.processExecutor = processExecutor;
     }
 
@@ -87,7 +87,13 @@ public class XmlBootConfigUtil {
     public void setDataPartitionMode(
             DataPartitionMode destinationDataPartitionMode, String imagePath) {
 
-        // xmlboot
+        setDataPartitionModeXmlBoot(destinationDataPartitionMode, imagePath);
+        setDataPartitionModeGrub(destinationDataPartitionMode, imagePath);
+    }
+
+    private void setDataPartitionModeXmlBoot(
+            DataPartitionMode destinationDataPartitionMode, String imagePath) {
+
         try {
             File xmlBootConfigFile = getXmlBootConfigFile(new File(imagePath));
             if (xmlBootConfigFile == null) {
@@ -160,8 +166,10 @@ public class XmlBootConfigUtil {
         } catch (TransformerException ex) {
             LOGGER.log(Level.WARNING, "could not save xmlboot config", ex);
         }
+    }
 
-        // grub
+    private void setDataPartitionModeGrub(
+            DataPartitionMode destinationDataPartitionMode, String imagePath) {
         String persistenceString = "";
         switch (destinationDataPartitionMode) {
             case ReadOnly:
