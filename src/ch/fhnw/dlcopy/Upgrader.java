@@ -503,8 +503,8 @@ public class Upgrader extends SwingWorker<Void, Void>
         };
         Files.walkFileTree(Paths.get(cowPath, "home"), copyUpFileVisitor);
         if (keepPrinterSettings) {
-            Files.walkFileTree(
-                    Paths.get(cowPath, "etc"), copyUpFileVisitor);
+            Files.walkFileTree(Paths.get(
+                    cowPath, "etc/cups"), copyUpFileVisitor);
         }
 
         finalizeDataPartition(cowPath);
