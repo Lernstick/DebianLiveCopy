@@ -1,3 +1,9 @@
+dlcopy (201511021701-1) lernstick-8; urgency=medium
+
+  * [c96fe3] fixed copy-up of printer settings
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Mon, 02 Nov 2015 17:01:09 +0100
+
 dlcopy (201510141203-1) lernstick-8; urgency=medium
 
   * [b37f19] more comments and logging, added some checks to prevent unnecessary process calls
