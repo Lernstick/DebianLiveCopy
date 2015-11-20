@@ -11,6 +11,18 @@ import ch.fhnw.util.StorageDevice;
 public interface DLCopyGUI {
 
     /**
+     * shows the user interface for showing the installation progress
+     */
+    public void showInstallProgress();
+
+    /**
+     * sets the info about the currently installed device
+     *
+     * @param storageDevice the StorageDevice to be installed
+     */
+    public void installingDeviceStarted(StorageDevice storageDevice);
+
+    /**
      * shows the user interface for creating file systems of a running
      * installation
      */
@@ -23,6 +35,13 @@ public interface DLCopyGUI {
      * installation
      */
     public void showInstallFileCopy(FileCopier fileCopier);
+    
+    /**
+     * sets the current output line of the copy process
+     *
+     * @param line the current output line of the copy process
+     */
+    public void setInstallCopyLine(String line);
 
     /**
      * shows the user interface for unmouting file systems during installation
@@ -34,6 +53,21 @@ public interface DLCopyGUI {
      * installation
      */
     public void showInstallWritingBootSector();
+
+    /**
+     * called when installing of a StorageDevice finished
+     *
+     * @param errorMessage the error message or <code>null</code> if there was
+     * no error
+     * @param autoNumberStart the new auto numbering start value
+     */
+    public void installingDeviceFinished(
+            String errorMessage, int autoNumberStart);
+
+    /**
+     * called when installing all selected StorageDevices finished
+     */
+    public void installingListFinished();
 
     /**
      * shows the user interface for creating file systems of a running upgrade
@@ -152,7 +186,15 @@ public interface DLCopyGUI {
      * called when upgrading all selected StorageDevices finished
      */
     public void upgradingListFinished();
-
+    
+    /**
+     * sets the progress info in the title of the main window
+     *
+     * @param progressInfo the progress info to show in the title of the main
+     * window
+     */
+    public void setProgressInTitle(String progressInfo);
+    
     /**
      * shows an error message
      *

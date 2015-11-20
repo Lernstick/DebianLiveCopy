@@ -119,18 +119,17 @@ public class DLCopy extends JFrame
         EXCHANGE
     }
 
-    private final static ProcessExecutor processExecutor
+    private final static Logger LOGGER
+            = Logger.getLogger(DLCopy.class.getName());
+    private final static ProcessExecutor PROCESS_EXECUTOR
             = new ProcessExecutor();
     private final static FileFilter NO_HIDDEN_FILES_FILTER
             = NoHiddenFilesSwingFileFilter.getInstance();
-    private final static NumberFormat numberFormat = NumberFormat.getInstance();
-    private final static Logger LOGGER
-            = Logger.getLogger(DLCopy.class.getName());
     private final static long MINIMUM_FREE_MEMORY = 300 * MEGA;
     private final static String UDISKS_ADDED = "added:";
     private final static String UDISKS_REMOVED = "removed:";
-    private final DefaultListModel installStorageDeviceListModel
-            = new DefaultListModel();
+    private final DefaultListModel<StorageDevice> installStorageDeviceListModel
+            = new DefaultListModel<>();
     private final DefaultListModel<StorageDevice> upgradeStorageDeviceListModel
             = new DefaultListModel<>();
     private final DefaultListModel repairStorageDeviceListModel
@@ -143,7 +142,7 @@ public class DLCopy extends JFrame
     private final DateFormat timeFormat;
 
     private final BootConfigUtil bootConfigUtil
-            = new BootConfigUtil(processExecutor);
+            = new BootConfigUtil(PROCESS_EXECUTOR);
 
     private enum State {
 
@@ -216,10 +215,10 @@ public class DLCopy extends JFrame
     private final StorageDeviceListUpdateDialogHandler storageDeviceListUpdateDialogHandler
             = new StorageDeviceListUpdateDialogHandler(this);
 
-    private int currentDevice;
+    private int batchCounter;
+    private long deviceStartTime;
+    private StorageDevice currentDevice;
     private List<StorageDeviceResult> resultsList;
-    private long upgradeStart;
-    private StorageDevice upgradingDevice;
 
     /**
      * Creates new form DLCopy
@@ -255,7 +254,7 @@ public class DLCopy extends JFrame
         // prepare processExecutor to always use the POSIX locale
         Map<String, String> environment = new HashMap<>();
         environment.put("LC_ALL", "C");
-        processExecutor.setEnvironment(environment);
+        PROCESS_EXECUTOR.setEnvironment(environment);
 
         ToolTipManager.sharedInstance().setDismissDelay(60000);
 
@@ -328,7 +327,7 @@ public class DLCopy extends JFrame
         }
 
         try {
-            systemSource = new SystemInstallationSource(processExecutor,
+            systemSource = new SystemInstallationSource(PROCESS_EXECUTOR,
                     bootConfigUtil);
             source = systemSource;
         } catch (IOException | DBusException ex) {
@@ -336,7 +335,7 @@ public class DLCopy extends JFrame
 
         }
         if (isoImagePath != null) {
-            source = new IsoInstallationSource(isoImagePath, processExecutor);
+            source = new IsoInstallationSource(isoImagePath, PROCESS_EXECUTOR);
         }
 
         initComponents();
@@ -661,19 +660,100 @@ public class DLCopy extends JFrame
     }
 
     @Override
-    public void setUpgradeBackupProgress(String progressInfo) {
-        setLabelTextonEDT(upgradeBackupProgressLabel, progressInfo);
+    public void showInstallProgress() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                showCard(cardPanel, "installTabbedPane");
+            }
+        });
     }
 
     @Override
-    public void setUpgradeBackupFilename(String filename) {
-        setLabelTextonEDT(upgradeBackupFilenameLabel, filename);
+    public void installingDeviceStarted(StorageDevice storageDevice) {
+        deviceStarted(storageDevice);
+        
+        // update label
+        String pattern = STRINGS.getString("Install_Device_Info");
+        String deviceInfo = MessageFormat.format(pattern,
+                storageDevice.getVendor() + " " + storageDevice.getModel() + " "
+                + LernstickFileTools.getDataVolumeString(
+                        storageDevice.getSize(), 1),
+                "/dev/" + storageDevice.getDevice(), batchCounter,
+                installStorageDeviceList.getSelectedIndices().length);
+        setLabelTextonEDT(currentlyInstalledDeviceLabel, deviceInfo);
+
+        // add "in progress" entry to results table
+        installationResultsTableModel.setList(resultsList);
     }
 
     @Override
-    public void setUpgradeBackupDuration(final long time) {
-        setLabelTextonEDT(upgradeBackupDurationLabel,
-                timeFormat.format(new Date(time)));
+    public void showInstallCreatingFileSystems() {
+        showInstallIndeterminateProgressBarText("Creating_File_Systems");
+    }
+
+    @Override
+    public void showInstallFileCopy(FileCopier fileCopier) {
+        showFileCopy(installFileCopierPanel, fileCopier, installCopyLabel,
+                installCardPanel, "installCopyPanel");
+    }
+
+    @Override
+    public void setInstallCopyLine(String line) {
+        cpActionListener.setCurrentLine(line);
+    }
+
+    @Override
+    public void showInstallUnmounting() {
+        showInstallIndeterminateProgressBarText("Unmounting_File_Systems");
+    }
+
+    @Override
+    public void showInstallWritingBootSector() {
+        showInstallIndeterminateProgressBarText("Writing_Boot_Sector");
+    }
+
+    @Override
+    public void installingDeviceFinished(
+            String errorMessage, int autoNumberStart) {
+        // update final report
+        deviceFinished(errorMessage);
+
+        // update current report
+        installationResultsTableModel.setList(resultsList);
+
+        autoNumberStartSpinner.setValue(autoNumberStart);
+    }
+
+    @Override
+    public void installingListFinished() {
+        batchFinished(
+                "Installation_Done_Message_From_Non_Removable_Boot_Device",
+                "Installation_Done_Message_From_Removable_Boot_Device",
+                "Installation_Report");
+    }
+
+    @Override
+    public void upgradingDeviceStarted(StorageDevice storageDevice) {
+        deviceStarted(storageDevice);
+        
+        // update label
+        String pattern = STRINGS.getString("Upgrade_Device_Info");
+        String deviceInfo = MessageFormat.format(pattern, batchCounter,
+                upgradeStorageDeviceList.getSelectedIndices().length,
+                storageDevice.getVendor() + " " + storageDevice.getModel(), " ("
+                + DLCopy.STRINGS.getString("Size") + ": "
+                + LernstickFileTools.getDataVolumeString(
+                        storageDevice.getSize(), 1) + ", "
+                + DLCopy.STRINGS.getString("Revision") + ": "
+                + storageDevice.getRevision() + ", "
+                + DLCopy.STRINGS.getString("Serial") + ": "
+                + storageDevice.getSerial() + ", "
+                + "&#47;dev&#47;" + storageDevice.getDevice() + ")");
+        setLabelTextonEDT(currentlyUpgradedDeviceLabel, deviceInfo);
+
+        // add "in progress" entry to results table
+        upgradeResultsTableModel.setList(resultsList);
     }
 
     @Override
@@ -688,6 +768,22 @@ public class DLCopy extends JFrame
                 showCard(upgradeCardPanel, "upgradeBackupPanel");
             }
         });
+    }
+
+    @Override
+    public void setUpgradeBackupProgress(String progressInfo) {
+        setLabelTextonEDT(upgradeBackupProgressLabel, progressInfo);
+    }
+
+    @Override
+    public void setUpgradeBackupFilename(String filename) {
+        setLabelTextonEDT(upgradeBackupFilenameLabel, filename);
+    }
+
+    @Override
+    public void setUpgradeBackupDuration(final long time) {
+        setLabelTextonEDT(upgradeBackupDurationLabel,
+                timeFormat.format(new Date(time)));
     }
 
     @Override
@@ -743,98 +839,6 @@ public class DLCopy extends JFrame
     }
 
     @Override
-    public void upgradingDeviceStarted(StorageDevice storageDevice) {
-        // remember timestamp of upgrade start
-        upgradeStart = System.currentTimeMillis();
-
-        upgradingDevice = storageDevice;
-
-        // update label
-        currentDevice++;
-        String pattern = STRINGS.getString("Upgrade_Device_Info");
-        String deviceInfo = MessageFormat.format(pattern, currentDevice,
-                upgradeStorageDeviceList.getSelectedIndices().length,
-                storageDevice.getVendor() + " " + storageDevice.getModel(), " ("
-                + DLCopy.STRINGS.getString("Size") + ": "
-                + LernstickFileTools.getDataVolumeString(
-                        storageDevice.getSize(), 1) + ", "
-                + DLCopy.STRINGS.getString("Revision") + ": "
-                + storageDevice.getRevision() + ", "
-                + DLCopy.STRINGS.getString("Serial") + ": "
-                + storageDevice.getSerial() + ", "
-                + "&#47;dev&#47;" + storageDevice.getDevice() + ")");
-        setLabelTextonEDT(currentlyUpgradedDeviceLabel, deviceInfo);
-
-        // add "in progress" entry to results table
-        resultsList.add(new StorageDeviceResult(storageDevice, -1, null));
-        upgradeResultsTableModel.setList(resultsList);
-    }
-
-    @Override
-    public void upgradingDeviceFinished(String errorMessage) {
-        long duration = System.currentTimeMillis() - upgradeStart;
-
-        // remove "in progress" entry
-        resultsList.remove(resultsList.size() - 1);
-
-        // add current result
-        resultsList.add(new StorageDeviceResult(
-                upgradingDevice, duration, errorMessage));
-
-        // update current and final report
-        upgradeResultsTableModel.setList(resultsList);
-        resultsTableModel.setList(resultsList);
-    }
-
-    @Override
-    public void upgradingListFinished() {
-        setTitle(STRINGS.getString("DLCopy.title"));
-        String key;
-        switch (source.getDeviceType()) {
-            case HardDrive:
-            case OpticalDisc:
-                key = "Upgrade_Done_From_Non_Removable_Device";
-                break;
-            default:
-                key = "Upgrade_Done_From_Removable_Device";
-        }
-        resultsInfoLabel.setText(STRINGS.getString(key));
-        resultsTitledPanel.setBorder(BorderFactory.createTitledBorder(
-                STRINGS.getString("Upgrade_Report")));
-        showCard(cardPanel, "resultsPanel");
-        previousButton.setEnabled(true);
-        nextButton.setText(STRINGS.getString("Done"));
-        nextButton.setIcon(new ImageIcon(
-                getClass().getResource("/ch/fhnw/dlcopy/icons/exit.png")));
-        nextButton.setEnabled(true);
-        previousButton.requestFocusInWindow();
-        getRootPane().setDefaultButton(previousButton);
-        playNotifySound();
-        toFront();
-    }
-
-    @Override
-    public void showInstallCreatingFileSystems() {
-        showInstallIndeterminateProgressBarText("Creating_File_Systems");
-    }
-
-    @Override
-    public void showInstallFileCopy(FileCopier fileCopier) {
-        showFileCopy(installFileCopierPanel, fileCopier, installCopyLabel,
-                installCardPanel, "installCopyPanel");
-    }
-
-    @Override
-    public void showInstallUnmounting() {
-        showInstallIndeterminateProgressBarText("Unmounting_File_Systems");
-    }
-
-    @Override
-    public void showInstallWritingBootSector() {
-        showInstallIndeterminateProgressBarText("Writing_Boot_Sector");
-    }
-
-    @Override
     public void showUpgradeChangingPartitionSizes() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -887,6 +891,33 @@ public class DLCopy extends JFrame
     @Override
     public void showUpgradeWritingBootSector() {
         showUpgradeIndeterminateProgressBarText("Writing_Boot_Sector");
+    }
+
+    @Override
+    public void upgradingDeviceFinished(String errorMessage) {
+        // upgrade final report
+        deviceFinished(errorMessage);
+
+        // update current report
+        upgradeResultsTableModel.setList(resultsList);
+    }
+
+    @Override
+    public void upgradingListFinished() {
+        batchFinished(
+                "Upgrade_Done_From_Non_Removable_Device",
+                "Upgrade_Done_From_Removable_Device",
+                "Upgrade_Report");
+    }
+
+    @Override
+    public void setProgressInTitle(final String progressInfo) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                setTitle(progressInfo);
+            }
+        });
     }
 
     @Override
@@ -1086,7 +1117,7 @@ public class DLCopy extends JFrame
         // will later get exceptions similar to this one:
         // org.freedesktop.dbus.exceptions.DBusExecutionException:
         // No such interface 'org.freedesktop.UDisks2.Filesystem'
-        processExecutor.executeProcess("partprobe", device);
+        PROCESS_EXECUTOR.executeProcess("partprobe", device);
         // Sigh... even after partprobe exits, we have to give udisks even more
         // time to get its act together and finally know about the new
         // partitions.
@@ -1187,7 +1218,7 @@ public class DLCopy extends JFrame
             }
         }
 
-        int exitValue = processExecutor.executeProcess("umount", deviceOrMountpoint);
+        int exitValue = PROCESS_EXECUTOR.executeProcess("umount", deviceOrMountpoint);
         if (exitValue != 0) {
             String errorMessage = STRINGS.getString("Error_Umount");
             errorMessage = MessageFormat.format(errorMessage, deviceOrMountpoint);
@@ -1249,20 +1280,20 @@ public class DLCopy extends JFrame
     public void formatBootAndSystemPartition(
             String bootDevice, String systemDevice) throws IOException {
 
-        int exitValue = processExecutor.executeProcess(
+        int exitValue = PROCESS_EXECUTOR.executeProcess(
                 "/sbin/mkfs.vfat", "-n", Partition.BOOT_LABEL, bootDevice);
         if (exitValue != 0) {
-            LOGGER.severe(processExecutor.getOutput());
+            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
             String errorMessage
                     = STRINGS.getString("Error_Create_Boot_Partition");
             LOGGER.severe(errorMessage);
             throw new IOException(errorMessage);
         }
 
-        exitValue = processExecutor.executeProcess(
+        exitValue = PROCESS_EXECUTOR.executeProcess(
                 "/sbin/mkfs.ext4", "-L", systemPartitionLabel, systemDevice);
         if (exitValue != 0) {
-            LOGGER.severe(processExecutor.getOutput());
+            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
             String errorMessage
                     = STRINGS.getString("Error_Create_System_Partition");
             LOGGER.severe(errorMessage);
@@ -1347,7 +1378,7 @@ public class DLCopy extends JFrame
         for (String bootFile : bootFiles) {
             Path destinationPath = Paths.get(destinationExchangePath, bootFile);
             if (Files.exists(destinationPath)) {
-                processExecutor.executeProcess(
+                PROCESS_EXECUTOR.executeProcess(
                         "fatattr", "+h", destinationPath.toString());
             }
         }
@@ -1368,7 +1399,7 @@ public class DLCopy extends JFrame
         }
 
         // use FAT attributes again to hide OS X ".hidden" file in Windows
-        processExecutor.executeProcess("fatattr", "+h", osxHiddenFilePath);
+        PROCESS_EXECUTOR.executeProcess("fatattr", "+h", osxHiddenFilePath);
     }
 
     /**
@@ -1414,7 +1445,7 @@ public class DLCopy extends JFrame
                     }
                 }
                 writeFile(md5sumFile, lines);
-                processExecutor.executeProcess("sync");
+                PROCESS_EXECUTOR.executeProcess("sync");
             } else {
                 LOGGER.log(Level.WARNING,
                         "file \"{0}\" does not exist!", md5sumFileName);
@@ -1445,13 +1476,13 @@ public class DLCopy extends JFrame
         if (exitValue != 0) {
             String errorMessage = STRINGS.getString("Make_Bootable_Failed");
             errorMessage = MessageFormat.format(
-                    errorMessage, bootDevice, processExecutor.getOutput());
+                    errorMessage, bootDevice, PROCESS_EXECUTOR.getOutput());
             LOGGER.severe(errorMessage);
             throw new IOException(errorMessage);
         }
 
         // install MBR
-        exitValue = processExecutor.executeScript(
+        exitValue = PROCESS_EXECUTOR.executeScript(
                 "cat " + source.getMbrPath() + " > " + device + '\n'
                 + "sync");
         if (exitValue != 0) {
@@ -2052,7 +2083,7 @@ public class DLCopy extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 2, 0);
         autoNumberPanel.add(autoNumberStartLabel, gridBagConstraints);
 
-        autoNumberStartSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), null, null, Integer.valueOf(1)));
+        autoNumberStartSpinner.setModel(new javax.swing.SpinnerNumberModel(1, null, null, 1));
         autoNumberStartSpinner.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -2067,7 +2098,7 @@ public class DLCopy extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 2, 0);
         autoNumberPanel.add(autoNumberIncrementLabel, gridBagConstraints);
 
-        autoNumberIncrementSpinner.setModel(new javax.swing.SpinnerNumberModel(Integer.valueOf(1), Integer.valueOf(1), null, Integer.valueOf(1)));
+        autoNumberIncrementSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, null, 1));
         autoNumberIncrementSpinner.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -2360,7 +2391,7 @@ public class DLCopy extends JFrame
         doneLabel.setFont(doneLabel.getFont().deriveFont(doneLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
         doneLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         doneLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/usbpendrive_unmount_tux.png"))); // NOI18N
-        doneLabel.setText(bundle.getString("Done_Message_From_Removable_Boot_Device")); // NOI18N
+        doneLabel.setText(bundle.getString("Installation_Done_Message_From_Removable_Boot_Device")); // NOI18N
         doneLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         doneLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
 
@@ -3281,9 +3312,9 @@ public class DLCopy extends JFrame
             toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(toISOSelectionPanelLayout.createSequentialGroup()
                 .addContainerGap()
-                .addComponent(tmpDriveInfoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 90, Short.MAX_VALUE)
+                .addComponent(tmpDriveInfoLabel)
                 .addGap(18, 18, 18)
-                .addComponent(toIsoGridBagPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 263, Short.MAX_VALUE)
+                .addComponent(toIsoGridBagPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 233, Short.MAX_VALUE)
                 .addContainerGap())
         );
 
@@ -3339,7 +3370,7 @@ public class DLCopy extends JFrame
 
         cardPanel.add(toISODonePanel, "toISODonePanel");
 
-        resultsInfoLabel.setText(bundle.getString("Done_Message_From_Non_Removable_Boot_Device")); // NOI18N
+        resultsInfoLabel.setText(bundle.getString("Installation_Done_Message_From_Removable_Boot_Device")); // NOI18N
 
         resultsTitledPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("Installation_Report"))); // NOI18N
         resultsTitledPanel.setLayout(new java.awt.GridBagLayout());
@@ -3370,7 +3401,7 @@ public class DLCopy extends JFrame
                 .addContainerGap()
                 .addComponent(resultsInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(resultsTitledPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 332, Short.MAX_VALUE))
+                .addComponent(resultsTitledPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 302, Short.MAX_VALUE))
         );
 
         cardPanel.add(resultsPanel, "resultsPanel");
@@ -4044,15 +4075,15 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private void addHiddenFilesFilter(final JFileChooser fileChooser) {
         fileChooser.addPropertyChangeListener(
                 new java.beans.PropertyChangeListener() {
-                    @Override
-                    public void propertyChange(
-                            java.beans.PropertyChangeEvent evt) {
-                                fileChooser.setFileHidingEnabled(
-                                        fileChooser.getFileFilter()
-                                        == NO_HIDDEN_FILES_FILTER);
-                                fileChooser.rescanCurrentDirectory();
-                            }
-                });
+            @Override
+            public void propertyChange(
+                    java.beans.PropertyChangeEvent evt) {
+                fileChooser.setFileHidingEnabled(
+                        fileChooser.getFileFilter()
+                        == NO_HIDDEN_FILES_FILTER);
+                fileChooser.rescanCurrentDirectory();
+            }
+        });
         fileChooser.addChoosableFileFilter(NO_HIDDEN_FILES_FILTER);
         fileChooser.setFileFilter(NO_HIDDEN_FILES_FILTER);
     }
@@ -4765,7 +4796,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         if (disableSwap) {
-            int exitValue = processExecutor.executeProcess("swapoff", swapFile);
+            int exitValue = PROCESS_EXECUTOR.executeProcess("swapoff", swapFile);
             if (exitValue != 0) {
                 String errorMessage = STRINGS.getString("Error_Swapoff_File");
                 errorMessage = MessageFormat.format(errorMessage, swapFile);
@@ -4801,7 +4832,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         if (disableSwap) {
-            int exitValue = processExecutor.executeProcess("swapoff", swapFile);
+            int exitValue = PROCESS_EXECUTOR.executeProcess("swapoff", swapFile);
             if (exitValue != 0) {
                 String errorMessage
                         = STRINGS.getString("Error_Swapoff_Partition");
@@ -4923,6 +4954,54 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 progressBar.setString(STRINGS.getString(text));
             }
         });
+    }
+
+    private void deviceStarted(StorageDevice storageDevice) {
+        currentDevice = storageDevice;
+        deviceStartTime = System.currentTimeMillis();
+        batchCounter++;
+        resultsList.add(new StorageDeviceResult(storageDevice, -1, null));
+    }
+    
+    private void deviceFinished(String errorMessage) {
+        long duration = System.currentTimeMillis() - deviceStartTime;
+
+        // remove "in progress" entry
+        resultsList.remove(resultsList.size() - 1);
+
+        // add current result
+        resultsList.add(new StorageDeviceResult(
+                currentDevice, duration, errorMessage));
+
+        // update final report
+        resultsTableModel.setList(resultsList);
+    }
+
+    private void batchFinished(String nonRemovableKey, String removableKey,
+            String reportKey) {
+        setTitle(STRINGS.getString("DLCopy.title"));
+        String key;
+        switch (source.getDeviceType()) {
+            case HardDrive:
+            case OpticalDisc:
+                key = nonRemovableKey;
+                break;
+            default:
+                key = removableKey;
+        }
+        resultsInfoLabel.setText(STRINGS.getString(key));
+        resultsTitledPanel.setBorder(BorderFactory.createTitledBorder(
+                STRINGS.getString(reportKey)));
+        showCard(cardPanel, "resultsPanel");
+        previousButton.setEnabled(true);
+        nextButton.setText(STRINGS.getString("Done"));
+        nextButton.setIcon(new ImageIcon(getClass().getResource(
+                "/ch/fhnw/dlcopy/icons/exit.png")));
+        nextButton.setEnabled(true);
+        previousButton.requestFocusInWindow();
+        getRootPane().setDefaultButton(previousButton);
+        playNotifySound();
+        toFront();
     }
 
     private static void showCard(Container container, String cardName) {
@@ -5056,8 +5135,20 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         previousButton.setEnabled(false);
         nextButton.setEnabled(false);
         state = State.INSTALLATION;
+
         // let's start...
-        new Installer(this).start();
+        Number autoNumberStart = (Number) autoNumberStartSpinner.getValue();
+        Number autoIncrementNumber
+                = (Number) autoNumberIncrementSpinner.getValue();
+        int autoNumber = autoNumberStart.intValue();
+        int autoIncrement = autoIncrementNumber.intValue();
+        List<StorageDevice> deviceList = new ArrayList<>();
+        for (int i : selectedIndices) {
+            deviceList.add(installStorageDeviceListModel.get(i));
+        }
+        new Installer(this, this, deviceList,
+                exchangePartitionTextField.getText(), autoNumber, autoIncrement,
+                autoNumberPatternTextField.getText()).start();
     }
 
     private void upgrade() {
@@ -5144,7 +5235,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         state = State.UPGRADE;
         showCard(cardPanel, "upgradeTabbedPane");
         resultsList = new ArrayList<>();
-        currentDevice = 0;
+        batchCounter = 0;
         boolean removeBackup = automaticBackupCheckBox.isSelected()
                 && automaticBackupRemoveCheckBox.isSelected();
         List<StorageDevice> deviceList = new ArrayList<>();
@@ -5415,11 +5506,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         // ------------
         // To make a long story short, this is the reason we have to use the
         // force flag "-F" here.
-        int exitValue = processExecutor.executeProcess(
+        int exitValue = PROCESS_EXECUTOR.executeProcess(
                 "/sbin/mkfs." + fileSystem,
                 "-F", "-L", Partition.PERSISTENCE_LABEL, device);
         if (exitValue != 0) {
-            LOGGER.severe(processExecutor.getOutput());
+            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
             String errorMessage
                     = STRINGS.getString("Error_Create_Data_Partition");
             LOGGER.severe(errorMessage);
@@ -5427,10 +5518,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         // tuning
-        exitValue = processExecutor.executeProcess(
+        exitValue = PROCESS_EXECUTOR.executeProcess(
                 "/sbin/tune2fs", "-m", "0", "-c", "0", "-i", "0", device);
         if (exitValue != 0) {
-            LOGGER.severe(processExecutor.getOutput());
+            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
             String errorMessage
                     = STRINGS.getString("Error_Tune_Data_Partition");
             LOGGER.severe(errorMessage);
@@ -5637,7 +5728,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         // the call synchronous
         int exitValue;
         if (DbusTools.DBUS_VERSION == DbusTools.DbusVersion.V1) {
-            exitValue = processExecutor.executeProcess("dbus-send",
+            exitValue = PROCESS_EXECUTOR.executeProcess("dbus-send",
                     "--system", "--print-reply",
                     "--dest=org.freedesktop.UDisks",
                     "/org/freedesktop/UDisks/devices/" + device.substring(5),
@@ -5680,7 +5771,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             //
             // So, for Debian 8 we retry with good old parted and hope for the
             // best...
-            exitValue = processExecutor.executeProcess(true, true,
+            exitValue = PROCESS_EXECUTOR.executeProcess(true, true,
                     "parted", "-s", device, "mklabel", "msdos");
         }
         if (exitValue != 0) {
@@ -5697,7 +5788,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         // repartition device
         String[] commandArray = partedCommandList.toArray(
                 new String[partedCommandList.size()]);
-        exitValue = processExecutor.executeProcess(commandArray);
+        exitValue = PROCESS_EXECUTOR.executeProcess(commandArray);
         if (exitValue != 0) {
             String errorMessage = STRINGS.getString("Error_Repartitioning");
             errorMessage = MessageFormat.format(errorMessage, device);
@@ -5717,9 +5808,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // create two partitions:
                 //  1) boot (EFI)
                 //  2) system (Linux)
-                processExecutor.executeProcess("/sbin/sfdisk",
+                PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                         "--id", device, "1", "ef");
-                processExecutor.executeProcess("/sbin/sfdisk",
+                PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                         "--id", device, "2", "83");
                 break;
 
@@ -5728,11 +5819,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 //  1) boot (EFI)
                 //  2) persistence (Linux)
                 //  3) system (Linux)
-                processExecutor.executeProcess("/sbin/sfdisk",
+                PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                         "--id", device, "1", "ef");
-                processExecutor.executeProcess("/sbin/sfdisk",
+                PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                         "--id", device, "2", "83");
-                processExecutor.executeProcess("/sbin/sfdisk",
+                PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                         "--id", device, "3", "83");
                 break;
 
@@ -5742,11 +5833,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     //  1) boot (EFI)
                     //  2) persistence (Linux)
                     //  3) system (Linux)
-                    processExecutor.executeProcess("/sbin/sfdisk",
+                    PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                             "--id", device, "1", "ef");
-                    processExecutor.executeProcess("/sbin/sfdisk",
+                    PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                             "--id", device, "2", "83");
-                    processExecutor.executeProcess("/sbin/sfdisk",
+                    PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                             "--id", device, "3", "83");
                 } else {
                     // determine ID for exchange partition
@@ -5764,29 +5855,29 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     if (storageDevice.isRemovable()) {
                         //  1) exchange (exFAT, FAT32 or NTFS)
                         //  2) boot (EFI)
-                        processExecutor.executeProcess("/sbin/sfdisk",
+                        PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                                 "--id", device, "1", exchangePartitionID);
-                        processExecutor.executeProcess("/sbin/sfdisk",
+                        PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                                 "--id", device, "2", "ef");
                     } else {
                         //  1) boot (EFI)
                         //  2) exchange (exFAT, FAT32 or NTFS)
-                        processExecutor.executeProcess("/sbin/sfdisk",
+                        PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                                 "--id", device, "1", "ef");
-                        processExecutor.executeProcess("/sbin/sfdisk",
+                        PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                                 "--id", device, "2", exchangePartitionID);
                     }
 
                     if (persistenceMB == 0) {
                         //  3) system (Linux)
-                        processExecutor.executeProcess("/sbin/sfdisk",
+                        PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                                 "--id", device, "3", "83");
                     } else {
                         //  3) persistence (Linux)
                         //  4) system (Linux)
-                        processExecutor.executeProcess("/sbin/sfdisk",
+                        PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                                 "--id", device, "3", "83");
-                        processExecutor.executeProcess("/sbin/sfdisk",
+                        PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                                 "--id", device, "4", "83");
                     }
                 }
@@ -5998,11 +6089,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         int exitValue;
         if (quickSwitch == null) {
-            exitValue = processExecutor.executeProcess(
+            exitValue = PROCESS_EXECUTOR.executeProcess(
                     "/sbin/mkfs." + mkfsBuilder, mkfsLabelSwitch,
                     exchangePartitionLabel, exchangeDevice);
         } else {
-            exitValue = processExecutor.executeProcess(
+            exitValue = PROCESS_EXECUTOR.executeProcess(
                     "/sbin/mkfs." + mkfsBuilder, quickSwitch, mkfsLabelSwitch,
                     exchangePartitionLabel, exchangeDevice);
         }
@@ -6035,241 +6126,18 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
         });
         Thread.sleep(1000);
-        processExecutor.addPropertyChangeListener(this);
+        PROCESS_EXECUTOR.addPropertyChangeListener(this);
         // this needs to be a script because of the shell globbing
         String copyScript = "#!/bin/bash\n"
                 + "cp -av \"" + persistenceSourcePath + "/\"* \""
                 + persistenceDestinationPath + "/\"";
-        int exitValue = processExecutor.executeScript(true, true, copyScript);
-        processExecutor.removePropertyChangeListener(this);
+        int exitValue = PROCESS_EXECUTOR.executeScript(true, true, copyScript);
+        PROCESS_EXECUTOR.removePropertyChangeListener(this);
         cpTimer.stop();
         if (exitValue != 0) {
             String errorMessage = "Could not copy persistence layer!";
             LOGGER.severe(errorMessage);
             throw new IOException(errorMessage);
-        }
-    }
-
-    private class Installer extends Thread
-            implements InstallerOrUpgrader, PropertyChangeListener {
-
-        private FileCopier fileCopier;
-        private int currentDevice;
-        private int selectionCount;
-        private final DLCopyGUI dlCopyGUI;
-
-        public Installer(DLCopyGUI dlCopyGUI) {
-            this.dlCopyGUI = dlCopyGUI;
-        }
-
-        @Override
-        public void run() {
-            LogindInhibit inhibit = new LogindInhibit("Installing");
-
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    showCard(cardPanel, "installTabbedPane");
-                }
-            });
-
-            int[] selectedIndices
-                    = installStorageDeviceList.getSelectedIndices();
-            selectionCount = selectedIndices.length;
-            fileCopier = new FileCopier();
-            Number autoNumberStart = (Number) autoNumberStartSpinner.getValue();
-            Number autoIncrementNumber
-                    = (Number) autoNumberIncrementSpinner.getValue();
-            int autoNumber = autoNumberStart.intValue();
-            int autoIncrement = autoIncrementNumber.intValue();
-            final List<StorageDeviceResult> resultsList = new ArrayList<>();
-            for (int i = 0; i < selectionCount; i++) {
-                long startTime = System.currentTimeMillis();
-                currentDevice = i + 1;
-                StorageDevice storageDevice
-                        = (StorageDevice) installStorageDeviceListModel.
-                        getElementAt(selectedIndices[i]);
-
-                // update overall progress message
-                String pattern = STRINGS.getString("Install_Device_Info");
-                final String message = MessageFormat.format(pattern,
-                        storageDevice.getVendor() + " "
-                        + storageDevice.getModel() + " "
-                        + LernstickFileTools.getDataVolumeString(
-                                storageDevice.getSize(), 1),
-                        "/dev/" + storageDevice.getDevice(),
-                        currentDevice, selectionCount);
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        currentlyInstalledDeviceLabel.setText(message);
-                    }
-                });
-
-                // add "in progress" entry to results table
-                resultsList.add(
-                        new StorageDeviceResult(storageDevice, -1, null));
-                installationResultsTableModel.setList(resultsList);
-
-                // auto numbering
-                String exchangePartitionLabel
-                        = exchangePartitionTextField.getText();
-                String autoNumberPattern = autoNumberPatternTextField.getText();
-                if (!autoNumberPattern.isEmpty()) {
-                    exchangePartitionLabel = exchangePartitionLabel.replace(
-                            autoNumberPattern, String.valueOf(autoNumber));
-                    autoNumber += autoIncrement;
-                }
-
-                String errorMessage = null;
-                try {
-                    copyToStorageDevice(fileCopier, storageDevice,
-                            exchangePartitionLabel, this);
-                } catch (InterruptedException | IOException |
-                        DBusException exception) {
-                    LOGGER.log(Level.WARNING, "", exception);
-                    errorMessage = exception.getMessage();
-                }
-
-                long stopTime = System.currentTimeMillis();
-                long duration = stopTime - startTime;
-
-                // remove "in progress" entry
-                resultsList.remove(resultsList.size() - 1);
-                // add current result
-                resultsList.add(new StorageDeviceResult(
-                        storageDevice, duration, errorMessage));
-                installationResultsTableModel.setList(resultsList);
-                resultsTableModel.setList(resultsList);
-
-                // auto-increment autoNumberStartSpinner
-                final int newStartNumber = autoNumber;
-                SwingUtilities.invokeLater(new Runnable() {
-
-                    @Override
-                    public void run() {
-                        autoNumberStartSpinner.setValue(newStartNumber);
-                    }
-                });
-            }
-
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    setTitle(STRINGS.getString("DLCopy.title"));
-                    String key;
-                    switch (source.getDeviceType()) {
-                        case HardDrive:
-                        case OpticalDisc:
-                            key = "Done_Message_From_Non_Removable_Boot_Device";
-                            break;
-                        default:
-                            key = "Done_Message_From_Removable_Boot_Device";
-                    }
-                    resultsInfoLabel.setText(STRINGS.getString(key));
-                    resultsTitledPanel.setBorder(
-                            BorderFactory.createTitledBorder(
-                                    STRINGS.getString("Installation_Report")));
-                    showCard(cardPanel, "resultsPanel");
-                    previousButton.setEnabled(true);
-                    nextButton.setText(STRINGS.getString("Done"));
-                    nextButton.setIcon(new ImageIcon(getClass().getResource(
-                            "/ch/fhnw/dlcopy/icons/exit.png")));
-                    nextButton.setEnabled(true);
-                    previousButton.requestFocusInWindow();
-                    getRootPane().setDefaultButton(previousButton);
-                    //Toolkit.getDefaultToolkit().beep();
-                    playNotifySound();
-                    toFront();
-                }
-            });
-            inhibit.delete();
-        }
-
-        @Override
-        public void propertyChange(PropertyChangeEvent evt) {
-            String propertyName = evt.getPropertyName();
-            switch (propertyName) {
-                case FileCopier.BYTE_COUNTER_PROPERTY:
-                    long byteCount = fileCopier.getByteCount();
-                    long copiedBytes = fileCopier.getCopiedBytes();
-                    final int progress
-                            = (int) ((100 * copiedBytes) / byteCount);
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            setTitle(progress + "% "
-                                    + STRINGS.getString("Copied") + " ("
-                                    + currentDevice + '/' + selectionCount
-                                    + ')');
-                        }
-                    });
-                    break;
-
-                case ProcessExecutor.LINE:
-                    // store current cp progress line
-                    // (will be pattern matched later when needed)
-                    String line = (String) evt.getNewValue();
-                    cpActionListener.setCurrentLine(line);
-
-//                // rsync updates
-//                // parse lines that end with "... to-check=100/800)"
-//                String line = (String) evt.getNewValue();
-//                Matcher matcher = rsyncPattern.matcher(line);
-//                if (matcher.matches()) {
-//                    String toCheckString = matcher.group(1);
-//                    String fileCountString = matcher.group(2);
-//                    try {
-//                        int filesToCheck = Integer.parseInt(toCheckString);
-//                        int fileCount = Integer.parseInt(fileCountString);
-//                        int progress =
-//                                (fileCount - filesToCheck) * 100 / fileCount;
-//                        // Because of the rsync algorithm it can happen that the
-//                        // progress value temporarily decreases. This is very
-//                        // confusing for users. We hide this ugly details by not
-//                        // updating the value if it decreases...
-//                        if (progress > rsyncProgress) {
-//                            rsyncProgress = progress;
-//                            SwingUtilities.invokeLater(new Runnable() {
-//
-//                                @Override
-//                                public void run() {
-//                                    rsyncPogressBar.setValue(rsyncProgress);
-//                                    setTitle(rsyncProgress + "% "
-//                                            + STRINGS.getString("Copied") + " ("
-//                                            + currentDevice + '/'
-//                                            + selectionCount + ')');
-//                                }
-//                            });
-//                        }
-//
-//                    } catch (NumberFormatException ex) {
-//                        LOGGER.log(Level.WARNING,
-//                                "could not parse rsync output", ex);
-//                    }
-//                }
-                    break;
-            }
-        }
-
-        @Override
-        public void showCreatingFileSystems() {
-            dlCopyGUI.showInstallCreatingFileSystems();
-        }
-
-        @Override
-        public void showCopyingFiles(FileCopier fileCopier) {
-            dlCopyGUI.showInstallFileCopy(fileCopier);
-        }
-
-        @Override
-        public void showUnmounting() {
-            dlCopyGUI.showInstallUnmounting();
-        }
-
-        @Override
-        public void showWritingBootSector() {
-            dlCopyGUI.showInstallWritingBootSector();
         }
     }
 
@@ -6315,7 +6183,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             + "cd " + source.getSystemPath() + '\n'
                             + "find -not -name filesystem*.squashfs | cpio -pvdum \""
                             + targetDirectory + "\"";
-                    processExecutor.executeScript(copyScript);
+                    PROCESS_EXECUTOR.executeScript(copyScript);
                 }
 
                 if (systemMediumRadioButton.isSelected()) {
@@ -6366,7 +6234,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         + "find . -type f \\! -path './isolinux/isolinux.bin' "
                         + "\\! -path './boot/grub/stage2_eltorito' -print0 | "
                         + "sort -z | xargs -0 md5sum >> md5sum.txt";
-                processExecutor.executeScript(md5Script);
+                PROCESS_EXECUTOR.executeScript(md5Script);
 
                 // create new iso image
                 SwingUtilities.invokeLater(new Runnable() {
@@ -6378,7 +6246,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 isoPath = targetRootDirectory + "/Lernstick.iso";
                 step = IsoStep.GENISOIMAGE;
                 publish(STRINGS.getString("Creating_Image"));
-                processExecutor.addPropertyChangeListener(this);
+                PROCESS_EXECUTOR.addPropertyChangeListener(this);
                 String isoLabel = isoLabelTextField.getText();
 
                 String xorrisoScript = "#!/bin/sh\n"
@@ -6392,10 +6260,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         + " -compliance iso_9660_level=3"
                         + " -add .";
 
-                int returnValue = processExecutor.executeScript(
+                int returnValue = PROCESS_EXECUTOR.executeScript(
                         true, true, xorrisoScript);
 
-                processExecutor.removePropertyChangeListener(this);
+                PROCESS_EXECUTOR.removePropertyChangeListener(this);
                 if (returnValue != 0) {
                     return false;
                 }
@@ -6581,16 +6449,16 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 }
             });
             publish(STRINGS.getString("Compressing_Filesystem"));
-            processExecutor.addPropertyChangeListener(this);
+            PROCESS_EXECUTOR.addPropertyChangeListener(this);
             String cowPath = cowDir.getPath();
-            int exitValue = processExecutor.executeProcess("mksquashfs",
+            int exitValue = PROCESS_EXECUTOR.executeProcess("mksquashfs",
                     cowPath, targetDirectory + "/live/filesystem.squashfs",
                     "-comp", "xz");
             if (exitValue != 0) {
                 throw new IOException(
                         STRINGS.getString("Error_Creating_Squashfs"));
             }
-            processExecutor.removePropertyChangeListener(this);
+            PROCESS_EXECUTOR.removePropertyChangeListener(this);
             SwingUtilities.invokeLater(new Runnable() {
                 @Override
                 public void run() {
@@ -6692,7 +6560,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     if (systemFilesCheckBox.isSelected() && resetHome) {
                         // remove all files
                         // but keep "/lost+found/" and "persistence.conf"
-                        processExecutor.executeProcess("find", mountPoint,
+                        PROCESS_EXECUTOR.executeProcess("find", mountPoint,
                                 "!", "-regex", mountPoint,
                                 "!", "-regex", mountPoint + "/lost\\+found",
                                 "!", "-regex", mountPoint + "/persistence.conf",
@@ -6701,7 +6569,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         if (systemFilesCheckBox.isSelected()) {
                             // remove all files but keep
                             // "/lost+found/", "persistence.conf" and "/home/"
-                            processExecutor.executeProcess("find", mountPoint,
+                            PROCESS_EXECUTOR.executeProcess("find", mountPoint,
                                     "!", "-regex", mountPoint,
                                     "!", "-regex", mountPoint + "/lost\\+found",
                                     "!", "-regex", mountPoint + "/persistence.conf",
@@ -6710,17 +6578,17 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         }
                         if (resetHome) {
                             // only remove "/home/user/"
-                            processExecutor.executeProcess(
+                            PROCESS_EXECUTOR.executeProcess(
                                     "rm", "-rf", mountPoint + "/home/user/");
                         }
                     }
                     if (resetHome) {
                         // restore "/home/user/" from "/etc/skel/"
-                        processExecutor.executeProcess("mkdir",
+                        PROCESS_EXECUTOR.executeProcess("mkdir",
                                 mountPoint + "/home/");
-                        processExecutor.executeProcess("cp", "-a",
+                        PROCESS_EXECUTOR.executeProcess("cp", "-a",
                                 "/etc/skel/", mountPoint + "/home/user/");
-                        processExecutor.executeProcess("chown", "-R",
+                        PROCESS_EXECUTOR.executeProcess("chown", "-R",
                                 "user.user", mountPoint + "/home/user/");
                     }
                     if (!mountInfo.alreadyMounted()) {

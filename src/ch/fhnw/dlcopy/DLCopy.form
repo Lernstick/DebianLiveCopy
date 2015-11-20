@@ -1336,7 +1336,7 @@
                       <Image iconType="3" name="/ch/fhnw/dlcopy/icons/usbpendrive_unmount_tux.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="Done_Message_From_Removable_Boot_Device" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="Installation_Done_Message_From_Removable_Boot_Device" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalTextPosition" type="int" value="0"/>
                     <Property name="verticalTextPosition" type="int" value="3"/>
@@ -2756,9 +2756,9 @@
                   <Group type="103" groupAlignment="0" attributes="0">
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace min="-2" max="-2" attributes="0"/>
-                          <Component id="tmpDriveInfoLabel" pref="90" max="32767" attributes="0"/>
+                          <Component id="tmpDriveInfoLabel" max="32767" attributes="0"/>
                           <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                          <Component id="toIsoGridBagPanel" pref="263" max="32767" attributes="0"/>
+                          <Component id="toIsoGridBagPanel" pref="233" max="32767" attributes="0"/>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -3168,7 +3168,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="resultsInfoLabel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="resultsTitledPanel" pref="332" max="32767" attributes="0"/>
+                          <Component id="resultsTitledPanel" pref="302" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -3177,7 +3177,7 @@
                 <Component class="javax.swing.JLabel" name="resultsInfoLabel">
                   <Properties>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="Done_Message_From_Non_Removable_Boot_Device" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="Installation_Done_Message_From_Removable_Boot_Device" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                 </Component>

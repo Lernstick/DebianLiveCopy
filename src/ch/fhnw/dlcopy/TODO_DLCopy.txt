@@ -2,7 +2,9 @@
 kdesudo "java -Djava.library.path=/usr/lib/jni -jar dist/DLCopy_orig.jar --variant lernstick"
 ********************************************************************************
 
-- funktioniert nicht mehr offline!
+- re-check property handling in installer and upgrader
+- similar label pattern in installingDeviceStarted() and upgradingDeviceStarted()?
+- Installer: SwingWorker instead of Thread
 
 - Berechnung der Partitionsgrössen bei Installation und Upgrade nochmal genauer ansehen
 

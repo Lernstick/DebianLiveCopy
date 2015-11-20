@@ -36,7 +36,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.SwingUtilities;
 import javax.swing.SwingWorker;
 import javax.swing.Timer;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -194,15 +193,10 @@ public class Upgrader extends SwingWorker<Void, Void>
         if (FileCopier.BYTE_COUNTER_PROPERTY.equals(propertyName)) {
             long byteCount = fileCopier.getByteCount();
             long copiedBytes = fileCopier.getCopiedBytes();
-            final int progress = (int) ((100 * copiedBytes) / byteCount);
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    dlCopy.setTitle(progress + "% "
-                            + STRINGS.getString("Copied") + " (" + currentDevice
-                            + '/' + selectionCount + ')');
-                }
-            });
+            int progress = (int) ((100 * copiedBytes) / byteCount);
+            dlCopyGUI.setProgressInTitle(progress + "% "
+                    + STRINGS.getString("Copied") + " (" + currentDevice
+                    + '/' + selectionCount + ')');
         }
     }
 
@@ -473,14 +467,12 @@ public class Upgrader extends SwingWorker<Void, Void>
                             new Object[]{file, target});
                     Files.delete(file);
                     Files.createSymbolicLink(file, target);
+                } else if (attributes.isOther()) {
+                    LOGGER.log(Level.WARNING, "skipping {0} (probably a "
+                            + "named pipe or unix domain socket, bot are "
+                            + "not supported!)", file);
                 } else {
-                    if (attributes.isOther()) {
-                        LOGGER.log(Level.WARNING, "skipping {0} (probably a "
-                                + "named pipe or unix domain socket, bot are "
-                                + "not supported!)", file);
-                    } else {
-                        changeAccessTime(file);
-                    }
+                    changeAccessTime(file);
                 }
                 return FileVisitResult.CONTINUE;
             }
