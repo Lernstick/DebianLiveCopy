@@ -35,7 +35,7 @@ public interface DLCopyGUI {
      * installation
      */
     public void showInstallFileCopy(FileCopier fileCopier);
-    
+
     /**
      * sets the current output line of the copy process
      *
@@ -186,7 +186,7 @@ public interface DLCopyGUI {
      * called when upgrading all selected StorageDevices finished
      */
     public void upgradingListFinished();
-    
+
     /**
      * sets the progress info in the title of the main window
      *
@@ -194,7 +194,7 @@ public interface DLCopyGUI {
      * window
      */
     public void setProgressInTitle(String progressInfo);
-    
+
     /**
      * shows an error message
      *

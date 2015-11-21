@@ -175,8 +175,8 @@ public class IsoInstallationSource implements InstallationSource {
             return;
         }
         try {
-            mediaPath = LernstickFileTools.createTempDirectory(new File("/tmp/"),
-                    "DLCopy").getCanonicalPath();
+            mediaPath = LernstickFileTools.createTempDirectory(
+                    new File("/tmp/"), "DLCopy").getCanonicalPath();
             processExecutor.executeScript(String.format("mount -o loop %s %s\n",
                     imagePath, mediaPath));
         } catch (IOException ex) {
@@ -191,8 +191,8 @@ public class IsoInstallationSource implements InstallationSource {
             return;
         }
         try {
-            rootFsPath = LernstickFileTools.createTempDirectory(new File("/tmp/"),
-                    "DLCopy").getCanonicalPath();
+            rootFsPath = LernstickFileTools.createTempDirectory(
+                    new File("/tmp/"), "DLCopy").getCanonicalPath();
             // Create sandbox environment from install system image.
             // Should be sufficient to run syslinux in chroot environment.
             processExecutor.executeScript(String.format(

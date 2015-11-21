@@ -16,6 +16,7 @@ public interface InstallerOrUpgrader {
 
     /**
      * shows that files are being copied
+     *
      * @param fileCopier the fileCopier used to copy files
      */
     public void showCopyingFiles(FileCopier fileCopier);

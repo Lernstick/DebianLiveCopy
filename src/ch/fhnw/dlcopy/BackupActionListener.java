@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 
 /**
  * An ActionListener when running rdiff-backup in DLCopy
+ *
  * @author Ronny Standtke <ronny.standtke@gmx.net>
  */
 public class BackupActionListener implements ActionListener {
@@ -21,6 +22,7 @@ public class BackupActionListener implements ActionListener {
 
     /**
      * Creates a new BackupActionListener
+     *
      * @param backup if <code>true</code> we are running a backup, otherwise a
      * restore operation
      * @param rdiffBackupRestore the RdiffBackupRestore instance

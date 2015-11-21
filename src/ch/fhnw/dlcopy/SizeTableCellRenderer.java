@@ -7,6 +7,7 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 /**
  * a table cell renderer for size values
+ *
  * @author Ronny Standtke <ronny.standtke@fhnw.ch>
  */
 public class SizeTableCellRenderer extends DefaultTableCellRenderer {

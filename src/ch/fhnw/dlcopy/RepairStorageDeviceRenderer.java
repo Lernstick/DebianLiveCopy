@@ -26,25 +26,25 @@ public class RepairStorageDeviceRenderer
 
     private final static Logger LOGGER
             = Logger.getLogger(DLCopy.class.getName());
-    private final static Icon blueBox = new ImageIcon(
+    private final static Icon BLUE_BOX = new ImageIcon(
             RepairStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/blue_box.png"));
-    private final static Icon greenBox = new ImageIcon(
+    private final static Icon GREEN_BOX = new ImageIcon(
             RepairStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/green_box.png"));
-    private final static Icon yellowBox = new ImageIcon(
+    private final static Icon YELLOW_BOX = new ImageIcon(
             RepairStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/yellow_box.png"));
-    private final static Icon grayBox = new ImageIcon(
+    private final static Icon GRAY_BOX = new ImageIcon(
             RepairStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/gray_box.png"));
-    private final static Icon darkGrayBox = new ImageIcon(
+    private final static Icon DARK_GRAY_BOX = new ImageIcon(
             RepairStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/dark_gray_box.png"));
-    private final static Icon okIcon = new ImageIcon(
+    private final static Icon OK_ICON = new ImageIcon(
             RepairStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/16x16/dialog-ok-apply.png"));
-    private final static Icon cancelIcon = new ImageIcon(
+    private final static Icon CANCEL_ICON = new ImageIcon(
             RepairStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/16x16/dialog-cancel.png"));
     private final Color LIGHT_BLUE = new Color(170, 170, 255);
@@ -100,15 +100,15 @@ public class RepairStorageDeviceRenderer
                 // set color box
                 try {
                     if (partition.isSystemPartition()) {
-                        label.setIcon(blueBox);
+                        label.setIcon(BLUE_BOX);
                     } else if (partition.isPersistencePartition()) {
-                        label.setIcon(greenBox);
+                        label.setIcon(GREEN_BOX);
                     } else if (partition.isExchangePartition()) {
-                        label.setIcon(yellowBox);
+                        label.setIcon(YELLOW_BOX);
                     } else if (extended) {
-                        label.setIcon(darkGrayBox);
+                        label.setIcon(DARK_GRAY_BOX);
                     } else {
-                        label.setIcon(grayBox);
+                        label.setIcon(GRAY_BOX);
                     }
                 } catch (DBusException ex) {
                     LOGGER.log(Level.SEVERE, "", ex);
@@ -169,17 +169,17 @@ public class RepairStorageDeviceRenderer
             // upgrade info text
             Partition dataPartition = storageDevice.getDataPartition();
             if (dataPartition == null) {
-                upgradeInfoLabel.setIcon(cancelIcon);
+                upgradeInfoLabel.setIcon(CANCEL_ICON);
                 upgradeInfoLabel.setText(DLCopy.STRINGS.getString(
                         "Repairing_Impossible_No_Data_Partition"));
             } else {
                 try {
                     if (dataPartition.isActivePersistencePartition()) {
-                        upgradeInfoLabel.setIcon(cancelIcon);
+                        upgradeInfoLabel.setIcon(CANCEL_ICON);
                         upgradeInfoLabel.setText(DLCopy.STRINGS.getString(
                                 "Repairing_Impossible_Active_Data_Partition"));
                     } else {
-                        upgradeInfoLabel.setIcon(okIcon);
+                        upgradeInfoLabel.setIcon(OK_ICON);
                         upgradeInfoLabel.setText(
                                 DLCopy.STRINGS.getString("Repairing_Possible"));
                     }

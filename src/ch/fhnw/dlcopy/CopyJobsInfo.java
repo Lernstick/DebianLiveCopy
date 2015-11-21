@@ -57,6 +57,7 @@ public class CopyJobsInfo {
 
     /**
      * returns the CopyJob for the boot partition
+     *
      * @return the CopyJob for the boot partition
      */
     public CopyJob getBootCopyJob() {
@@ -65,6 +66,7 @@ public class CopyJobsInfo {
 
     /**
      * returns the CopyJob for boot files on the exchange partition
+     *
      * @return the CopyJob for boot files on the exchange partition
      */
     public CopyJob getBootFilesCopyJob() {
@@ -73,6 +75,7 @@ public class CopyJobsInfo {
 
     /**
      * returns the CopyJob for the system partition
+     *
      * @return the CopyJob for the system partition
      */
     public CopyJob getSystemCopyJob() {

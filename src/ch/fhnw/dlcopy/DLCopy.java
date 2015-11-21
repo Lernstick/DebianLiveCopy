@@ -672,7 +672,7 @@ public class DLCopy extends JFrame
     @Override
     public void installingDeviceStarted(StorageDevice storageDevice) {
         deviceStarted(storageDevice);
-        
+
         // update label
         String pattern = STRINGS.getString("Install_Device_Info");
         String deviceInfo = MessageFormat.format(pattern,
@@ -736,7 +736,7 @@ public class DLCopy extends JFrame
     @Override
     public void upgradingDeviceStarted(StorageDevice storageDevice) {
         deviceStarted(storageDevice);
-        
+
         // update label
         String pattern = STRINGS.getString("Upgrade_Device_Info");
         String deviceInfo = MessageFormat.format(pattern, batchCounter,
@@ -4962,7 +4962,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         batchCounter++;
         resultsList.add(new StorageDeviceResult(storageDevice, -1, null));
     }
-    
+
     private void deviceFinished(String errorMessage) {
         long duration = System.currentTimeMillis() - deviceStartTime;
 

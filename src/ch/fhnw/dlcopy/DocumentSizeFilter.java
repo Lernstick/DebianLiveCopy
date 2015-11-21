@@ -9,6 +9,7 @@ import javax.swing.text.DocumentFilter.FilterBypass;
 
 /**
  * A DocumentFilter that filters regarding a maximum size
+ *
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
 public class DocumentSizeFilter extends DocumentFilter {
@@ -18,7 +19,7 @@ public class DocumentSizeFilter extends DocumentFilter {
     @Override
     public void insertString(FilterBypass fb, int offs,
             String newText, AttributeSet a) throws BadLocationException {
-        
+
         // only allow ASCII input
         if (!isASCII(newText)) {
             return;
@@ -47,7 +48,7 @@ public class DocumentSizeFilter extends DocumentFilter {
         if (!isASCII(newText)) {
             return;
         }
-        
+
         // try string replacement
         Document document = fb.getDocument();
         int docLength = document.getLength();
@@ -57,7 +58,7 @@ public class DocumentSizeFilter extends DocumentFilter {
         builder.replace(offs, offs + length, newText);
         String replacedText = builder.toString();
         System.out.println("replacedText: \"" + replacedText + "\"");
-        
+
         // check, if the replacement still fits in
         int specialLength = getSpecialLength(replacedText);
         System.out.println("specialLength = " + specialLength);
@@ -77,14 +78,14 @@ public class DocumentSizeFilter extends DocumentFilter {
         }
         return true;
     }
-    
+
     private int getSpecialLength(String string) {
         // follow special rules for VFAT labels
         int count = 0;
         for (int i = 0, length = string.length(); i < length; i++) {
             char character = string.charAt(i);
-            System.out.print("character: \"" + character +
-                    "\" (" + (int) character + ") = ");
+            System.out.print("character: \"" + character
+                    + "\" (" + (int) character + ") = ");
             if ((character >= 0) && (character <= 127)) {
                 // ASCII
                 if ((character == 39) || (character == 96)) {

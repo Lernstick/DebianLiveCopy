@@ -254,7 +254,6 @@ public class InstallStorageDeviceRenderer
                 systemText = LernstickFileTools.getDataVolumeString(
                         systemSize, 1);
 
-
                 int exchangePartitionX;
                 if (storageDevice.isRemovable()) {
                     exchangePartitionX = iconGap + OFFSET;
