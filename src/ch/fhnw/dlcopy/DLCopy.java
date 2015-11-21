@@ -327,8 +327,8 @@ public class DLCopy extends JFrame
         }
 
         try {
-            systemSource = new SystemInstallationSource(PROCESS_EXECUTOR,
-                    bootConfigUtil);
+            systemSource = new SystemInstallationSource(
+                    PROCESS_EXECUTOR, bootConfigUtil);
             source = systemSource;
         } catch (IOException | DBusException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
@@ -631,7 +631,7 @@ public class DLCopy extends JFrame
 
         } else {
             // check, if a device was removed
-            boolean deviceRemoved = false;
+            boolean deviceRemoved;
             if (DbusTools.DBUS_VERSION == DbusTools.DbusVersion.V1) {
                 deviceRemoved = line.startsWith(UDISKS_REMOVED);
             } else {
@@ -1156,7 +1156,7 @@ public class DLCopy extends JFrame
 
         // copy persistence layer
         if ((state != State.UPGRADE) && (destinationDataPartition != null)) {
-            copyPersistence(destinationDataPartition);
+            copyPersistence(installerOrUpgrader, destinationDataPartition);
         }
 
         // make storage device bootable
@@ -5146,9 +5146,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         for (int i : selectedIndices) {
             deviceList.add(installStorageDeviceListModel.get(i));
         }
+        resultsList = new ArrayList<>();
         new Installer(this, this, deviceList,
                 exchangePartitionTextField.getText(), autoNumber, autoIncrement,
-                autoNumberPatternTextField.getText()).start();
+                autoNumberPatternTextField.getText()).execute();
     }
 
     private void upgrade() {
@@ -5247,7 +5248,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         for (int i = 0, size = upgradeOverwriteListModel.size(); i < size; i++) {
             overWriteList.add(upgradeOverwriteListModel.get(i));
         }
-        new Upgrader(this, this, source, deviceList,
+        new Upgrader(this, this, deviceList, source,
                 automaticBackupCheckBox.isSelected(),
                 automaticBackupTextField.getText(), removeBackup,
                 upgradeSystemPartitionCheckBox.isSelected(),
@@ -5997,53 +5998,51 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         setDataPartitionMode(dataPartitionModeComboBox, destinationBootPath);
     }
 
-    private void copyPersistence(Partition destinationDataPartition)
+    private void copyPersistence(InstallerOrUpgrader installerOrUpgrader,
+            Partition destinationDataPartition)
             throws IOException, InterruptedException, DBusException {
-        // copy persistence partition
-        if (copyPersistenceCheckBox.isSelected()) {
 
-            // mount persistence source
-            MountInfo sourceDataMountInfo
-                    = source.getDataPartition().mount();
-            String sourceDataPath = sourceDataMountInfo.getMountPath();
-            if (sourceDataPath == null) {
-                String errorMessage = "could not mount source data partition";
-                throw new IOException(errorMessage);
+        if (!copyPersistenceCheckBox.isSelected()) {
+            return;
+        }
+
+        // mount persistence source
+        MountInfo sourceDataMountInfo = source.getDataPartition().mount();
+        String sourceDataPath = sourceDataMountInfo.getMountPath();
+        if (sourceDataPath == null) {
+            String errorMessage = "could not mount source data partition";
+            throw new IOException(errorMessage);
+        }
+
+        // mount persistence destination
+        MountInfo destinationDataMountInfo = destinationDataPartition.mount();
+        String destinationDataPath = destinationDataMountInfo.getMountPath();
+        if (destinationDataPath == null) {
+            String errorMessage = "could not mount destination data partition";
+            throw new IOException(errorMessage);
+        }
+
+        // TODO: use filecopier as soon as it supports symlinks etc.
+        copyPersistenceCp(installerOrUpgrader,
+                sourceDataPath, destinationDataPath);
+
+        // update GUI
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                showCard(installCardPanel, "installIndeterminateProgressPanel");
+                installIndeterminateProgressBar.setString(
+                        STRINGS.getString("Unmounting_File_Systems"));
             }
+        });
 
-            // mount persistence destination
-            MountInfo destinationDataMountInfo
-                    = destinationDataPartition.mount();
-            String destinationDataPath
-                    = destinationDataMountInfo.getMountPath();
-            if (destinationDataPath == null) {
-                String errorMessage
-                        = "could not mount destination data partition";
-                throw new IOException(errorMessage);
-            }
-
-            // TODO: use filecopier as soon as it supports symlinks etc.
-            copyPersistenceCp(sourceDataPath, destinationDataPath);
-
-            // update GUI
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    showCard(installCardPanel,
-                            "installIndeterminateProgressPanel");
-                    installIndeterminateProgressBar.setString(
-                            STRINGS.getString("Unmounting_File_Systems"));
-                }
-            });
-
-            // umount both source and destination persistence partitions
-            //  (only if there were not mounted before)
-            if (!sourceDataMountInfo.alreadyMounted()) {
-                source.getDataPartition().umount();
-            }
-            if (!destinationDataMountInfo.alreadyMounted()) {
-                destinationDataPartition.umount();
-            }
+        // umount both source and destination persistence partitions
+        //  (only if there were not mounted before)
+        if (!sourceDataMountInfo.alreadyMounted()) {
+            source.getDataPartition().umount();
+        }
+        if (!destinationDataMountInfo.alreadyMounted()) {
+            destinationDataPartition.umount();
         }
     }
 
@@ -6107,13 +6106,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }
 
-    private void copyPersistenceCp(String persistenceSourcePath,
-            String persistenceDestinationPath)
+    private void copyPersistenceCp(InstallerOrUpgrader installerOrUpgrader,
+            String persistenceSourcePath, String persistenceDestinationPath)
             throws InterruptedException, IOException {
 
         cpActionListener = new CpActionListener();
         cpActionListener.setSourceMountPoint(persistenceSourcePath);
-        final Timer cpTimer = new Timer(1000, cpActionListener);
+        Timer cpTimer = new Timer(1000, cpActionListener);
         cpTimer.setInitialDelay(0);
         cpTimer.start();
         SwingUtilities.invokeLater(new Runnable() {
@@ -6126,13 +6125,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
         });
         Thread.sleep(1000);
-        PROCESS_EXECUTOR.addPropertyChangeListener(this);
+        PROCESS_EXECUTOR.addPropertyChangeListener(installerOrUpgrader);
         // this needs to be a script because of the shell globbing
         String copyScript = "#!/bin/bash\n"
                 + "cp -av \"" + persistenceSourcePath + "/\"* \""
                 + persistenceDestinationPath + "/\"";
         int exitValue = PROCESS_EXECUTOR.executeScript(true, true, copyScript);
-        PROCESS_EXECUTOR.removePropertyChangeListener(this);
+        PROCESS_EXECUTOR.removePropertyChangeListener(installerOrUpgrader);
         cpTimer.stop();
         if (exitValue != 0) {
             String errorMessage = "Could not copy persistence layer!";
@@ -7096,7 +7095,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private class CpActionListener implements ActionListener {
 
         private final long start = System.currentTimeMillis();
-        private final Pattern cpPattern = Pattern.compile("`(.*)' -> .*");
+        private final Pattern cpPattern = Pattern.compile("'(.*)' -> .*");
         private int pathIndex;
         private String currentLine = "";
 

@@ -1,11 +1,9 @@
 package ch.fhnw.dlcopy;
 
-import static ch.fhnw.dlcopy.DLCopy.STRINGS;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -17,22 +15,14 @@ import org.freedesktop.dbus.exceptions.DBusException;
  *
  * @author Ronny Standtke <ronny.standtke@gmx.net>
  */
-public class Installer extends Thread
-        implements InstallerOrUpgrader, PropertyChangeListener {
+public class Installer extends InstallerOrUpgrader {
 
     private static final Logger LOGGER
             = Logger.getLogger(Installer.class.getName());
 
-    private final DLCopy dlCopy;
-    private final DLCopyGUI dlCopyGUI;
-    private final List<StorageDevice> deviceList;
-    private String exchangePartitionLabel;
     private int autoNumber;
     private final int autoNumberIncrement;
     private final String autoNumberPattern;
-    private FileCopier fileCopier;
-    private int currentDevice;
-    private int selectionCount;
 
     /**
      * creates a new Installer
@@ -49,24 +39,19 @@ public class Installer extends Thread
             List<StorageDevice> deviceList, String exchangePartitionLabel,
             int autoNumberStart, int autoNumberIncrement,
             String autoNumberPattern) {
-        this.dlCopy = dlCopy;
-        this.dlCopyGUI = dlCopyGUI;
-        this.deviceList = deviceList;
-        this.exchangePartitionLabel = exchangePartitionLabel;
+        super(dlCopy, dlCopyGUI, deviceList, exchangePartitionLabel);
         this.autoNumber = autoNumberStart;
         this.autoNumberIncrement = autoNumberIncrement;
         this.autoNumberPattern = autoNumberPattern;
     }
 
     @Override
-    public void run() {
-
-        LogindInhibit inhibit = new LogindInhibit("Installing");
-
-        dlCopyGUI.showInstallProgress();
+    protected Void doInBackground() throws Exception {
+        inhibit = new LogindInhibit("Installing");
 
         selectionCount = deviceList.size();
-        fileCopier = new FileCopier();
+
+        dlCopyGUI.showInstallProgress();
 
         for (StorageDevice storageDevice : deviceList) {
 
@@ -95,29 +80,24 @@ public class Installer extends Thread
             dlCopyGUI.installingDeviceFinished(errorMessage, autoNumber);
         }
 
-        dlCopyGUI.installingListFinished();
+        return null;
+    }
 
-        inhibit.delete();
+    @Override
+    protected void done() {
+        if (inhibit != null) {
+            inhibit.delete();
+        }
+        dlCopyGUI.installingListFinished();
     }
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        String propertyName = evt.getPropertyName();
-        switch (propertyName) {
-            case FileCopier.BYTE_COUNTER_PROPERTY:
-                long byteCount = fileCopier.getByteCount();
-                long copiedBytes = fileCopier.getCopiedBytes();
-                int progress = (int) ((100 * copiedBytes) / byteCount);
-                dlCopyGUI.setProgressInTitle(progress + "% "
-                        + STRINGS.getString("Copied") + " ("
-                        + currentDevice + '/' + selectionCount + ')');
-                break;
-
-            case ProcessExecutor.LINE:
-                // store current cp progress line
-                // (will be pattern matched later when needed)
-                String line = (String) evt.getNewValue();
-                dlCopyGUI.setInstallCopyLine(line);
+        if (ProcessExecutor.LINE.equals(evt.getPropertyName())) {
+            // store current cp progress line
+            // (will be pattern matched later when needed)
+            String line = (String) evt.getNewValue();
+            dlCopyGUI.setInstallCopyLine(line);
         }
     }
 

@@ -1,3 +1,9 @@
+dlcopy (201511212047-1) lernstick-8; urgency=medium
+
+  * [c4c0f7] moved Installer into its own class
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 21 Nov 2015 20:47:42 +0100
+
 dlcopy (201511021701-1) lernstick-8; urgency=medium
 
   * [c96fe3] fixed copy-up of printer settings

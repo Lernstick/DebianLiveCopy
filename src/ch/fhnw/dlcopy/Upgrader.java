@@ -15,7 +15,6 @@ import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
 import java.beans.PropertyChangeEvent;
-import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -36,7 +35,6 @@ import java.util.List;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.SwingWorker;
 import javax.swing.Timer;
 import org.freedesktop.dbus.exceptions.DBusException;
 
@@ -45,31 +43,21 @@ import org.freedesktop.dbus.exceptions.DBusException;
  *
  * @author Ronny Standtke <ronny.standtke@gmx.net>
  */
-public class Upgrader extends SwingWorker<Void, Void>
-        implements InstallerOrUpgrader, PropertyChangeListener {
+public class Upgrader extends InstallerOrUpgrader {
 
     private static final Logger LOGGER
             = Logger.getLogger(Upgrader.class.getName());
-    private final FileCopier fileCopier = new FileCopier();
 
-    private final DLCopy dlCopy;
-    private final DLCopyGUI dlCopyGUI;
     private final InstallationSource source;
-    private final List<StorageDevice> deviceList;
     private final boolean automaticBackup;
     private final String automaticBackupDestination;
     private final boolean removeBackup;
     private final boolean upgradeSystemPartition;
-    private final String exchangePartitionLabel;
     private final boolean keepPrinterSettings;
     private final boolean reactivateWelcome;
     private final boolean removeHiddenFiles;
     private final List<String> filesToOverwrite;
     private final long systemSizeEnlarged;
-
-    private LogindInhibit inhibit;
-    private int selectionCount;
-    private int currentDevice;
 
     /**
      * Creates a new Upgrader
@@ -95,21 +83,18 @@ public class Upgrader extends SwingWorker<Void, Void>
      * small file system overhead factor)
      */
     public Upgrader(DLCopy dlCopy, DLCopyGUI dlCopyGUI,
-            InstallationSource source, List<StorageDevice> deviceList,
+            List<StorageDevice> deviceList, InstallationSource source,
             boolean automaticBackup, String automaticBackupDestination,
             boolean removeBackup, boolean upgradeSystemPartition,
             String exchangePartitionLabel, boolean keepPrinterSettings,
             boolean reactivateWelcome, boolean removeHiddenFiles,
             List<String> filesToOverwrite, long systemSizeEnlarged) {
-        this.dlCopy = dlCopy;
-        this.dlCopyGUI = dlCopyGUI;
+        super(dlCopy, dlCopyGUI, deviceList, exchangePartitionLabel);
         this.source = source;
-        this.deviceList = deviceList;
         this.automaticBackup = automaticBackup;
         this.automaticBackupDestination = automaticBackupDestination;
         this.removeBackup = removeBackup;
         this.upgradeSystemPartition = upgradeSystemPartition;
-        this.exchangePartitionLabel = exchangePartitionLabel;
         this.keepPrinterSettings = keepPrinterSettings;
         this.reactivateWelcome = reactivateWelcome;
         this.removeHiddenFiles = removeHiddenFiles;
@@ -188,24 +173,16 @@ public class Upgrader extends SwingWorker<Void, Void>
     }
 
     @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-        String propertyName = evt.getPropertyName();
-        if (FileCopier.BYTE_COUNTER_PROPERTY.equals(propertyName)) {
-            long byteCount = fileCopier.getByteCount();
-            long copiedBytes = fileCopier.getCopiedBytes();
-            int progress = (int) ((100 * copiedBytes) / byteCount);
-            dlCopyGUI.setProgressInTitle(progress + "% "
-                    + STRINGS.getString("Copied") + " (" + currentDevice
-                    + '/' + selectionCount + ')');
-        }
-    }
-
-    @Override
     protected void done() {
         if (inhibit != null) {
             inhibit.delete();
         }
         dlCopyGUI.upgradingListFinished();
+    }
+
+    @Override
+    public void propertyChange(PropertyChangeEvent evt) {
+        
     }
 
     @Override
