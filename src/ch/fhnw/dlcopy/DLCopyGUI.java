@@ -188,12 +188,27 @@ public interface DLCopyGUI {
     public void upgradingListFinished();
 
     /**
-     * sets the progress info in the title of the main window
+     * shows a message regarding the ISO creation progress
      *
-     * @param progressInfo the progress info to show in the title of the main
-     * window
+     * @param message the message to show
      */
-    public void setProgressInTitle(String progressInfo);
+    public void showIsoProgressMessage(String message);
+
+    /**
+     * shows a message and progress percentage value regarding the ISO creation
+     * progress
+     *
+     * @param message the message to show
+     * @param value the progress given in percent
+     */
+    public void showIsoProgressMessage(String message, int value);
+
+    /**
+     * called when creating the ISO file finished
+     * @param path the path to the created ISO
+     * @param success if creating the ISO was successfull
+     */
+    public void isoCreationFinished(String path, boolean success);
 
     /**
      * shows an error message
