@@ -4933,15 +4933,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }
 
-    private static File createTempDir(String prefix) throws IOException {
-        File tmpDir = new File(System.getProperty("java.io.tmpdir"));
-        File tmpFile = File.createTempFile(prefix, "", tmpDir);
-        tmpFile.delete();
-        tmpFile.mkdir();
-        tmpFile.deleteOnExit();
-        return tmpFile;
-    }
-
     private static class Partitions {
 
         private final int exchangeMB;
@@ -5067,8 +5058,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         resultsTableModel.setList(resultsList);
     }
 
-    private void batchFinished(String nonRemovableKey, String removableKey,
-            String reportKey) {
+    private void batchFinished(String nonRemovableKey,
+            String removableKey, String reportKey) {
         setTitle(STRINGS.getString("DLCopy.title"));
         String key;
         switch (source.getDeviceType()) {
@@ -5610,7 +5601,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
         deviceList.add(newDevice);
         Collections.sort(deviceList);
-        Object[] selectedValues = list.getSelectedValues();
+        List selectedValues = list.getSelectedValuesList();
         listModel.clear();
         for (StorageDevice device : deviceList) {
             listModel.addElement(device);
@@ -5748,7 +5739,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         // safety wait in case of device scanning
         // 5 seconds were not enough...
-        Thread.sleep(7000);
+        TimeUnit.SECONDS.sleep(7);
 
         // check if a swap partition is active on this device
         // if so, switch it off
@@ -5831,7 +5822,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         // another safety wait...
-        Thread.sleep(3000);
+        TimeUnit.SECONDS.sleep(3);
 
         // repartition device
         String[] commandArray = partedCommandList.toArray(
@@ -5845,7 +5836,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         // safety wait so that new partitions are known to the system
-        Thread.sleep(7000);
+        TimeUnit.SECONDS.sleep(7);
 
         // The partition types assigned by parted are mosty garbage.
         // We must fix them here...
@@ -6173,7 +6164,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 showCard(installCardPanel, "cpPanel");
             }
         });
-        Thread.sleep(1000);
+        TimeUnit.SECONDS.sleep(1);
         PROCESS_EXECUTOR.addPropertyChangeListener(installerOrUpgrader);
         // this needs to be a script because of the shell globbing
         String copyScript = "#!/bin/bash\n"
@@ -6444,7 +6435,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         // device but not yet its partitions. Therefore we give the system
         // a little break after storage devices have been added.
         try {
-            Thread.sleep(1000);
+            TimeUnit.SECONDS.sleep(1);
         } catch (InterruptedException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
         }
@@ -6567,7 +6558,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 addedDevice.getUpgradeVariant();
                 // safety wait, otherwise the call below to getPartitions()
                 // fails very often
-                Thread.sleep(7000);
+                TimeUnit.SECONDS.sleep(7);
                 for (Partition partition : addedDevice.getPartitions()) {
                     try {
                         if (partition.isPersistencePartition()) {
@@ -6692,7 +6683,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 // in Swing Event Thread
                 // safety wait, otherwise the call below to getPartitions()
                 // fails very often
-                Thread.sleep(7000);
+                TimeUnit.SECONDS.sleep(7);
                 addedDevice.getUpgradeVariant();
                 for (Partition partition : addedDevice.getPartitions()) {
                     try {

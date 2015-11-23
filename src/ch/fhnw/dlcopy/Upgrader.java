@@ -33,6 +33,7 @@ import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
+import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Timer;
@@ -182,7 +183,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
     @Override
     public void propertyChange(PropertyChangeEvent evt) {
-        
+
     }
 
     @Override
@@ -628,7 +629,7 @@ public class Upgrader extends InstallerOrUpgrader {
                     try {
                         LOGGER.info(
                                 "waiting for 10 seconds before continuing...");
-                        Thread.sleep(10000);
+                        TimeUnit.SECONDS.sleep(10);
                     } catch (InterruptedException ex) {
                         LOGGER.log(Level.SEVERE, null, ex);
                     }
@@ -699,8 +700,8 @@ public class Upgrader extends InstallerOrUpgrader {
             // refresh storage device and partition info
             processExecutor.executeProcess(true, true, "/sbin/partprobe");
             // safety wait so that new partitions are known to the system
-            // (5000ms were NOT enough!)
-            Thread.sleep(7000);
+            // (7 seconds were NOT enough!)
+            TimeUnit.SECONDS.sleep(7);
 
             returnValue = processExecutor.executeProcess(true, true,
                     "resize2fs", dataDevPath);
