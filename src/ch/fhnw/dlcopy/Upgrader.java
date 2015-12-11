@@ -107,18 +107,17 @@ public class Upgrader extends InstallerOrUpgrader {
     protected Void doInBackground() throws Exception {
         inhibit = new LogindInhibit("Upgrading");
 
-        selectionCount = deviceList.size();
-
         // upgrade all selected storage devices
+        int batchCounter = 0;
         for (StorageDevice storageDevice : deviceList) {
 
             // update overall progress message
-            currentDevice++;
+            batchCounter++;
             dlCopyGUI.upgradingDeviceStarted(storageDevice);
             LOGGER.log(Level.INFO,
                     "upgrading storage device: {0} of {1} ({2})",
                     new Object[]{
-                        currentDevice, selectionCount, storageDevice
+                        batchCounter, deviceListSize, storageDevice
                     });
 
             File backupDestination = getBackupDestination(storageDevice);
@@ -166,7 +165,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
             LOGGER.log(Level.INFO, "upgrading of storage device finished: "
                     + "{0} of {1} ({2})", new Object[]{
-                        currentDevice, selectionCount, storageDevice
+                        batchCounter, deviceListSize, storageDevice
                     });
         }
 

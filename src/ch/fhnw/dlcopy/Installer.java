@@ -49,13 +49,9 @@ public class Installer extends InstallerOrUpgrader {
     protected Void doInBackground() throws Exception {
         inhibit = new LogindInhibit("Installing");
 
-        selectionCount = deviceList.size();
-
         dlCopyGUI.showInstallProgress();
 
         for (StorageDevice storageDevice : deviceList) {
-
-            currentDevice++;
 
             // update overall progress message
             dlCopyGUI.installingDeviceStarted(storageDevice);

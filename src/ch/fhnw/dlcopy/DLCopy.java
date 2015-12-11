@@ -40,7 +40,6 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
 import java.util.prefs.Preferences;
@@ -132,7 +131,7 @@ public class DLCopy extends JFrame
             = new DefaultListModel<>();
     private final DefaultListModel<StorageDevice> upgradeStorageDeviceListModel
             = new DefaultListModel<>();
-    private final DefaultListModel repairStorageDeviceListModel
+    private final DefaultListModel<StorageDevice> repairStorageDeviceListModel
             = new DefaultListModel();
     private final InstallStorageDeviceRenderer installStorageDeviceRenderer;
     private final UpgradeStorageDeviceRenderer upgradeStorageDeviceRenderer;
@@ -826,24 +825,14 @@ public class DLCopy extends JFrame
 
     @Override
     public void showUpgradeChangingPartitionSizes() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                upgradeIndeterminateProgressBar.setString(
-                        STRINGS.getString("Changing_Partition_Sizes"));
-            }
-        });
+        setProgressBarStringOnEDT(upgradeIndeterminateProgressBar,
+                STRINGS.getString("Changing_Partition_Sizes"));
     }
 
     @Override
     public void showUpgradeDataPartitionReset() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                upgradeIndeterminateProgressBar.setString(
-                        STRINGS.getString("Resetting_Data_Partition"));
-            }
-        });
+        setProgressBarStringOnEDT(upgradeIndeterminateProgressBar,
+                STRINGS.getString("Resetting_Data_Partition"));
     }
 
     @Override
@@ -931,6 +920,59 @@ public class DLCopy extends JFrame
         isoDoneLabel.setText(message);
         showCard(cardPanel, "toISODonePanel");
         processDone();
+    }
+
+    @Override
+    public void showRepairProgress() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                showCard(cardPanel, "repairPanel");
+            }
+        });
+    }
+
+    @Override
+    public void repairingDeviceStarted(StorageDevice storageDevice) {
+        deviceStarted(storageDevice);
+
+        String pattern = STRINGS.getString("Repair_Device_Info");
+        String message = MessageFormat.format(pattern, batchCounter,
+                repairStorageDeviceList.getSelectedIndices().length,
+                storageDevice.getVendor() + " " + storageDevice.getModel(),
+                " (" + DLCopy.STRINGS.getString("Size") + ": "
+                + LernstickFileTools.getDataVolumeString(
+                        storageDevice.getSize(), 1) + ", "
+                + DLCopy.STRINGS.getString("Revision") + ": "
+                + storageDevice.getRevision() + ", "
+                + DLCopy.STRINGS.getString("Serial") + ": "
+                + storageDevice.getSerial() + ", " + "&#47;dev&#47;"
+                + storageDevice.getDevice() + ")");
+        setLabelTextonEDT(currentlyRepairedDeviceLabel, message);
+    }
+
+    @Override
+    public void showRepairFormattingDataPartition() {
+        setProgressBarStringOnEDT(repairProgressBar,
+                STRINGS.getString("Formatting_Data_Partition"));
+    }
+
+    @Override
+    public void showRepairRemovingFiles() {
+        setProgressBarStringOnEDT(repairProgressBar,
+                STRINGS.getString("Removing_Selected_Files"));
+    }
+
+    @Override
+    public void repairingFinished(boolean success) {
+        setTitle(STRINGS.getString("DLCopy.title"));
+        if (success) {
+            doneLabel.setText(STRINGS.getString("Repair_Done"));
+            showCard(cardPanel, "donePanel");
+            processDone();
+        } else {
+            switchToRepairSelection();
+        }
     }
 
     @Override
@@ -1251,21 +1293,6 @@ public class DLCopy extends JFrame
         source.unmountTmpPartitions();
     }
 
-    public void playNotifySound() {
-        URL url = getClass().getResource("/ch/fhnw/dlcopy/KDE_Notify.wav");
-        AudioClip clip = Applet.newAudioClip(url);
-        clip.play();
-    }
-
-    public void switchToUpgradeSelection() {
-        setLabelHighlighted(infoStepLabel, false);
-        setLabelHighlighted(selectionLabel, true);
-        setLabelHighlighted(executionLabel, false);
-        state = State.UPGRADE_SELECTION;
-        showCard(cardPanel, "upgradeSelectionPanel");
-        enableNextButton();
-    }
-
     /**
      * unmounts a device or mountpoint
      *
@@ -1274,8 +1301,8 @@ public class DLCopy extends JFrame
      */
     public void umount(String deviceOrMountpoint) throws IOException {
         // check if a swapfile is in use on this partition
-        List<String> mounts
-                = LernstickFileTools.readFile(new File("/proc/mounts"));
+        List<String> mounts = LernstickFileTools.readFile(
+                new File("/proc/mounts"));
         for (String mount : mounts) {
             String[] tokens = mount.split(" ");
             String device = tokens[0];
@@ -1293,10 +1320,12 @@ public class DLCopy extends JFrame
             }
         }
 
-        int exitValue = PROCESS_EXECUTOR.executeProcess("umount", deviceOrMountpoint);
+        int exitValue = PROCESS_EXECUTOR.executeProcess(
+                "umount", deviceOrMountpoint);
         if (exitValue != 0) {
             String errorMessage = STRINGS.getString("Error_Umount");
-            errorMessage = MessageFormat.format(errorMessage, deviceOrMountpoint);
+            errorMessage = MessageFormat.format(
+                    errorMessage, deviceOrMountpoint);
             LOGGER.severe(errorMessage);
             throw new IOException(errorMessage);
         }
@@ -1313,8 +1342,8 @@ public class DLCopy extends JFrame
     public boolean umount(Partition partition) throws DBusException {
         // early return
         if (!partition.isMounted()) {
-            LOGGER.log(Level.INFO,
-                    "{0} was NOT mounted...", partition.getDeviceAndNumber());
+            LOGGER.log(Level.INFO, "{0} was NOT mounted...",
+                    partition.getDeviceAndNumber());
             return true;
         }
 
@@ -1338,8 +1367,8 @@ public class DLCopy extends JFrame
      * @throws IOException
      */
     public void writePersistenceConf(String mountPath) throws IOException {
-        try (FileWriter writer
-                = new FileWriter(mountPath + "/persistence.conf")) {
+        try (FileWriter writer = new FileWriter(
+                mountPath + "/persistence.conf")) {
             writer.write("/ union,source=.\n");
             writer.flush();
         }
@@ -1528,8 +1557,7 @@ public class DLCopy extends JFrame
 
         } else {
             // boot device is probably a hard disk
-            LOGGER.info(
-                    "isolinux directory does not exist -> no renaming");
+            LOGGER.info("isolinux directory does not exist -> no renaming");
         }
     }
 
@@ -1545,8 +1573,7 @@ public class DLCopy extends JFrame
             throws IOException {
 
         // install syslinux
-        String bootDevice
-                = "/dev/" + bootPartition.getDeviceAndNumber();
+        String bootDevice = "/dev/" + bootPartition.getDeviceAndNumber();
         int exitValue = source.installSyslinux(bootDevice);
         if (exitValue != 0) {
             String errorMessage = STRINGS.getString("Make_Bootable_Failed");
@@ -1585,6 +1612,80 @@ public class DLCopy extends JFrame
         if (source.getDataPartitionMode() != dataPartitionMode) {
             bootConfigUtil.setDataPartitionMode(dataPartitionMode, imagePath);
         }
+    }
+
+    /**
+     * formats and tunes the persistence partition of a given device (e.g.
+     * "/dev/sdb1") and creates the default persistence configuration file on
+     * the partition file system
+     *
+     * @param device the given device (e.g. "/dev/sdb1")
+     * @throws DBusException if a DBusException occurs
+     * @throws IOException if an IOException occurs
+     */
+    public void formatPersistencePartition(String device)
+            throws DBusException, IOException {
+
+        // make sure that the partition is unmounted
+        if (isMounted(device)) {
+            umount(device);
+        }
+
+        // formatting
+        String fileSystem
+                = dataPartitionFilesystemComboBox.getSelectedItem().toString();
+        // If we want to create a partition at the exact same location of
+        // another type of partition mkfs becomes interactive.
+        // For instance if we first install with an exchange partition and later
+        // without one, mkfs asks the following question:
+        // ------------
+        // /dev/sda2 contains a exfat file system labelled 'Austausch'
+        // Proceed anyway? (y,n)
+        // ------------
+        // To make a long story short, this is the reason we have to use the
+        // force flag "-F" here.
+        int exitValue = PROCESS_EXECUTOR.executeProcess("/sbin/mkfs."
+                + fileSystem, "-F", "-L", Partition.PERSISTENCE_LABEL, device);
+        if (exitValue != 0) {
+            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
+            String errorMessage = STRINGS.getString(
+                    "Error_Create_Data_Partition");
+            LOGGER.severe(errorMessage);
+            throw new IOException(errorMessage);
+        }
+
+        // tuning
+        exitValue = PROCESS_EXECUTOR.executeProcess(
+                "/sbin/tune2fs", "-m", "0", "-c", "0", "-i", "0", device);
+        if (exitValue != 0) {
+            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
+            String errorMessage = STRINGS.getString(
+                    "Error_Tune_Data_Partition");
+            LOGGER.severe(errorMessage);
+            throw new IOException(errorMessage);
+        }
+
+        // We have to wait a little for dbus to get to know the new filesystem.
+        // Otherwise we will sometimes get the following exception in the calls
+        // below:
+        // org.freedesktop.dbus.exceptions.DBusExecutionException:
+        // No such interface 'org.freedesktop.UDisks2.Filesystem'
+        try {
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+        }
+
+        // create default persistence configuration file
+        Partition persistencePartition
+                = Partition.getPartitionFromDeviceAndNumber(
+                        device.substring(5), systemSize);
+        String mountPath = persistencePartition.mount().getMountPath();
+        if (mountPath == null) {
+            throw new IOException("could not mount persistence partition");
+        }
+        writePersistenceConf(mountPath);
+        persistencePartition.umount();
     }
 
     /**
@@ -4035,6 +4136,21 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         showMediumPanel();
     }//GEN-LAST:event_systemMediumRadioButtonActionPerformed
 
+    private void playNotifySound() {
+        URL url = getClass().getResource("/ch/fhnw/dlcopy/KDE_Notify.wav");
+        AudioClip clip = Applet.newAudioClip(url);
+        clip.play();
+    }
+
+    private void switchToUpgradeSelection() {
+        setLabelHighlighted(infoStepLabel, false);
+        setLabelHighlighted(selectionLabel, true);
+        setLabelHighlighted(executionLabel, false);
+        state = State.UPGRADE_SELECTION;
+        showCard(cardPanel, "upgradeSelectionPanel");
+        enableNextButton();
+    }
+
     private void showMediumPanel() {
         CardLayout cardLayout = (CardLayout) isoOptionsCardPanel.getLayout();
         if (systemMediumRadioButton.isSelected()) {
@@ -4089,7 +4205,17 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         previousButton.setEnabled(false);
         nextButton.setEnabled(false);
         state = State.REPAIR;
-        new Repairer().execute();
+
+        batchCounter = 0;
+        int[] selectedIndices = repairStorageDeviceList.getSelectedIndices();
+        List<StorageDevice> deviceList = new ArrayList<>();
+        for (int i : selectedIndices) {
+            deviceList.add(repairStorageDeviceListModel.get(i));
+        }
+        new Repairer(this, this, deviceList,
+                formatDataPartitionRadioButton.isSelected(),
+                homeDirectoryCheckBox.isSelected(),
+                systemFilesCheckBox.isSelected()).execute();
     }
 
     private void sortList(boolean ascending) {
@@ -4886,7 +5012,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         if (disableSwap) {
-            int exitValue = PROCESS_EXECUTOR.executeProcess("swapoff", swapFile);
+            int exitValue = PROCESS_EXECUTOR.executeProcess(
+                    "swapoff", swapFile);
             if (exitValue != 0) {
                 String errorMessage = STRINGS.getString("Error_Swapoff_File");
                 errorMessage = MessageFormat.format(errorMessage, swapFile);
@@ -4922,7 +5049,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         if (disableSwap) {
-            int exitValue = PROCESS_EXECUTOR.executeProcess("swapoff", swapFile);
+            int exitValue = PROCESS_EXECUTOR.executeProcess(
+                    "swapoff", swapFile);
             if (exitValue != 0) {
                 String errorMessage
                         = STRINGS.getString("Error_Swapoff_Partition");
@@ -5107,11 +5235,22 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         });
     }
 
-    private void setLabelTextonEDT(final JLabel label, final String text) {
+    private static void setLabelTextonEDT(
+            final JLabel label, final String text) {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
                 label.setText(text);
+            }
+        });
+    }
+
+    private static void setProgressBarStringOnEDT(
+            final JProgressBar progressBar, final String string) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                progressBar.setString(string);
             }
         });
     }
@@ -5185,6 +5324,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             deviceList.add(installStorageDeviceListModel.get(i));
         }
         resultsList = new ArrayList<>();
+        batchCounter = 0;
         new Installer(this, this, deviceList,
                 exchangePartitionTextField.getText(), autoNumber, autoIncrement,
                 autoNumberPatternTextField.getText()).execute();
@@ -5522,72 +5662,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             writableTextField.setForeground(Color.RED);
             disableNextButton();
         }
-    }
-
-    private void formatPersistencePartition(String device)
-            throws DBusException, IOException {
-
-        // make sure that the partition is unmounted
-        if (isMounted(device)) {
-            umount(device);
-        }
-
-        // formatting
-        String fileSystem
-                = dataPartitionFilesystemComboBox.getSelectedItem().toString();
-        // If we want to create a partition at the exact same location of
-        // another type of partition mkfs becomes interactive.
-        // For instance if we first install with an exchange partition and later
-        // without one, mkfs asks the following question:
-        // ------------
-        // /dev/sda2 contains a exfat file system labelled 'Austausch'
-        // Proceed anyway? (y,n)
-        // ------------
-        // To make a long story short, this is the reason we have to use the
-        // force flag "-F" here.
-        int exitValue = PROCESS_EXECUTOR.executeProcess(
-                "/sbin/mkfs." + fileSystem,
-                "-F", "-L", Partition.PERSISTENCE_LABEL, device);
-        if (exitValue != 0) {
-            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
-            String errorMessage
-                    = STRINGS.getString("Error_Create_Data_Partition");
-            LOGGER.severe(errorMessage);
-            throw new IOException(errorMessage);
-        }
-
-        // tuning
-        exitValue = PROCESS_EXECUTOR.executeProcess(
-                "/sbin/tune2fs", "-m", "0", "-c", "0", "-i", "0", device);
-        if (exitValue != 0) {
-            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
-            String errorMessage
-                    = STRINGS.getString("Error_Tune_Data_Partition");
-            LOGGER.severe(errorMessage);
-            throw new IOException(errorMessage);
-        }
-
-        // We have to wait a little for dbus to get to know the new filesystem.
-        // Otherwise we will sometimes get the following exception in the calls
-        // below:
-        // org.freedesktop.dbus.exceptions.DBusExecutionException:
-        // No such interface 'org.freedesktop.UDisks2.Filesystem'
-        try {
-            TimeUnit.SECONDS.sleep(5);
-        } catch (InterruptedException ex) {
-            LOGGER.log(Level.SEVERE, "", ex);
-        }
-
-        // create default persistence configuration file
-        Partition persistencePartition
-                = Partition.getPartitionFromDeviceAndNumber(
-                        device.substring(5), systemSize);
-        String mountPath = persistencePartition.mount().getMountPath();
-        if (mountPath == null) {
-            throw new IOException("could not mount persistence partition");
-        }
-        writePersistenceConf(mountPath);
-        persistencePartition.umount();
     }
 
     private void addDeviceToList(JList list, StorageDevice newDevice) {
@@ -6180,159 +6254,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }
 
-    private class Repairer extends SwingWorker<Boolean, Void> {
-
-        private int selectionCount;
-        private int currentDevice;
-
-        @Override
-        protected Boolean doInBackground() throws Exception {
-
-            SwingUtilities.invokeLater(new Runnable() {
-                @Override
-                public void run() {
-                    showCard(cardPanel, "repairPanel");
-                }
-            });
-
-            // repair all selected storage devices
-            int[] selectedIndices
-                    = repairStorageDeviceList.getSelectedIndices();
-            selectionCount = selectedIndices.length;
-            for (int i : selectedIndices) {
-
-                StorageDevice storageDevice
-                        = (StorageDevice) repairStorageDeviceListModel.get(i);
-
-                // update overall progress message
-                currentDevice++;
-                String pattern = STRINGS.getString("Repair_Device_Info");
-                final String message = MessageFormat.format(pattern,
-                        currentDevice, selectionCount,
-                        storageDevice.getVendor() + " "
-                        + storageDevice.getModel(),
-                        " (" + DLCopy.STRINGS.getString("Size") + ": "
-                        + LernstickFileTools.getDataVolumeString(
-                                storageDevice.getSize(), 1)
-                        + ", "
-                        + DLCopy.STRINGS.getString("Revision") + ": "
-                        + storageDevice.getRevision() + ", "
-                        + DLCopy.STRINGS.getString("Serial") + ": "
-                        + storageDevice.getSerial() + ", "
-                        + "&#47;dev&#47;" + storageDevice.getDevice()
-                        + ")");
-                SwingUtilities.invokeLater(new Runnable() {
-                    @Override
-                    public void run() {
-                        currentlyRepairedDeviceLabel.setText(message);
-                    }
-                });
-                LOGGER.log(Level.INFO,
-                        "repairing storage device: {0} of {1} ({2})",
-                        new Object[]{
-                            currentDevice, selectionCount, storageDevice
-                        });
-
-                // repair
-                Partition dataPartition = storageDevice.getDataPartition();
-                if (formatDataPartitionRadioButton.isSelected()) {
-                    // format data partition
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            repairProgressBar.setString(STRINGS.getString(
-                                    "Formatting_Data_Partition"));
-                        }
-                    });
-
-                    formatPersistencePartition(
-                            "/dev/" + dataPartition.getDeviceAndNumber());
-                } else {
-                    // remove files from data partition
-                    SwingUtilities.invokeLater(new Runnable() {
-                        @Override
-                        public void run() {
-                            repairProgressBar.setString(STRINGS.getString(
-                                    "Removing_Selected_Files"));
-                        }
-                    });
-
-                    MountInfo mountInfo = dataPartition.mount();
-                    String mountPoint = mountInfo.getMountPath();
-                    boolean resetHome = homeDirectoryCheckBox.isSelected();
-                    if (systemFilesCheckBox.isSelected() && resetHome) {
-                        // remove all files
-                        // but keep "/lost+found/" and "persistence.conf"
-                        PROCESS_EXECUTOR.executeProcess("find", mountPoint,
-                                "!", "-regex", mountPoint,
-                                "!", "-regex", mountPoint + "/lost\\+found",
-                                "!", "-regex", mountPoint + "/persistence.conf",
-                                "-exec", "rm", "-rf", "{}", ";");
-                    } else {
-                        if (systemFilesCheckBox.isSelected()) {
-                            // remove all files but keep
-                            // "/lost+found/", "persistence.conf" and "/home/"
-                            PROCESS_EXECUTOR.executeProcess("find", mountPoint,
-                                    "!", "-regex", mountPoint,
-                                    "!", "-regex", mountPoint + "/lost\\+found",
-                                    "!", "-regex", mountPoint + "/persistence.conf",
-                                    "!", "-regex", mountPoint + "/home.*",
-                                    "-exec", "rm", "-rf", "{}", ";");
-                        }
-                        if (resetHome) {
-                            // only remove "/home/user/"
-                            PROCESS_EXECUTOR.executeProcess(
-                                    "rm", "-rf", mountPoint + "/home/user/");
-                        }
-                    }
-                    if (resetHome) {
-                        // restore "/home/user/" from "/etc/skel/"
-                        PROCESS_EXECUTOR.executeProcess("mkdir",
-                                mountPoint + "/home/");
-                        PROCESS_EXECUTOR.executeProcess("cp", "-a",
-                                "/etc/skel/", mountPoint + "/home/user/");
-                        PROCESS_EXECUTOR.executeProcess("chown", "-R",
-                                "user.user", mountPoint + "/home/user/");
-                    }
-                    if (!mountInfo.alreadyMounted()) {
-                        umount(dataPartition);
-                    }
-                }
-
-                LOGGER.log(Level.INFO, "repairing of storage device finished: "
-                        + "{0} of {1} ({2})", new Object[]{
-                            currentDevice, selectionCount, storageDevice
-                        });
-            }
-
-            return true;
-        }
-
-        @Override
-        protected void done() {
-            setTitle(STRINGS.getString("DLCopy.title"));
-            try {
-                if (get()) {
-                    doneLabel.setText(STRINGS.getString("Repair_Done"));
-                    showCard(cardPanel, "donePanel");
-                    previousButton.setEnabled(true);
-                    nextButton.setText(STRINGS.getString("Done"));
-                    nextButton.setIcon(new ImageIcon(getClass().getResource(
-                            "/ch/fhnw/dlcopy/icons/exit.png")));
-                    nextButton.setEnabled(true);
-                    previousButton.requestFocusInWindow();
-                    getRootPane().setDefaultButton(previousButton);
-                    playNotifySound();
-                    toFront();
-                } else {
-                    switchToRepairSelection();
-                }
-            } catch (InterruptedException | ExecutionException ex) {
-                LOGGER.log(Level.SEVERE, "", ex);
-            }
-        }
-    }
-
     private class SwapInfo {
 
         private String file;
@@ -6411,8 +6332,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         @Override
         public void run() {
-            String binaryName = null;
-            String parameter = null;
+            String binaryName;
+            String parameter;
             if (DbusTools.DBUS_VERSION == DbusTools.DBUS_VERSION.V1) {
                 binaryName = "udisks";
                 parameter = "--monitor";

@@ -205,10 +205,40 @@ public interface DLCopyGUI {
 
     /**
      * called when creating the ISO file finished
+     *
      * @param path the path to the created ISO
      * @param success if creating the ISO was successfull
      */
     public void isoCreationFinished(String path, boolean success);
+
+    /**
+     * shows the user interface for visualization of the repair progress
+     */
+    public void showRepairProgress();
+
+    /**
+     * sets the info about the currently repaired device
+     *
+     * @param storageDevice the StorageDevice to be repaired
+     */
+    public void repairingDeviceStarted(StorageDevice storageDevice);
+
+    /**
+     * shows the user interface for formatting the data partition during repair
+     */
+    public void showRepairFormattingDataPartition();
+
+    /**
+     * shows the user interface for removing files during repair
+     */
+    public void showRepairRemovingFiles();
+
+    /**
+     * called when repairing all selected StorageDevices finished
+     *
+     * @param success if repairing all storage devices was successful
+     */
+    public void repairingFinished(boolean success);
 
     /**
      * shows an error message
