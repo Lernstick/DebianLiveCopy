@@ -1,5 +1,6 @@
-package ch.fhnw.dlcopy;
+package ch.fhnw.dlcopy.gui.swing;
 
+import ch.fhnw.dlcopy.StorageDeviceResult;
 import ch.fhnw.util.PreferredSizesTableModel;
 import ch.fhnw.util.StorageDevice;
 import java.awt.Dimension;

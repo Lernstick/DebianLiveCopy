@@ -1,5 +1,6 @@
 package ch.fhnw.dlcopy;
 
+import ch.fhnw.dlcopy.gui.DLCopyGUI;
 import ch.fhnw.util.MountInfo;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
@@ -20,11 +21,11 @@ public class Repairer extends SwingWorker<Boolean, Void> {
     private static final Logger LOGGER
             = Logger.getLogger(Repairer.class.getName());
 
-    private final DLCopy dlCopy;
     private final DLCopyGUI dlCopyGUI;
     private final List<StorageDevice> deviceList;
 
     private final boolean formatDataPartition;
+    private final String dataPartitionFileSystem;
     private final boolean resetHome;
     private final boolean resetSystem;
 
@@ -34,20 +35,20 @@ public class Repairer extends SwingWorker<Boolean, Void> {
     /**
      * creates a new Repairer
      *
-     * @param dlCopy the core program
      * @param dlCopyGUI the graphical user interface
      * @param deviceList the list of StorageDevices to repair
      * @param formatDataPartition if the data partition should be formatted
+     * @param dataPartitionFileSystem the file system of the data partition
      * @param resetHome if the home directory should be reset
      * @param resetSystem if the system (without /home) should be reset
      */
-    public Repairer(DLCopy dlCopy, DLCopyGUI dlCopyGUI,
-            List<StorageDevice> deviceList, boolean formatDataPartition,
+    public Repairer(DLCopyGUI dlCopyGUI, List<StorageDevice> deviceList,
+            boolean formatDataPartition, String dataPartitionFileSystem,
             boolean resetHome, boolean resetSystem) {
-        this.dlCopy = dlCopy;
         this.dlCopyGUI = dlCopyGUI;
         this.deviceList = deviceList;
         this.formatDataPartition = formatDataPartition;
+        this.dataPartitionFileSystem = dataPartitionFileSystem;
         this.resetHome = resetHome;
         this.resetSystem = resetSystem;
     }
@@ -75,8 +76,9 @@ public class Repairer extends SwingWorker<Boolean, Void> {
             if (formatDataPartition) {
                 // format data partition
                 dlCopyGUI.showRepairFormattingDataPartition();
-                dlCopy.formatPersistencePartition(
-                        "/dev/" + dataPartition.getDeviceAndNumber());
+                DLCopy.formatPersistencePartition(
+                        "/dev/" + dataPartition.getDeviceAndNumber(),
+                        dataPartitionFileSystem, dlCopyGUI);
             } else {
                 // remove files from data partition
                 dlCopyGUI.showRepairRemovingFiles();
@@ -119,7 +121,7 @@ public class Repairer extends SwingWorker<Boolean, Void> {
                             "user.user", mountPoint + "/home/user/");
                 }
                 if (!mountInfo.alreadyMounted()) {
-                    dlCopy.umount(dataPartition);
+                    DLCopy.umount(dataPartition, dlCopyGUI);
                 }
             }
 

@@ -1,4 +1,4 @@
-package ch.fhnw.dlcopy;
+package ch.fhnw.dlcopy.gui.swing;
 
 import ch.fhnw.util.ModalDialogHandler;
 import java.awt.Frame;
@@ -18,10 +18,20 @@ public class StorageDeviceListUpdateDialogHandler {
     private StorageDeviceListUpdateDialog dialog;
     private boolean showing;
 
+    /**
+     * creates a new StorageDeviceListUpdateDialogHandler
+     *
+     * @param parent the parent frame
+     */
     public StorageDeviceListUpdateDialogHandler(Frame parent) {
         this.parent = parent;
     }
 
+    /**
+     * adds a path to parse
+     *
+     * @param path the path to parse
+     */
     public synchronized void addPath(String path) {
         paths.add(path);
         if (!showing) {
@@ -34,6 +44,11 @@ public class StorageDeviceListUpdateDialogHandler {
         }
     }
 
+    /**
+     * removes a path that was parsed
+     *
+     * @param path the path that was parsed
+     */
     public synchronized void removePath(String path) {
         paths.remove(path);
         if (paths.isEmpty()) {

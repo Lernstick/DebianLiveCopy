@@ -1,4 +1,4 @@
-package ch.fhnw.dlcopy;
+package ch.fhnw.dlcopy.gui.swing;
 
 import java.awt.Toolkit;
 import javax.swing.text.AttributeSet;

@@ -1,7 +1,8 @@
 package ch.fhnw.dlcopy;
 
-import static ch.fhnw.dlcopy.DLCopy.MEGA;
 import static ch.fhnw.dlcopy.DLCopy.STRINGS;
+import ch.fhnw.dlcopy.gui.swing.DLCopySwingGUI;
+import ch.fhnw.dlcopy.gui.DLCopyGUI;
 import ch.fhnw.filecopier.CopyJob;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.filecopier.Source;
@@ -14,7 +15,6 @@ import ch.fhnw.util.MountInfo;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
-import java.beans.PropertyChangeEvent;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -49,7 +49,8 @@ public class Upgrader extends InstallerOrUpgrader {
     private static final Logger LOGGER
             = Logger.getLogger(Upgrader.class.getName());
 
-    private final InstallationSource source;
+    private final DLCopy.RepartitionStrategy repartitionStrategy;
+    private final int resizedExchangePartitionSize;
     private final boolean automaticBackup;
     private final String automaticBackupDestination;
     private final boolean removeBackup;
@@ -63,16 +64,23 @@ public class Upgrader extends InstallerOrUpgrader {
     /**
      * Creates a new Upgrader
      *
-     * @param dlCopy the main DLCopy instance
-     * @param dlCopyGUI the DLCopy GUI
      * @param source the installation source
      * @param deviceList the list of StorageDevices to upgrade
+     * @param exchangePartitionLabel the label of the exchange partition
+     * @param exchangePartitionFileSystem the file system of the exchange
+     * partition
+     * @param dataPartitionFileSystem the file system of the data partition
+     * @param dlCopy the main DLCopy instance
+     * @param dlCopyGUI the DLCopy GUI
+     * @param repartitionStrategy the repartition strategie for the exchange
+     * partition
+     * @param resizedExchangePartitionSize the new size of the exchange
+     * partition if we want to resize it during upgrade
      * @param automaticBackup if an automatic backup should be run before
      * upgrading
      * @param automaticBackupDestination the destination for automatic backups
      * @param removeBackup if temporary backups should be removed
      * @param upgradeSystemPartition if the system partition should be upgraded
-     * @param exchangePartitionLabel the label of the exchange partition
      * @param keepPrinterSettings if the printer settings should be kept when
      * upgrading
      * @param reactivateWelcome if the welcome program should be reactivated
@@ -83,15 +91,20 @@ public class Upgrader extends InstallerOrUpgrader {
      * @param systemSizeEnlarged the "enlarged" system size (multiplied with a
      * small file system overhead factor)
      */
-    public Upgrader(DLCopy dlCopy, DLCopyGUI dlCopyGUI,
-            List<StorageDevice> deviceList, InstallationSource source,
-            boolean automaticBackup, String automaticBackupDestination,
-            boolean removeBackup, boolean upgradeSystemPartition,
-            String exchangePartitionLabel, boolean keepPrinterSettings,
+    public Upgrader(InstallationSource source, List<StorageDevice> deviceList,
+            String exchangePartitionLabel, String exchangePartitionFileSystem,
+            String dataPartitionFileSystem, DLCopySwingGUI dlCopy,
+            DLCopyGUI dlCopyGUI, DLCopy.RepartitionStrategy repartitionStrategy,
+            int resizedExchangePartitionSize, boolean automaticBackup,
+            String automaticBackupDestination, boolean removeBackup,
+            boolean upgradeSystemPartition, boolean keepPrinterSettings,
             boolean reactivateWelcome, boolean removeHiddenFiles,
             List<String> filesToOverwrite, long systemSizeEnlarged) {
-        super(dlCopy, dlCopyGUI, deviceList, exchangePartitionLabel);
-        this.source = source;
+        super(source, deviceList, exchangePartitionLabel,
+                exchangePartitionFileSystem, dataPartitionFileSystem,
+                dlCopyGUI);
+        this.repartitionStrategy = repartitionStrategy;
+        this.resizedExchangePartitionSize = resizedExchangePartitionSize;
         this.automaticBackup = automaticBackup;
         this.automaticBackupDestination = automaticBackupDestination;
         this.removeBackup = removeBackup;
@@ -141,10 +154,9 @@ public class Upgrader extends InstallerOrUpgrader {
                         break;
 
                     case INSTALLATION:
-                        // TODO: dlCopyGUI.getExchangePartitionLabel() is ugly
-                        // because it is not visible when upgrading
-                        dlCopy.copyToStorageDevice(fileCopier, storageDevice,
-                                exchangePartitionLabel, this);
+                        DLCopy.copyToStorageDevice(source, fileCopier,
+                                storageDevice, exchangePartitionLabel,
+                                this, dlCopyGUI);
                         break;
 
                     default:
@@ -178,11 +190,6 @@ public class Upgrader extends InstallerOrUpgrader {
             inhibit.delete();
         }
         dlCopyGUI.upgradingListFinished();
-    }
-
-    @Override
-    public void propertyChange(PropertyChangeEvent evt) {
-
     }
 
     @Override
@@ -234,8 +241,8 @@ public class Upgrader extends InstallerOrUpgrader {
         backupExchangeParitition(storageDevice, exchangeDestination);
 
         // installation
-        dlCopy.copyToStorageDevice(fileCopier, storageDevice,
-                exchangePartitionLabel, this);
+        DLCopy.copyToStorageDevice(source, fileCopier, storageDevice,
+                exchangePartitionLabel, this, dlCopyGUI);
 
         // !!! update reference to storage device !!!
         // copyToStorageDevice() may change the storage device completely
@@ -252,7 +259,7 @@ public class Upgrader extends InstallerOrUpgrader {
         File backupSource = new File(mountPoint);
         RdiffBackupRestore rdiffBackupRestore = new RdiffBackupRestore();
         Timer backupTimer = new Timer(1000, new BackupActionListener(
-                true, rdiffBackupRestore, dlCopy));
+                true, rdiffBackupRestore, dlCopyGUI));
         backupTimer.setInitialDelay(0);
         backupTimer.start();
         dlCopyGUI.showUpgradeBackup();
@@ -399,7 +406,7 @@ public class Upgrader extends InstallerOrUpgrader {
         // reset data partition
         // first umount the aufs
         // (otherwise we would wreak havoc on the aufs metadata)
-        dlCopy.umount(cowPath);
+        DLCopy.umount(cowPath, dlCopyGUI);
         ProcessExecutor processExecutor = new ProcessExecutor();
         if (keepPrinterSettings) {
             processExecutor.executeProcess("find", dataMountPoint,
@@ -479,14 +486,14 @@ public class Upgrader extends InstallerOrUpgrader {
         finalizeDataPartition(cowPath);
 
         // disassemble union
-        dlCopy.umount(cowPath);
+        DLCopy.umount(cowPath, dlCopyGUI);
         for (String readOnlyMountPoint : readOnlyMountPoints) {
-            dlCopy.umount(readOnlyMountPoint);
+            DLCopy.umount(readOnlyMountPoint, dlCopyGUI);
         }
 
         // umount
         if ((!dataMountInfo.alreadyMounted())
-                && (!dlCopy.umount(dataPartition))) {
+                && (!DLCopy.umount(dataPartition, dlCopyGUI))) {
             return false;
         }
 
@@ -556,7 +563,7 @@ public class Upgrader extends InstallerOrUpgrader {
         // is still missing and we have to add it now
         File persistenceConf = new File(dataMountPoint, "persistence.conf");
         if (!persistenceConf.exists()) {
-            dlCopy.writePersistenceConf(dataMountPoint);
+            DLCopy.writePersistenceConf(dataMountPoint);
         }
     }
 
@@ -574,7 +581,7 @@ public class Upgrader extends InstallerOrUpgrader {
         ProcessExecutor processExecutor = new ProcessExecutor();
 
         // make sure that systemPartition is unmounted
-        if (!dlCopy.umount(systemPartition)) {
+        if (!DLCopy.umount(systemPartition, dlCopyGUI)) {
             return false;
         }
 
@@ -585,7 +592,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
             // TODO: search partition that needs to be shrinked
             // (for now we simply assume it's the data partition)
-            if (!dlCopy.umount(dataPartition)) {
+            if (!DLCopy.umount(dataPartition, dlCopyGUI)) {
                 return false;
             }
             String dataDevPath
@@ -658,7 +665,7 @@ public class Upgrader extends InstallerOrUpgrader {
             long newSystemPartitionOffset = systemPartition.getOffset()
                     + systemPartition.getSize() - systemSizeEnlarged;
             // align newSystemPartitionOffset on a MiB boundary
-            newSystemPartitionOffset /= MEGA;
+            newSystemPartitionOffset /= DLCopy.MEGA;
             String dataPartitionStart
                     = String.valueOf(dataPartitionOffset) + "B";
             String systemPartitionStart
@@ -722,7 +729,7 @@ public class Upgrader extends InstallerOrUpgrader {
             List<Partition> partitions = storageDevice.getPartitions();
             systemPartition = partitions.get(systemPartitionNumber - 1);
 
-            dlCopy.formatBootAndSystemPartition(
+            DLCopy.formatBootAndSystemPartition(
                     "/dev/" + bootPartition.getDeviceAndNumber(),
                     "/dev/" + systemPartition.getDeviceAndNumber());
         }
@@ -738,7 +745,7 @@ public class Upgrader extends InstallerOrUpgrader {
         }
         // TODO: mapping of other file systems
 
-        CopyJobsInfo copyJobsInfo = dlCopy.prepareBootAndSystemCopyJobs(
+        CopyJobsInfo copyJobsInfo = DLCopy.prepareBootAndSystemCopyJobs(source,
                 storageDevice, bootPartition, exchangePartition,
                 systemPartition, exchangePartitionFS);
         File bootMountPointFile = new File(
@@ -763,22 +770,29 @@ public class Upgrader extends InstallerOrUpgrader {
         // (only necessary with FAT32 on removable media...)
         if (bootFilesCopyJob != null) {
             String exchangePath = exchangePartition.getMountPath();
-            dlCopy.hideBootFiles(bootFilesCopyJob, exchangePath);
-            dlCopy.umount(exchangePartition);
+            DLCopy.hideBootFiles(bootFilesCopyJob, exchangePath);
+            DLCopy.umount(exchangePartition, dlCopyGUI);
         }
 
         dlCopyGUI.showUpgradeUnmounting();
-        dlCopy.isolinuxToSyslinux(copyJobsInfo.getDestinationBootPath());
+        DLCopy.isolinuxToSyslinux(copyJobsInfo.getDestinationBootPath(),
+                dlCopyGUI);
 
         // make storage device bootable
         dlCopyGUI.showUpgradeWritingBootSector();
-        dlCopy.makeBootable(devicePath, bootPartition);
+        DLCopy.makeBootable(source, devicePath, bootPartition);
 
         // cleanup
         source.unmountTmpPartitions();
-        if (!dlCopy.umount(bootPartition)) {
+        if (!DLCopy.umount(bootPartition, dlCopyGUI)) {
             return false;
         }
-        return dlCopy.umount(systemPartition);
+        return DLCopy.umount(systemPartition, dlCopyGUI);
+    }
+
+    @Override
+    public PartitionSizes getPartitions(StorageDevice storageDevice) {
+        return DLCopy.getUpgradePartitionSizes(storageDevice,
+                repartitionStrategy, resizedExchangePartitionSize);
     }
 }

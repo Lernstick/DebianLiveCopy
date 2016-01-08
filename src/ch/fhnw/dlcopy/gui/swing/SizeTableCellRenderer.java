@@ -1,4 +1,4 @@
-package ch.fhnw.dlcopy;
+package ch.fhnw.dlcopy.gui.swing;
 
 import ch.fhnw.util.LernstickFileTools;
 import java.awt.Component;

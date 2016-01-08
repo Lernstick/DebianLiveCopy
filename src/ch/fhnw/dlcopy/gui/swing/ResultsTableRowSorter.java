@@ -1,4 +1,4 @@
-package ch.fhnw.dlcopy;
+package ch.fhnw.dlcopy.gui.swing;
 
 import java.util.Comparator;
 import javax.swing.table.TableModel;

@@ -3,7 +3,7 @@
  *
  * Created on 04.10.2011, 14:29:38
  */
-package ch.fhnw.dlcopy;
+package ch.fhnw.dlcopy.gui.swing;
 
 import java.awt.Frame;
 

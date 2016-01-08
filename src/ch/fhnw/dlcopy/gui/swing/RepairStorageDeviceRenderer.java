@@ -3,8 +3,9 @@
  *
  * Created on 16. April 2008, 13:23
  */
-package ch.fhnw.dlcopy;
+package ch.fhnw.dlcopy.gui.swing;
 
+import static ch.fhnw.dlcopy.DLCopy.STRINGS;
 import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.StorageDevice;
@@ -25,7 +26,7 @@ public class RepairStorageDeviceRenderer
         extends JPanel implements ListCellRenderer {
 
     private final static Logger LOGGER
-            = Logger.getLogger(DLCopy.class.getName());
+            = Logger.getLogger(DLCopySwingGUI.class.getName());
     private final static Icon BLUE_BOX = new ImageIcon(
             RepairStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/blue_box.png"));
@@ -123,24 +124,23 @@ public class RepairStorageDeviceRenderer
                         partition.getSize(), 1));
                 stringBuilder.append(")<br>");
                 if (extended) {
-                    stringBuilder.append(DLCopy.STRINGS.getString("Extended"));
+                    stringBuilder.append(STRINGS.getString("Extended"));
                     stringBuilder.append("<br>&nbsp;");
                 } else {
-                    stringBuilder.append(DLCopy.STRINGS.getString("Label"));
+                    stringBuilder.append(STRINGS.getString("Label"));
                     stringBuilder.append(": ");
                     stringBuilder.append(partition.getIdLabel());
                     stringBuilder.append("<br>");
-                    stringBuilder.append(DLCopy.STRINGS.getString("File_System"));
+                    stringBuilder.append(STRINGS.getString("File_System"));
                     stringBuilder.append(": ");
                     stringBuilder.append(partition.getIdType());
                     stringBuilder.append("<br>");
-                    stringBuilder.append(DLCopy.STRINGS.getString("Used"));
+                    stringBuilder.append(STRINGS.getString("Used"));
                     stringBuilder.append(": ");
                     try {
                         long usedSpace = partition.getUsedSpace(false);
                         if (usedSpace == -1) {
-                            stringBuilder.append(
-                                    DLCopy.STRINGS.getString("Unknown"));
+                            stringBuilder.append(STRINGS.getString("Unknown"));
                         } else {
                             stringBuilder.append(
                                     LernstickFileTools.getDataVolumeString(
@@ -170,18 +170,18 @@ public class RepairStorageDeviceRenderer
             Partition dataPartition = storageDevice.getDataPartition();
             if (dataPartition == null) {
                 upgradeInfoLabel.setIcon(CANCEL_ICON);
-                upgradeInfoLabel.setText(DLCopy.STRINGS.getString(
+                upgradeInfoLabel.setText(STRINGS.getString(
                         "Repairing_Impossible_No_Data_Partition"));
             } else {
                 try {
                     if (dataPartition.isActivePersistencePartition()) {
                         upgradeInfoLabel.setIcon(CANCEL_ICON);
-                        upgradeInfoLabel.setText(DLCopy.STRINGS.getString(
+                        upgradeInfoLabel.setText(STRINGS.getString(
                                 "Repairing_Impossible_Active_Data_Partition"));
                     } else {
                         upgradeInfoLabel.setIcon(OK_ICON);
                         upgradeInfoLabel.setText(
-                                DLCopy.STRINGS.getString("Repairing_Possible"));
+                                STRINGS.getString("Repairing_Possible"));
                     }
                 } catch (DBusException ex) {
                     LOGGER.log(Level.SEVERE, "", ex);
@@ -221,7 +221,8 @@ public class RepairStorageDeviceRenderer
         location.translate(pgpLocation.x, pgpLocation.y);
 
         // border for storage device
-        int deviceWidth = (int) ((width * storageDevice.getSize()) / maxStorageDeviceSize);
+        int deviceWidth = (int) ((width * storageDevice.getSize())
+                / maxStorageDeviceSize);
         graphics2D.setPaint(Color.BLACK);
         graphics2D.drawRect(location.x, location.y, deviceWidth, height);
 
@@ -232,7 +233,8 @@ public class RepairStorageDeviceRenderer
 
             // determine offset
             long partitionOffset = partition.getOffset();
-            int offset = (int) ((width * partitionOffset) / maxStorageDeviceSize);
+            int offset = (int) ((width * partitionOffset)
+                    / maxStorageDeviceSize);
 
             // determine width
             long partitionSize = partition.getSize();
@@ -407,16 +409,16 @@ public class RepairStorageDeviceRenderer
         }
         stringBuilder.append(storageDevice.getModel());
         stringBuilder.append("</b>, ");
-        stringBuilder.append(DLCopy.STRINGS.getString("Size"));
+        stringBuilder.append(STRINGS.getString("Size"));
         stringBuilder.append(": ");
         stringBuilder.append(LernstickFileTools.getDataVolumeString(
                 storageDevice.getSize(), 1));
         stringBuilder.append(", ");
-        stringBuilder.append(DLCopy.STRINGS.getString("Revision"));
+        stringBuilder.append(STRINGS.getString("Revision"));
         stringBuilder.append(": ");
         stringBuilder.append(storageDevice.getRevision());
         stringBuilder.append(", ");
-        stringBuilder.append(DLCopy.STRINGS.getString("Serial"));
+        stringBuilder.append(STRINGS.getString("Serial"));
         stringBuilder.append(": ");
         stringBuilder.append(storageDevice.getSerial());
         stringBuilder.append(", &#47;dev&#47;");

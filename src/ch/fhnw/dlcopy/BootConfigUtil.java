@@ -1,6 +1,5 @@
 package ch.fhnw.dlcopy;
 
-import ch.fhnw.dlcopy.InstallationSource.DataPartitionMode;
 import ch.fhnw.util.ProcessExecutor;
 import java.io.File;
 import java.io.IOException;
@@ -29,13 +28,17 @@ public class BootConfigUtil {
     private final static Logger LOGGER
             = Logger.getLogger(BootConfigUtil.class.getName());
 
-    private final ProcessExecutor processExecutor;
+    private final static ProcessExecutor PROCESS_EXECUTOR
+            = new ProcessExecutor();
 
-    public BootConfigUtil(ProcessExecutor processExecutor) {
-        this.processExecutor = processExecutor;
-    }
-
-    public DataPartitionMode getDataPartitionMode(String imagePath) {
+    /**
+     * returns the DataPartitionMode of an installation (out of the xmlboot
+     * config file)
+     *
+     * @param imagePath
+     * @return
+     */
+    public static DataPartitionMode getDataPartitionMode(String imagePath) {
         try {
             File xmlBootConfigFile = getXmlBootConfigFile(new File(imagePath));
             if (xmlBootConfigFile == null) {
@@ -84,14 +87,14 @@ public class BootConfigUtil {
      * @param destinationDataPartitionMode the DataPartitionMode to set
      * @param imagePath the path where the target image is mounted
      */
-    public void setDataPartitionMode(
+    public static void setDataPartitionMode(
             DataPartitionMode destinationDataPartitionMode, String imagePath) {
 
         setDataPartitionModeXmlBoot(destinationDataPartitionMode, imagePath);
         setDataPartitionModeGrub(destinationDataPartitionMode, imagePath);
     }
 
-    private void setDataPartitionModeXmlBoot(
+    private static void setDataPartitionModeXmlBoot(
             DataPartitionMode destinationDataPartitionMode, String imagePath) {
 
         try {
@@ -156,7 +159,7 @@ public class BootConfigUtil {
             File parentDir = xmlBootConfigFile.getParentFile();
             LOGGER.log(Level.INFO, "parentDir: {0}", parentDir);
             if (parentDir.getName().equals("bootlogo.dir")) {
-                processExecutor.executeProcess(true, true, "gfxboot",
+                PROCESS_EXECUTOR.executeProcess(true, true, "gfxboot",
                         "--archive", parentDir.getPath(),
                         "--pack-archive", parentDir.getParent() + "/bootlogo");
             }
@@ -168,7 +171,7 @@ public class BootConfigUtil {
         }
     }
 
-    private void setDataPartitionModeGrub(
+    private static void setDataPartitionModeGrub(
             DataPartitionMode destinationDataPartitionMode, String imagePath) {
         String persistenceString = "";
         switch (destinationDataPartitionMode) {
@@ -187,12 +190,13 @@ public class BootConfigUtil {
                 LOGGER.log(Level.WARNING, "unsupported dataPartitionMode: {0}",
                         destinationDataPartitionMode);
         }
-        processExecutor.executeProcess("sed", "-i", "-e",
+        PROCESS_EXECUTOR.executeProcess("sed", "-i", "-e",
                 "s|set PERSISTENCE=.*|set PERSISTENCE=\"" + persistenceString
                 + "\"|1", imagePath + "/boot/grub/grub.cfg");
     }
 
-    private Node getPersistenceNode(org.w3c.dom.Document xmlBootDocument) {
+    private static Node getPersistenceNode(
+            org.w3c.dom.Document xmlBootDocument) {
         Node configsNode
                 = xmlBootDocument.getElementsByTagName("configs").item(0);
         NodeList childNodes = configsNode.getChildNodes();
@@ -212,7 +216,7 @@ public class BootConfigUtil {
         return null;
     }
 
-    private File getXmlBootConfigFile(File imageDirectory) {
+    private static File getXmlBootConfigFile(File imageDirectory) {
         // search through all known variants
         String[] dirs = new String[]{"isolinux", "syslinux"};
         String[] subdirs = new String[]{"/", "/bootlogo.dir/"};
@@ -234,7 +238,7 @@ public class BootConfigUtil {
         return null;
     }
 
-    private org.w3c.dom.Document parseXmlFile(File file)
+    private static org.w3c.dom.Document parseXmlFile(File file)
             throws ParserConfigurationException, SAXException, IOException {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setIgnoringComments(true);
@@ -243,12 +247,12 @@ public class BootConfigUtil {
         return builder.parse(file);
     }
 
-    private void selectNode(Node node) {
+    private static void selectNode(Node node) {
         Element element = (Element) node;
         element.setAttribute("selected", "true");
     }
 
-    private void unselectNode(Node node) {
+    private static void unselectNode(Node node) {
         Element element = (Element) node;
         element.removeAttribute("selected");
     }

@@ -1,9 +1,11 @@
 package ch.fhnw.dlcopy;
 
+import ch.fhnw.dlcopy.gui.DLCopyGUI;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
 import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -15,34 +17,56 @@ import org.freedesktop.dbus.exceptions.DBusException;
  *
  * @author Ronny Standtke <ronny.standtke@gmx.net>
  */
-public class Installer extends InstallerOrUpgrader {
+public class Installer extends InstallerOrUpgrader
+        implements PropertyChangeListener {
 
     private static final Logger LOGGER
             = Logger.getLogger(Installer.class.getName());
 
-    private int autoNumber;
+    private final int exchangePartitionSize;
+    private final boolean copyExchangePartition;
     private final int autoNumberIncrement;
     private final String autoNumberPattern;
+    private int autoNumber;
+    private final boolean copyDataPartition;
+    private final DataPartitionMode dataPartitionMode;
 
     /**
      * creates a new Installer
      *
-     * @param dlCopy the main DLCopy instance
      * @param dlCopyGUI the DLCopy GUI
      * @param deviceList the list of StorageDevices to install
      * @param exchangePartitionLabel the label of the exchange partition
+     * @param source the installation source
+     * @param exchangePartitionSize the size of the exchange partition
+     * @param exchangePartitionFileSystem the file system of the exchange
+     * partition
+     * @param copyExchangePartition if the exchange partition should be copied
      * @param autoNumberStart the auto numbering start value
      * @param autoNumberIncrement the auto numbering increment
      * @param autoNumberPattern the auto numbering pattern
+     * @param dataPartitionFileSystem the file system of the data partition
+     * @param copyDataPartition if the data partition should be copied
+     * @param dataPartitionMode the mode of the data partition to set in the
+     * bootloaders config
      */
-    public Installer(DLCopy dlCopy, DLCopyGUI dlCopyGUI,
-            List<StorageDevice> deviceList, String exchangePartitionLabel,
+    public Installer(InstallationSource source, List<StorageDevice> deviceList,
+            String exchangePartitionLabel, String exchangePartitionFileSystem,
+            String dataPartitionFileSystem, DLCopyGUI dlCopyGUI,
+            int exchangePartitionSize, boolean copyExchangePartition,
             int autoNumberStart, int autoNumberIncrement,
-            String autoNumberPattern) {
-        super(dlCopy, dlCopyGUI, deviceList, exchangePartitionLabel);
-        this.autoNumber = autoNumberStart;
+            String autoNumberPattern, boolean copyDataPartition,
+            DataPartitionMode dataPartitionMode) {
+        super(source, deviceList, exchangePartitionLabel,
+                exchangePartitionFileSystem, dataPartitionFileSystem,
+                dlCopyGUI);
+        this.exchangePartitionSize = exchangePartitionSize;
+        this.copyExchangePartition = copyExchangePartition;
         this.autoNumberIncrement = autoNumberIncrement;
         this.autoNumberPattern = autoNumberPattern;
+        this.autoNumber = autoNumberStart;
+        this.copyDataPartition = copyDataPartition;
+        this.dataPartitionMode = dataPartitionMode;
     }
 
     @Override
@@ -65,8 +89,8 @@ public class Installer extends InstallerOrUpgrader {
 
             String errorMessage = null;
             try {
-                dlCopy.copyToStorageDevice(fileCopier, storageDevice,
-                        exchangePartitionLabel, this);
+                DLCopy.copyToStorageDevice(source, fileCopier, storageDevice,
+                        exchangePartitionLabel, this, dlCopyGUI);
             } catch (InterruptedException | IOException |
                     DBusException exception) {
                 LOGGER.log(Level.WARNING, "", exception);
@@ -115,5 +139,41 @@ public class Installer extends InstallerOrUpgrader {
     @Override
     public void showWritingBootSector() {
         dlCopyGUI.showInstallWritingBootSector();
+    }
+
+    @Override
+    public PartitionSizes getPartitions(StorageDevice storageDevice) {
+        return DLCopy.getInstallPartitionSizes(storageDevice, exchangePartitionSize);
+    }
+
+    /**
+     * returns true if the user selected to copy the exchange partition, false
+     * otherwise
+     *
+     * @return true if the user selected to copy the exchange partition, false
+     * otherwise
+     */
+    public boolean isCopyExchangePartitionSelected() {
+        return copyExchangePartition;
+    }
+
+    /**
+     * returns true if the user selected to copy the data partition, false
+     * otherwise
+     *
+     * @return true if the user selected to copy the data partition, false
+     * otherwise
+     */
+    public boolean isCopyDataPartitionSelected() {
+        return copyDataPartition;
+    }
+
+    /**
+     * returns the mode for the data partition to set in the bootloaders config
+     *
+     * @return the mode for the data partition to set in the bootloaders config
+     */
+    public DataPartitionMode getDataPartitionMode() {
+        return dataPartitionMode;
     }
 }

@@ -1,5 +1,6 @@
-package ch.fhnw.dlcopy;
+package ch.fhnw.dlcopy.gui;
 
+import ch.fhnw.dlcopy.Installer;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.StorageDevice;
 
@@ -35,6 +36,17 @@ public interface DLCopyGUI {
      * installation
      */
     public void showInstallFileCopy(FileCopier fileCopier);
+    
+    /**
+     * shows the user interface for copying the persistency partition during
+     * installation
+     *
+     * @param installer the Installer currently in use
+     * @param copyScript the shell script for the copy operation
+     * @param sourcePath the path to the source directory
+     */
+    public void showInstallPersistencyCopy(
+            Installer installer, String copyScript, String sourcePath);
 
     /**
      * sets the current output line of the copy process
@@ -246,4 +258,12 @@ public interface DLCopyGUI {
      * @param errorMessage the error message
      */
     public void showErrorMessage(String errorMessage);
+    
+    /**
+     * shows a confirm dialog
+     * @param title the dialog title
+     * @param message the message to display
+     * @return true, if the user confirmed, false otherwise
+     */
+    public boolean showConfirmDialog(String title, String message);
 }

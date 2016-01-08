@@ -21,7 +21,7 @@ public final class SystemInstallationSource implements InstallationSource {
 
     private final ProcessExecutor processExecutor;
     private final DebianLiveVersion runningVersion;
-    private final InstallationSource.DataPartitionMode dataPartitionMode;
+    private final DataPartitionMode dataPartitionMode;
     private final StorageDevice storageDevice;
     private final Partition exchangePartition;
     private final Partition dataPartition;
@@ -33,8 +33,7 @@ public final class SystemInstallationSource implements InstallationSource {
     private String exchangePath = null;
     private boolean isExchangeTmpMounted = false;
 
-    public SystemInstallationSource(ProcessExecutor processExecutor,
-            BootConfigUtil bootConfigUtil)
+    public SystemInstallationSource(ProcessExecutor processExecutor)
             throws DBusException, IOException {
         this.processExecutor = processExecutor;
         runningVersion = DebianLiveVersion.getRunningVersion();
@@ -63,14 +62,14 @@ public final class SystemInstallationSource implements InstallationSource {
         if (hasBootPartition()) {
             MountInfo bootMountInfo = bootPartition.mount();
             dataPartitionMode
-                    = bootConfigUtil.getDataPartitionMode(
+                    = BootConfigUtil.getDataPartitionMode(
                             bootMountInfo.getMountPath());
             if (!bootMountInfo.alreadyMounted()) {
                 bootPartition.umount();
             }
         } else {
             dataPartitionMode
-                    = bootConfigUtil.getDataPartitionMode(getSystemPath());
+                    = BootConfigUtil.getDataPartitionMode(getSystemPath());
         }
     }
 

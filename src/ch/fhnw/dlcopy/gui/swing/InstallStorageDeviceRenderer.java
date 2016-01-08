@@ -3,9 +3,12 @@
  *
  * Created on 16. April 2008, 13:23
  */
-package ch.fhnw.dlcopy;
+package ch.fhnw.dlcopy.gui.swing;
 
+import ch.fhnw.dlcopy.DLCopy;
+import static ch.fhnw.dlcopy.DLCopy.MEGA;
 import ch.fhnw.dlcopy.DLCopy.PartitionState;
+import static ch.fhnw.dlcopy.DLCopy.STRINGS;
 import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.StorageDevice;
 import java.awt.*;
@@ -24,13 +27,13 @@ public class InstallStorageDeviceRenderer
         extends JPanel implements ListCellRenderer {
 
     private final static Logger LOGGER
-            = Logger.getLogger(DLCopy.class.getName());
+            = Logger.getLogger(DLCopySwingGUI.class.getName());
     // here we need the boot partition size in bytes
     private final static long BOOT_PARTITION_SIZE
-            = DLCopy.BOOT_PARTITION_SIZE * DLCopy.MEGA;
+            = DLCopy.BOOT_PARTITION_SIZE * MEGA;
     private final static int OFFSET = 5;
     private final static int BAR_HEIGHT = 30;
-    private final DLCopy dlCopy;
+    private final DLCopySwingGUI dlCopy;
     private final long systemSize;
     private final Color LIGHT_BLUE = new Color(170, 170, 255);
     private final Color DARK_BLUE = new Color(69, 69, 255);
@@ -46,7 +49,7 @@ public class InstallStorageDeviceRenderer
      * @param dlCopy the main program
      * @param systemSize the size of the system to be copied in Byte
      */
-    public InstallStorageDeviceRenderer(DLCopy dlCopy, long systemSize) {
+    public InstallStorageDeviceRenderer(DLCopySwingGUI dlCopy, long systemSize) {
         this.dlCopy = dlCopy;
         this.systemSize = systemSize;
         initComponents();
@@ -136,7 +139,7 @@ public class InstallStorageDeviceRenderer
         if (partitionState == PartitionState.TOO_SMALL) {
             rectangleTop = drawTopText(graphics2D, deviceText);
         } else {
-            String text = DLCopy.STRINGS.getString("Proposed_Partitioning");
+            String text = STRINGS.getString("Proposed_Partitioning");
             text = MessageFormat.format(text, deviceText);
             rectangleTop = drawTopText(graphics2D, text);
         }
@@ -158,7 +161,7 @@ public class InstallStorageDeviceRenderer
         switch (partitionState) {
             case TOO_SMALL:
                 // paint error text
-                String errorText = DLCopy.STRINGS.getString("Too_Small");
+                String errorText = STRINGS.getString("Too_Small");
                 drawCenterText(iconGap + OFFSET, rectangleTop, usbStorageWidth,
                         BAR_HEIGHT, errorText, graphics2D);
                 break;
@@ -219,19 +222,19 @@ public class InstallStorageDeviceRenderer
                         = dlCopy.getExchangePartitionSizeSlider();
                 long exchangeSize
                         = (long) getExchangePartitionSizeSlider.getValue()
-                        * DLCopy.MEGA;
+                        * MEGA;
                 int exchangeWidth = (int) ((usbStorageWidth * exchangeSize)
                         / storageSize);
                 int maximumExchangeSizeMega
                         = getExchangePartitionSizeSlider.getMaximum();
                 long maximumExchangeSize
-                        = (long) maximumExchangeSizeMega * DLCopy.MEGA;
+                        = (long) maximumExchangeSizeMega * MEGA;
                 long persistentSize = 0;
                 persistentWidth = 0;
                 // we need to calculate with overheadMega because we define MiB
                 // in the exchange partition size slider
                 // (calculating with byte values is "too exact"...)
-                long overheadMega = overhead / DLCopy.MEGA;
+                long overheadMega = overhead / MEGA;
                 if ((overheadMega != maximumExchangeSizeMega)
                         || (exchangeSize != maximumExchangeSize)) {
                     persistentSize = storageSize

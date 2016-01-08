@@ -12,7 +12,7 @@
   <Properties>
     <Property name="defaultCloseOperation" type="int" value="2"/>
     <Property name="title" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
     </Property>
   </Properties>
   <SyntheticProperties>
@@ -58,7 +58,7 @@
             </Property>
             <Property name="horizontalAlignment" type="int" value="0"/>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.choiceLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.choiceLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
           </Properties>
           <Constraints>
@@ -91,7 +91,7 @@
                       <Image iconType="3" name="/ch/fhnw/dlcopy/icons/dvd2usb.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.installButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.installButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalTextPosition" type="int" value="0"/>
                     <Property name="name" type="java.lang.String" value="installButton" noResource="true"/>
@@ -116,7 +116,7 @@
                       </FontInfo>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.installLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.installLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Constraints>
@@ -142,7 +142,7 @@
                       <Image iconType="3" name="/ch/fhnw/dlcopy/icons/usbupgrade.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalTextPosition" type="int" value="0"/>
                     <Property name="verticalTextPosition" type="int" value="3"/>
@@ -166,7 +166,7 @@
                       </FontInfo>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Constraints>
@@ -183,7 +183,7 @@
                   <Image iconType="3" name="/ch/fhnw/dlcopy/icons/usb2dvd.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.toISOButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.toISOButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="horizontalTextPosition" type="int" value="0"/>
                 <Property name="verticalTextPosition" type="int" value="3"/>
@@ -205,7 +205,7 @@
                   <Image iconType="3" name="/ch/fhnw/dlcopy/icons/lernstick_repair.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.repairButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.repairButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
                 <Property name="horizontalTextPosition" type="int" value="0"/>
                 <Property name="verticalTextPosition" type="int" value="3"/>
@@ -329,7 +329,7 @@
             <Component class="javax.swing.JLabel" name="stepsLabel">
               <Properties>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.stepsLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.stepsLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </Component>
@@ -343,7 +343,7 @@
                   </FontInfo>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.infoStepLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.infoStepLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </Component>
@@ -358,7 +358,7 @@
                   <Color blue="40" green="40" id="darkGray" palette="1" red="40" type="palette"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.selectionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.selectionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                 </Property>
               </Properties>
             </Component>
@@ -398,7 +398,7 @@
                       <Image iconType="3" name="/ch/fhnw/dlcopy/icons/dvd2usb.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.infoLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.infoLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalTextPosition" type="int" value="0"/>
                     <Property name="verticalTextPosition" type="int" value="3"/>
@@ -446,7 +446,7 @@
                       </FontInfo>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.installShowHarddisksCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.installShowHarddisksCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -510,7 +510,7 @@
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="installSelectionCountLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="storageDeviceListScrollPane" pref="95" max="32767" attributes="0"/>
+                                  <Component id="storageDeviceListScrollPane" pref="130" max="32767" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
                                   <Component id="exchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
@@ -556,7 +556,7 @@
                               <Image iconType="3" name="/ch/fhnw/dlcopy/icons/yellow_box.png"/>
                             </Property>
                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.exchangeDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.exchangeDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
                           </Properties>
                         </Component>
@@ -571,7 +571,7 @@
                               <Image iconType="3" name="/ch/fhnw/dlcopy/icons/green_box.png"/>
                             </Property>
                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.dataDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.dataDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
                           </Properties>
                         </Component>
@@ -621,7 +621,7 @@
                                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
                                   <JTabbedPaneConstraints tabName="Exchange partition (optional)">
                                     <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.exchangePartitionPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.exchangePartitionPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                     </Property>
                                     <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                                       <Image iconType="3" name="/ch/fhnw/dlcopy/icons/yellow_box.png"/>
@@ -678,7 +678,7 @@
                                 <Component class="javax.swing.JLabel" name="exchangePartitionSizeUnitLabel">
                                   <Properties>
                                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.exchangePartitionSizeUnitLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.exchangePartitionSizeUnitLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                     </Property>
                                     <Property name="enabled" type="boolean" value="false"/>
                                   </Properties>
@@ -741,7 +741,7 @@
                                         <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                                           <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                                             <TitledBorder title="Automatic Numbering">
-                                              <ResourceString PropertyName="titleX" bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.autoNumberPanel.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                              <ResourceString PropertyName="titleX" bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.autoNumberPanel.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                             </TitledBorder>
                                           </Border>
                                         </Property>
@@ -758,7 +758,7 @@
                                           <Properties>
                                             <Property name="horizontalAlignment" type="int" value="2"/>
                                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.autoNumberPatternLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.autoNumberPatternLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                             </Property>
                                             <Property name="enabled" type="boolean" value="false"/>
                                           </Properties>
@@ -783,7 +783,7 @@
                                           <Properties>
                                             <Property name="horizontalAlignment" type="int" value="2"/>
                                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.autoNumberStartLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.autoNumberStartLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                             </Property>
                                             <Property name="enabled" type="boolean" value="false"/>
                                           </Properties>
@@ -810,7 +810,7 @@
                                           <Properties>
                                             <Property name="horizontalAlignment" type="int" value="2"/>
                                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.autoNumberIncrementLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.autoNumberIncrementLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                             </Property>
                                             <Property name="enabled" type="boolean" value="false"/>
                                           </Properties>
@@ -847,7 +847,7 @@
                                         <Component class="javax.swing.JLabel" name="exchangePartitionFileSystemLabel">
                                           <Properties>
                                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.exchangePartitionFileSystemLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.exchangePartitionFileSystemLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                             </Property>
                                             <Property name="enabled" type="boolean" value="false"/>
                                           </Properties>
@@ -867,23 +867,7 @@
                                               </StringArray>
                                             </Property>
                                             <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.exchangePartitionFileSystemComboBox.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                                            </Property>
-                                            <Property name="enabled" type="boolean" value="false"/>
-                                          </Properties>
-                                          <Events>
-                                            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="exchangePartitionFileSystemComboBoxActionPerformed"/>
-                                          </Events>
-                                          <Constraints>
-                                            <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
-                                              <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="0" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="5" insetsBottom="0" insetsRight="0" anchor="17" weightX="0.0" weightY="0.0"/>
-                                            </Constraint>
-                                          </Constraints>
-                                        </Component>
-                                        <Component class="javax.swing.JCheckBox" name="quickFormatCheckBox">
-                                          <Properties>
-                                            <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.quickFormatCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.exchangePartitionFileSystemComboBox.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                             </Property>
                                             <Property name="enabled" type="boolean" value="false"/>
                                           </Properties>
@@ -896,7 +880,7 @@
                                         <Component class="javax.swing.JCheckBox" name="copyExchangeCheckBox">
                                           <Properties>
                                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.copyExchangeCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.copyExchangeCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                             </Property>
                                           </Properties>
                                           <Constraints>
@@ -916,7 +900,7 @@
                                 <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
                                   <JTabbedPaneConstraints tabName="Data partition">
                                     <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.dataPartitionPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.dataPartitionPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                     </Property>
                                     <Property name="tabIcon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                                       <Image iconType="3" name="/ch/fhnw/dlcopy/icons/green_box.png"/>
@@ -930,7 +914,7 @@
                                 <Component class="javax.swing.JLabel" name="dataPartitionFileSystemLabel">
                                   <Properties>
                                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.dataPartitionFileSystemLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.dataPartitionFileSystemLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                     </Property>
                                   </Properties>
                                   <Constraints>
@@ -958,7 +942,7 @@
                                 <Component class="javax.swing.JLabel" name="dataPartitionModeLabel">
                                   <Properties>
                                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.dataPartitionModeLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.dataPartitionModeLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                     </Property>
                                   </Properties>
                                   <Constraints>
@@ -1038,7 +1022,7 @@
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
                       <JTabbedPaneConstraints tabName="Current installation">
                         <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.installCurrentPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.installCurrentPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
                       </JTabbedPaneConstraints>
                     </Constraint>
@@ -1090,7 +1074,7 @@
                                   <Dimension value="[250, 25]"/>
                                 </Property>
                                 <Property name="string" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.installIndeterminateProgressBar.string" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.installIndeterminateProgressBar.string" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="stringPainted" type="boolean" value="true"/>
                               </Properties>
@@ -1114,7 +1098,7 @@
                             <Component class="javax.swing.JLabel" name="installCopyLabel">
                               <Properties>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.installCopyLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.installCopyLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                               </Properties>
                               <Constraints>
@@ -1144,7 +1128,7 @@
                             <Component class="javax.swing.JLabel" name="jLabel3">
                               <Properties>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.jLabel3.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.jLabel3.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                               </Properties>
                               <Constraints>
@@ -1169,7 +1153,7 @@
                             <Component class="javax.swing.JLabel" name="rsyncTimeLabel">
                               <Properties>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.rsyncTimeLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.rsyncTimeLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="name" type="java.lang.String" value="upgradeBackupTimeLabel" noResource="true"/>
                               </Properties>
@@ -1193,7 +1177,7 @@
                             <Component class="javax.swing.JLabel" name="jLabel4">
                               <Properties>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.jLabel4.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.jLabel4.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                               </Properties>
                               <Constraints>
@@ -1221,7 +1205,7 @@
                                 </Property>
                                 <Property name="horizontalAlignment" type="int" value="0"/>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.cpFilenameLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.cpFilenameLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="name" type="java.lang.String" value="cpFilenameLabel" noResource="true"/>
                               </Properties>
@@ -1237,7 +1221,7 @@
                             <Component class="javax.swing.JLabel" name="cpTimeLabel">
                               <Properties>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.cpTimeLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.cpTimeLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="name" type="java.lang.String" value="upgradeBackupTimeLabel" noResource="true"/>
                               </Properties>
@@ -1300,11 +1284,11 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="575" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="746" max="32767" attributes="0"/>
                       <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="doneLabel" pref="551" max="32767" attributes="0"/>
+                              <Component id="doneLabel" pref="722" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -1312,12 +1296,12 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="395" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="430" max="32767" attributes="0"/>
                       <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="83" max="-2" attributes="0"/>
                               <Component id="doneLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="146" max="32767" attributes="0"/>
+                              <EmptySpace pref="181" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -1359,7 +1343,7 @@
                       <Image iconType="3" name="/ch/fhnw/dlcopy/icons/usbupgrade.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeInfoLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeInfoLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalTextPosition" type="int" value="0"/>
                     <Property name="verticalTextPosition" type="int" value="3"/>
@@ -1410,7 +1394,7 @@
                       </FontInfo>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeShowHarddisksCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeShowHarddisksCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -1436,7 +1420,7 @@
                         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
                           <JTabbedPaneConstraints tabName="Selection">
                             <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeSelectionCardPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeSelectionCardPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
                           </JTabbedPaneConstraints>
                         </Constraint>
@@ -1498,7 +1482,7 @@
                                   <Image iconType="3" name="/ch/fhnw/dlcopy/icons/yellow_box.png"/>
                                 </Property>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeExchangeDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeExchangeDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                               </Properties>
                               <Constraints>
@@ -1518,7 +1502,7 @@
                                   <Image iconType="3" name="/ch/fhnw/dlcopy/icons/green_box.png"/>
                                 </Property>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeDataDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeDataDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                               </Properties>
                               <Constraints>
@@ -1538,7 +1522,7 @@
                                   <Image iconType="3" name="/ch/fhnw/dlcopy/icons/dark_blue_box.png"/>
                                 </Property>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeBootDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeBootDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                               </Properties>
                               <Constraints>
@@ -1558,7 +1542,7 @@
                                   <Image iconType="3" name="/ch/fhnw/dlcopy/icons/blue_box.png"/>
                                 </Property>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeOsDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeOsDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                               </Properties>
                               <Constraints>
@@ -1604,7 +1588,7 @@
                         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
                           <JTabbedPaneConstraints tabName="Details">
                             <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeDetailsTabbedPane.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeDetailsTabbedPane.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
                           </JTabbedPaneConstraints>
                         </Constraint>
@@ -1617,7 +1601,7 @@
                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
                               <JTabbedPaneConstraints tabName="Options">
                                 <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeOptionsPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeOptionsPanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                               </JTabbedPaneConstraints>
                             </Constraint>
@@ -1656,7 +1640,7 @@
                                                   <Component id="keepPrinterSettingsCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
                                                   <Component id="removeHiddenFilesCheckBox" alignment="0" min="-2" max="-2" attributes="0"/>
                                               </Group>
-                                              <EmptySpace min="0" pref="70" max="32767" attributes="0"/>
+                                              <EmptySpace min="0" pref="241" max="32767" attributes="0"/>
                                           </Group>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -1703,7 +1687,7 @@
                               <Properties>
                                 <Property name="selected" type="boolean" value="true"/>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeSystemPartitionCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeSystemPartitionCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                               </Properties>
                             </Component>
@@ -1711,7 +1695,7 @@
                               <Properties>
                                 <Property name="selected" type="boolean" value="true"/>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.reactivateWelcomeCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.reactivateWelcomeCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                               </Properties>
                             </Component>
@@ -1719,21 +1703,21 @@
                               <Properties>
                                 <Property name="selected" type="boolean" value="true"/>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.keepPrinterSettingsCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.keepPrinterSettingsCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JCheckBox" name="removeHiddenFilesCheckBox">
                               <Properties>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.removeHiddenFilesCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.removeHiddenFilesCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                               </Properties>
                             </Component>
                             <Component class="javax.swing.JCheckBox" name="automaticBackupCheckBox">
                               <Properties>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.automaticBackupCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.automaticBackupCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                               </Properties>
                               <Events>
@@ -1743,7 +1727,7 @@
                             <Component class="javax.swing.JLabel" name="automaticBackupLabel">
                               <Properties>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.automaticBackupLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.automaticBackupLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="enabled" type="boolean" value="false"/>
                               </Properties>
@@ -1770,7 +1754,7 @@
                             <Component class="javax.swing.JCheckBox" name="automaticBackupRemoveCheckBox">
                               <Properties>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.automaticBackupRemoveCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.automaticBackupRemoveCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="enabled" type="boolean" value="false"/>
                               </Properties>
@@ -1780,7 +1764,7 @@
                                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                                     <TitledBorder title="If the storage media must be completely repartitioned, the exchange partition will be...">
-                                      <ResourceString PropertyName="titleX" bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.repartitionExchangeOptionsPanel.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                      <ResourceString PropertyName="titleX" bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.repartitionExchangeOptionsPanel.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                     </TitledBorder>
                                   </Border>
                                 </Property>
@@ -1824,16 +1808,6 @@
                                 </DimensionLayout>
                               </Layout>
                               <SubComponents>
-                                <Component class="javax.swing.JRadioButton" name="removeExchangeRadioButton">
-                                  <Properties>
-                                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
-                                      <ComponentRef name="exchangeButtonGroup"/>
-                                    </Property>
-                                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.removeExchangeRadioButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
-                                    </Property>
-                                  </Properties>
-                                </Component>
                                 <Component class="javax.swing.JRadioButton" name="originalExchangeRadioButton">
                                   <Properties>
                                     <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
@@ -1841,7 +1815,17 @@
                                     </Property>
                                     <Property name="selected" type="boolean" value="true"/>
                                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.originalExchangeRadioButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.originalExchangeRadioButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                    </Property>
+                                  </Properties>
+                                </Component>
+                                <Component class="javax.swing.JRadioButton" name="removeExchangeRadioButton">
+                                  <Properties>
+                                    <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
+                                      <ComponentRef name="exchangeButtonGroup"/>
+                                    </Property>
+                                    <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.removeExchangeRadioButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                     </Property>
                                   </Properties>
                                 </Component>
@@ -1851,7 +1835,7 @@
                                       <ComponentRef name="exchangeButtonGroup"/>
                                     </Property>
                                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.resizeExchangeRadioButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.resizeExchangeRadioButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                     </Property>
                                   </Properties>
                                 </Component>
@@ -1864,7 +1848,7 @@
                                 <Component class="javax.swing.JLabel" name="resizeExchangeLabel">
                                   <Properties>
                                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.resizeExchangeLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.resizeExchangeLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                     </Property>
                                   </Properties>
                                 </Component>
@@ -1884,7 +1868,7 @@
                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
                               <JTabbedPaneConstraints tabName="Always overwrite">
                                 <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeOverwritePanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeOverwritePanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                               </JTabbedPaneConstraints>
                             </Constraint>
@@ -1904,7 +1888,7 @@
                                           <Component id="sortDescendingButton" min="-2" max="-2" attributes="0"/>
                                       </Group>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="upgradeOverwriteScrollPane" pref="475" max="32767" attributes="0"/>
+                                      <Component id="upgradeOverwriteScrollPane" pref="646" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Group type="103" groupAlignment="0" attributes="0">
                                           <Component id="upgradeOverwriteAddButton" alignment="1" min="-2" max="-2" attributes="0"/>
@@ -1932,7 +1916,7 @@
                                               <Component id="upgradeOverwriteExportButton" min="-2" max="-2" attributes="0"/>
                                               <EmptySpace max="-2" attributes="0"/>
                                               <Component id="upgradeOverwriteImportButton" min="-2" max="-2" attributes="0"/>
-                                              <EmptySpace min="0" pref="128" max="32767" attributes="0"/>
+                                              <EmptySpace min="0" pref="163" max="32767" attributes="0"/>
                                           </Group>
                                           <Group type="102" attributes="0">
                                               <Group type="103" groupAlignment="0" attributes="0">
@@ -1962,7 +1946,7 @@
                                   <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/arrow-up.png"/>
                                 </Property>
                                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeMoveUpButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeMoveUpButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="enabled" type="boolean" value="false"/>
                                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
@@ -1979,7 +1963,7 @@
                                   <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/arrow-down.png"/>
                                 </Property>
                                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeMoveDownButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeMoveDownButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="enabled" type="boolean" value="false"/>
                                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
@@ -1996,7 +1980,7 @@
                                   <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/view-sort-ascending.png"/>
                                 </Property>
                                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.sortAscendingButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.sortAscendingButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="enabled" type="boolean" value="false"/>
                                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
@@ -2013,7 +1997,7 @@
                                   <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/view-sort-descending.png"/>
                                 </Property>
                                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.sortDescendingButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.sortDescendingButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="enabled" type="boolean" value="false"/>
                                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
@@ -2045,7 +2029,7 @@
                                   <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/list-add.png"/>
                                 </Property>
                                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeOverwriteAddButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeOverwriteAddButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                                   <Insets value="[2, 2, 2, 2]"/>
@@ -2061,7 +2045,7 @@
                                   <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/document-edit.png"/>
                                 </Property>
                                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeOverwriteEditButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeOverwriteEditButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="enabled" type="boolean" value="false"/>
                                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
@@ -2078,7 +2062,7 @@
                                   <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/list-remove.png"/>
                                 </Property>
                                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeOverwriteRemoveButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeOverwriteRemoveButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="enabled" type="boolean" value="false"/>
                                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
@@ -2095,7 +2079,7 @@
                                   <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/document-export.png"/>
                                 </Property>
                                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeOverwriteExportButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeOverwriteExportButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                                   <Insets value="[2, 2, 2, 2]"/>
@@ -2111,7 +2095,7 @@
                                   <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/document-import.png"/>
                                 </Property>
                                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeOverwriteImportButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeOverwriteImportButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                                   <Insets value="[2, 2, 2, 2]"/>
@@ -2143,7 +2127,7 @@
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout" value="org.netbeans.modules.form.compat2.layouts.support.JTabbedPaneSupportLayout$JTabbedPaneConstraintsDescription">
                       <JTabbedPaneConstraints tabName="Current upgrade">
                         <Property name="tabTitle" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradePanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradePanel.TabConstraints.tabTitle" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
                       </JTabbedPaneConstraints>
                     </Constraint>
@@ -2200,7 +2184,7 @@
                                   <Dimension value="[250, 25]"/>
                                 </Property>
                                 <Property name="string" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeIndeterminateProgressBar.string" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeIndeterminateProgressBar.string" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="stringPainted" type="boolean" value="true"/>
                               </Properties>
@@ -2224,7 +2208,7 @@
                             <Component class="javax.swing.JLabel" name="upgradeCopyLabel">
                               <Properties>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeCopyLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeCopyLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                               </Properties>
                               <Constraints>
@@ -2254,7 +2238,7 @@
                             <Component class="javax.swing.JLabel" name="upgradeBackupLabel">
                               <Properties>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeBackupLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeBackupLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                               </Properties>
                               <Constraints>
@@ -2266,7 +2250,7 @@
                             <Component class="javax.swing.JLabel" name="upgradeBackupProgressLabel">
                               <Properties>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeBackupProgressLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeBackupProgressLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="name" type="java.lang.String" value="upgradeBackupProgressLabel" noResource="true"/>
                               </Properties>
@@ -2285,7 +2269,7 @@
                                 </Property>
                                 <Property name="horizontalAlignment" type="int" value="0"/>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeBackupFilenameLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeBackupFilenameLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="name" type="java.lang.String" value="upgradeBackupFilenameLabel" noResource="true"/>
                               </Properties>
@@ -2311,7 +2295,7 @@
                             <Component class="javax.swing.JLabel" name="upgradeBackupDurationLabel">
                               <Properties>
                                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.upgradeBackupDurationLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                  <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeBackupDurationLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                 </Property>
                                 <Property name="name" type="java.lang.String" value="upgradeBackupDurationLabel" noResource="true"/>
                               </Properties>
@@ -2379,7 +2363,7 @@
                       <Image iconType="3" name="/ch/fhnw/dlcopy/icons/lernstick_repair.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.repairInfoLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.repairInfoLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalTextPosition" type="int" value="0"/>
                     <Property name="verticalTextPosition" type="int" value="3"/>
@@ -2413,7 +2397,7 @@
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="0"/>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.repairSelectionHeaderLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.repairSelectionHeaderLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Constraints>
@@ -2430,7 +2414,7 @@
                       </FontInfo>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.repairShowHarddisksCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.repairShowHarddisksCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                   </Properties>
                   <Events>
@@ -2466,7 +2450,7 @@
                               <Image iconType="3" name="/ch/fhnw/dlcopy/icons/messagebox_info.png"/>
                             </Property>
                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.repairNoMediaLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.repairNoMediaLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
                             <Property name="horizontalTextPosition" type="int" value="0"/>
                             <Property name="verticalTextPosition" type="int" value="3"/>
@@ -2516,7 +2500,7 @@
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
                                   <Component id="repairSelectionCountLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace max="-2" attributes="0"/>
-                                  <Component id="repairStorageDeviceListScrollPane" pref="159" max="32767" attributes="0"/>
+                                  <Component id="repairStorageDeviceListScrollPane" pref="194" max="32767" attributes="0"/>
                                   <EmptySpace type="separate" max="-2" attributes="0"/>
                                   <Component id="repairExchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
                                   <EmptySpace min="-2" max="-2" attributes="0"/>
@@ -2541,7 +2525,7 @@
                         <Component class="javax.swing.JLabel" name="repairSelectionCountLabel">
                           <Properties>
                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.repairSelectionCountLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.repairSelectionCountLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
                           </Properties>
                         </Component>
@@ -2573,7 +2557,7 @@
                               <Image iconType="3" name="/ch/fhnw/dlcopy/icons/yellow_box.png"/>
                             </Property>
                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.repairExchangeDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.repairExchangeDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
                           </Properties>
                         </Component>
@@ -2588,7 +2572,7 @@
                               <Image iconType="3" name="/ch/fhnw/dlcopy/icons/green_box.png"/>
                             </Property>
                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.repairDataDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.repairDataDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
                           </Properties>
                         </Component>
@@ -2603,7 +2587,7 @@
                               <Image iconType="3" name="/ch/fhnw/dlcopy/icons/blue_box.png"/>
                             </Property>
                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.repairOsDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.repairOsDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
                           </Properties>
                         </Component>
@@ -2613,7 +2597,7 @@
                               <ComponentRef name="repairButtonGroup"/>
                             </Property>
                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.formatDataPartitionRadioButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.formatDataPartitionRadioButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
                           </Properties>
                           <Events>
@@ -2627,7 +2611,7 @@
                             </Property>
                             <Property name="selected" type="boolean" value="true"/>
                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.removeFilesRadioButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.removeFilesRadioButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
                           </Properties>
                           <Events>
@@ -2638,14 +2622,14 @@
                           <Properties>
                             <Property name="selected" type="boolean" value="true"/>
                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.systemFilesCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.systemFilesCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
                           </Properties>
                         </Component>
                         <Component class="javax.swing.JCheckBox" name="homeDirectoryCheckBox">
                           <Properties>
                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.homeDirectoryCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.homeDirectoryCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
                           </Properties>
                         </Component>
@@ -2719,7 +2703,7 @@
                       <Image iconType="3" name="/ch/fhnw/dlcopy/icons/usb2dvd.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.toISOInfoLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.toISOInfoLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalTextPosition" type="int" value="0"/>
                     <Property name="verticalTextPosition" type="int" value="3"/>
@@ -2758,7 +2742,7 @@
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                           <Component id="tmpDriveInfoLabel" max="32767" attributes="0"/>
                           <EmptySpace type="separate" min="-2" max="-2" attributes="0"/>
-                          <Component id="toIsoGridBagPanel" pref="233" max="32767" attributes="0"/>
+                          <Component id="toIsoGridBagPanel" pref="293" max="32767" attributes="0"/>
                           <EmptySpace min="-2" max="-2" attributes="0"/>
                       </Group>
                   </Group>
@@ -2772,7 +2756,7 @@
                       <Image iconType="3" name="/ch/fhnw/dlcopy/icons/file_temporary.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.tmpDriveInfoLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.tmpDriveInfoLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="iconTextGap" type="int" value="15"/>
                   </Properties>
@@ -2784,7 +2768,7 @@
                     <Component class="javax.swing.JLabel" name="tmpDirLabel">
                       <Properties>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.tmpDirLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.tmpDirLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
                       </Properties>
                       <Constraints>
@@ -2825,7 +2809,7 @@
                     <Component class="javax.swing.JLabel" name="freeSpaceLabel">
                       <Properties>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.freeSpaceLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.freeSpaceLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
                       </Properties>
                       <Constraints>
@@ -2848,7 +2832,7 @@
                     <Component class="javax.swing.JLabel" name="writableLabel">
                       <Properties>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.writableLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.writableLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
                       </Properties>
                       <Constraints>
@@ -2871,7 +2855,7 @@
                     <Component class="javax.swing.JLabel" name="isoLabelLabel">
                       <Properties>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.isoLabelLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.isoLabelLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
                       </Properties>
                       <Constraints>
@@ -2902,7 +2886,7 @@
                               <ComponentRef name="isoButtonGroup"/>
                             </Property>
                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.bootMediumRadioButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.bootMediumRadioButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
                           </Properties>
                           <Events>
@@ -2921,7 +2905,7 @@
                             </Property>
                             <Property name="selected" type="boolean" value="true"/>
                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.systemMediumRadioButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.systemMediumRadioButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
                           </Properties>
                           <Events>
@@ -2947,7 +2931,7 @@
                         <Component class="javax.swing.JLabel" name="isoDataPartitionModeLabel">
                           <Properties>
                             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.isoDataPartitionModeLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.isoDataPartitionModeLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                             </Property>
                           </Properties>
                           <Constraints>
@@ -2977,7 +2961,7 @@
                                 <Property name="border" type="javax.swing.border.Border" editor="org.netbeans.modules.form.editors2.BorderEditor">
                                   <Border info="org.netbeans.modules.form.compat2.border.TitledBorderInfo">
                                     <TitledBorder title="When no data partition is used">
-                                      <ResourceString PropertyName="titleX" bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.systemMediumPanel.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                      <ResourceString PropertyName="titleX" bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.systemMediumPanel.border.title" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                     </TitledBorder>
                                   </Border>
                                 </Property>
@@ -3009,14 +2993,14 @@
                                 <Component class="javax.swing.JCheckBox" name="showNotUsedDialogCheckBox">
                                   <Properties>
                                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.showNotUsedDialogCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.showNotUsedDialogCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                     </Property>
                                   </Properties>
                                 </Component>
                                 <Component class="javax.swing.JCheckBox" name="autoStartInstallerCheckBox">
                                   <Properties>
                                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.autoStartInstallerCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.autoStartInstallerCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                     </Property>
                                   </Properties>
                                 </Component>
@@ -3078,7 +3062,7 @@
                       <Dimension value="[250, 25]"/>
                     </Property>
                     <Property name="string" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.toISOProgressBar.string" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.toISOProgressBar.string" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="stringPainted" type="boolean" value="true"/>
                   </Properties>
@@ -3100,11 +3084,11 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="575" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="746" max="32767" attributes="0"/>
                       <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace max="-2" attributes="0"/>
-                              <Component id="isoDoneLabel" pref="551" max="32767" attributes="0"/>
+                              <Component id="isoDoneLabel" pref="722" max="32767" attributes="0"/>
                               <EmptySpace max="-2" attributes="0"/>
                           </Group>
                       </Group>
@@ -3112,12 +3096,12 @@
                 </DimensionLayout>
                 <DimensionLayout dim="1">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <EmptySpace min="0" pref="395" max="32767" attributes="0"/>
+                      <EmptySpace min="0" pref="430" max="32767" attributes="0"/>
                       <Group type="103" rootIndex="1" groupAlignment="0" attributes="0">
                           <Group type="102" alignment="0" attributes="0">
                               <EmptySpace min="-2" pref="83" max="-2" attributes="0"/>
                               <Component id="isoDoneLabel" min="-2" max="-2" attributes="0"/>
-                              <EmptySpace pref="116" max="32767" attributes="0"/>
+                              <EmptySpace pref="151" max="32767" attributes="0"/>
                           </Group>
                       </Group>
                   </Group>
@@ -3136,7 +3120,7 @@
                       <Image iconType="3" name="/ch/fhnw/dlcopy/icons/usb2dvd.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.isoDoneLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                      <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.isoDoneLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                     </Property>
                     <Property name="horizontalTextPosition" type="int" value="0"/>
                     <Property name="verticalTextPosition" type="int" value="3"/>
@@ -3154,7 +3138,7 @@
               <Layout>
                 <DimensionLayout dim="0">
                   <Group type="103" groupAlignment="0" attributes="0">
-                      <Component id="resultsTitledPanel" alignment="1" pref="575" max="32767" attributes="0"/>
+                      <Component id="resultsTitledPanel" alignment="1" pref="746" max="32767" attributes="0"/>
                       <Group type="102" alignment="0" attributes="0">
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="resultsInfoLabel" pref="0" max="32767" attributes="0"/>
@@ -3168,7 +3152,7 @@
                           <EmptySpace max="-2" attributes="0"/>
                           <Component id="resultsInfoLabel" min="-2" max="-2" attributes="0"/>
                           <EmptySpace max="-2" attributes="0"/>
-                          <Component id="resultsTitledPanel" pref="302" max="32767" attributes="0"/>
+                          <Component id="resultsTitledPanel" pref="337" max="32767" attributes="0"/>
                       </Group>
                   </Group>
                 </DimensionLayout>
@@ -3226,7 +3210,7 @@
               <Image iconType="3" name="/ch/fhnw/dlcopy/icons/previous.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.previousButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.previousButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
             <Property name="name" type="java.lang.String" value="previousButton" noResource="true"/>
           </Properties>
@@ -3242,7 +3226,7 @@
               <Image iconType="3" name="/ch/fhnw/dlcopy/icons/next.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopy.nextButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+              <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.nextButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
             </Property>
             <Property name="name" type="java.lang.String" value="nextButton" noResource="true"/>
           </Properties>

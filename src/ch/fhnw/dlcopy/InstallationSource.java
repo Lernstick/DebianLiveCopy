@@ -7,7 +7,8 @@ import java.io.IOException;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 /**
- * Encapsulate the source of an install or update operation
+ * Encapsulate the source of an install or update operation TODO: rename class
+ * so that upgrading is also reflected in its name
  */
 public interface InstallationSource {
 
@@ -28,11 +29,6 @@ public interface InstallationSource {
             + "|isolinux.*|syslinux.*|live/memtest";
     public final static String SYSTEM_COPY_PATTERM
             = "\\.disk/.*|live/filesystem.*|md5sum.txt";
-
-    public enum DataPartitionMode {
-
-        ReadWrite, ReadOnly, NotUsed
-    }
 
     public String getDeviceName();
 

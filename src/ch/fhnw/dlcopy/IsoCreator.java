@@ -1,6 +1,7 @@
 package ch.fhnw.dlcopy;
 
 import static ch.fhnw.dlcopy.DLCopy.STRINGS;
+import ch.fhnw.dlcopy.gui.DLCopyGUI;
 import ch.fhnw.filecopier.CopyJob;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.filecopier.Source;
@@ -51,12 +52,11 @@ public class IsoCreator
     private static final Pattern MKSQUASHFS_PATTERN
             = Pattern.compile("\\[.* (.*)/(.*) .*");
 
-    private final DLCopy dlCopy;
     private final DLCopyGUI dlCopyGUI;
     private final InstallationSource installationSource;
     private final boolean onlyBootMedium;
     private final String tmpDirectory;
-    private final InstallationSource.DataPartitionMode dataPartitionMode;
+    private final DataPartitionMode dataPartitionMode;
     private final boolean showNotUsedDialog;
     private final boolean autoStartInstaller;
     private final String isoLabel;
@@ -71,7 +71,6 @@ public class IsoCreator
     /**
      * creates a new ISOCreator
      *
-     * @param dlCopy the main DLCopy instance
      * @param dlCopyGUI the DLCopy GUI
      * @param installationSource the installation source
      * @param onlyBootMedium if only a boot medium should be created
@@ -83,13 +82,12 @@ public class IsoCreator
      * no datapartition is in use
      * @param isoLabel the label to use for the final ISO
      */
-    public IsoCreator(DLCopy dlCopy, DLCopyGUI dlCopyGUI,
+    public IsoCreator(DLCopyGUI dlCopyGUI,
             InstallationSource installationSource,
             boolean onlyBootMedium, String tmpDirectory,
-            InstallationSource.DataPartitionMode dataPartitionMode,
+            DataPartitionMode dataPartitionMode,
             boolean showNotUsedDialog, boolean autoStartInstaller,
             String isoLabel) {
-        this.dlCopy = dlCopy;
         this.dlCopyGUI = dlCopyGUI;
         this.installationSource = installationSource;
         this.onlyBootMedium = onlyBootMedium;
@@ -145,7 +143,8 @@ public class IsoCreator
                 createSquashFS(targetDirectory);
             }
 
-            dlCopy.setDataPartitionMode(dataPartitionMode, targetDirectory);
+            DLCopy.setDataPartitionMode(installationSource,
+                    dataPartitionMode, targetDirectory);
 
             // syslinux -> isolinux
             final String SYSLINUX_DIR = targetDirectory + "/syslinux";
@@ -366,12 +365,12 @@ public class IsoCreator
         PROCESS_EXECUTOR.removePropertyChangeListener(this);
 
         // umount all partitions
-        dlCopy.umount(cowPath);
+        DLCopy.umount(cowPath, dlCopyGUI);
         if (!dataMountInfo.alreadyMounted()) {
             installationSource.getDataPartition().umount();
         }
         for (String readOnlyMountPoint : readOnlyMountPoints) {
-            dlCopy.umount(readOnlyMountPoint);
+            DLCopy.umount(readOnlyMountPoint, dlCopyGUI);
         }
     }
 }

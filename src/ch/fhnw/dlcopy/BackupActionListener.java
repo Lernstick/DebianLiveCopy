@@ -1,5 +1,6 @@
 package ch.fhnw.dlcopy;
 
+import ch.fhnw.dlcopy.gui.DLCopyGUI;
 import ch.fhnw.jbackpack.RdiffBackupRestore;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
