@@ -23,9 +23,8 @@ import org.freedesktop.dbus.exceptions.DBusExecutionException;
  *
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
-public class UpgradeStorageDeviceRenderer
-        extends JPanel
-        implements ListCellRenderer {
+public class UpgradeStorageDeviceRenderer extends JPanel
+        implements ListCellRenderer, StorageDeviceRenderer {
 
     private final static Logger LOGGER
             = Logger.getLogger(DLCopySwingGUI.class.getName());
@@ -258,7 +257,7 @@ public class UpgradeStorageDeviceRenderer
         location.translate(pgpLocation.x, pgpLocation.y);
 
         // border for storage device
-        int deviceWidth = (int) ((width * storageDevice.getSize()) 
+        int deviceWidth = (int) ((width * storageDevice.getSize())
                 / maxStorageDeviceSize);
         graphics2D.setPaint(Color.BLACK);
         graphics2D.drawRect(location.x, location.y, deviceWidth, height);
@@ -270,7 +269,7 @@ public class UpgradeStorageDeviceRenderer
 
             // determine offset
             long partitionOffset = partition.getOffset();
-            int offset = (int) ((width * partitionOffset) 
+            int offset = (int) ((width * partitionOffset)
                     / maxStorageDeviceSize);
 
             // determine width
@@ -336,11 +335,7 @@ public class UpgradeStorageDeviceRenderer
         }
     }
 
-    /**
-     * sets the size of the largest USB stick
-     *
-     * @param maxSize the size of the largest USB stick
-     */
+    @Override
     public void setMaxSize(long maxSize) {
         this.maxStorageDeviceSize = maxSize;
     }

@@ -22,8 +22,8 @@ import org.freedesktop.dbus.exceptions.DBusExecutionException;
  *
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
-public class RepairStorageDeviceRenderer
-        extends JPanel implements ListCellRenderer {
+public class RepairStorageDeviceRenderer extends JPanel
+        implements ListCellRenderer, StorageDeviceRenderer {
 
     private final static Logger LOGGER
             = Logger.getLogger(DLCopySwingGUI.class.getName());
@@ -292,11 +292,7 @@ public class RepairStorageDeviceRenderer
         }
     }
 
-    /**
-     * sets the size of the largest USB stick
-     *
-     * @param maxSize the size of the largest USB stick
-     */
+    @Override
     public void setMaxSize(long maxSize) {
         this.maxStorageDeviceSize = maxSize;
     }

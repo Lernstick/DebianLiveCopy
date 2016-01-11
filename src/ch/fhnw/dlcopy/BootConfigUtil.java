@@ -65,11 +65,11 @@ public class BootConfigUtil {
                                 selectedPersistence);
                         switch (selectedPersistence) {
                             case "rw":
-                                return DataPartitionMode.ReadWrite;
+                                return DataPartitionMode.READ_WRITE;
                             case "ro":
-                                return DataPartitionMode.ReadOnly;
+                                return DataPartitionMode.READ_ONLY;
                             case "no":
-                                return DataPartitionMode.NotUsed;
+                                return DataPartitionMode.NOT_USED;
                         }
                     }
                 }
@@ -121,7 +121,7 @@ public class BootConfigUtil {
                     switch (id) {
                         case "rw":
                             if (destinationDataPartitionMode
-                                    == DataPartitionMode.ReadWrite) {
+                                    == DataPartitionMode.READ_WRITE) {
                                 selectNode(childNode);
                             } else {
                                 unselectNode(childNode);
@@ -129,7 +129,7 @@ public class BootConfigUtil {
                             break;
                         case "ro":
                             if (destinationDataPartitionMode
-                                    == DataPartitionMode.ReadOnly) {
+                                    == DataPartitionMode.READ_ONLY) {
                                 selectNode(childNode);
                             } else {
                                 unselectNode(childNode);
@@ -137,7 +137,7 @@ public class BootConfigUtil {
                             break;
                         case "no":
                             if (destinationDataPartitionMode
-                                    == DataPartitionMode.NotUsed) {
+                                    == DataPartitionMode.NOT_USED) {
                                 selectNode(childNode);
                             } else {
                                 unselectNode(childNode);
@@ -175,15 +175,15 @@ public class BootConfigUtil {
             DataPartitionMode destinationDataPartitionMode, String imagePath) {
         String persistenceString = "";
         switch (destinationDataPartitionMode) {
-            case ReadOnly:
+            case READ_ONLY:
                 persistenceString = "persistence persistence-read-only";
                 break;
 
-            case ReadWrite:
+            case READ_WRITE:
                 persistenceString = "persistence";
                 break;
 
-            case NotUsed:
+            case NOT_USED:
                 break;
 
             default:

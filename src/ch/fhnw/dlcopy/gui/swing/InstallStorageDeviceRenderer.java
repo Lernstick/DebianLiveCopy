@@ -23,8 +23,8 @@ import javax.swing.*;
  *
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
-public class InstallStorageDeviceRenderer
-        extends JPanel implements ListCellRenderer {
+public class InstallStorageDeviceRenderer extends JPanel
+        implements ListCellRenderer, StorageDeviceRenderer {
 
     private final static Logger LOGGER
             = Logger.getLogger(DLCopySwingGUI.class.getName());
@@ -315,11 +315,7 @@ public class InstallStorageDeviceRenderer
                 0, separatorPosition, componentWidth, separatorPosition);
     }
 
-    /**
-     * sets the size of the largest USB stick
-     *
-     * @param maxSize the size of the largest USB stick
-     */
+    @Override
     public void setMaxSize(long maxSize) {
         this.maxStorageDeviceSize = maxSize;
     }

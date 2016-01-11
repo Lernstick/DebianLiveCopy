@@ -5,7 +5,6 @@
  */
 package ch.fhnw.dlcopy.gui.swing;
 
-import ch.fhnw.dlcopy.BootConfigUtil;
 import ch.fhnw.dlcopy.DLCopy;
 import ch.fhnw.dlcopy.DLCopy.DebianLiveDistribution;
 import ch.fhnw.dlcopy.DLCopy.PartitionState;
@@ -107,11 +106,6 @@ public class DLCopySwingGUI extends JFrame
     }
     private State state = State.INSTALL_INFORMATION;
 
-    private enum IsoStep {
-
-        MKSQUASHFS, GENISOIMAGE
-    }
-
     // Information about currently running system image
     private InstallationSource systemSource;
     private InstallationSource source = null;
@@ -121,7 +115,7 @@ public class DLCopySwingGUI extends JFrame
 
     private String isoImagePath;
     private DebianLiveDistribution debianLiveDistribution;
-    private DBusConnection dbusSystemConnection;
+
     private UdisksMonitorThread udisksMonitorThread;
     private DefaultListModel<String> upgradeOverwriteListModel;
     private JFileChooser addFileChooser;
@@ -209,19 +203,19 @@ public class DLCopySwingGUI extends JFrame
         }
 
         // parse command line arguments
-        debianLiveDistribution = DebianLiveDistribution.Default;
+        debianLiveDistribution = DebianLiveDistribution.DEFAULT;
         isoImagePath = null;
         for (int i = 0, length = arguments.length; i < length; i++) {
 
             if (arguments[i].equals("--variant")
                     && (i != length - 1)
                     && (arguments[i + 1].equals("lernstick"))) {
-                debianLiveDistribution = DebianLiveDistribution.lernstick;
+                debianLiveDistribution = DebianLiveDistribution.LERNSTICK;
             }
             if (arguments[i].equals("--variant")
                     && (i != length - 1)
                     && (arguments[i + 1].equals("lernstick-pu"))) {
-                debianLiveDistribution = DebianLiveDistribution.lernstick_pu;
+                debianLiveDistribution = DebianLiveDistribution.LERNSTICK_EXAM;
             }
             if (arguments[i].equals("--iso") && (i != length - 1)) {
                 isoImagePath = arguments[i + 1];
@@ -229,13 +223,13 @@ public class DLCopySwingGUI extends JFrame
         }
         if (LOGGER.isLoggable(Level.INFO)) {
             switch (debianLiveDistribution) {
-                case lernstick:
+                case LERNSTICK:
                     LOGGER.info("using lernstick distribution");
                     break;
-                case lernstick_pu:
+                case LERNSTICK_EXAM:
                     LOGGER.info("using lernstick exam environment distribution");
                     break;
-                case Default:
+                case DEFAULT:
                     LOGGER.info("using Debian Live distribution");
                     break;
                 default:
@@ -245,19 +239,12 @@ public class DLCopySwingGUI extends JFrame
         }
 
         switch (debianLiveDistribution) {
-            case lernstick:
-            case lernstick_pu:
+            case LERNSTICK:
+            case LERNSTICK_EXAM:
                 DLCopy.systemPartitionLabel = "system";
                 break;
             default:
                 DLCopy.systemPartitionLabel = "DEBIAN_LIVE";
-        }
-
-        try {
-            dbusSystemConnection = DBusConnection.getConnection(
-                    DBusConnection.SYSTEM);
-        } catch (DBusException ex) {
-            LOGGER.log(Level.SEVERE, "", ex);
         }
 
         try {
@@ -335,7 +322,8 @@ public class DLCopySwingGUI extends JFrame
         } else {
             final String CMD_LINE_FILENAME = "/proc/cmdline";
             try {
-                String cmdLine = readOneLineFile(new File(CMD_LINE_FILENAME));
+                String cmdLine = DLCopy.readOneLineFile(
+                        new File(CMD_LINE_FILENAME));
                 persistenceBoot = cmdLine.contains(" persistence ");
                 LOGGER.log(Level.FINEST,
                         "persistenceBoot: {0}", persistenceBoot);
@@ -373,7 +361,7 @@ public class DLCopySwingGUI extends JFrame
         exchangePartitionSizeTextField.getDocument().addDocumentListener(this);
 
         switch (debianLiveDistribution) {
-            case lernstick:
+            case LERNSTICK:
                 isoLabelTextField.setText("lernstick");
                 // default to exFAT for exchange partition
                 ComboBoxModel model = new DefaultComboBoxModel(
@@ -381,7 +369,7 @@ public class DLCopySwingGUI extends JFrame
                 exchangePartitionFileSystemComboBox.setModel(model);
                 exchangePartitionFileSystemComboBox.setSelectedItem("exFAT");
                 break;
-            case lernstick_pu:
+            case LERNSTICK_EXAM:
                 isoLabelTextField.setText("lernstick");
                 // default to FAT32 for exchange partition
                 // (rdiff-backup can't cope with destinations on exFAT)
@@ -438,15 +426,15 @@ public class DLCopySwingGUI extends JFrame
         if (sourceDataPartitionMode != null) {
             String selectedItem = null;
             switch (sourceDataPartitionMode) {
-                case NotUsed:
+                case NOT_USED:
                     selectedItem = STRINGS.getString("Not_Used");
                     break;
 
-                case ReadOnly:
+                case READ_ONLY:
                     selectedItem = STRINGS.getString("Read_Only");
                     break;
 
-                case ReadWrite:
+                case READ_WRITE:
                     selectedItem = STRINGS.getString("Read_Write");
                     break;
 
@@ -547,15 +535,27 @@ public class DLCopySwingGUI extends JFrame
 
             switch (state) {
                 case INSTALL_SELECTION:
-                    new InstallStorageDeviceAdder(addedPath).execute();
+                    new InstallStorageDeviceAdder(addedPath,
+                            installShowHarddisksCheckBox.isSelected(),
+                            storageDeviceListUpdateDialogHandler,
+                            installStorageDeviceListModel,
+                            installStorageDeviceList, this).execute();
                     break;
 
                 case UPGRADE_SELECTION:
-                    new UpgradeStorageDeviceAdder(addedPath).execute();
+                    new UpgradeStorageDeviceAdder(addedPath,
+                            upgradeShowHarddisksCheckBox.isSelected(),
+                            storageDeviceListUpdateDialogHandler,
+                            upgradeStorageDeviceListModel,
+                            upgradeStorageDeviceList, this).execute();
                     break;
 
                 case REPAIR_SELECTION:
-                    new RepairStorageDeviceAdder(addedPath).execute();
+                    new RepairStorageDeviceAdder(addedPath,
+                            repairShowHarddisksCheckBox.isSelected(),
+                            storageDeviceListUpdateDialogHandler,
+                            repairStorageDeviceListModel,
+                            repairStorageDeviceList, this).execute();
                     break;
 
                 default:
@@ -902,7 +902,7 @@ public class DLCopySwingGUI extends JFrame
     public void isoCreationFinished(String isoPath, boolean success) {
         String message;
         if (success) {
-            message = STRINGS.getString("DLCopy.isoDoneLabel.text");
+            message = STRINGS.getString("DLCopySwingGUI.isoDoneLabel.text");
             message = MessageFormat.format(message, isoPath);
         } else {
             message = STRINGS.getString("Error_ISO_Creation");
@@ -955,7 +955,7 @@ public class DLCopySwingGUI extends JFrame
 
     @Override
     public void repairingFinished(boolean success) {
-        setTitle(STRINGS.getString("DLCopy.title"));
+        setTitle(STRINGS.getString("DLCopySwingGUI.title"));
         if (success) {
             doneLabel.setText(STRINGS.getString("Repair_Done"));
             showCard(cardPanel, "donePanel");
@@ -984,24 +984,228 @@ public class DLCopySwingGUI extends JFrame
     }
 
     /**
-     * @param args the command line arguments
-     */
-    public static void main(final String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new DLCopySwingGUI(args).setVisible(true);
-            }
-        });
-    }
-
-    /**
      * returns the exchange partition size slider
      *
      * @return the exchange partition size slider
      */
     public JSlider getExchangePartitionSizeSlider() {
         return exchangePartitionSizeSlider;
+    }
+
+    /**
+     * must be called whenever the install storage device list changes to
+     * execute some updates (e.g. maximum storage device size) and some sanity
+     * checks
+     */
+    public void installStorageDeviceListChanged() {
+        storageDeviceListChanged(
+                installStorageDeviceListModel, installSelectionCardPanel,
+                "installNoMediaPanel", "installListPanel",
+                installStorageDeviceRenderer, installStorageDeviceList);
+        updateInstallNextButton();
+    }
+
+    /**
+     * must be called whenever the upgrade storage device list changes to
+     * execute some updates (e.g. maximum storage device size) and some sanity
+     * checks
+     */
+    public void upgradeStorageDeviceListChanged() {
+        storageDeviceListChanged(
+                upgradeStorageDeviceListModel, upgradeSelectionCardPanel,
+                "upgradeNoMediaPanel", "upgradeSelectionDeviceListPanel",
+                upgradeStorageDeviceRenderer, upgradeStorageDeviceList);
+    }
+
+    /**
+     * must be called whenever the repair storage device list changes to execute
+     * some updates
+     */
+    public void repairStorageDeviceListChanged() {
+        storageDeviceListChanged(
+                repairStorageDeviceListModel, repairSelectionCardPanel,
+                "repairNoMediaPanel", "repairSelectionDeviceListPanel",
+                repairStorageDeviceRenderer, repairStorageDeviceList);
+
+    }
+
+    /**
+     * must be called whenever the selection count and exchange info for the
+     * installer needs an update
+     */
+    public void updateInstallSelectionCountAndExchangeInfo() {
+
+        // early return
+        if (state != State.INSTALL_SELECTION) {
+            return;
+        }
+
+        // check all selected storage devices
+        long minOverhead = Long.MAX_VALUE;
+        boolean exchange = true;
+        int[] selectedIndices = installStorageDeviceList.getSelectedIndices();
+        int selectionCount = selectedIndices.length;
+        if (selectionCount == 0) {
+            minOverhead = 0;
+            exchange = false;
+        } else {
+            for (int i = 0; i < selectionCount; i++) {
+                StorageDevice device
+                        = (StorageDevice) installStorageDeviceListModel.get(
+                                selectedIndices[i]);
+                long overhead = device.getSize()
+                        - (DLCopy.BOOT_PARTITION_SIZE * DLCopy.MEGA)
+                        - DLCopy.systemSizeEnlarged;
+                minOverhead = Math.min(minOverhead, overhead);
+                PartitionState partitionState = DLCopy.getPartitionState(
+                        device.getSize(),
+                        (DLCopy.BOOT_PARTITION_SIZE * DLCopy.MEGA)
+                        + DLCopy.systemSizeEnlarged);
+                if (partitionState != PartitionState.EXCHANGE) {
+                    exchange = false;
+                    break; // for
+                }
+            }
+        }
+
+        String countString = STRINGS.getString("Selection_Count");
+        countString = MessageFormat.format(countString,
+                selectionCount, installStorageDeviceListModel.size());
+        installSelectionCountLabel.setText(countString);
+
+        exchangePartitionSizeLabel.setEnabled(exchange);
+        exchangePartitionSizeSlider.setEnabled(exchange);
+        exchangePartitionSizeTextField.setEnabled(exchange);
+        exchangePartitionSizeUnitLabel.setEnabled(exchange);
+        if (exchange) {
+            int overheadMega = (int) (minOverhead / DLCopy.MEGA);
+            exchangePartitionSizeSlider.setMaximum(overheadMega);
+            setMajorTickSpacing(exchangePartitionSizeSlider, overheadMega);
+            exchangePartitionSizeTextField.setText(
+                    String.valueOf(exchangePartitionSizeSlider.getValue()));
+        } else {
+            exchangePartitionSizeSlider.setMaximum(0);
+            exchangePartitionSizeSlider.setValue(0);
+            // remove text
+            exchangePartitionSizeTextField.setText(null);
+        }
+        exchangePartitionLabel.setEnabled(exchange);
+        exchangePartitionTextField.setEnabled(exchange);
+        autoNumberPatternLabel.setEnabled(exchange);
+        autoNumberPatternTextField.setEnabled(exchange);
+        autoNumberStartLabel.setEnabled(exchange);
+        autoNumberStartSpinner.setEnabled(exchange);
+        autoNumberIncrementLabel.setEnabled(exchange);
+        autoNumberIncrementSpinner.setEnabled(exchange);
+        exchangePartitionFileSystemLabel.setEnabled(exchange);
+        exchangePartitionFileSystemComboBox.setEnabled(exchange);
+        copyExchangeCheckBox.setEnabled(exchange
+                && (source.hasExchangePartition()));
+
+        // enable nextButton?
+        updateInstallNextButton();
+    }
+
+    /**
+     * must be called whenever the selection count and next button for the
+     * upgrader needs an update
+     */
+    public void updateUpgradeSelectionCountAndNextButton() {
+        // early return
+        if (state != State.UPGRADE_SELECTION) {
+            return;
+        }
+
+        boolean backupSelected = automaticBackupCheckBox.isSelected();
+
+        // check all selected storage devices
+        boolean canUpgrade = true;
+        int[] selectedIndices = upgradeStorageDeviceList.getSelectedIndices();
+        for (int i : selectedIndices) {
+            StorageDevice storageDevice
+                    = (StorageDevice) upgradeStorageDeviceListModel.get(i);
+            try {
+                StorageDevice.UpgradeVariant upgradeVariant
+                        = storageDevice.getUpgradeVariant();
+                switch (upgradeVariant) {
+                    case IMPOSSIBLE:
+                        canUpgrade = false;
+                        break;
+                    case BACKUP:
+                        if (!backupSelected) {
+                            canUpgrade = false;
+                        }
+                        break;
+                    default:
+                        LOGGER.log(Level.WARNING,
+                                "unsupported upgradeVariant: {0}",
+                                upgradeVariant);
+                }
+                if (!canUpgrade) {
+                    break;
+                }
+            } catch (DBusException | IOException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
+            }
+        }
+
+        int selectionCount = selectedIndices.length;
+        String countString = STRINGS.getString("Selection_Count");
+        countString = MessageFormat.format(countString,
+                selectionCount, upgradeStorageDeviceListModel.size());
+        upgradeSelectionCountLabel.setText(countString);
+
+        // update nextButton state
+        if ((selectionCount > 0) && canUpgrade) {
+            enableNextButton();
+        } else {
+            disableNextButton();
+        }
+    }
+
+    /**
+     * must be called whenever the selection count and next button for the
+     * repairer needs an update
+     */
+    public void updateRepairSelectionCountAndNextButton() {
+
+        // early return
+        if (state != State.REPAIR_SELECTION) {
+            return;
+        }
+
+        // check all selected storage devices
+        boolean canRepair = true;
+        int[] selectedIndices = repairStorageDeviceList.getSelectedIndices();
+        for (int i : selectedIndices) {
+            StorageDevice storageDevice
+                    = (StorageDevice) repairStorageDeviceListModel.get(i);
+            Partition dataPartition = storageDevice.getDataPartition();
+            try {
+                if ((dataPartition == null)
+                        || dataPartition.isActivePersistencePartition()) {
+                    canRepair = false;
+                    break;
+                }
+            } catch (DBusException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
+                canRepair = false;
+                break;
+            }
+        }
+
+        int selectionCount = selectedIndices.length;
+        String countString = STRINGS.getString("Selection_Count");
+        countString = MessageFormat.format(countString,
+                selectionCount, repairStorageDeviceListModel.size());
+        repairSelectionCountLabel.setText(countString);
+
+        // update nextButton state
+        if ((selectionCount > 0) && canRepair) {
+            enableNextButton();
+        } else {
+            disableNextButton();
+        }
     }
 
     /**
@@ -2136,7 +2340,7 @@ public class DLCopySwingGUI extends JFrame
                             .addComponent(reactivateWelcomeCheckBox)
                             .addComponent(keepPrinterSettingsCheckBox)
                             .addComponent(removeHiddenFilesCheckBox))
-                        .addGap(0, 241, Short.MAX_VALUE)))
+                        .addGap(0, 70, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         upgradeOptionsPanelLayout.setVerticalGroup(
@@ -2863,7 +3067,7 @@ public class DLCopySwingGUI extends JFrame
                 .addGroup(toISODonePanelLayout.createSequentialGroup()
                     .addGap(83, 83, 83)
                     .addComponent(isoDoneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(151, Short.MAX_VALUE)))
+                    .addContainerGap(116, Short.MAX_VALUE)))
         );
 
         cardPanel.add(toISODonePanel, "toISODonePanel");
@@ -3116,7 +3320,7 @@ public class DLCopySwingGUI extends JFrame
     }//GEN-LAST:event_previousButtonActionPerformed
 
     private void installStorageDeviceListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_installStorageDeviceListValueChanged
-        installStorageDeviceListSelectionChanged();
+        updateInstallSelectionCountAndExchangeInfo();
     }//GEN-LAST:event_installStorageDeviceListValueChanged
 
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
@@ -3134,7 +3338,7 @@ public class DLCopySwingGUI extends JFrame
 }//GEN-LAST:event_exchangePartitionSizeSliderStateChanged
 
     private void exchangePartitionSizeSliderComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_exchangePartitionSizeSliderComponentResized
-        installStorageDeviceListSelectionChanged();
+        updateInstallSelectionCountAndExchangeInfo();
     }//GEN-LAST:event_exchangePartitionSizeSliderComponentResized
 
     private void nextButtonFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_nextButtonFocusGained
@@ -3231,7 +3435,7 @@ public class DLCopySwingGUI extends JFrame
     }//GEN-LAST:event_upgradeButtonActionPerformed
 
     private void upgradeStorageDeviceListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_upgradeStorageDeviceListValueChanged
-        upgradeStorageDeviceListSelectionChanged();
+        updateUpgradeSelectionCountAndNextButton();
     }//GEN-LAST:event_upgradeStorageDeviceListValueChanged
 
     private void upgradeSelectionPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_upgradeSelectionPanelComponentShown
@@ -3289,7 +3493,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         automaticBackupTextField.setEnabled(automaticBackup);
         automaticBackupButton.setEnabled(automaticBackup);
         automaticBackupRemoveCheckBox.setEnabled(automaticBackup);
-        updateUpgradeNextButton();
+        updateUpgradeSelectionCountAndNextButton();
     }//GEN-LAST:event_automaticBackupCheckBoxItemStateChanged
 
     private void automaticBackupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_automaticBackupButtonActionPerformed
@@ -3321,7 +3525,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }//GEN-LAST:event_repairButtonKeyPressed
 
     private void repairStorageDeviceListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_repairStorageDeviceListValueChanged
-        repairStorageDeviceListSelectionChanged();
+        updateRepairSelectionCountAndNextButton();
     }//GEN-LAST:event_repairStorageDeviceListValueChanged
 
     private void repairSelectionPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_repairSelectionPanelComponentShown
@@ -3394,33 +3598,17 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         JFileChooser fileChooser = new JFileChooser();
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             upgradeOverwriteListModel.clear();
-            FileReader fileReader = null;
-            BufferedReader bufferedReader = null;
-            try {
-                File selectedFile = fileChooser.getSelectedFile();
-                fileReader = new FileReader(selectedFile);
-                bufferedReader = new BufferedReader(fileReader);
-                for (String line = bufferedReader.readLine(); line != null;
-                        line = bufferedReader.readLine()) {
-                    upgradeOverwriteListModel.addElement(line);
+            File selectedFile = fileChooser.getSelectedFile();
+            try (FileReader fileReader = new FileReader(selectedFile)) {
+                try (BufferedReader bufferedReader
+                        = new BufferedReader(fileReader)) {
+                    for (String line = bufferedReader.readLine(); line != null;
+                            line = bufferedReader.readLine()) {
+                        upgradeOverwriteListModel.addElement(line);
+                    }
                 }
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
-            } finally {
-                if (fileReader != null) {
-                    try {
-                        fileReader.close();
-                    } catch (IOException ex) {
-                        LOGGER.log(Level.SEVERE, "", ex);
-                    }
-                }
-                if (bufferedReader != null) {
-                    try {
-                        bufferedReader.close();
-                    } catch (IOException ex) {
-                        LOGGER.log(Level.SEVERE, "", ex);
-                    }
-                }
             }
         }
     }//GEN-LAST:event_upgradeOverwriteImportButtonActionPerformed
@@ -3461,11 +3649,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         DataPartitionMode dataPartitionMode = null;
         String comboBoxItemText = (String) comboBox.getSelectedItem();
         if (comboBoxItemText.equals(STRINGS.getString("Not_Used"))) {
-            dataPartitionMode = DataPartitionMode.NotUsed;
+            dataPartitionMode = DataPartitionMode.NOT_USED;
         } else if (comboBoxItemText.equals(STRINGS.getString("Read_Only"))) {
-            dataPartitionMode = DataPartitionMode.ReadOnly;
+            dataPartitionMode = DataPartitionMode.READ_ONLY;
         } else if (comboBoxItemText.equals(STRINGS.getString("Read_Write"))) {
-            dataPartitionMode = DataPartitionMode.ReadWrite;
+            dataPartitionMode = DataPartitionMode.READ_WRITE;
         } else {
             LOGGER.log(Level.WARNING, "unsupported data partition mode: {0}",
                     comboBoxItemText);
@@ -3477,7 +3665,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         nextButton.setIcon(new ImageIcon(
                 getClass().getResource("/ch/fhnw/dlcopy/icons/next.png")));
         nextButton.setText(
-                STRINGS.getString("DLCopy.nextButton.text"));
+                STRINGS.getString("DLCopySwingGUI.nextButton.text"));
     }
 
     private void repair() {
@@ -3504,6 +3692,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         state = State.REPAIR;
 
         batchCounter = 0;
+        resultsList = new ArrayList<>();
         int[] selectedIndices = repairStorageDeviceList.getSelectedIndices();
         List<StorageDevice> deviceList = new ArrayList<>();
         for (int i : selectedIndices) {
@@ -3522,7 +3711,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private void sortList(boolean ascending) {
         // remember selection before sorting
-        Object[] selectedValues = upgradeOverwriteList.getSelectedValues();
+        List selectedValues = upgradeOverwriteList.getSelectedValuesList();
 
         // sort
         List<String> list = new ArrayList<>();
@@ -3654,71 +3843,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         });
     }
 
-    /**
-     * must be called whenever the install storage device list changes to
-     * execute some updates (e.g. maximum storage device size) and some sanity
-     * checks
-     */
-    private void installStorageDeviceListChanged() {
-        int deviceCount = installStorageDeviceListModel.size();
-        if (deviceCount == 0) {
-            showCard(installSelectionCardPanel, "installNoMediaPanel");
-            disableNextButton();
-        } else {
-            installStorageDeviceRenderer.setMaxSize(
-                    getMaxStorageDeviceSize(installStorageDeviceListModel));
-
-            showCard(installSelectionCardPanel, "installListPanel");
-            // auto-select single entry
-            if (deviceCount == 1) {
-                installStorageDeviceList.setSelectedIndex(0);
-            }
-            installStorageDeviceList.repaint();
-            updateInstallNextButton();
-        }
-    }
-
-    /**
-     * must be called whenever the upgrade storage device list changes to
-     * execute some updates (e.g. maximum storage device size) and some sanity
-     * checks
-     */
-    private void upgradeStorageDeviceListChanged() {
-        int deviceCount = upgradeStorageDeviceListModel.size();
-        if (deviceCount == 0) {
-            showCard(upgradeSelectionCardPanel, "upgradeNoMediaPanel");
-            disableNextButton();
-        } else {
-            upgradeStorageDeviceRenderer.setMaxSize(
-                    getMaxStorageDeviceSize(upgradeStorageDeviceListModel));
-
-            showCard(upgradeSelectionCardPanel,
-                    "upgradeSelectionDeviceListPanel");
-            // auto-select single entry
-            if (deviceCount == 1) {
-                upgradeStorageDeviceList.setSelectedIndex(0);
-            }
-        }
-    }
-
-    private void repairStorageDeviceListChanged() {
-        int deviceCount = repairStorageDeviceListModel.size();
-        if (deviceCount == 0) {
-            showCard(repairSelectionCardPanel, "repairNoMediaPanel");
-            disableNextButton();
-        } else {
-            repairStorageDeviceRenderer.setMaxSize(
-                    getMaxStorageDeviceSize(repairStorageDeviceListModel));
-
-            showCard(repairSelectionCardPanel,
-                    "repairSelectionDeviceListPanel");
-            // auto-select single entry
-            if (deviceCount == 1) {
-                repairStorageDeviceList.setSelectedIndex(0);
-            }
-        }
-    }
-
     private long getMaxStorageDeviceSize(ListModel listModel) {
         long maxSize = 0;
         for (int i = 0, size = listModel.getSize(); i < size; i++) {
@@ -3834,184 +3958,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             String dataVolumeString
                     = LernstickFileTools.getDataVolumeString(exchangeSize, 1);
             copyExchangeCheckBox.setText(
-                    STRINGS.getString("DLCopy.copyExchangeCheckBox.text")
+                    STRINGS.getString("DLCopySwingGUI.copyExchangeCheckBox.text")
                     + " (" + dataVolumeString + ')');
         }
 
         previousButton.setEnabled(true);
-        installStorageDeviceListSelectionChanged();
+        updateInstallSelectionCountAndExchangeInfo();
         showCard(cardPanel, "installSelectionPanel");
-    }
-
-    private void installStorageDeviceListSelectionChanged() {
-
-        // early return
-        if (state != State.INSTALL_SELECTION) {
-            return;
-        }
-
-        // check all selected storage devices
-        long minOverhead = Long.MAX_VALUE;
-        boolean exchange = true;
-        int[] selectedIndices = installStorageDeviceList.getSelectedIndices();
-        int selectionCount = selectedIndices.length;
-        if (selectionCount == 0) {
-            minOverhead = 0;
-            exchange = false;
-        } else {
-            for (int i = 0; i < selectionCount; i++) {
-                StorageDevice device
-                        = (StorageDevice) installStorageDeviceListModel.get(
-                                selectedIndices[i]);
-                long overhead = device.getSize()
-                        - (DLCopy.BOOT_PARTITION_SIZE * DLCopy.MEGA)
-                        - DLCopy.systemSizeEnlarged;
-                minOverhead = Math.min(minOverhead, overhead);
-                PartitionState partitionState = DLCopy.getPartitionState(
-                        device.getSize(),
-                        (DLCopy.BOOT_PARTITION_SIZE * DLCopy.MEGA)
-                        + DLCopy.systemSizeEnlarged);
-                if (partitionState != PartitionState.EXCHANGE) {
-                    exchange = false;
-                    break; // for
-                }
-            }
-        }
-
-        String countString = STRINGS.getString("Selection_Count");
-        countString = MessageFormat.format(countString,
-                selectionCount, installStorageDeviceListModel.size());
-        installSelectionCountLabel.setText(countString);
-
-        exchangePartitionSizeLabel.setEnabled(exchange);
-        exchangePartitionSizeSlider.setEnabled(exchange);
-        exchangePartitionSizeTextField.setEnabled(exchange);
-        exchangePartitionSizeUnitLabel.setEnabled(exchange);
-        if (exchange) {
-            int overheadMega = (int) (minOverhead / DLCopy.MEGA);
-            exchangePartitionSizeSlider.setMaximum(overheadMega);
-            setMajorTickSpacing(exchangePartitionSizeSlider, overheadMega);
-            exchangePartitionSizeTextField.setText(
-                    String.valueOf(exchangePartitionSizeSlider.getValue()));
-        } else {
-            exchangePartitionSizeSlider.setMaximum(0);
-            exchangePartitionSizeSlider.setValue(0);
-            // remove text
-            exchangePartitionSizeTextField.setText(null);
-        }
-        exchangePartitionLabel.setEnabled(exchange);
-        exchangePartitionTextField.setEnabled(exchange);
-        autoNumberPatternLabel.setEnabled(exchange);
-        autoNumberPatternTextField.setEnabled(exchange);
-        autoNumberStartLabel.setEnabled(exchange);
-        autoNumberStartSpinner.setEnabled(exchange);
-        autoNumberIncrementLabel.setEnabled(exchange);
-        autoNumberIncrementSpinner.setEnabled(exchange);
-        exchangePartitionFileSystemLabel.setEnabled(exchange);
-        exchangePartitionFileSystemComboBox.setEnabled(exchange);
-        copyExchangeCheckBox.setEnabled(exchange
-                && (source.hasExchangePartition()));
-
-        // enable nextButton?
-        updateInstallNextButton();
-    }
-
-    private void upgradeStorageDeviceListSelectionChanged() {
-        updateUpgradeNextButton();
-    }
-
-    private void updateUpgradeNextButton() {
-        // early return
-        if (state != State.UPGRADE_SELECTION) {
-            return;
-        }
-
-        boolean backupSelected = automaticBackupCheckBox.isSelected();
-
-        // check all selected storage devices
-        boolean canUpgrade = true;
-        int[] selectedIndices = upgradeStorageDeviceList.getSelectedIndices();
-        for (int i : selectedIndices) {
-            StorageDevice storageDevice
-                    = (StorageDevice) upgradeStorageDeviceListModel.get(i);
-            try {
-                StorageDevice.UpgradeVariant upgradeVariant
-                        = storageDevice.getUpgradeVariant();
-                switch (upgradeVariant) {
-                    case IMPOSSIBLE:
-                        canUpgrade = false;
-                        break;
-                    case BACKUP:
-                        if (!backupSelected) {
-                            canUpgrade = false;
-                        }
-                        break;
-                    default:
-                        LOGGER.log(Level.WARNING,
-                                "unsupported upgradeVariant: {0}",
-                                upgradeVariant);
-                }
-                if (!canUpgrade) {
-                    break;
-                }
-            } catch (DBusException | IOException ex) {
-                LOGGER.log(Level.SEVERE, "", ex);
-            }
-        }
-
-        int selectionCount = selectedIndices.length;
-        String countString = STRINGS.getString("Selection_Count");
-        countString = MessageFormat.format(countString,
-                selectionCount, upgradeStorageDeviceListModel.size());
-        upgradeSelectionCountLabel.setText(countString);
-
-        // update nextButton state
-        if ((selectionCount > 0) && canUpgrade) {
-            enableNextButton();
-        } else {
-            disableNextButton();
-        }
-    }
-
-    private void repairStorageDeviceListSelectionChanged() {
-
-        // early return
-        if (state != State.REPAIR_SELECTION) {
-            return;
-        }
-
-        // check all selected storage devices
-        boolean canRepair = true;
-        int[] selectedIndices = repairStorageDeviceList.getSelectedIndices();
-        for (int i : selectedIndices) {
-            StorageDevice storageDevice
-                    = (StorageDevice) repairStorageDeviceListModel.get(i);
-            Partition dataPartition = storageDevice.getDataPartition();
-            try {
-                if ((dataPartition == null)
-                        || dataPartition.isActivePersistencePartition()) {
-                    canRepair = false;
-                    break;
-                }
-            } catch (DBusException ex) {
-                LOGGER.log(Level.SEVERE, "", ex);
-                canRepair = false;
-                break;
-            }
-        }
-
-        int selectionCount = selectedIndices.length;
-        String countString = STRINGS.getString("Selection_Count");
-        countString = MessageFormat.format(countString,
-                selectionCount, repairStorageDeviceListModel.size());
-        repairSelectionCountLabel.setText(countString);
-
-        // update nextButton state
-        if ((selectionCount > 0) && canRepair) {
-            enableNextButton();
-        } else {
-            disableNextButton();
-        }
     }
 
     private void setMajorTickSpacing(JSlider slider, int maxValue) {
@@ -4070,139 +4023,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     label.getFont().getStyle() & ~Font.BOLD));
         }
 
-    }
-
-    private List<StorageDevice> getStorageDevices(
-            boolean includeHarddisks, boolean includeBootDevice)
-            throws IOException, DBusException {
-
-        List<String> partitions = DbusTools.getPartitions();
-        List<StorageDevice> storageDevices = new ArrayList<>();
-
-        for (String partition : partitions) {
-            LOGGER.log(Level.FINE, "checking partition \"{0}\"", partition);
-
-            if (!includeBootDevice) {
-                if (partition.equals(systemSource.getDeviceName())) {
-                    // this is the boot device, skip it
-                    LOGGER.log(Level.INFO,
-                            "skipping {0}, it''s the boot device", partition);
-                    continue;
-                }
-            }
-
-            String pathPrefix = "/org/freedesktop/";
-            if (DbusTools.DBUS_VERSION == DbusTools.DbusVersion.V1) {
-                pathPrefix += "UDisks/devices/";
-            } else {
-                pathPrefix += "UDisks2/block_devices/";
-            }
-            StorageDevice storageDevice = getStorageDevice(
-                    pathPrefix + partition, includeHarddisks);
-            if (storageDevice != null) {
-                if (storageDevice.getType() == StorageDevice.Type.OpticalDisc) {
-                    LOGGER.log(Level.INFO,
-                            "skipping optical disk {0}", storageDevice);
-                } else {
-                    LOGGER.log(Level.INFO, "adding {0}", partition);
-                    storageDevices.add(storageDevice);
-                }
-            }
-        }
-
-        return storageDevices;
-    }
-
-    private StorageDevice getStorageDevice(String path,
-            boolean includeHarddisks) throws DBusException {
-
-        LOGGER.log(Level.FINE, "path: {0}", path);
-
-        String busName;
-        Boolean isDrive = null;
-        Boolean isLoop = null;
-        long size;
-        String deviceFile;
-        if (DbusTools.DBUS_VERSION == DbusTools.DbusVersion.V1) {
-            busName = "org.freedesktop.UDisks";
-            String interfaceName = "org.freedesktop.UDisks";
-            DBus.Properties deviceProperties
-                    = dbusSystemConnection.getRemoteObject(
-                            busName, path, DBus.Properties.class);
-            isDrive = deviceProperties.Get(interfaceName, "DeviceIsDrive");
-            isLoop = deviceProperties.Get(interfaceName, "DeviceIsLinuxLoop");
-            UInt64 size64 = deviceProperties.Get(interfaceName, "DeviceSize");
-            size = size64.longValue();
-            deviceFile = deviceProperties.Get(interfaceName, "DeviceFile");
-        } else {
-            String prefix = "org.freedesktop.UDisks2.";
-            try {
-                List<String> interfaceNames = DbusTools.getInterfaceNames(path);
-                isDrive = !interfaceNames.contains(prefix + "Partition");
-                isLoop = interfaceNames.contains(prefix + "Loop");
-            } catch (IOException | SAXException |
-                    ParserConfigurationException ex) {
-                LOGGER.log(Level.SEVERE, "", ex);
-            }
-            size = DbusTools.getLongProperty(path, prefix + "Block", "Size");
-            // the device is a char array terminated with a 0 byte
-            // we need to remove the 0 byte!
-            byte[] array = DbusTools.getByteArrayProperty(path,
-                    prefix + "Block", "Device");
-            deviceFile = new String(DbusTools.removeNullByte(array));
-        }
-
-        LOGGER.log(Level.FINE, "{0} isDrive: {1}", new Object[]{path, isDrive});
-        LOGGER.log(Level.FINE, "{0} isLoop: {1}", new Object[]{path, isLoop});
-        LOGGER.log(Level.FINE, "{0} size: {1}", new Object[]{path, size});
-        LOGGER.log(Level.FINE, "{0} deviceFile: {1}",
-                new Object[]{path, deviceFile});
-
-        // early return for non-drives
-        // (partitions, loop devices, empty optical drives, ...)
-        if ((!isDrive) || isLoop || (size <= 0)) {
-            return null;
-        }
-
-        StorageDevice storageDevice
-                = new StorageDevice(deviceFile.substring(5), DLCopy.systemSize);
-
-        if ((storageDevice.getType() == StorageDevice.Type.HardDrive)
-                && !includeHarddisks) {
-            return null;
-        } else {
-            return storageDevice;
-        }
-    }
-
-    private static String readOneLineFile(File file) throws IOException {
-        FileReader fileReader = null;
-        BufferedReader bufferedReader = null;
-        try {
-            fileReader = new FileReader(file);
-            bufferedReader = new BufferedReader(fileReader);
-            String string = bufferedReader.readLine();
-            if (string != null) {
-                string = string.trim();
-            }
-            bufferedReader.close();
-            return string;
-        } finally {
-            if (fileReader != null) {
-                try {
-                    fileReader.close();
-                } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
-                }
-            }
-            if (bufferedReader != null) {
-                try {
-                    bufferedReader.close();
-                } catch (IOException ex) {
-                    LOGGER.log(Level.SEVERE, null, ex);
-                }
-            }
-        }
     }
 
     /**
@@ -4299,7 +4119,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private void batchFinished(String nonRemovableKey,
             String removableKey, String reportKey) {
-        setTitle(STRINGS.getString("DLCopy.title"));
+        setTitle(STRINGS.getString("DLCopySwingGUI.title"));
         String key;
         switch (source.getDeviceType()) {
             case HardDrive:
@@ -4501,8 +4321,35 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 return;
             }
         }
+        int exchangeMB = 0;
+        if (resizeExchangeRadioButton.isSelected()) {
+            String newSizeText = resizeExchangeTextField.getText();
+            String errorMessage = null;
+            if (newSizeText.isEmpty()) {
+                errorMessage = STRINGS.getString(
+                        "Error_No_Exchange_Resize_Size");
+            } else {
+                try {
+                    exchangeMB = Integer.parseInt(newSizeText);
+                } catch (NumberFormatException ex) {
+                    LOGGER.log(Level.WARNING, "", ex);
+                    errorMessage = STRINGS.getString(
+                            "Error_Parsing_Exchange_Resize_Size");
+                }
+            }
+            if (errorMessage != null) {
+                upgradeSelectionTabbedPane.setSelectedComponent(
+                        upgradeDetailsTabbedPane);
+                upgradeDetailsTabbedPane.setSelectedComponent(
+                        upgradeOptionsPanel);
+                showErrorMessage(errorMessage);
+                resizeExchangeTextField.requestFocusInWindow();
+                resizeExchangeTextField.selectAll();
+                return;
+            }
+        }
 
-        Object[] selectedDevices = upgradeStorageDeviceList.getSelectedValues();
+        List selectedDevices = upgradeStorageDeviceList.getSelectedValuesList();
         int noDataPartitionCounter = 0;
         for (Object object : selectedDevices) {
             StorageDevice storageDevice = (StorageDevice) object;
@@ -4554,16 +4401,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 = DLCopy.getRepartitionStrategy(
                         originalExchangeRadioButton.isSelected(),
                         resizeExchangeRadioButton.isSelected());
-        int exchangeMB = 0;
-        String newSizeText = resizeExchangeTextField.getText();
-        try {
-            exchangeMB = Integer.parseInt(newSizeText);
-        } catch (NumberFormatException ex) {
-            // TODO: focus switch and proper error message
-            showErrorMessage(ex.getLocalizedMessage());
-            LOGGER.log(Level.WARNING, "", ex);
-            return;
-        }
         Object selectedItem
                 = exchangePartitionFileSystemComboBox.getSelectedItem();
         String exchangePartitionFileSystem = selectedItem.toString();
@@ -4719,6 +4556,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private void switchToISOInformation() {
         setLabelHighlighted(infoStepLabel, true);
         setLabelHighlighted(selectionLabel, false);
+        setLabelHighlighted(executionLabel, false);
         showCard(cardPanel, "toISOInfoPanel");
         enableNextButton();
         nextButton.requestFocusInWindow();
@@ -4728,6 +4566,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private void switchToUSBInformation() {
         setLabelHighlighted(infoStepLabel, true);
         setLabelHighlighted(selectionLabel, false);
+        setLabelHighlighted(executionLabel, false);
         executionLabel.setText(STRINGS.getString("Installation_Label"));
         showCard(cardPanel, "installInfoPanel");
         enableNextButton();
@@ -4738,6 +4577,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private void switchToUpgradeInformation() {
         setLabelHighlighted(infoStepLabel, true);
         setLabelHighlighted(selectionLabel, false);
+        setLabelHighlighted(executionLabel, false);
         executionLabel.setText(STRINGS.getString("Upgrade_Label"));
         showCard(cardPanel, "upgradeInfoPanel");
         enableNextButton();
@@ -4748,6 +4588,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private void switchToRepairInformation() {
         setLabelHighlighted(infoStepLabel, true);
         setLabelHighlighted(selectionLabel, false);
+        setLabelHighlighted(executionLabel, false);
         executionLabel.setText(STRINGS.getString("Repair_Label"));
         showCard(cardPanel, "repairInfoPanel");
         enableNextButton();
@@ -4813,29 +4654,22 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }
 
-    private void addDeviceToList(JList list, StorageDevice newDevice) {
-        DefaultListModel listModel = (DefaultListModel) list.getModel();
+    private void storageDeviceListChanged(DefaultListModel<StorageDevice> model,
+            JPanel panel, String noMediaPanelName, String selectionPanelName,
+            StorageDeviceRenderer renderer, JList list) {
 
-        // put new device into a "sorted" position
-        List<StorageDevice> deviceList = new ArrayList<>();
-        Object[] entries = listModel.toArray();
-        for (Object entry : entries) {
-            deviceList.add((StorageDevice) entry);
-        }
-        deviceList.add(newDevice);
-        Collections.sort(deviceList);
-        List selectedValues = list.getSelectedValuesList();
-        listModel.clear();
-        for (StorageDevice device : deviceList) {
-            listModel.addElement(device);
-        }
-
-        // try to restore the previous selection
-        for (Object selectedValue : selectedValues) {
-            int index = deviceList.indexOf(selectedValue);
-            if (index != -1) {
-                list.addSelectionInterval(index, index);
+        int deviceCount = model.size();
+        if (deviceCount == 0) {
+            showCard(panel, noMediaPanelName);
+            disableNextButton();
+        } else {
+            renderer.setMaxSize(getMaxStorageDeviceSize(model));
+            showCard(panel, selectionPanelName);
+            // auto-select single entry
+            if (deviceCount == 1) {
+                list.setSelectedIndex(0);
             }
+            list.repaint();
         }
     }
 
@@ -4865,64 +4699,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }
 
-    private StorageDevice getStorageDeviceAfterTimeout(
-            String path, boolean includeHardDisks) throws DBusException {
-        // It has happened that "udisks --enumerate" returns a valid storage
-        // device but not yet its partitions. Therefore we give the system
-        // a little break after storage devices have been added.
-        try {
-            TimeUnit.SECONDS.sleep(1);
-        } catch (InterruptedException ex) {
-            LOGGER.log(Level.SEVERE, "", ex);
-        }
-        StorageDevice storageDevice = getStorageDevice(path, includeHardDisks);
-        LOGGER.log(Level.INFO,
-                "storage device of path {0}: {1}",
-                new Object[]{path, storageDevice});
-        return storageDevice;
-    }
-
-    private class InstallStorageDeviceAdder extends SwingWorker<Void, Void> {
-
-        private final String addedPath;
-        private StorageDevice addedDevice;
-
-        public InstallStorageDeviceAdder(String addedPath) {
-            this.addedPath = addedPath;
-            storageDeviceListUpdateDialogHandler.addPath(addedPath);
-        }
-
-        @Override
-        protected Void doInBackground() throws Exception {
-            addedDevice = getStorageDeviceAfterTimeout(addedPath,
-                    installShowHarddisksCheckBox.isSelected());
-            return null;
-        }
-
-        @Override
-        protected void done() {
-            storageDeviceListUpdateDialogHandler.removePath(addedPath);
-
-            if (addedDevice == null) {
-                return;
-            }
-            synchronized (installStorageDeviceListModel) {
-                // do nothing, if device was added in the meantime
-                // e.g. via InstallStorageDeviceListUpdater
-                if (!installStorageDeviceListModel.contains(addedDevice)) {
-                    addDeviceToList(installStorageDeviceList, addedDevice);
-                    installStorageDeviceListChanged();
-                    installStorageDeviceListSelectionChanged();
-                }
-            }
-        }
-    }
-
     private class InstallStorageDeviceListUpdater
             extends SwingWorker<Void, Void> {
 
         private final ModalDialogHandler dialogHandler;
-        private final Object[] selectedValues;
+        private final List selectedValues;
         private final boolean showHardDisks;
         private List<StorageDevice> storageDevices;
 
@@ -4932,7 +4713,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             dialogHandler = new ModalDialogHandler(dialog);
             dialogHandler.show();
             // remember selected values so that we can restore the selection
-            selectedValues = installStorageDeviceList.getSelectedValues();
+            selectedValues = installStorageDeviceList.getSelectedValuesList();
             showHardDisks = installShowHarddisksCheckBox.isSelected();
         }
 
@@ -4941,7 +4722,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             synchronized (installStorageDeviceListModel) {
                 installStorageDeviceListModel.clear();
                 try {
-                    storageDevices = getStorageDevices(showHardDisks, false);
+                    storageDevices = DLCopy.getStorageDevices(
+                            showHardDisks, false, systemSource.getDeviceName());
                     Collections.sort(storageDevices);
                     for (StorageDevice device : storageDevices) {
                         installStorageDeviceListModel.addElement(device);
@@ -4967,64 +4749,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
 
             installStorageDeviceListChanged();
-            installStorageDeviceListSelectionChanged();
+            updateInstallSelectionCountAndExchangeInfo();
             dialogHandler.hide();
-        }
-    }
-
-    private class UpgradeStorageDeviceAdder extends SwingWorker<Void, Void> {
-
-        private final String addedPath;
-        private StorageDevice addedDevice;
-
-        public UpgradeStorageDeviceAdder(String addedPath) {
-            this.addedPath = addedPath;
-            storageDeviceListUpdateDialogHandler.addPath(addedPath);
-        }
-
-        @Override
-        protected Void doInBackground() throws Exception {
-
-            addedDevice = getStorageDeviceAfterTimeout(addedPath,
-                    upgradeShowHarddisksCheckBox.isSelected());
-
-            if (addedDevice != null) {
-                // init all infos so that later rendering does not block
-                // in Swing Event Thread
-                addedDevice.getUpgradeVariant();
-                // safety wait, otherwise the call below to getPartitions()
-                // fails very often
-                TimeUnit.SECONDS.sleep(7);
-                for (Partition partition : addedDevice.getPartitions()) {
-                    try {
-                        if (partition.isPersistencePartition()) {
-                            partition.getUsedSpace(true);
-                        } else {
-                            partition.getUsedSpace(false);
-                        }
-                    } catch (Exception ignored) {
-                    }
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void done() {
-            storageDeviceListUpdateDialogHandler.removePath(addedPath);
-
-            if (addedDevice == null) {
-                return;
-            }
-            synchronized (upgradeStorageDeviceListModel) {
-                // do nothing, if device was added in the meantime
-                // e.g. via UpgradeStorageDeviceListUpdater
-                if (!upgradeStorageDeviceListModel.contains(addedDevice)) {
-                    addDeviceToList(upgradeStorageDeviceList, addedDevice);
-                    upgradeStorageDeviceListChanged();
-                    upgradeStorageDeviceListSelectionChanged();
-                }
-            }
         }
     }
 
@@ -5032,7 +4758,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             extends SwingWorker<Void, Void> {
 
         private final ModalDialogHandler dialogHandler;
-        private final Object[] selectedValues;
+        private final List selectedValues;
         private final boolean showHardDisks;
         private List<StorageDevice> storageDevices;
 
@@ -5042,7 +4768,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             dialogHandler = new ModalDialogHandler(dialog);
             dialogHandler.show();
             // remember selected values so that we can restore the selection
-            selectedValues = upgradeStorageDeviceList.getSelectedValues();
+            selectedValues = upgradeStorageDeviceList.getSelectedValuesList();
             showHardDisks = upgradeShowHarddisksCheckBox.isSelected();
             upgradeStorageDeviceListModel.clear();
         }
@@ -5050,7 +4776,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         @Override
         protected Void doInBackground() throws Exception {
             try {
-                storageDevices = getStorageDevices(showHardDisks, false);
+                storageDevices = DLCopy.getStorageDevices(
+                        showHardDisks, false, systemSource.getDeviceName());
                 Collections.sort(storageDevices);
                 // init all infos so that later rendering does not block
                 // in Swing Event Thread
@@ -5093,60 +4820,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
 
             upgradeStorageDeviceListChanged();
-            upgradeStorageDeviceListSelectionChanged();
+            updateUpgradeSelectionCountAndNextButton();
             dialogHandler.hide();
-        }
-    }
-
-    private class RepairStorageDeviceAdder extends SwingWorker<Void, Void> {
-
-        private final String addedPath;
-        private StorageDevice addedDevice;
-
-        public RepairStorageDeviceAdder(final String addedPath) {
-            this.addedPath = addedPath;
-            storageDeviceListUpdateDialogHandler.addPath(addedPath);
-        }
-
-        @Override
-        protected Void doInBackground() throws Exception {
-
-            addedDevice = getStorageDeviceAfterTimeout(addedPath,
-                    repairShowHarddisksCheckBox.isSelected());
-
-            if (addedDevice != null) {
-                // init all infos so that later rendering does not block
-                // in Swing Event Thread
-                // safety wait, otherwise the call below to getPartitions()
-                // fails very often
-                TimeUnit.SECONDS.sleep(7);
-                addedDevice.getUpgradeVariant();
-                for (Partition partition : addedDevice.getPartitions()) {
-                    try {
-                        partition.getUsedSpace(false);
-                    } catch (Exception ignored) {
-                    }
-                }
-            }
-            return null;
-        }
-
-        @Override
-        protected void done() {
-            storageDeviceListUpdateDialogHandler.removePath(addedPath);
-
-            if (addedDevice == null) {
-                return;
-            }
-            synchronized (repairStorageDeviceListModel) {
-                // do nothing, if device was added in the meantime
-                // e.g. via RepairStorageDeviceListUpdater
-                if (!repairStorageDeviceListModel.contains(addedDevice)) {
-                    addDeviceToList(repairStorageDeviceList, addedDevice);
-                    repairStorageDeviceListChanged();
-                    repairStorageDeviceListSelectionChanged();
-                }
-            }
         }
     }
 
@@ -5154,7 +4829,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             extends SwingWorker<Void, Void> {
 
         private final ModalDialogHandler dialogHandler;
-        private final Object[] selectedValues;
+        private final List selectedValues;
         private final boolean showHardDisks;
         private List<StorageDevice> storageDevices;
 
@@ -5164,7 +4839,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             dialogHandler = new ModalDialogHandler(dialog);
             dialogHandler.show();
             // remember selected values so that we can restore the selection
-            selectedValues = repairStorageDeviceList.getSelectedValues();
+            selectedValues = repairStorageDeviceList.getSelectedValuesList();
             showHardDisks = repairShowHarddisksCheckBox.isSelected();
             repairStorageDeviceListModel.clear();
         }
@@ -5172,7 +4847,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         @Override
         protected Void doInBackground() throws Exception {
             try {
-                storageDevices = getStorageDevices(showHardDisks, true);
+                storageDevices = DLCopy.getStorageDevices(showHardDisks, true,
+                        systemSource.getDeviceName());
                 Collections.sort(storageDevices);
                 // init all infos so that later rendering does not block
                 // in Swing Event Thread
@@ -5211,24 +4887,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
 
             repairStorageDeviceListChanged();
-            repairStorageDeviceListSelectionChanged();
+            updateRepairSelectionCountAndNextButton();
             dialogHandler.hide();
-        }
-    }
-
-    private class RsyncActionListener implements ActionListener {
-
-        private final long start;
-
-        public RsyncActionListener() {
-            start = System.currentTimeMillis();
-        }
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            long time = System.currentTimeMillis() - start;
-            String timeString = timeFormat.format(new Date(time));
-            rsyncTimeLabel.setText(timeString);
         }
     }
 

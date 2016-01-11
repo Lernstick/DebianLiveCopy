@@ -63,7 +63,7 @@ public class IsoInstallationSource implements InstallationSource {
 
     @Override
     public DataPartitionMode getDataPartitionMode() {
-        return DataPartitionMode.NotUsed;
+        return DataPartitionMode.NOT_USED;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package ch.fhnw.dlcopy;
 
 import ch.fhnw.dlcopy.gui.DLCopyGUI;
+import ch.fhnw.dlcopy.gui.swing.DLCopySwingGUI;
 import ch.fhnw.filecopier.CopyJob;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.filecopier.Source;
@@ -10,8 +11,10 @@ import ch.fhnw.util.MountInfo;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -26,8 +29,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.JOptionPane;
+import javax.xml.parsers.ParserConfigurationException;
+import org.freedesktop.DBus;
+import org.freedesktop.dbus.DBusConnection;
+import org.freedesktop.dbus.UInt64;
 import org.freedesktop.dbus.exceptions.DBusException;
+import org.xml.sax.SAXException;
 
 /**
  * The core class of the program
@@ -88,9 +95,23 @@ public class DLCopy {
         EXCHANGE
     }
 
+    /**
+     * the Debian Live distributions we support
+     */
     public enum DebianLiveDistribution {
 
-        Default, lernstick, lernstick_pu
+        /**
+         * the default Debian Live distribution
+         */
+        DEFAULT,
+        /**
+         * the Lernstick distribution
+         */
+        LERNSTICK,
+        /**
+         * the Lernstick exam distribution
+         */
+        LERNSTICK_EXAM
     }
 
     /**
@@ -117,6 +138,31 @@ public class DLCopy {
     private final static ProcessExecutor PROCESS_EXECUTOR
             = new ProcessExecutor();
     private final static long MINIMUM_FREE_MEMORY = 300 * MEGA;
+    private static DBusConnection dbusSystemConnection;
+
+    static {
+        try {
+            dbusSystemConnection = DBusConnection.getConnection(
+                    DBusConnection.SYSTEM);
+        } catch (DBusException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+            System.exit(-1);
+        }
+    }
+
+    /**
+     * @param args the command line arguments
+     */
+    public static void main(final String args[]) {
+        
+        // 
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                new DLCopySwingGUI(args).setVisible(true);
+            }
+        });
+    }
 
     /**
      * returns the PartitionState for a given storage and system size
@@ -1250,7 +1296,7 @@ public class DLCopy {
         persistencePartition.umount();
     }
 
-    private static void umountPartitions(String device, DLCopyGUI dlCopyGUI) 
+    private static void umountPartitions(String device, DLCopyGUI dlCopyGUI)
             throws IOException {
         LOGGER.log(Level.FINEST, "umountPartitions({0})", device);
         List<String> mounts
@@ -1562,5 +1608,173 @@ public class DLCopy {
             return RepartitionStrategy.RESIZE;
         }
         return RepartitionStrategy.REMOVE;
+    }
+
+    /**
+     * returns the StorageDevice for a given dbus path
+     *
+     * @param path the dbus path
+     * @param includeHardDisks if true, paths to hard disks are processed,
+     * otherwise ignored
+     * @return the StorageDevice for a given dbus path
+     * @throws DBusException if a dbus exception occurs
+     */
+    public static StorageDevice getStorageDevice(
+            String path, boolean includeHardDisks) throws DBusException {
+
+        LOGGER.log(Level.FINE, "path: {0}", path);
+
+        String busName;
+        Boolean isDrive = null;
+        Boolean isLoop = null;
+        long size;
+        String deviceFile;
+        if (DbusTools.DBUS_VERSION == DbusTools.DbusVersion.V1) {
+            busName = "org.freedesktop.UDisks";
+            String interfaceName = "org.freedesktop.UDisks";
+            DBus.Properties deviceProperties
+                    = dbusSystemConnection.getRemoteObject(
+                            busName, path, DBus.Properties.class);
+            isDrive = deviceProperties.Get(interfaceName, "DeviceIsDrive");
+            isLoop = deviceProperties.Get(interfaceName, "DeviceIsLinuxLoop");
+            UInt64 size64 = deviceProperties.Get(interfaceName, "DeviceSize");
+            size = size64.longValue();
+            deviceFile = deviceProperties.Get(interfaceName, "DeviceFile");
+        } else {
+            String prefix = "org.freedesktop.UDisks2.";
+            try {
+                List<String> interfaceNames = DbusTools.getInterfaceNames(path);
+                isDrive = !interfaceNames.contains(prefix + "Partition");
+                isLoop = interfaceNames.contains(prefix + "Loop");
+            } catch (IOException | SAXException |
+                    ParserConfigurationException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
+            }
+            size = DbusTools.getLongProperty(path, prefix + "Block", "Size");
+            // the device is a char array terminated with a 0 byte
+            // we need to remove the 0 byte!
+            byte[] array = DbusTools.getByteArrayProperty(path,
+                    prefix + "Block", "Device");
+            deviceFile = new String(DbusTools.removeNullByte(array));
+        }
+
+        LOGGER.log(Level.FINE, "{0} isDrive: {1}", new Object[]{path, isDrive});
+        LOGGER.log(Level.FINE, "{0} isLoop: {1}", new Object[]{path, isLoop});
+        LOGGER.log(Level.FINE, "{0} size: {1}", new Object[]{path, size});
+        LOGGER.log(Level.FINE, "{0} deviceFile: {1}",
+                new Object[]{path, deviceFile});
+
+        // early return for non-drives
+        // (partitions, loop devices, empty optical drives, ...)
+        if ((!isDrive) || isLoop || (size <= 0)) {
+            return null;
+        }
+
+        StorageDevice storageDevice = new StorageDevice(
+                deviceFile.substring(5), systemSize);
+
+        if ((storageDevice.getType() == StorageDevice.Type.HardDrive)
+                && !includeHardDisks) {
+            return null;
+        } else {
+            return storageDevice;
+        }
+    }
+
+    /**
+     * returns the StorageDevice for a given dbus path after a timeout
+     *
+     * @param path the dbus path
+     * @param includeHardDisks if true, paths to hard disks are processed,
+     * otherwise ignored
+     * @return the StorageDevice for a given dbus path after a timeout
+     * @throws DBusException
+     */
+    public static StorageDevice getStorageDeviceAfterTimeout(
+            String path, boolean includeHardDisks) throws DBusException {
+        // It has happened that "udisks --enumerate" returns a valid storage
+        // device but not yet its partitions. Therefore we give the system
+        // a little break after storage devices have been added.
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+        }
+        StorageDevice storageDevice = getStorageDevice(path, includeHardDisks);
+        LOGGER.log(Level.INFO, "storage device of path {0}: {1}",
+                new Object[]{path, storageDevice});
+        return storageDevice;
+    }
+
+    /**
+     * returns a list of all storage devices in the system
+     *
+     * @param includeHardDisks if hard disks should be included in the list
+     * @param includeBootDevice if the boot device should be included in the
+     * list
+     * @param bootDeviceName the name of the boot device
+     * @return
+     * @throws IOException
+     * @throws DBusException
+     */
+    public static List<StorageDevice> getStorageDevices(
+            boolean includeHardDisks, boolean includeBootDevice,
+            String bootDeviceName) throws IOException, DBusException {
+
+        List<String> partitions = DbusTools.getPartitions();
+        List<StorageDevice> storageDevices = new ArrayList<>();
+
+        for (String partition : partitions) {
+            LOGGER.log(Level.FINE, "checking partition \"{0}\"", partition);
+
+            if (!includeBootDevice) {
+                if (partition.equals(bootDeviceName)) {
+                    // this is the boot device, skip it
+                    LOGGER.log(Level.INFO,
+                            "skipping {0}, it''s the boot device", partition);
+                    continue;
+                }
+            }
+
+            String pathPrefix = "/org/freedesktop/";
+            if (DbusTools.DBUS_VERSION == DbusTools.DbusVersion.V1) {
+                pathPrefix += "UDisks/devices/";
+            } else {
+                pathPrefix += "UDisks2/block_devices/";
+            }
+            StorageDevice storageDevice = getStorageDevice(
+                    pathPrefix + partition, includeHardDisks);
+            if (storageDevice != null) {
+                if (storageDevice.getType() == StorageDevice.Type.OpticalDisc) {
+                    LOGGER.log(Level.INFO,
+                            "skipping optical disk {0}", storageDevice);
+                } else {
+                    LOGGER.log(Level.INFO, "adding {0}", partition);
+                    storageDevices.add(storageDevice);
+                }
+            }
+        }
+
+        return storageDevices;
+    }
+
+    /**
+     * reads a one-line file
+     *
+     * @param file the file to read
+     * @return the trimmed line of the file
+     * @throws IOException if an I/O exception occurs
+     */
+    public static String readOneLineFile(File file) throws IOException {
+        try (FileReader fileReader = new FileReader(file)) {
+            try (BufferedReader bufferedReader
+                    = new BufferedReader(fileReader)) {
+                String string = bufferedReader.readLine();
+                if (string != null) {
+                    string = string.trim();
+                }
+                return string;
+            }
+        }
     }
 }
