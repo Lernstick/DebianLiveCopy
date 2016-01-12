@@ -53,10 +53,6 @@ public class DLCopy {
     public static final ResourceBundle STRINGS
             = ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings");
     /**
-     * the minimal size for a data partition (200 MByte)
-     */
-    public static final long MINIMUM_PARTITION_SIZE = 200 * MEGA;
-    /**
      * the size of the boot partition (given in MiB)
      */
     public static final long BOOT_PARTITION_SIZE = 100;
@@ -71,73 +67,12 @@ public class DLCopy {
     public static long systemSizeEnlarged = -1;
     public static String systemPartitionLabel;
 
-    /**
-     * the known partition states for a drive
-     */
-    public enum PartitionState {
-
-        /**
-         * the drive is too small
-         */
-        TOO_SMALL,
-        /**
-         * the drive is so small that only a system partition can be created
-         */
-        ONLY_SYSTEM,
-        /**
-         * the system is so small that only a system and persistence partition
-         * can be created
-         */
-        PERSISTENCE,
-        /**
-         * the system is large enough to create all partition scenarios
-         */
-        EXCHANGE
-    }
-
-    /**
-     * the Debian Live distributions we support
-     */
-    public enum DebianLiveDistribution {
-
-        /**
-         * the default Debian Live distribution
-         */
-        DEFAULT,
-        /**
-         * the Lernstick distribution
-         */
-        LERNSTICK,
-        /**
-         * the Lernstick exam distribution
-         */
-        LERNSTICK_EXAM
-    }
-
-    /**
-     * repartition stragies
-     */
-    public enum RepartitionStrategy {
-
-        /**
-         * keep a partition
-         */
-        KEEP,
-        /**
-         * resize a partition
-         */
-        RESIZE,
-        /**
-         * remove a partition
-         */
-        REMOVE
-    }
-
     private static final Logger LOGGER
             = Logger.getLogger(DLCopy.class.getName());
-    private final static ProcessExecutor PROCESS_EXECUTOR
+    private static final ProcessExecutor PROCESS_EXECUTOR
             = new ProcessExecutor();
-    private final static long MINIMUM_FREE_MEMORY = 300 * MEGA;
+    private static final long MINIMUM_PARTITION_SIZE = 200 * MEGA;
+    private static final long MINIMUM_FREE_MEMORY = 300 * MEGA;
     private static DBusConnection dbusSystemConnection;
 
     static {
@@ -154,8 +89,6 @@ public class DLCopy {
      * @param args the command line arguments
      */
     public static void main(final String args[]) {
-        
-        // 
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
@@ -246,6 +179,13 @@ public class DLCopy {
         }
     }
 
+    /**
+     * writes lines of text into a file
+     *
+     * @param file the file to write into
+     * @param lines the lines to write
+     * @throws IOException
+     */
     public static void writeFile(File file, List<String> lines)
             throws IOException {
         // delete old version of file
@@ -532,6 +472,475 @@ public class DLCopy {
             int resizedExchangePartitionSize) {
         return getPartitionSizes(storageDevice, true,
                 exchangeRepartitionStrategy, resizedExchangePartitionSize, 0);
+    }
+
+    /**
+     * unmounts a device or mountpoint
+     *
+     * @param deviceOrMountpoint the device or mountpoint to unmount
+     * @param dlCopyGUI the currently used GUI for DLCopy
+     * @throws IOException
+     */
+    public static void umount(String deviceOrMountpoint, DLCopyGUI dlCopyGUI)
+            throws IOException {
+        // check if a swapfile is in use on this partition
+        List<String> mounts = LernstickFileTools.readFile(
+                new File("/proc/mounts"));
+        for (String mount : mounts) {
+            String[] tokens = mount.split(" ");
+            String device = tokens[0];
+            String mountPoint = tokens[1];
+            if (device.equals(deviceOrMountpoint)
+                    || mountPoint.equals(deviceOrMountpoint)) {
+                List<String> swapLines = LernstickFileTools.readFile(
+                        new File("/proc/swaps"));
+                for (String swapLine : swapLines) {
+                    if (swapLine.startsWith(mountPoint)) {
+                        // deactivate swapfile
+                        swapoffFile(device, swapLine, dlCopyGUI);
+                    }
+                }
+            }
+        }
+
+        int exitValue = PROCESS_EXECUTOR.executeProcess(
+                "umount", deviceOrMountpoint);
+        if (exitValue != 0) {
+            String errorMessage = STRINGS.getString("Error_Umount");
+            errorMessage = MessageFormat.format(
+                    errorMessage, deviceOrMountpoint);
+            LOGGER.severe(errorMessage);
+            throw new IOException(errorMessage);
+        }
+    }
+
+    /**
+     * unmounts a given partition
+     *
+     * @param partition the given partition
+     * @param dlCopyGUI the GUI to show error messages
+     * @return <tt>true</tt>, if unmounting was successfull, <tt>false</tt>
+     * otherwise
+     * @throws DBusException
+     */
+    public static boolean umount(Partition partition, DLCopyGUI dlCopyGUI)
+            throws DBusException {
+        // early return
+        if (!partition.isMounted()) {
+            LOGGER.log(Level.INFO, "{0} was NOT mounted...",
+                    partition.getDeviceAndNumber());
+            return true;
+        }
+
+        if (partition.umount()) {
+            LOGGER.log(Level.INFO, "{0} was successfully umounted",
+                    partition.getDeviceAndNumber());
+            return true;
+        } else {
+            String errorMessage = STRINGS.getString("Error_Umount");
+            errorMessage = MessageFormat.format(errorMessage,
+                    "/dev/" + partition.getDeviceAndNumber());
+            dlCopyGUI.showErrorMessage(errorMessage);
+            return false;
+        }
+    }
+
+    /**
+     * writes the currently used version of persistence.conf into a given path
+     *
+     * @param mountPath the given path
+     * @throws IOException
+     */
+    public static void writePersistenceConf(String mountPath)
+            throws IOException {
+        try (FileWriter writer = new FileWriter(
+                mountPath + "/persistence.conf")) {
+            writer.write("/ union,source=.\n");
+            writer.flush();
+        }
+    }
+
+    /**
+     * formats and tunes the persistence partition of a given device (e.g.
+     * "/dev/sdb1") and creates the default persistence configuration file on
+     * the partition file system
+     *
+     * @param device the given device (e.g. "/dev/sdb1")
+     * @param fileSystem the file system to use
+     * @param dlCopyGUI the program GUI to show error messages
+     * @throws DBusException if a DBusException occurs
+     * @throws IOException if an IOException occurs
+     */
+    public static void formatPersistencePartition(
+            String device, String fileSystem, DLCopyGUI dlCopyGUI)
+            throws DBusException, IOException {
+
+        // make sure that the partition is unmounted
+        if (isMounted(device)) {
+            umount(device, dlCopyGUI);
+        }
+
+        // If we want to create a partition at the exact same location of
+        // another type of partition mkfs becomes interactive.
+        // For instance if we first install with an exchange partition and later
+        // without one, mkfs asks the following question:
+        // ------------
+        // /dev/sda2 contains a exfat file system labelled 'Austausch'
+        // Proceed anyway? (y,n)
+        // ------------
+        // To make a long story short, this is the reason we have to use the
+        // force flag "-F" here.
+        int exitValue = PROCESS_EXECUTOR.executeProcess("/sbin/mkfs."
+                + fileSystem, "-F", "-L", Partition.PERSISTENCE_LABEL, device);
+        if (exitValue != 0) {
+            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
+            String errorMessage = STRINGS.getString(
+                    "Error_Create_Data_Partition");
+            LOGGER.severe(errorMessage);
+            throw new IOException(errorMessage);
+        }
+
+        // tuning
+        exitValue = PROCESS_EXECUTOR.executeProcess(
+                "/sbin/tune2fs", "-m", "0", "-c", "0", "-i", "0", device);
+        if (exitValue != 0) {
+            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
+            String errorMessage = STRINGS.getString(
+                    "Error_Tune_Data_Partition");
+            LOGGER.severe(errorMessage);
+            throw new IOException(errorMessage);
+        }
+
+        // We have to wait a little for dbus to get to know the new filesystem.
+        // Otherwise we will sometimes get the following exception in the calls
+        // below:
+        // org.freedesktop.dbus.exceptions.DBusExecutionException:
+        // No such interface 'org.freedesktop.UDisks2.Filesystem'
+        try {
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+        }
+
+        // create default persistence configuration file
+        Partition persistencePartition
+                = Partition.getPartitionFromDeviceAndNumber(
+                        device.substring(5), systemSize);
+        String mountPath = persistencePartition.mount().getMountPath();
+        if (mountPath == null) {
+            throw new IOException("could not mount persistence partition");
+        }
+        writePersistenceConf(mountPath);
+        persistencePartition.umount();
+    }
+
+    /**
+     * creates a CopyJobsInfo for a given source / destination combination
+     *
+     * @param source the installation source
+     * @param storageDevice the destination StorageDevice
+     * @param destinationBootPartition the destination boot partition
+     * @param destinationExchangePartition the destination exchange partition
+     * @param destinationSystemPartition the destination system partition
+     * @param destinationExchangePartitionFileSystem the file system of the
+     * destination exchange partition
+     * @return the CopyJobsInfo for the given source / destination combination
+     * @throws DBusException
+     */
+    public static CopyJobsInfo prepareBootAndSystemCopyJobs(
+            InstallationSource source,
+            StorageDevice storageDevice,
+            Partition destinationBootPartition,
+            Partition destinationExchangePartition,
+            Partition destinationSystemPartition,
+            String destinationExchangePartitionFileSystem)
+            throws DBusException {
+
+        String destinationBootPath
+                = destinationBootPartition.mount().getMountPath();
+        String destinationSystemPath
+                = destinationSystemPartition.mount().getMountPath();
+
+        Source bootCopyJobSource = source.getBootCopySource();
+        Source systemCopyJobSource = source.getSystemCopySource();
+
+        CopyJob bootCopyJob = new CopyJob(
+                new Source[]{bootCopyJobSource},
+                new String[]{destinationBootPath});
+
+        // Only if we have a FAT32 exchange partition on a removable media we
+        // have to copy the boot files also to the exchange partition.
+        CopyJob bootFilesCopyJob = null;
+        if ((destinationExchangePartition != null)
+                && (storageDevice.isRemovable())) {
+            if ("fat32".equalsIgnoreCase(
+                    destinationExchangePartitionFileSystem)) {
+                String destinationExchangePath
+                        = destinationExchangePartition.mount().getMountPath();
+                bootFilesCopyJob = new CopyJob(
+                        new Source[]{source.getExchangeBootCopySource()},
+                        new String[]{destinationExchangePath});
+            }
+        }
+
+        CopyJob systemCopyJob = new CopyJob(
+                new Source[]{systemCopyJobSource},
+                new String[]{destinationSystemPath});
+
+        return new CopyJobsInfo(destinationBootPath, destinationSystemPath,
+                bootCopyJob, bootFilesCopyJob, systemCopyJob);
+    }
+
+    /**
+     * tries to hide the boot files on the exchange partition with FAT
+     * attributes (works on Windows) and a .hidden file (works on OS X)
+     *
+     * @param bootFilesCopyJob the CopyJob for the boot file, used to get the
+     * list of files to hide
+     * @param destinationExchangePath
+     */
+    public static void hideBootFiles(
+            CopyJob bootFilesCopyJob, String destinationExchangePath) {
+
+        Source bootFilesSource = bootFilesCopyJob.getSources()[0];
+        String[] bootFiles = bootFilesSource.getBaseDirectory().list();
+
+        if (bootFiles == null) {
+            return;
+        }
+
+        // use FAT attributes to hide boot files in Windows
+        for (String bootFile : bootFiles) {
+            Path destinationPath = Paths.get(destinationExchangePath, bootFile);
+            if (Files.exists(destinationPath)) {
+                PROCESS_EXECUTOR.executeProcess(
+                        "fatattr", "+h", destinationPath.toString());
+            }
+        }
+
+        // use ".hidden" file to hide boot files in OS X
+        String osxHiddenFilePath = destinationExchangePath + "/.hidden";
+        try (FileWriter fileWriter = new FileWriter(osxHiddenFilePath)) {
+            String lineSeperator = System.lineSeparator();
+            for (String bootFile : bootFiles) {
+                Path destinationPath = Paths.get(
+                        destinationExchangePath, bootFile);
+                if (Files.exists(destinationPath)) {
+                    fileWriter.write(bootFile + lineSeperator);
+                }
+            }
+        } catch (IOException ex) {
+            LOGGER.log(Level.WARNING, "", ex);
+        }
+
+        // use FAT attributes again to hide OS X ".hidden" file in Windows
+        PROCESS_EXECUTOR.executeProcess("fatattr", "+h", osxHiddenFilePath);
+    }
+
+    /**
+     * converts an isolinux directory structure to a syslinux directory
+     * structure
+     *
+     * @param mountPoint the mountpoint of the isolinux directory
+     * @param dlCopyGUI the GUI to show error messages
+     * @throws IOException
+     */
+    public static void isolinuxToSyslinux(String mountPoint,
+            DLCopyGUI dlCopyGUI) throws IOException {
+        final String isolinuxPath = mountPoint + "/isolinux";
+        if (new File(isolinuxPath).exists()) {
+            LOGGER.info("replacing isolinux with syslinux");
+            final String syslinuxPath = mountPoint + "/syslinux";
+            moveFile(isolinuxPath, syslinuxPath);
+            moveFile(syslinuxPath + "/isolinux.cfg",
+                    syslinuxPath + "/syslinux.cfg");
+
+            // replace "isolinux" with "syslinux" in some files
+            Pattern pattern = Pattern.compile("isolinux");
+            replaceText(syslinuxPath + "/exithelp.cfg", pattern, "syslinux");
+            replaceText(syslinuxPath + "/stdmenu.cfg", pattern, "syslinux");
+            replaceText(syslinuxPath + "/syslinux.cfg", pattern, "syslinux");
+
+            // remove boot.cat
+            String bootCatFileName = syslinuxPath + "/boot.cat";
+            File bootCatFile = new File(bootCatFileName);
+            if (!bootCatFile.delete()) {
+                dlCopyGUI.showErrorMessage(
+                        "Could not delete " + bootCatFileName);
+            }
+
+            // update md5sum.txt
+            String md5sumFileName = mountPoint + "/md5sum.txt";
+            replaceText(md5sumFileName, pattern, "syslinux");
+            File md5sumFile = new File(md5sumFileName);
+            if (md5sumFile.exists()) {
+                List<String> lines = LernstickFileTools.readFile(md5sumFile);
+                for (int i = lines.size() - 1; i >= 0; i--) {
+                    String line = lines.get(i);
+                    if (line.contains("xmlboot.config")
+                            || line.contains("grub.cfg")) {
+                        lines.remove(i);
+                    }
+                }
+                writeFile(md5sumFile, lines);
+                PROCESS_EXECUTOR.executeProcess("sync");
+            } else {
+                LOGGER.log(Level.WARNING,
+                        "file \"{0}\" does not exist!", md5sumFileName);
+            }
+
+        } else {
+            // boot device is probably a hard disk
+            LOGGER.info("isolinux directory does not exist -> no renaming");
+        }
+    }
+
+    /**
+     * formats the boot and system partition
+     *
+     * @param bootDevice the boot device
+     * @param systemDevice the system device
+     * @throws IOException
+     */
+    public static void formatBootAndSystemPartition(
+            String bootDevice, String systemDevice) throws IOException {
+
+        int exitValue = PROCESS_EXECUTOR.executeProcess(
+                "/sbin/mkfs.vfat", "-n", Partition.BOOT_LABEL, bootDevice);
+        if (exitValue != 0) {
+            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
+            String errorMessage
+                    = STRINGS.getString("Error_Create_Boot_Partition");
+            LOGGER.severe(errorMessage);
+            throw new IOException(errorMessage);
+        }
+
+        exitValue = PROCESS_EXECUTOR.executeProcess(
+                "/sbin/mkfs.ext4", "-L", systemPartitionLabel, systemDevice);
+        if (exitValue != 0) {
+            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
+            String errorMessage
+                    = STRINGS.getString("Error_Create_System_Partition");
+            LOGGER.severe(errorMessage);
+            throw new IOException(errorMessage);
+        }
+    }
+
+    /**
+     * sets the data partition mode on a target system
+     *
+     * @param source the installation source
+     * @param dataPartitionMode the data partition mode to set
+     * @param imagePath the path where the target image is mounted
+     */
+    public static void setDataPartitionMode(InstallationSource source,
+            DataPartitionMode dataPartitionMode, String imagePath) {
+        LOGGER.log(Level.INFO,
+                "data partition mode of installation source: {0}",
+                source.getDataPartitionMode());
+        LOGGER.log(Level.INFO,
+                "selected data partition mode for destination: {0}",
+                dataPartitionMode);
+        if (source.getDataPartitionMode() != dataPartitionMode) {
+            BootConfigUtil.setDataPartitionMode(dataPartitionMode, imagePath);
+        }
+    }
+
+    /**
+     * returns a list of all storage devices in the system
+     *
+     * @param includeHardDisks if hard disks should be included in the list
+     * @param includeBootDevice if the boot device should be included in the
+     * list
+     * @param bootDeviceName the name of the boot device
+     * @return
+     * @throws IOException
+     * @throws DBusException
+     */
+    public static List<StorageDevice> getStorageDevices(
+            boolean includeHardDisks, boolean includeBootDevice,
+            String bootDeviceName) throws IOException, DBusException {
+
+        List<String> partitions = DbusTools.getPartitions();
+        List<StorageDevice> storageDevices = new ArrayList<>();
+
+        for (String partition : partitions) {
+            LOGGER.log(Level.FINE, "checking partition \"{0}\"", partition);
+
+            if (!includeBootDevice) {
+                if (partition.equals(bootDeviceName)) {
+                    // this is the boot device, skip it
+                    LOGGER.log(Level.INFO,
+                            "skipping {0}, it''s the boot device", partition);
+                    continue;
+                }
+            }
+
+            String pathPrefix = "/org/freedesktop/";
+            if (DbusTools.DBUS_VERSION == DbusTools.DbusVersion.V1) {
+                pathPrefix += "UDisks/devices/";
+            } else {
+                pathPrefix += "UDisks2/block_devices/";
+            }
+            StorageDevice storageDevice = getStorageDevice(
+                    pathPrefix + partition, includeHardDisks);
+            if (storageDevice != null) {
+                if (storageDevice.getType() == StorageDevice.Type.OpticalDisc) {
+                    LOGGER.log(Level.INFO,
+                            "skipping optical disk {0}", storageDevice);
+                } else {
+                    LOGGER.log(Level.INFO, "adding {0}", partition);
+                    storageDevices.add(storageDevice);
+                }
+            }
+        }
+
+        return storageDevices;
+    }
+
+    /**
+     * returns the StorageDevice for a given dbus path after a timeout
+     *
+     * @param path the dbus path
+     * @param includeHardDisks if true, paths to hard disks are processed,
+     * otherwise ignored
+     * @return the StorageDevice for a given dbus path after a timeout
+     * @throws DBusException
+     */
+    public static StorageDevice getStorageDeviceAfterTimeout(
+            String path, boolean includeHardDisks) throws DBusException {
+        // It has happened that "udisks --enumerate" returns a valid storage
+        // device but not yet its partitions. Therefore we give the system
+        // a little break after storage devices have been added.
+        try {
+            TimeUnit.SECONDS.sleep(3);
+        } catch (InterruptedException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+        }
+        StorageDevice storageDevice = getStorageDevice(path, includeHardDisks);
+        LOGGER.log(Level.INFO, "storage device of path {0}: {1}",
+                new Object[]{path, storageDevice});
+        return storageDevice;
+    }
+
+    /**
+     * reads a one-line file
+     *
+     * @param file the file to read
+     * @return the trimmed line of the file
+     * @throws IOException if an I/O exception occurs
+     */
+    public static String readOneLineFile(File file) throws IOException {
+        try (FileReader fileReader = new FileReader(file)) {
+            try (BufferedReader bufferedReader
+                    = new BufferedReader(fileReader)) {
+                String string = bufferedReader.readLine();
+                if (string != null) {
+                    string = string.trim();
+                }
+                return string;
+            }
+        }
     }
 
     // TODO: use installation source for calculation
@@ -1137,165 +1546,6 @@ public class DLCopy {
                 installer, copyScript, persistenceSourcePath);
     }
 
-    /**
-     * unmounts a device or mountpoint
-     *
-     * @param deviceOrMountpoint the device or mountpoint to unmount
-     * @throws IOException
-     */
-    public static void umount(String deviceOrMountpoint, DLCopyGUI dlCopyGUI)
-            throws IOException {
-        // check if a swapfile is in use on this partition
-        List<String> mounts = LernstickFileTools.readFile(
-                new File("/proc/mounts"));
-        for (String mount : mounts) {
-            String[] tokens = mount.split(" ");
-            String device = tokens[0];
-            String mountPoint = tokens[1];
-            if (device.equals(deviceOrMountpoint)
-                    || mountPoint.equals(deviceOrMountpoint)) {
-                List<String> swapLines = LernstickFileTools.readFile(
-                        new File("/proc/swaps"));
-                for (String swapLine : swapLines) {
-                    if (swapLine.startsWith(mountPoint)) {
-                        // deactivate swapfile
-                        swapoffFile(device, swapLine, dlCopyGUI);
-                    }
-                }
-            }
-        }
-
-        int exitValue = PROCESS_EXECUTOR.executeProcess(
-                "umount", deviceOrMountpoint);
-        if (exitValue != 0) {
-            String errorMessage = STRINGS.getString("Error_Umount");
-            errorMessage = MessageFormat.format(
-                    errorMessage, deviceOrMountpoint);
-            LOGGER.severe(errorMessage);
-            throw new IOException(errorMessage);
-        }
-    }
-
-    /**
-     * unmounts a given partition
-     *
-     * @param partition the given partition
-     * @param dlCopyGUI the GUI to show error messages
-     * @return <tt>true</tt>, if unmounting was successfull, <tt>false</tt>
-     * otherwise
-     * @throws DBusException
-     */
-    public static boolean umount(Partition partition, DLCopyGUI dlCopyGUI)
-            throws DBusException {
-        // early return
-        if (!partition.isMounted()) {
-            LOGGER.log(Level.INFO, "{0} was NOT mounted...",
-                    partition.getDeviceAndNumber());
-            return true;
-        }
-
-        if (partition.umount()) {
-            LOGGER.log(Level.INFO, "{0} was successfully umounted",
-                    partition.getDeviceAndNumber());
-            return true;
-        } else {
-            String errorMessage = STRINGS.getString("Error_Umount");
-            errorMessage = MessageFormat.format(errorMessage,
-                    "/dev/" + partition.getDeviceAndNumber());
-            dlCopyGUI.showErrorMessage(errorMessage);
-            return false;
-        }
-    }
-
-    /**
-     * writes the currently used version of persistence.conf into a given path
-     *
-     * @param mountPath the given path
-     * @throws IOException
-     */
-    public static void writePersistenceConf(String mountPath)
-            throws IOException {
-        try (FileWriter writer = new FileWriter(
-                mountPath + "/persistence.conf")) {
-            writer.write("/ union,source=.\n");
-            writer.flush();
-        }
-    }
-
-    /**
-     * formats and tunes the persistence partition of a given device (e.g.
-     * "/dev/sdb1") and creates the default persistence configuration file on
-     * the partition file system
-     *
-     * @param device the given device (e.g. "/dev/sdb1")
-     * @param fileSystem the file system to use
-     * @param dlCopyGUI the program GUI to show error messages
-     * @throws DBusException if a DBusException occurs
-     * @throws IOException if an IOException occurs
-     */
-    public static void formatPersistencePartition(
-            String device, String fileSystem, DLCopyGUI dlCopyGUI)
-            throws DBusException, IOException {
-
-        // make sure that the partition is unmounted
-        if (isMounted(device)) {
-            umount(device, dlCopyGUI);
-        }
-
-        // If we want to create a partition at the exact same location of
-        // another type of partition mkfs becomes interactive.
-        // For instance if we first install with an exchange partition and later
-        // without one, mkfs asks the following question:
-        // ------------
-        // /dev/sda2 contains a exfat file system labelled 'Austausch'
-        // Proceed anyway? (y,n)
-        // ------------
-        // To make a long story short, this is the reason we have to use the
-        // force flag "-F" here.
-        int exitValue = PROCESS_EXECUTOR.executeProcess("/sbin/mkfs."
-                + fileSystem, "-F", "-L", Partition.PERSISTENCE_LABEL, device);
-        if (exitValue != 0) {
-            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
-            String errorMessage = STRINGS.getString(
-                    "Error_Create_Data_Partition");
-            LOGGER.severe(errorMessage);
-            throw new IOException(errorMessage);
-        }
-
-        // tuning
-        exitValue = PROCESS_EXECUTOR.executeProcess(
-                "/sbin/tune2fs", "-m", "0", "-c", "0", "-i", "0", device);
-        if (exitValue != 0) {
-            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
-            String errorMessage = STRINGS.getString(
-                    "Error_Tune_Data_Partition");
-            LOGGER.severe(errorMessage);
-            throw new IOException(errorMessage);
-        }
-
-        // We have to wait a little for dbus to get to know the new filesystem.
-        // Otherwise we will sometimes get the following exception in the calls
-        // below:
-        // org.freedesktop.dbus.exceptions.DBusExecutionException:
-        // No such interface 'org.freedesktop.UDisks2.Filesystem'
-        try {
-            TimeUnit.SECONDS.sleep(5);
-        } catch (InterruptedException ex) {
-            LOGGER.log(Level.SEVERE, "", ex);
-        }
-
-        // create default persistence configuration file
-        Partition persistencePartition
-                = Partition.getPartitionFromDeviceAndNumber(
-                        device.substring(5), systemSize);
-        String mountPath = persistencePartition.mount().getMountPath();
-        if (mountPath == null) {
-            throw new IOException("could not mount persistence partition");
-        }
-        writePersistenceConf(mountPath);
-        persistencePartition.umount();
-    }
-
     private static void umountPartitions(String device, DLCopyGUI dlCopyGUI)
             throws IOException {
         LOGGER.log(Level.FINEST, "umountPartitions({0})", device);
@@ -1388,229 +1638,6 @@ public class DLCopy {
     }
 
     /**
-     * creates a CopyJobsInfo for a given source / destination combination
-     *
-     * @param source the installation source
-     * @param storageDevice the destination StorageDevice
-     * @param destinationBootPartition the destination boot partition
-     * @param destinationExchangePartition the destination exchange partition
-     * @param destinationSystemPartition the destination system partition
-     * @param destinationExchangePartitionFileSystem the file system of the
-     * destination exchange partition
-     * @return the CopyJobsInfo for the given source / destination combination
-     * @throws DBusException
-     */
-    public static CopyJobsInfo prepareBootAndSystemCopyJobs(
-            InstallationSource source,
-            StorageDevice storageDevice,
-            Partition destinationBootPartition,
-            Partition destinationExchangePartition,
-            Partition destinationSystemPartition,
-            String destinationExchangePartitionFileSystem)
-            throws DBusException {
-
-        String destinationBootPath
-                = destinationBootPartition.mount().getMountPath();
-        String destinationSystemPath
-                = destinationSystemPartition.mount().getMountPath();
-
-        Source bootCopyJobSource = source.getBootCopySource();
-        Source systemCopyJobSource = source.getSystemCopySource();
-
-        CopyJob bootCopyJob = new CopyJob(
-                new Source[]{bootCopyJobSource},
-                new String[]{destinationBootPath});
-
-        // Only if we have a FAT32 exchange partition on a removable media we
-        // have to copy the boot files also to the exchange partition.
-        CopyJob bootFilesCopyJob = null;
-        if ((destinationExchangePartition != null)
-                && (storageDevice.isRemovable())) {
-            if ("fat32".equalsIgnoreCase(
-                    destinationExchangePartitionFileSystem)) {
-                String destinationExchangePath
-                        = destinationExchangePartition.mount().getMountPath();
-                bootFilesCopyJob = new CopyJob(
-                        new Source[]{source.getExchangeBootCopySource()},
-                        new String[]{destinationExchangePath});
-            }
-        }
-
-        CopyJob systemCopyJob = new CopyJob(
-                new Source[]{systemCopyJobSource},
-                new String[]{destinationSystemPath});
-
-        return new CopyJobsInfo(destinationBootPath, destinationSystemPath,
-                bootCopyJob, bootFilesCopyJob, systemCopyJob);
-    }
-
-    /**
-     * tries to hide the boot files on the exchange partition with FAT
-     * attributes (works on Windows) and a .hidden file (works on OS X)
-     *
-     * @param bootFilesCopyJob the CopyJob for the boot file, used to get the
-     * list of files to hide
-     * @param destinationExchangePath
-     */
-    public static void hideBootFiles(
-            CopyJob bootFilesCopyJob, String destinationExchangePath) {
-
-        Source bootFilesSource = bootFilesCopyJob.getSources()[0];
-        String[] bootFiles = bootFilesSource.getBaseDirectory().list();
-
-        if (bootFiles == null) {
-            return;
-        }
-
-        // use FAT attributes to hide boot files in Windows
-        for (String bootFile : bootFiles) {
-            Path destinationPath = Paths.get(destinationExchangePath, bootFile);
-            if (Files.exists(destinationPath)) {
-                PROCESS_EXECUTOR.executeProcess(
-                        "fatattr", "+h", destinationPath.toString());
-            }
-        }
-
-        // use ".hidden" file to hide boot files in OS X
-        String osxHiddenFilePath = destinationExchangePath + "/.hidden";
-        try (FileWriter fileWriter = new FileWriter(osxHiddenFilePath)) {
-            String lineSeperator = System.lineSeparator();
-            for (String bootFile : bootFiles) {
-                Path destinationPath = Paths.get(
-                        destinationExchangePath, bootFile);
-                if (Files.exists(destinationPath)) {
-                    fileWriter.write(bootFile + lineSeperator);
-                }
-            }
-        } catch (IOException ex) {
-            LOGGER.log(Level.WARNING, "", ex);
-        }
-
-        // use FAT attributes again to hide OS X ".hidden" file in Windows
-        PROCESS_EXECUTOR.executeProcess("fatattr", "+h", osxHiddenFilePath);
-    }
-
-    /**
-     * converts an isolinux directory structure to a syslinux directory
-     * structure
-     *
-     * @param mountPoint the mountpoint of the isolinux directory
-     * @param dlCopyGUI the GUI to show error messages
-     * @throws IOException
-     */
-    public static void isolinuxToSyslinux(String mountPoint,
-            DLCopyGUI dlCopyGUI) throws IOException {
-        final String isolinuxPath = mountPoint + "/isolinux";
-        if (new File(isolinuxPath).exists()) {
-            LOGGER.info("replacing isolinux with syslinux");
-            final String syslinuxPath = mountPoint + "/syslinux";
-            moveFile(isolinuxPath, syslinuxPath);
-            moveFile(syslinuxPath + "/isolinux.cfg",
-                    syslinuxPath + "/syslinux.cfg");
-
-            // replace "isolinux" with "syslinux" in some files
-            Pattern pattern = Pattern.compile("isolinux");
-            replaceText(syslinuxPath + "/exithelp.cfg", pattern, "syslinux");
-            replaceText(syslinuxPath + "/stdmenu.cfg", pattern, "syslinux");
-            replaceText(syslinuxPath + "/syslinux.cfg", pattern, "syslinux");
-
-            // remove boot.cat
-            String bootCatFileName = syslinuxPath + "/boot.cat";
-            File bootCatFile = new File(bootCatFileName);
-            if (!bootCatFile.delete()) {
-                dlCopyGUI.showErrorMessage(
-                        "Could not delete " + bootCatFileName);
-            }
-
-            // update md5sum.txt
-            String md5sumFileName = mountPoint + "/md5sum.txt";
-            replaceText(md5sumFileName, pattern, "syslinux");
-            File md5sumFile = new File(md5sumFileName);
-            if (md5sumFile.exists()) {
-                List<String> lines = LernstickFileTools.readFile(md5sumFile);
-                for (int i = lines.size() - 1; i >= 0; i--) {
-                    String line = lines.get(i);
-                    if (line.contains("xmlboot.config")
-                            || line.contains("grub.cfg")) {
-                        lines.remove(i);
-                    }
-                }
-                writeFile(md5sumFile, lines);
-                PROCESS_EXECUTOR.executeProcess("sync");
-            } else {
-                LOGGER.log(Level.WARNING,
-                        "file \"{0}\" does not exist!", md5sumFileName);
-            }
-
-        } else {
-            // boot device is probably a hard disk
-            LOGGER.info("isolinux directory does not exist -> no renaming");
-        }
-    }
-
-    /**
-     * formats the boot and system partition
-     *
-     * @param bootDevice the boot device
-     * @param systemDevice the system device
-     * @throws IOException
-     */
-    public static void formatBootAndSystemPartition(
-            String bootDevice, String systemDevice) throws IOException {
-
-        int exitValue = PROCESS_EXECUTOR.executeProcess(
-                "/sbin/mkfs.vfat", "-n", Partition.BOOT_LABEL, bootDevice);
-        if (exitValue != 0) {
-            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
-            String errorMessage
-                    = STRINGS.getString("Error_Create_Boot_Partition");
-            LOGGER.severe(errorMessage);
-            throw new IOException(errorMessage);
-        }
-
-        exitValue = PROCESS_EXECUTOR.executeProcess(
-                "/sbin/mkfs.ext4", "-L", systemPartitionLabel, systemDevice);
-        if (exitValue != 0) {
-            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
-            String errorMessage
-                    = STRINGS.getString("Error_Create_System_Partition");
-            LOGGER.severe(errorMessage);
-            throw new IOException(errorMessage);
-        }
-    }
-
-    /**
-     * sets the data partition mode on a target system
-     *
-     * @param source the installation source
-     * @param dataPartitionMode the data partition mode to set
-     * @param imagePath the path where the target image is mounted
-     */
-    public static void setDataPartitionMode(InstallationSource source,
-            DataPartitionMode dataPartitionMode, String imagePath) {
-        LOGGER.log(Level.INFO,
-                "data partition mode of installation source: {0}",
-                source.getDataPartitionMode());
-        LOGGER.log(Level.INFO,
-                "selected data partition mode for destination: {0}",
-                dataPartitionMode);
-        if (source.getDataPartitionMode() != dataPartitionMode) {
-            BootConfigUtil.setDataPartitionMode(dataPartitionMode, imagePath);
-        }
-    }
-
-    public static RepartitionStrategy getRepartitionStrategy(
-            boolean keep, boolean resize) {
-        if (keep) {
-            return RepartitionStrategy.KEEP;
-        }
-        if (resize) {
-            return RepartitionStrategy.RESIZE;
-        }
-        return RepartitionStrategy.REMOVE;
-    }
-
-    /**
      * returns the StorageDevice for a given dbus path
      *
      * @param path the dbus path
@@ -1619,7 +1646,7 @@ public class DLCopy {
      * @return the StorageDevice for a given dbus path
      * @throws DBusException if a dbus exception occurs
      */
-    public static StorageDevice getStorageDevice(
+    private static StorageDevice getStorageDevice(
             String path, boolean includeHardDisks) throws DBusException {
 
         LOGGER.log(Level.FINE, "path: {0}", path);
@@ -1678,103 +1705,6 @@ public class DLCopy {
             return null;
         } else {
             return storageDevice;
-        }
-    }
-
-    /**
-     * returns the StorageDevice for a given dbus path after a timeout
-     *
-     * @param path the dbus path
-     * @param includeHardDisks if true, paths to hard disks are processed,
-     * otherwise ignored
-     * @return the StorageDevice for a given dbus path after a timeout
-     * @throws DBusException
-     */
-    public static StorageDevice getStorageDeviceAfterTimeout(
-            String path, boolean includeHardDisks) throws DBusException {
-        // It has happened that "udisks --enumerate" returns a valid storage
-        // device but not yet its partitions. Therefore we give the system
-        // a little break after storage devices have been added.
-        try {
-            TimeUnit.SECONDS.sleep(3);
-        } catch (InterruptedException ex) {
-            LOGGER.log(Level.SEVERE, "", ex);
-        }
-        StorageDevice storageDevice = getStorageDevice(path, includeHardDisks);
-        LOGGER.log(Level.INFO, "storage device of path {0}: {1}",
-                new Object[]{path, storageDevice});
-        return storageDevice;
-    }
-
-    /**
-     * returns a list of all storage devices in the system
-     *
-     * @param includeHardDisks if hard disks should be included in the list
-     * @param includeBootDevice if the boot device should be included in the
-     * list
-     * @param bootDeviceName the name of the boot device
-     * @return
-     * @throws IOException
-     * @throws DBusException
-     */
-    public static List<StorageDevice> getStorageDevices(
-            boolean includeHardDisks, boolean includeBootDevice,
-            String bootDeviceName) throws IOException, DBusException {
-
-        List<String> partitions = DbusTools.getPartitions();
-        List<StorageDevice> storageDevices = new ArrayList<>();
-
-        for (String partition : partitions) {
-            LOGGER.log(Level.FINE, "checking partition \"{0}\"", partition);
-
-            if (!includeBootDevice) {
-                if (partition.equals(bootDeviceName)) {
-                    // this is the boot device, skip it
-                    LOGGER.log(Level.INFO,
-                            "skipping {0}, it''s the boot device", partition);
-                    continue;
-                }
-            }
-
-            String pathPrefix = "/org/freedesktop/";
-            if (DbusTools.DBUS_VERSION == DbusTools.DbusVersion.V1) {
-                pathPrefix += "UDisks/devices/";
-            } else {
-                pathPrefix += "UDisks2/block_devices/";
-            }
-            StorageDevice storageDevice = getStorageDevice(
-                    pathPrefix + partition, includeHardDisks);
-            if (storageDevice != null) {
-                if (storageDevice.getType() == StorageDevice.Type.OpticalDisc) {
-                    LOGGER.log(Level.INFO,
-                            "skipping optical disk {0}", storageDevice);
-                } else {
-                    LOGGER.log(Level.INFO, "adding {0}", partition);
-                    storageDevices.add(storageDevice);
-                }
-            }
-        }
-
-        return storageDevices;
-    }
-
-    /**
-     * reads a one-line file
-     *
-     * @param file the file to read
-     * @return the trimmed line of the file
-     * @throws IOException if an I/O exception occurs
-     */
-    public static String readOneLineFile(File file) throws IOException {
-        try (FileReader fileReader = new FileReader(file)) {
-            try (BufferedReader bufferedReader
-                    = new BufferedReader(fileReader)) {
-                String string = bufferedReader.readLine();
-                if (string != null) {
-                    string = string.trim();
-                }
-                return string;
-            }
         }
     }
 }

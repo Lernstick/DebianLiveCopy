@@ -7,7 +7,7 @@ package ch.fhnw.dlcopy.gui.swing;
 
 import ch.fhnw.dlcopy.DLCopy;
 import static ch.fhnw.dlcopy.DLCopy.MEGA;
-import ch.fhnw.dlcopy.DLCopy.PartitionState;
+import ch.fhnw.dlcopy.PartitionState;
 import static ch.fhnw.dlcopy.DLCopy.STRINGS;
 import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.StorageDevice;

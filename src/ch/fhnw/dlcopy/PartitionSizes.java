@@ -9,6 +9,11 @@ public class PartitionSizes {
     private final int exchangeMB;
     private final int persistenceMB;
 
+    /**
+     * creates new PartitionSizes
+     * @param exchangeMB the size of the exchange partition (given in MiB)
+     * @param persistenceMB the size of the persistence partition (given in MiB)
+     */
     public PartitionSizes(int exchangeMB, int persistenceMB) {
         this.exchangeMB = exchangeMB;
         this.persistenceMB = persistenceMB;

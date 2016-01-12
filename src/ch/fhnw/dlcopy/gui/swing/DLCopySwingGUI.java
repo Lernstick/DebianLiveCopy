@@ -6,8 +6,8 @@
 package ch.fhnw.dlcopy.gui.swing;
 
 import ch.fhnw.dlcopy.DLCopy;
-import ch.fhnw.dlcopy.DLCopy.DebianLiveDistribution;
-import ch.fhnw.dlcopy.DLCopy.PartitionState;
+import ch.fhnw.dlcopy.DebianLiveDistribution;
+import ch.fhnw.dlcopy.PartitionState;
 import static ch.fhnw.dlcopy.DLCopy.STRINGS;
 import ch.fhnw.dlcopy.DataPartitionMode;
 import ch.fhnw.dlcopy.InstallationSource;
@@ -17,6 +17,7 @@ import ch.fhnw.dlcopy.IsoCreator;
 import ch.fhnw.dlcopy.IsoInstallationSource;
 import ch.fhnw.dlcopy.PartitionSizes;
 import ch.fhnw.dlcopy.Repairer;
+import ch.fhnw.dlcopy.RepartitionStrategy;
 import ch.fhnw.dlcopy.StorageDeviceResult;
 import ch.fhnw.dlcopy.SystemInstallationSource;
 import ch.fhnw.dlcopy.Upgrader;
@@ -4411,10 +4412,15 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         for (int i = 0, size = upgradeOverwriteListModel.size(); i < size; i++) {
             overWriteList.add(upgradeOverwriteListModel.get(i));
         }
-        DLCopy.RepartitionStrategy repartitionStrategy
-                = DLCopy.getRepartitionStrategy(
-                        originalExchangeRadioButton.isSelected(),
-                        resizeExchangeRadioButton.isSelected());
+        RepartitionStrategy repartitionStrategy;
+        if (originalExchangeRadioButton.isSelected()) {
+            repartitionStrategy = RepartitionStrategy.KEEP;
+        } else if (resizeExchangeRadioButton.isSelected()) {
+            repartitionStrategy = RepartitionStrategy.RESIZE;
+        } else {
+            repartitionStrategy = RepartitionStrategy.REMOVE;
+        }
+
         Object selectedItem
                 = exchangePartitionFileSystemComboBox.getSelectedItem();
         String exchangePartitionFileSystem = selectedItem.toString();

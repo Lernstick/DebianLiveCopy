@@ -49,7 +49,7 @@ public class Upgrader extends InstallerOrUpgrader {
     private static final Logger LOGGER
             = Logger.getLogger(Upgrader.class.getName());
 
-    private final DLCopy.RepartitionStrategy repartitionStrategy;
+    private final RepartitionStrategy repartitionStrategy;
     private final int resizedExchangePartitionSize;
     private final boolean automaticBackup;
     private final String automaticBackupDestination;
@@ -94,7 +94,7 @@ public class Upgrader extends InstallerOrUpgrader {
     public Upgrader(InstallationSource source, List<StorageDevice> deviceList,
             String exchangePartitionLabel, String exchangePartitionFileSystem,
             String dataPartitionFileSystem, DLCopySwingGUI dlCopy,
-            DLCopyGUI dlCopyGUI, DLCopy.RepartitionStrategy repartitionStrategy,
+            DLCopyGUI dlCopyGUI, RepartitionStrategy repartitionStrategy,
             int resizedExchangePartitionSize, boolean automaticBackup,
             String automaticBackupDestination, boolean removeBackup,
             boolean upgradeSystemPartition, boolean keepPrinterSettings,
