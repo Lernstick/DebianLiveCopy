@@ -1221,6 +1221,7 @@ public class DLCopySwingGUI extends JFrame
         repairButtonGroup = new javax.swing.ButtonGroup();
         isoButtonGroup = new javax.swing.ButtonGroup();
         exchangeButtonGroup = new javax.swing.ButtonGroup();
+        installSourceButtonGroup = new javax.swing.ButtonGroup();
         choicePanel = new javax.swing.JPanel();
         choiceLabel = new javax.swing.JLabel();
         buttonGridPanel = new javax.swing.JPanel();
@@ -1243,6 +1244,12 @@ public class DLCopySwingGUI extends JFrame
         installInfoPanel = new javax.swing.JPanel();
         infoLabel = new javax.swing.JLabel();
         installSelectionPanel = new javax.swing.JPanel();
+        installSourcePanel = new javax.swing.JPanel();
+        runningSystemSourceRadioButton = new javax.swing.JRadioButton();
+        isoSourceRadioButton = new javax.swing.JRadioButton();
+        isoSourceTextField = new javax.swing.JTextField();
+        isoSourceFileChooserButton = new javax.swing.JButton();
+        installTargetPanel = new javax.swing.JPanel();
         installSelectionHeaderLabel = new javax.swing.JLabel();
         installShowHarddisksCheckBox = new javax.swing.JCheckBox();
         installSelectionCardPanel = new javax.swing.JPanel();
@@ -1654,13 +1661,64 @@ public class DLCopySwingGUI extends JFrame
 
         installSelectionPanel.setLayout(new java.awt.GridBagLayout());
 
+        installSourcePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.installSourcePanel.border.title"))); // NOI18N
+        installSourcePanel.setLayout(new java.awt.GridBagLayout());
+
+        installSourceButtonGroup.add(runningSystemSourceRadioButton);
+        runningSystemSourceRadioButton.setSelected(true);
+        runningSystemSourceRadioButton.setText(bundle.getString("DLCopySwingGUI.runningSystemSourceRadioButton.text")); // NOI18N
+        runningSystemSourceRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                runningSystemSourceRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        installSourcePanel.add(runningSystemSourceRadioButton, gridBagConstraints);
+
+        installSourceButtonGroup.add(isoSourceRadioButton);
+        isoSourceRadioButton.setText(bundle.getString("DLCopySwingGUI.isoSourceRadioButton.text")); // NOI18N
+        isoSourceRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                isoSourceRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        installSourcePanel.add(isoSourceRadioButton, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        installSourcePanel.add(isoSourceTextField, gridBagConstraints);
+
+        isoSourceFileChooserButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/document-open-folder.png"))); // NOI18N
+        isoSourceFileChooserButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        isoSourceFileChooserButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                isoSourceFileChooserButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 3);
+        installSourcePanel.add(isoSourceFileChooserButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        installSelectionPanel.add(installSourcePanel, gridBagConstraints);
+
+        installTargetPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.installTargetPanel.border.title"))); // NOI18N
+        installTargetPanel.setLayout(new java.awt.GridBagLayout());
+
         installSelectionHeaderLabel.setFont(installSelectionHeaderLabel.getFont().deriveFont(installSelectionHeaderLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
         installSelectionHeaderLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         installSelectionHeaderLabel.setText(bundle.getString("Select_Install_Target_Storage_Media")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        installSelectionPanel.add(installSelectionHeaderLabel, gridBagConstraints);
+        installTargetPanel.add(installSelectionHeaderLabel, gridBagConstraints);
 
         installShowHarddisksCheckBox.setFont(installShowHarddisksCheckBox.getFont().deriveFont(installShowHarddisksCheckBox.getFont().getStyle() & ~java.awt.Font.BOLD, installShowHarddisksCheckBox.getFont().getSize()-1));
         installShowHarddisksCheckBox.setText(bundle.getString("DLCopySwingGUI.installShowHarddisksCheckBox.text")); // NOI18N
@@ -1671,7 +1729,7 @@ public class DLCopySwingGUI extends JFrame
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        installSelectionPanel.add(installShowHarddisksCheckBox, gridBagConstraints);
+        installTargetPanel.add(installShowHarddisksCheckBox, gridBagConstraints);
 
         installSelectionCardPanel.setLayout(new java.awt.CardLayout());
 
@@ -1935,7 +1993,7 @@ public class DLCopySwingGUI extends JFrame
                 .addContainerGap()
                 .addComponent(installSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 130, Short.MAX_VALUE)
+                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(exchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -1967,7 +2025,13 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        installSelectionPanel.add(installSelectionCardPanel, gridBagConstraints);
+        installTargetPanel.add(installSelectionCardPanel, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        installSelectionPanel.add(installTargetPanel, gridBagConstraints);
 
         cardPanel.add(installSelectionPanel, "installSelectionPanel");
 
@@ -2341,7 +2405,7 @@ public class DLCopySwingGUI extends JFrame
                             .addComponent(reactivateWelcomeCheckBox)
                             .addComponent(keepPrinterSettingsCheckBox)
                             .addComponent(removeHiddenFilesCheckBox))
-                        .addGap(0, 70, Short.MAX_VALUE)))
+                        .addGap(0, 241, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         upgradeOptionsPanelLayout.setVerticalGroup(
@@ -3112,14 +3176,14 @@ public class DLCopySwingGUI extends JFrame
         previousButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/previous.png"))); // NOI18N
         previousButton.setText(bundle.getString("DLCopySwingGUI.previousButton.text")); // NOI18N
         previousButton.setName("previousButton"); // NOI18N
-        previousButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                previousButtonActionPerformed(evt);
-            }
-        });
         previousButton.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 previousButtonFocusGained(evt);
+            }
+        });
+        previousButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                previousButtonActionPerformed(evt);
             }
         });
         previousButton.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -3633,6 +3697,33 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private void systemMediumRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_systemMediumRadioButtonActionPerformed
         showMediumPanel();
     }//GEN-LAST:event_systemMediumRadioButtonActionPerformed
+
+    private void isoSourceFileChooserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_isoSourceFileChooserButtonActionPerformed
+        File currentFile = new File(isoSourceTextField.getText());
+        String currentFileDir = currentFile.getParentFile().getPath();
+        JFileChooser fileChooser = new JFileChooser(currentFileDir);
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            String selectedPath = fileChooser.getSelectedFile().getPath();
+            isoSourceTextField.setText(selectedPath);
+        }
+        // TODO:
+        //  - check if selected file is really a Debian Live ISO
+        //  - update installation source info (size, etc.)
+    }//GEN-LAST:event_isoSourceFileChooserButtonActionPerformed
+
+    private void runningSystemSourceRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runningSystemSourceRadioButtonActionPerformed
+        updateInstallSourceGUI();
+    }//GEN-LAST:event_runningSystemSourceRadioButtonActionPerformed
+
+    private void isoSourceRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_isoSourceRadioButtonActionPerformed
+        updateInstallSourceGUI();
+    }//GEN-LAST:event_isoSourceRadioButtonActionPerformed
+
+    private void updateInstallSourceGUI() {
+        boolean isoSource = isoSourceRadioButton.isSelected();
+        isoSourceTextField.setEnabled(isoSource);
+        isoSourceFileChooserButton.setEnabled(isoSource);
+    }
 
     private void playNotifySound() {
         URL url = getClass().getResource("/ch/fhnw/dlcopy/KDE_Notify.wav");
@@ -4799,8 +4890,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel installSelectionHeaderLabel;
     private javax.swing.JPanel installSelectionPanel;
     private javax.swing.JCheckBox installShowHarddisksCheckBox;
+    private javax.swing.ButtonGroup installSourceButtonGroup;
+    private javax.swing.JPanel installSourcePanel;
     private javax.swing.JList installStorageDeviceList;
     private javax.swing.JTabbedPane installTabbedPane;
+    private javax.swing.JPanel installTargetPanel;
     private javax.swing.JScrollPane installationResultsScrollPane;
     private javax.swing.JTable installationResultsTable;
     private javax.swing.ButtonGroup isoButtonGroup;
@@ -4811,6 +4905,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JTextField isoLabelTextField;
     private javax.swing.JPanel isoOptionsCardPanel;
     private javax.swing.JPanel isoOptionsPanel;
+    private javax.swing.JButton isoSourceFileChooserButton;
+    private javax.swing.JRadioButton isoSourceRadioButton;
+    private javax.swing.JTextField isoSourceTextField;
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
@@ -4861,6 +4958,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JPanel rsyncPanel;
     private javax.swing.JProgressBar rsyncPogressBar;
     private javax.swing.JLabel rsyncTimeLabel;
+    private javax.swing.JRadioButton runningSystemSourceRadioButton;
     private javax.swing.JLabel selectionLabel;
     private javax.swing.JCheckBox showNotUsedDialogCheckBox;
     private javax.swing.JButton sortAscendingButton;
