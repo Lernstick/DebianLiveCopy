@@ -587,7 +587,7 @@
                                               <EmptySpace min="0" pref="0" max="32767" attributes="0"/>
                                           </Group>
                                           <Component id="installListTabbedPane" alignment="0" pref="0" max="32767" attributes="0"/>
-                                          <Component id="storageDeviceListScrollPane" alignment="0" pref="0" max="32767" attributes="0"/>
+                                          <Component id="installStorageDeviceListScrollPane" alignment="0" pref="0" max="32767" attributes="0"/>
                                           <Group type="102" alignment="0" attributes="0">
                                               <EmptySpace min="12" pref="12" max="-2" attributes="0"/>
                                               <Group type="103" groupAlignment="0" attributes="0">
@@ -612,7 +612,7 @@
                                       <EmptySpace min="-2" max="-2" attributes="0"/>
                                       <Component id="installSelectionCountLabel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
-                                      <Component id="storageDeviceListScrollPane" pref="22" max="32767" attributes="0"/>
+                                      <Component id="installStorageDeviceListScrollPane" pref="94" max="32767" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
                                       <Component id="exchangeDefinitionLabel" min="-2" max="-2" attributes="0"/>
                                       <EmptySpace max="-2" attributes="0"/>
@@ -630,7 +630,7 @@
                             </DimensionLayout>
                           </Layout>
                           <SubComponents>
-                            <Container class="javax.swing.JScrollPane" name="storageDeviceListScrollPane">
+                            <Container class="javax.swing.JScrollPane" name="installStorageDeviceListScrollPane">
                               <AuxValues>
                                 <AuxValue name="autoScrollPane" type="java.lang.Boolean" value="true"/>
                               </AuxValues>

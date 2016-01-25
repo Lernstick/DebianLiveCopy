@@ -30,7 +30,7 @@ public class InstallStorageDeviceRenderer extends JPanel
             = Logger.getLogger(DLCopySwingGUI.class.getName());
     // here we need the boot partition size in bytes
     private final static long BOOT_PARTITION_SIZE
-            = DLCopy.BOOT_PARTITION_SIZE * MEGA;
+            = DLCopy.EFI_PARTITION_SIZE * MEGA;
     private final static int OFFSET = 5;
     private final static int BAR_HEIGHT = 30;
     private final DLCopySwingGUI dlCopy;

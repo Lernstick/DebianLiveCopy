@@ -572,7 +572,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
         String device = storageDevice.getDevice();
         String devicePath = "/dev/" + device;
-        Partition bootPartition = storageDevice.getBootPartition();
+        Partition bootPartition = storageDevice.getEfiPartition();
         Partition exchangePartition = storageDevice.getExchangePartition();
         Partition dataPartition = storageDevice.getDataPartition();
         Partition systemPartition = storageDevice.getSystemPartition();
@@ -729,7 +729,7 @@ public class Upgrader extends InstallerOrUpgrader {
             List<Partition> partitions = storageDevice.getPartitions();
             systemPartition = partitions.get(systemPartitionNumber - 1);
 
-            DLCopy.formatBootAndSystemPartition(
+            DLCopy.formatEfiAndSystemPartition(
                     "/dev/" + bootPartition.getDeviceAndNumber(),
                     "/dev/" + systemPartition.getDeviceAndNumber());
         }
@@ -749,7 +749,7 @@ public class Upgrader extends InstallerOrUpgrader {
                 storageDevice, bootPartition, exchangePartition,
                 systemPartition, exchangePartitionFS);
         File bootMountPointFile = new File(
-                copyJobsInfo.getDestinationBootPath());
+                copyJobsInfo.getDestinationEfiPath());
         LOGGER.log(Level.INFO, "recursively deleting {0}",
                 bootMountPointFile);
         LernstickFileTools.recursiveDelete(bootMountPointFile, false);
@@ -762,8 +762,8 @@ public class Upgrader extends InstallerOrUpgrader {
         LOGGER.info("starting copy job");
         dlCopyGUI.showUpgradeFileCopy(fileCopier);
 
-        CopyJob bootFilesCopyJob = copyJobsInfo.getBootFilesCopyJob();
-        fileCopier.copy(copyJobsInfo.getBootCopyJob(),
+        CopyJob bootFilesCopyJob = copyJobsInfo.getExchangeEfiCopyJob();
+        fileCopier.copy(copyJobsInfo.getEfiCopyJob(),
                 bootFilesCopyJob, copyJobsInfo.getSystemCopyJob());
 
         // hide boot files in exchange partition
@@ -775,12 +775,12 @@ public class Upgrader extends InstallerOrUpgrader {
         }
 
         dlCopyGUI.showUpgradeUnmounting();
-        DLCopy.isolinuxToSyslinux(copyJobsInfo.getDestinationBootPath(),
+        DLCopy.isolinuxToSyslinux(copyJobsInfo.getDestinationEfiPath(),
                 dlCopyGUI);
 
         // make storage device bootable
         dlCopyGUI.showUpgradeWritingBootSector();
-        DLCopy.makeBootable(source, devicePath, bootPartition);
+        DLCopy.makeBootable(source, devicePath, systemPartition);
 
         // cleanup
         source.unmountTmpPartitions();

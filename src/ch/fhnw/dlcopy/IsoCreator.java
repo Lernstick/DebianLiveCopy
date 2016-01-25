@@ -121,7 +121,7 @@ public class IsoCreator
                 // system with a separate boot partition
                 CopyJob bootCopyJob = new CopyJob(
                         new Source[]{
-                            installationSource.getBootCopySource(),
+                            installationSource.getEfiCopySource(),
                             new Source(installationSource.getSystemPath(),
                                     "\\.disk.*")
                         },

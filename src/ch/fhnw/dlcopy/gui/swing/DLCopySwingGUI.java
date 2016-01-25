@@ -294,7 +294,7 @@ public class DLCopySwingGUI extends JFrame
 
         text = STRINGS.getString("Boot_Definition");
         String bootSize = LernstickFileTools.getDataVolumeString(
-                DLCopy.BOOT_PARTITION_SIZE * DLCopy.MEGA, 1);
+                DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA, 1);
         text = MessageFormat.format(text, bootSize);
         bootDefinitionLabel.setText(text);
 
@@ -1055,12 +1055,12 @@ public class DLCopySwingGUI extends JFrame
                         = (StorageDevice) installStorageDeviceListModel.get(
                                 selectedIndices[i]);
                 long overhead = device.getSize()
-                        - (DLCopy.BOOT_PARTITION_SIZE * DLCopy.MEGA)
+                        - (DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA)
                         - DLCopy.systemSizeEnlarged;
                 minOverhead = Math.min(minOverhead, overhead);
                 PartitionState partitionState = DLCopy.getPartitionState(
                         device.getSize(),
-                        (DLCopy.BOOT_PARTITION_SIZE * DLCopy.MEGA)
+                        (DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA)
                         + DLCopy.systemSizeEnlarged);
                 if (partitionState != PartitionState.EXCHANGE) {
                     exchange = false;
@@ -1254,7 +1254,7 @@ public class DLCopySwingGUI extends JFrame
         installShowHarddisksCheckBox = new javax.swing.JCheckBox();
         installSelectionCardPanel = new javax.swing.JPanel();
         installListPanel = new javax.swing.JPanel();
-        storageDeviceListScrollPane = new javax.swing.JScrollPane();
+        installStorageDeviceListScrollPane = new javax.swing.JScrollPane();
         installStorageDeviceList = new javax.swing.JList();
         exchangeDefinitionLabel = new javax.swing.JLabel();
         dataDefinitionLabel = new javax.swing.JLabel();
@@ -1739,7 +1739,7 @@ public class DLCopySwingGUI extends JFrame
                 installStorageDeviceListValueChanged(evt);
             }
         });
-        storageDeviceListScrollPane.setViewportView(installStorageDeviceList);
+        installStorageDeviceListScrollPane.setViewportView(installStorageDeviceList);
 
         exchangeDefinitionLabel.setFont(exchangeDefinitionLabel.getFont().deriveFont(exchangeDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, exchangeDefinitionLabel.getFont().getSize()-1));
         exchangeDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/yellow_box.png"))); // NOI18N
@@ -1974,7 +1974,7 @@ public class DLCopySwingGUI extends JFrame
                         .addComponent(installSelectionCountLabel)
                         .addGap(0, 0, Short.MAX_VALUE))
                     .addComponent(installListTabbedPane, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(installStorageDeviceListScrollPane, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
                     .addGroup(installListPanelLayout.createSequentialGroup()
                         .addGap(12, 12, 12)
                         .addGroup(installListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -1993,7 +1993,7 @@ public class DLCopySwingGUI extends JFrame
                 .addContainerGap()
                 .addComponent(installSelectionCountLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(storageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 22, Short.MAX_VALUE)
+                .addComponent(installStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 94, Short.MAX_VALUE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(exchangeDefinitionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -4893,6 +4893,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.ButtonGroup installSourceButtonGroup;
     private javax.swing.JPanel installSourcePanel;
     private javax.swing.JList installStorageDeviceList;
+    private javax.swing.JScrollPane installStorageDeviceListScrollPane;
     private javax.swing.JTabbedPane installTabbedPane;
     private javax.swing.JPanel installTargetPanel;
     private javax.swing.JScrollPane installationResultsScrollPane;
@@ -4965,7 +4966,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JButton sortDescendingButton;
     private javax.swing.JLabel stepsLabel;
     private javax.swing.JPanel stepsPanel;
-    private javax.swing.JScrollPane storageDeviceListScrollPane;
     private javax.swing.JLabel systemDefinitionLabel;
     private javax.swing.JCheckBox systemFilesCheckBox;
     private javax.swing.JPanel systemMediumPanel;

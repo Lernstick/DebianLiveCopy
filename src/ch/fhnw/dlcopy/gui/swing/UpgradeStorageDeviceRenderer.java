@@ -112,7 +112,7 @@ public class UpgradeStorageDeviceRenderer extends JPanel
 
                 // set color box
                 try {
-                    if (partition.isBootPartition()) {
+                    if (partition.isEfiPartition()) {
                         label.setIcon(DARK_BLUE_BOX);
                     } else if (partition.isExchangePartition()) {
                         label.setIcon(YELLOW_BOX);
@@ -283,7 +283,7 @@ public class UpgradeStorageDeviceRenderer extends JPanel
             LOGGER.log(Level.FINEST, "partitionType: {0}", partition.getType());
             boolean extended = partition.isExtended();
             try {
-                if (partition.isBootPartition()) {
+                if (partition.isEfiPartition()) {
                     graphics2D.setPaint(DARK_BLUE);
                 } else if (partition.isExchangePartition()) {
                     graphics2D.setPaint(Color.YELLOW);

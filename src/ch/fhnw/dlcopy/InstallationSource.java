@@ -12,23 +12,19 @@ import org.freedesktop.dbus.exceptions.DBusException;
  */
 public interface InstallationSource {
 
-    /*
-     * "Removable" USB flash drives must have their exchange partition before
-     * the boot partition. Otherwise Windows can't read the exchange partition.
-     * On the other hand, some firmware (e.g. in the Lenovo B590) only looks at
-     * the very first FAT32 partition for boot files. But only when booting in
-     * UEFI mode...
-     * Therefore we copy the files for UEFI boot also to the exchange partition
-     * when the exchange partition is FAT32 and the stick is "removable".
-     * Here we define the patterns for the different copy operations:
+    /**
+     * The pattern of files that need to be copied to the boot partition
      */
-    public final static String EXCHANGE_BOOT_COPY_PATTERN
-            = "boot.*|efi.*|live/initrd.*|live/vmlinuz.*"
-            + "|lernstick.ico|autorun.inf|.VolumeIcon.icns|\\.disk_label.*";
-    public final static String BOOT_COPY_PATTERN = EXCHANGE_BOOT_COPY_PATTERN
-            + "|isolinux.*|syslinux.*|live/memtest";
+    public final static String EFI_COPY_PATTERN
+            = "efi.*|.VolumeIcon.icns|\\.disk_label.*";
+
+    /**
+     * The pattern of files that need to be copied to the system partition
+     */
     public final static String SYSTEM_COPY_PATTERM
-            = "\\.disk/.*|live/filesystem.*|md5sum.txt";
+            = "boot.*|live/initrd.*|live/vmlinuz.*|lernstick.ico|autorun.inf"
+            + "|.VolumeIcon.icns|\\.disk_label.*|\\.disk/.*|live/filesystem.*"
+            + "|md5sum.txt|isolinux.*|syslinux.*|live/memtest";
 
     public String getDeviceName();
 
@@ -48,9 +44,9 @@ public interface InstallationSource {
 
     // Source definitions for copy jobs
     // Partitions may be mounted as needed if not already available
-    public Source getBootCopySource() throws DBusException;
+    public Source getEfiCopySource() throws DBusException;
 
-    public Source getExchangeBootCopySource() throws DBusException;
+    public Source getExchangeEfiCopySource() throws DBusException;
 
     public Source getSystemCopySource();
 
@@ -58,7 +54,7 @@ public interface InstallationSource {
 
     public Source getExchangeCopySource() throws DBusException;
 
-    public Partition getBootPartition();
+    public Partition getEfiPartition();
 
     public Partition getExchangePartition();
 
@@ -66,7 +62,14 @@ public interface InstallationSource {
 
     public String getMbrPath();
 
-    public int installSyslinux(String bootDevice) throws IOException;
+    /**
+     * installs extlinux from the source to the target boot partition
+     *
+     * @param systemPartition the target system partition
+     * @throws java.io.IOException if installing extlinux on the bootPartition
+     * fails
+     */
+    public void installExtlinux(Partition systemPartition) throws IOException;
 
     // Unmount any partitions that were mounted by any get*CopySource()
     public void unmountTmpPartitions();

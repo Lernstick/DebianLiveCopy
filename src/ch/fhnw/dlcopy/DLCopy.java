@@ -53,9 +53,9 @@ public class DLCopy {
     public static final ResourceBundle STRINGS
             = ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings");
     /**
-     * the size of the boot partition (given in MiB)
+     * the size of the efi partition (given in MiB)
      */
-    public static final long BOOT_PARTITION_SIZE = 100;
+    public static final long EFI_PARTITION_SIZE = 100;
 
     /**
      * Scale factor for system partition sizing.
@@ -206,26 +206,26 @@ public class DLCopy {
      *
      * @param source the installation source
      * @param device the device where the MBR should be installed
-     * @param bootPartition the boot partition of the device, where syslinux is
-     * installed
+     * @param systemPartition the boot partition of the device, where syslinux
+     * is installed
      * @throws IOException when an IOException occurs
      */
     public static void makeBootable(InstallationSource source, String device,
-            Partition bootPartition) throws IOException {
+            Partition systemPartition) throws IOException {
 
         // install syslinux
-        String bootDevice = "/dev/" + bootPartition.getDeviceAndNumber();
-        int exitValue = source.installSyslinux(bootDevice);
-        if (exitValue != 0) {
+        try {
+            source.installExtlinux(systemPartition);
+        } catch (IOException iOException) {
             String errorMessage = STRINGS.getString("Make_Bootable_Failed");
-            errorMessage = MessageFormat.format(
-                    errorMessage, bootDevice, PROCESS_EXECUTOR.getOutput());
+            errorMessage = MessageFormat.format(errorMessage,
+                    systemPartition, iOException.getMessage());
             LOGGER.severe(errorMessage);
             throw new IOException(errorMessage);
         }
 
         // install MBR
-        exitValue = PROCESS_EXECUTOR.executeScript(
+        int exitValue = PROCESS_EXECUTOR.executeScript(
                 "cat " + source.getMbrPath() + " > " + device + '\n'
                 + "sync");
         if (exitValue != 0) {
@@ -269,35 +269,35 @@ public class DLCopy {
                 == StorageDevice.Type.SDMemoryCard);
 
         // determine devices
-        String destinationBootDevice = null;
+        String destinationEfiDevice = null;
         String destinationExchangeDevice = null;
         String destinationDataDevice = null;
         String destinationSystemDevice;
         switch (partitionState) {
             case ONLY_SYSTEM:
-                destinationBootDevice = device + (sdDevice ? "p1" : '1');
+                destinationEfiDevice = device + (sdDevice ? "p1" : '1');
                 destinationSystemDevice = device + (sdDevice ? "p2" : '2');
                 break;
 
             case PERSISTENCE:
-                destinationBootDevice = device + (sdDevice ? "p1" : '1');
+                destinationEfiDevice = device + (sdDevice ? "p1" : '1');
                 destinationDataDevice = device + (sdDevice ? "p2" : '2');
                 destinationSystemDevice = device + (sdDevice ? "p3" : '3');
                 break;
 
             case EXCHANGE:
                 if (exchangeMB == 0) {
-                    destinationBootDevice = device + (sdDevice ? "p1" : '1');
+                    destinationEfiDevice = device + (sdDevice ? "p1" : '1');
                     destinationDataDevice = device + (sdDevice ? "p2" : '2');
                     destinationSystemDevice = device + (sdDevice ? "p3" : '3');
                 } else {
                     if (storageDevice.isRemovable()) {
                         destinationExchangeDevice
                                 = device + (sdDevice ? "p1" : '1');
-                        destinationBootDevice
+                        destinationEfiDevice
                                 = device + (sdDevice ? "p2" : '2');
                     } else {
-                        destinationBootDevice
+                        destinationEfiDevice
                                 = device + (sdDevice ? "p1" : '1');
                         destinationExchangeDevice
                                 = device + (sdDevice ? "p2" : '2');
@@ -323,10 +323,10 @@ public class DLCopy {
 
         // create all necessary partitions
         try {
-            createPartitions(storageDevice, partitionSizes, size, partitionState,
-                    destinationExchangeDevice, exchangeMB,
+            createPartitions(storageDevice, partitionSizes, size,
+                    partitionState, destinationExchangeDevice, exchangeMB,
                     exchangePartitionLabel, destinationDataDevice,
-                    destinationBootDevice, destinationSystemDevice,
+                    destinationEfiDevice, destinationSystemDevice,
                     installerOrUpgrader, dlCopyGUI);
         } catch (IOException iOException) {
             // On some Corsair Flash Voyager GT drives the first sfdisk try
@@ -373,10 +373,10 @@ public class DLCopy {
             // partitions are *NOT* correctly created the first time. Even
             // more strangely, it always works the second time. Therefore
             // we automatically retry once more in case of an error.
-            createPartitions(storageDevice, partitionSizes, size, partitionState,
-                    destinationExchangeDevice, exchangeMB,
+            createPartitions(storageDevice, partitionSizes, size,
+                    partitionState, destinationExchangeDevice, exchangeMB,
                     exchangePartitionLabel, destinationDataDevice,
-                    destinationBootDevice, destinationSystemDevice,
+                    destinationEfiDevice, destinationSystemDevice,
                     installerOrUpgrader, dlCopyGUI);
         }
 
@@ -411,7 +411,7 @@ public class DLCopy {
 
         Partition destinationBootPartition
                 = Partition.getPartitionFromDeviceAndNumber(
-                        destinationBootDevice.substring(5), systemSize);
+                        destinationEfiDevice.substring(5), systemSize);
 
         Partition destinationSystemPartition
                 = Partition.getPartitionFromDeviceAndNumber(
@@ -428,7 +428,7 @@ public class DLCopy {
 
         // make storage device bootable
         installerOrUpgrader.showWritingBootSector();
-        makeBootable(source, device, destinationBootPartition);
+        makeBootable(source, device, destinationSystemPartition);
 
         if (!umount(destinationBootPartition, dlCopyGUI)) {
             String errorMessage = "could not umount destination boot partition";
@@ -661,11 +661,11 @@ public class DLCopy {
         String destinationSystemPath
                 = destinationSystemPartition.mount().getMountPath();
 
-        Source bootCopyJobSource = source.getBootCopySource();
+        Source efiCopyJobSource = source.getEfiCopySource();
         Source systemCopyJobSource = source.getSystemCopySource();
 
         CopyJob bootCopyJob = new CopyJob(
-                new Source[]{bootCopyJobSource},
+                new Source[]{efiCopyJobSource},
                 new String[]{destinationBootPath});
 
         // Only if we have a FAT32 exchange partition on a removable media we
@@ -678,7 +678,7 @@ public class DLCopy {
                 String destinationExchangePath
                         = destinationExchangePartition.mount().getMountPath();
                 bootFilesCopyJob = new CopyJob(
-                        new Source[]{source.getExchangeBootCopySource()},
+                        new Source[]{source.getExchangeEfiCopySource()},
                         new String[]{destinationExchangePath});
             }
         }
@@ -796,21 +796,21 @@ public class DLCopy {
     }
 
     /**
-     * formats the boot and system partition
+     * formats the efi and system partition
      *
-     * @param bootDevice the boot device
+     * @param efiDevice the efi device
      * @param systemDevice the system device
      * @throws IOException
      */
-    public static void formatBootAndSystemPartition(
-            String bootDevice, String systemDevice) throws IOException {
+    public static void formatEfiAndSystemPartition(
+            String efiDevice, String systemDevice) throws IOException {
 
         int exitValue = PROCESS_EXECUTOR.executeProcess(
-                "/sbin/mkfs.vfat", "-n", Partition.BOOT_LABEL, bootDevice);
+                "/sbin/mkfs.vfat", "-n", Partition.EFI_LABEL, efiDevice);
         if (exitValue != 0) {
             LOGGER.severe(PROCESS_EXECUTOR.getOutput());
             String errorMessage
-                    = STRINGS.getString("Error_Create_Boot_Partition");
+                    = STRINGS.getString("Error_Create_EFI_Partition");
             LOGGER.severe(errorMessage);
             throw new IOException(errorMessage);
         }
@@ -943,6 +943,30 @@ public class DLCopy {
         }
     }
 
+    /**
+     * creates a syslinux directory on an EFI partition
+     *
+     * @param efiPartition the EFI partition
+     * @return the path to the newly created syslinux directory
+     * @throws IOException if creating the syslinux directory fails
+     */
+    public static String createSyslinuxDir(Partition efiPartition)
+            throws IOException {
+        try {
+            MountInfo mountInfo = efiPartition.mount();
+            File syslinuxDir = new File(mountInfo.getMountPath() + "/syslinux");
+            if (!syslinuxDir.exists() && !syslinuxDir.mkdirs()) {
+                String errorMessage = DLCopy.STRINGS.getString(
+                        "Error_Creating_Directory");
+                errorMessage = MessageFormat.format(errorMessage, syslinuxDir);
+                throw new IOException(errorMessage);
+            }
+            return syslinuxDir.getPath();
+        } catch (DBusException ex) {
+            throw new IOException(ex);
+        }
+    }
+
     // TODO: use installation source for calculation
     private static PartitionSizes getPartitionSizes(StorageDevice storageDevice,
             boolean upgrading, RepartitionStrategy upgradeRepartitionStrategy,
@@ -950,7 +974,7 @@ public class DLCopy {
             int installExchangePartitionSize) {
         long size = storageDevice.getSize();
         long overhead = size
-                - (BOOT_PARTITION_SIZE * MEGA) - systemSizeEnlarged;
+                - (EFI_PARTITION_SIZE * MEGA) - systemSizeEnlarged;
         int overheadMB = (int) (overhead / MEGA);
         PartitionState partitionState = getPartitionState(
                 size, systemSizeEnlarged);
@@ -1000,7 +1024,7 @@ public class DLCopy {
             PartitionSizes partitionSizes, long storageDeviceSize,
             final PartitionState partitionState, String exchangeDevice,
             int exchangeMB, String exchangePartitionLabel,
-            String persistenceDevice, String bootDevice, String systemDevice,
+            String persistenceDevice, String efiDevice, String systemDevice,
             InstallerOrUpgrader installerOrUpgrader, DLCopyGUI dlCopyGUI)
             throws InterruptedException, IOException, DBusException {
 
@@ -1046,64 +1070,70 @@ public class DLCopy {
 //            }
         switch (partitionState) {
             case ONLY_SYSTEM:
-                // create two partitions: boot, system
-                String bootBorder = BOOT_PARTITION_SIZE + "MiB";
-                mkpart(partedCommandList, "0%", bootBorder);
-                mkpart(partedCommandList, bootBorder, "100%");
-                setFlag(partedCommandList, "1", "boot", "on");
+                // create two partitions: efi, system
+                String efiBorder = EFI_PARTITION_SIZE + "MiB";
+                mkpart(partedCommandList, "0%", efiBorder);
+                mkpart(partedCommandList, efiBorder, "100%");
+                setFlag(partedCommandList, "2", "boot", "on");
                 setFlag(partedCommandList, "1", "lba", "on");
                 break;
 
             case PERSISTENCE:
-                // create three partitions: boot, persistence, system
-                bootBorder = BOOT_PARTITION_SIZE + "MiB";
+                // create three partitions: efi, persistence, system
+                efiBorder = EFI_PARTITION_SIZE + "MiB";
                 String persistenceBorder
-                        = (BOOT_PARTITION_SIZE + persistenceMB) + "MiB";
-                mkpart(partedCommandList, "0%", bootBorder);
-                mkpart(partedCommandList, bootBorder, persistenceBorder);
+                        = (EFI_PARTITION_SIZE + persistenceMB) + "MiB";
+                mkpart(partedCommandList, "0%", efiBorder);
+                mkpart(partedCommandList, efiBorder, persistenceBorder);
                 mkpart(partedCommandList, persistenceBorder, "100%");
-                setFlag(partedCommandList, "1", "boot", "on");
+                setFlag(partedCommandList, "3", "boot", "on");
                 setFlag(partedCommandList, "1", "lba", "on");
                 break;
 
             case EXCHANGE:
                 if (exchangeMB == 0) {
-                    // create three partitions: boot, persistence, system
-                    bootBorder = BOOT_PARTITION_SIZE + "MiB";
+                    // create three partitions: efi, persistence, system
+                    efiBorder = EFI_PARTITION_SIZE + "MiB";
                     persistenceBorder
-                            = (BOOT_PARTITION_SIZE + persistenceMB) + "MiB";
-                    mkpart(partedCommandList, "0%", bootBorder);
-                    mkpart(partedCommandList, bootBorder, persistenceBorder);
+                            = (EFI_PARTITION_SIZE + persistenceMB) + "MiB";
+                    mkpart(partedCommandList, "0%", efiBorder);
+                    mkpart(partedCommandList, efiBorder, persistenceBorder);
                     mkpart(partedCommandList, persistenceBorder, "100%");
-                    setFlag(partedCommandList, "1", "boot", "on");
+                    setFlag(partedCommandList, "3", "boot", "on");
                     setFlag(partedCommandList, "1", "lba", "on");
 
                 } else {
                     String secondBorder;
                     if (storageDevice.isRemovable()) {
+                        // first two partitions: exchange, efi
                         String exchangeBorder = exchangeMB + "MiB";
-                        bootBorder = (exchangeMB + BOOT_PARTITION_SIZE) + "MiB";
-                        secondBorder = bootBorder;
+                        efiBorder = (exchangeMB + EFI_PARTITION_SIZE) + "MiB";
+                        secondBorder = efiBorder;
                         mkpart(partedCommandList, "0%", exchangeBorder);
-                        mkpart(partedCommandList, exchangeBorder, bootBorder);
+                        mkpart(partedCommandList, exchangeBorder, efiBorder);
                         setFlag(partedCommandList, "2", "boot", "on");
                     } else {
-                        bootBorder = BOOT_PARTITION_SIZE + "MiB";
+                        // first two partitions: efi, exchange
+                        efiBorder = EFI_PARTITION_SIZE + "MiB";
                         String exchangeBorder
-                                = (BOOT_PARTITION_SIZE + exchangeMB) + "MiB";
+                                = (EFI_PARTITION_SIZE + exchangeMB) + "MiB";
                         secondBorder = exchangeBorder;
-                        mkpart(partedCommandList, "0%", bootBorder);
-                        mkpart(partedCommandList, bootBorder, exchangeBorder);
+                        mkpart(partedCommandList, "0%", efiBorder);
+                        mkpart(partedCommandList, efiBorder, exchangeBorder);
                         setFlag(partedCommandList, "1", "boot", "on");
                     }
                     if (persistenceMB == 0) {
+                        // third partitions: system
                         mkpart(partedCommandList, secondBorder, "100%");
+                        setFlag(partedCommandList, "3", "boot", "on");
                     } else {
-                        persistenceBorder = (BOOT_PARTITION_SIZE
+                        // last two partitions: persistence, system
+                        persistenceBorder = (EFI_PARTITION_SIZE
                                 + exchangeMB + persistenceMB) + "MiB";
                         mkpart(partedCommandList,
                                 secondBorder, persistenceBorder);
                         mkpart(partedCommandList, persistenceBorder, "100%");
+                        setFlag(partedCommandList, "4", "boot", "on");
                     }
                     setFlag(partedCommandList, "1", "lba", "on");
                     setFlag(partedCommandList, "2", "lba", "on");
@@ -1138,15 +1168,12 @@ public class DLCopy {
         // otherwise USB flash drives previously written with a dd'ed ISO
         // will NOT work!
         //
-        // NOTE 1:
         // "parted <device> mklabel msdos" did NOT work correctly here!
         // (the partition table type was still unknown and booting failed)
-        //
-        // NOTE 2:
-        // "--print-reply" is needed in the call to dbus-send below to make
-        // the call synchronous
         int exitValue;
         if (DbusTools.DBUS_VERSION == DbusTools.DbusVersion.V1) {
+            // "--print-reply" is needed in the call to dbus-send below to make
+            // the call synchronous
             exitValue = PROCESS_EXECUTOR.executeProcess("dbus-send",
                     "--system", "--print-reply",
                     "--dest=org.freedesktop.UDisks",
@@ -1218,14 +1245,14 @@ public class DLCopy {
         // safety wait so that new partitions are known to the system
         TimeUnit.SECONDS.sleep(7);
 
-        // The partition types assigned by parted are mosty garbage.
+        // The partition types assigned by parted are mostly garbage.
         // We must fix them here...
         // The boot partition is actually formatted with FAT32, but "hidden"
         // by using the EFI partition type.
         switch (partitionState) {
             case ONLY_SYSTEM:
                 // create two partitions:
-                //  1) boot (EFI)
+                //  1) efi (EFI)
                 //  2) system (Linux)
                 PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                         "--id", device, "1", "ef");
@@ -1235,7 +1262,7 @@ public class DLCopy {
 
             case PERSISTENCE:
                 // create three partitions:
-                //  1) boot (EFI)
+                //  1) efi (EFI)
                 //  2) persistence (Linux)
                 //  3) system (Linux)
                 PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
@@ -1249,7 +1276,7 @@ public class DLCopy {
             case EXCHANGE:
                 if (exchangeMB == 0) {
                     // create three partitions:
-                    //  1) boot (EFI)
+                    //  1) efi (EFI)
                     //  2) persistence (Linux)
                     //  3) system (Linux)
                     PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
@@ -1272,13 +1299,13 @@ public class DLCopy {
 
                     if (storageDevice.isRemovable()) {
                         //  1) exchange (exFAT, FAT32 or NTFS)
-                        //  2) boot (EFI)
+                        //  2) efi (EFI)
                         PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                                 "--id", device, "1", exchangePartitionID);
                         PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                                 "--id", device, "2", "ef");
                     } else {
-                        //  1) boot (EFI)
+                        //  1) efi (EFI)
                         //  2) exchange (exFAT, FAT32 or NTFS)
                         PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
                                 "--id", device, "1", "ef");
@@ -1311,14 +1338,14 @@ public class DLCopy {
         // create file systems
         switch (partitionState) {
             case ONLY_SYSTEM:
-                formatBootAndSystemPartition(bootDevice, systemDevice);
+                formatEfiAndSystemPartition(efiDevice, systemDevice);
                 return;
 
             case PERSISTENCE:
                 formatPersistencePartition(persistenceDevice,
                         installerOrUpgrader.getDataPartitionFileSystem(),
                         dlCopyGUI);
-                formatBootAndSystemPartition(bootDevice, systemDevice);
+                formatEfiAndSystemPartition(efiDevice, systemDevice);
                 return;
 
             case EXCHANGE:
@@ -1333,7 +1360,7 @@ public class DLCopy {
                             installerOrUpgrader.getDataPartitionFileSystem(),
                             dlCopyGUI);
                 }
-                formatBootAndSystemPartition(bootDevice, systemDevice);
+                formatEfiAndSystemPartition(efiDevice, systemDevice);
                 return;
 
             default:
@@ -1347,7 +1374,7 @@ public class DLCopy {
     private static void copyExchangeBootAndSystem(InstallationSource source,
             FileCopier fileCopier, StorageDevice storageDevice,
             Partition destinationExchangePartition,
-            Partition destinationBootPartition,
+            Partition destinationEfiPartition,
             Partition destinationSystemPartition,
             InstallerOrUpgrader installerOrUpgrader, DLCopyGUI dlCopyGUI)
             throws InterruptedException, IOException, DBusException {
@@ -1366,23 +1393,23 @@ public class DLCopy {
             }
         }
 
-        // define CopyJobs for boot and system parititions
+        // define CopyJobs for efi and system parititions
         CopyJobsInfo copyJobsInfo = prepareBootAndSystemCopyJobs(source,
-                storageDevice, destinationBootPartition,
+                storageDevice, destinationEfiPartition,
                 destinationExchangePartition, destinationSystemPartition,
                 installerOrUpgrader.getExhangePartitionFileSystem());
 
         // copy all files
         installerOrUpgrader.showCopyingFiles(fileCopier);
 
-        CopyJob bootFilesCopyJob = copyJobsInfo.getBootFilesCopyJob();
-        fileCopier.copy(exchangeCopyJob, bootFilesCopyJob,
-                copyJobsInfo.getBootCopyJob(), copyJobsInfo.getSystemCopyJob());
+        CopyJob efiFilesCopyJob = copyJobsInfo.getExchangeEfiCopyJob();
+        fileCopier.copy(exchangeCopyJob, efiFilesCopyJob,
+                copyJobsInfo.getEfiCopyJob(), copyJobsInfo.getSystemCopyJob());
 
-        if (bootFilesCopyJob != null) {
+        if (efiFilesCopyJob != null) {
             // The exchange partition is FAT32 on a removable media and
-            // therefore we copied the boot files not only to the boot partition
-            // but also to the exchange partition.
+            // therefore we have to copy the efi files not only to the efi
+            // partition but also to the exchange partition.
 
             if (destinationExchangePath == null) {
                 // The user did not select to copy the exchange partition but it
@@ -1393,7 +1420,7 @@ public class DLCopy {
             }
 
             // hide boot files
-            hideBootFiles(bootFilesCopyJob, destinationExchangePath);
+            hideBootFiles(efiFilesCopyJob, destinationExchangePath);
 
             // change data partition mode (if needed)
             if (installerOrUpgrader instanceof Installer) {
@@ -1413,19 +1440,20 @@ public class DLCopy {
             destinationExchangePartition.umount();
         }
 
-        String destinationBootPath = copyJobsInfo.getDestinationBootPath();
+        String destinationSystemPath = copyJobsInfo.getDestinationSystemPath();
         // isolinux -> syslinux renaming
         // !!! don't check here for boot storage device type !!!
         // (usb flash drives with an isohybrid image also contain the
         //  isolinux directory)
-        isolinuxToSyslinux(destinationBootPath, dlCopyGUI);
+        isolinuxToSyslinux(destinationSystemPath, dlCopyGUI);
 
         // change data partition mode on target (if needed)
         if (installerOrUpgrader instanceof Installer) {
             Installer installer = (Installer) installerOrUpgrader;
             DataPartitionMode dataPartitionMode
                     = installer.getDataPartitionMode();
-            setDataPartitionMode(source, dataPartitionMode, destinationBootPath);
+            setDataPartitionMode(source, dataPartitionMode,
+                    destinationSystemPath);
         }
     }
 

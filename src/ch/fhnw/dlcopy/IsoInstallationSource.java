@@ -26,6 +26,11 @@ public class IsoInstallationSource implements InstallationSource {
     private String mediaPath;
     private String rootFsPath = null;
 
+    /**
+     * Creates a new IsoInstallationSource
+     * @param imagePath the path to the ISO image
+     * @param processExecutor the ProcessExecutor to use
+     */
     public IsoInstallationSource(String imagePath,
             ProcessExecutor processExecutor) {
         this.imagePath = imagePath;
@@ -84,15 +89,15 @@ public class IsoInstallationSource implements InstallationSource {
     }
 
     @Override
-    public Source getBootCopySource() {
+    public Source getEfiCopySource() {
         return new Source(getSystemPath(),
-                InstallationSource.BOOT_COPY_PATTERN);
+                InstallationSource.EFI_COPY_PATTERN);
     }
 
     @Override
-    public Source getExchangeBootCopySource() {
+    public Source getExchangeEfiCopySource() {
         return new Source(getSystemPath(),
-                InstallationSource.EXCHANGE_BOOT_COPY_PATTERN);
+                InstallationSource.EFI_COPY_PATTERN);
     }
 
     @Override
@@ -112,7 +117,7 @@ public class IsoInstallationSource implements InstallationSource {
     }
 
     @Override
-    public Partition getBootPartition() {
+    public Partition getEfiPartition() {
         return null;
     }
 
@@ -133,12 +138,17 @@ public class IsoInstallationSource implements InstallationSource {
     }
 
     @Override
-    public int installSyslinux(String bootDevice) throws IOException {
+    public void installExtlinux(Partition bootPartition) throws IOException {
         mountSystemImageIfNeeded();
         processExecutor.executeProcess("sync");
-        return processExecutor.executeProcess(true, true,
-                "chroot", rootFsPath,
-                "syslinux", "-d", "syslinux", bootDevice);
+        String syslinuxDir = DLCopy.createSyslinuxDir(bootPartition);
+        int returnValue = processExecutor.executeProcess(true, true,
+                "chroot", rootFsPath, "extlinux", "-i", syslinuxDir);
+        if (returnValue != 0) {
+            throw new IOException(
+                    "extlinux failed with the following output: "
+                    + processExecutor.getOutput());
+        }
     }
 
     @Override

@@ -9,41 +9,41 @@ import ch.fhnw.filecopier.CopyJob;
  */
 public class CopyJobsInfo {
 
-    private final String destinationBootPath;
+    private final String destinationEfiPath;
     private final String destinationSystemPath;
-    private final CopyJob bootCopyJob;
-    private final CopyJob bootFilesCopyJob;
+    private final CopyJob efiCopyJob;
+    private final CopyJob exchangeEfiCopyJob;
     private final CopyJob systemCopyJob;
 
     /**
      * creates a new CopyJobsInfo
      *
-     * @param destinationBootPath the path to the destination boot partition
+     * @param destinationEfiPath the path to the destination EFI partition
      * mount point
      * @param destinationSystemPath the path to the destination system partition
      * mount point
-     * @param bootCopyJob the CopyJob for the boot partition
-     * @param bootFilesCopyJob the CopyJob for boot files on the exchange
+     * @param efiCopyJob the CopyJob for the EFI partition
+     * @param exchangeEfiCopyJob the CopyJob for EFI files on the exchange
      * partition
      * @param systemCopyJob the CopyJob for the system partition
      */
-    public CopyJobsInfo(String destinationBootPath,
-            String destinationSystemPath, CopyJob bootCopyJob,
-            CopyJob bootFilesCopyJob, CopyJob systemCopyJob) {
-        this.destinationBootPath = destinationBootPath;
+    public CopyJobsInfo(String destinationEfiPath,
+            String destinationSystemPath, CopyJob efiCopyJob,
+            CopyJob exchangeEfiCopyJob, CopyJob systemCopyJob) {
+        this.destinationEfiPath = destinationEfiPath;
         this.destinationSystemPath = destinationSystemPath;
-        this.bootCopyJob = bootCopyJob;
-        this.bootFilesCopyJob = bootFilesCopyJob;
+        this.efiCopyJob = efiCopyJob;
+        this.exchangeEfiCopyJob = exchangeEfiCopyJob;
         this.systemCopyJob = systemCopyJob;
     }
 
     /**
-     * returns the path to the destination boot partition mount point
+     * returns the path to the destination EFI partition mount point
      *
-     * @return the path to the destination boot partition mount point
+     * @return the path to the destination EFI partition mount point
      */
-    public String getDestinationBootPath() {
-        return destinationBootPath;
+    public String getDestinationEfiPath() {
+        return destinationEfiPath;
     }
 
     /**
@@ -56,21 +56,21 @@ public class CopyJobsInfo {
     }
 
     /**
-     * returns the CopyJob for the boot partition
+     * returns the CopyJob for the EFI partition
      *
-     * @return the CopyJob for the boot partition
+     * @return the CopyJob for the EFI partition
      */
-    public CopyJob getBootCopyJob() {
-        return bootCopyJob;
+    public CopyJob getEfiCopyJob() {
+        return efiCopyJob;
     }
 
     /**
-     * returns the CopyJob for boot files on the exchange partition
+     * returns the CopyJob for EFI files on the exchange partition
      *
-     * @return the CopyJob for boot files on the exchange partition
+     * @return the CopyJob for EFI files on the exchange partition
      */
-    public CopyJob getBootFilesCopyJob() {
-        return bootFilesCopyJob;
+    public CopyJob getExchangeEfiCopyJob() {
+        return exchangeEfiCopyJob;
     }
 
     /**

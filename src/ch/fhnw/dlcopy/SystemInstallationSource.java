@@ -54,7 +54,7 @@ public final class SystemInstallationSource implements InstallationSource {
         LOGGER.log(Level.INFO,
                 "boot data partition: {0}", dataPartition);
 
-        bootPartition = storageDevice.getBootPartition();
+        bootPartition = storageDevice.getEfiPartition();
         LOGGER.log(Level.INFO,
                 "boot boot partition: {0}", bootPartition);
 
@@ -114,25 +114,25 @@ public final class SystemInstallationSource implements InstallationSource {
     }
 
     @Override
-    public Source getBootCopySource() throws DBusException {
+    public Source getEfiCopySource() throws DBusException {
         if (hasBootPartition()) {
             mountBootIfNeeded();
-            return new Source(bootPath, InstallationSource.BOOT_COPY_PATTERN);
+            return new Source(bootPath, InstallationSource.EFI_COPY_PATTERN);
         } else {
             return new Source(getSystemPath(),
-                    InstallationSource.BOOT_COPY_PATTERN);
+                    InstallationSource.EFI_COPY_PATTERN);
         }
     }
 
     @Override
-    public Source getExchangeBootCopySource() throws DBusException {
+    public Source getExchangeEfiCopySource() throws DBusException {
         if (hasBootPartition()) {
             mountBootIfNeeded();
             return new Source(bootPath,
-                    InstallationSource.EXCHANGE_BOOT_COPY_PATTERN);
+                    InstallationSource.EFI_COPY_PATTERN);
         } else {
             return new Source(getSystemPath(),
-                    InstallationSource.EXCHANGE_BOOT_COPY_PATTERN);
+                    InstallationSource.EFI_COPY_PATTERN);
         }
     }
 
@@ -158,7 +158,7 @@ public final class SystemInstallationSource implements InstallationSource {
     }
 
     @Override
-    public Partition getBootPartition() {
+    public Partition getEfiPartition() {
         return bootPartition;
     }
 
@@ -178,9 +178,15 @@ public final class SystemInstallationSource implements InstallationSource {
     }
 
     @Override
-    public int installSyslinux(String bootDevice) {
-        return processExecutor.executeProcess(true, true,
-                "syslinux", "-d", "syslinux", bootDevice);
+    public void installExtlinux(Partition bootPartition) throws IOException {
+        String syslinuxDir = DLCopy.createSyslinuxDir(bootPartition);
+        int returnValue = processExecutor.executeProcess(true, true,
+                "extlinux", "-i", syslinuxDir);
+        if (returnValue != 0) {
+            throw new IOException(
+                    "extlinux failed with the following output: "
+                    + processExecutor.getOutput());
+        }
     }
 
     @Override
@@ -219,5 +225,4 @@ public final class SystemInstallationSource implements InstallationSource {
             isExchangeTmpMounted = bootMountInfo.alreadyMounted();
         }
     }
-
 }
