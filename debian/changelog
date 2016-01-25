@@ -1,3 +1,16 @@
+dlcopy (201601252025-1) lernstick-8; urgency=medium
+
+  * [47d9fa] code cleanup
+  * [32fea5] code cleanup (mainly moved Repairer into its own class)
+  * [40bdfd] massive code cleanup (needs proper testing!)
+  * [58b2cb] another code cleanup (mostly tested)
+  * [7d36fd] another code cleanup (moved StorageDeviceListUpdaters into separate classes)
+  * [6445ad] trivial code cleanups
+  * [6680c8] added GUI for install source selection (internal updates still missing...)
+  * [0f8c98] changed partitioning scheme (efi partition, bootable system partition, location of boot files, ...)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Mon, 25 Jan 2016 20:25:23 +0100
+
 dlcopy (201511221708-1) lernstick-8; urgency=medium
 
   * [c4c0f7] moved Installer into its own class
