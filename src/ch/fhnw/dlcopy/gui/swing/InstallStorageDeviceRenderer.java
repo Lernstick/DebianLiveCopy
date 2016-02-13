@@ -94,7 +94,7 @@ public class InstallStorageDeviceRenderer extends JPanel
             storageDevice.getRaidDeviceCount();
             stringBuilder.append(" ");
             stringBuilder.append(STRINGS.getString("Devices"));
-            stringBuilder.append(")");
+            stringBuilder.append(") ");
         } else {
             // the vendor string is sometimes empty
             String vendor = storageDevice.getVendor();
