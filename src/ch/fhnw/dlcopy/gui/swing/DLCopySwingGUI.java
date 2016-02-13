@@ -28,15 +28,12 @@ import ch.fhnw.jbackpack.RdiffBackupRestore;
 import ch.fhnw.jbackpack.chooser.SelectBackupDirectoryDialog;
 import ch.fhnw.util.DbusTools;
 import ch.fhnw.util.LernstickFileTools;
-import ch.fhnw.util.ModalDialogHandler;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
 import java.applet.Applet;
 import java.applet.AudioClip;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
@@ -63,12 +60,7 @@ import javax.swing.filechooser.FileFilter;
 import javax.swing.table.TableColumn;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
-import javax.xml.parsers.ParserConfigurationException;
-import org.freedesktop.DBus;
-import org.freedesktop.dbus.DBusConnection;
-import org.freedesktop.dbus.UInt64;
 import org.freedesktop.dbus.exceptions.DBusException;
-import org.xml.sax.SAXException;
 
 /**
  * Installs Debian Live to a USB flash drive
@@ -480,13 +472,6 @@ public class DLCopySwingGUI extends JFrame
         //pack();
         setSize(950, 550);
         setLocationRelativeTo(null);
-    }
-
-    private void setSpinnerColums(JSpinner spinner, int columns) {
-        JComponent editor = spinner.getEditor();
-        JFormattedTextField tf
-                = ((JSpinner.DefaultEditor) editor).getTextField();
-        tf.setColumns(columns);
     }
 
     @Override
@@ -982,6 +967,61 @@ public class DLCopySwingGUI extends JFrame
                         STRINGS.getString("Error"), JOptionPane.ERROR_MESSAGE);
             }
         });
+    }
+
+    /**
+     * sets the text on a JLabel to display info about a StorageDevice
+     *
+     * @param label the JLabel where to set the text
+     * @param storageDevice the given StorageDevice
+     */
+    public static void setStorageDeviceLabel(
+            JLabel label, StorageDevice storageDevice) {
+        StringBuilder stringBuilder = new StringBuilder();
+        stringBuilder.append("<html><b>");
+        if (storageDevice.isRaid()) {
+            stringBuilder.append("RAID (");
+            storageDevice.getRaidLevel();
+            stringBuilder.append(", ");
+            storageDevice.getRaidDeviceCount();
+            stringBuilder.append(" ");
+            stringBuilder.append(STRINGS.getString("Devices"));
+            stringBuilder.append(")");
+        } else {
+            String vendor = storageDevice.getVendor();
+            if ((vendor != null) && !vendor.isEmpty()) {
+                stringBuilder.append(vendor);
+                stringBuilder.append(" ");
+            }
+            String model = storageDevice.getModel();
+            if ((model != null) && !model.isEmpty()) {
+                stringBuilder.append(model);
+            }
+        }
+        stringBuilder.append("</b>, ");
+        stringBuilder.append(STRINGS.getString("Size"));
+        stringBuilder.append(": ");
+        stringBuilder.append(LernstickFileTools.getDataVolumeString(
+                storageDevice.getSize(), 1));
+        stringBuilder.append(", ");
+        String revision = storageDevice.getRevision();
+        if ((revision != null) && !revision.isEmpty()) {
+            stringBuilder.append(STRINGS.getString("Revision"));
+            stringBuilder.append(": ");
+            stringBuilder.append(revision);
+            stringBuilder.append(", ");
+        }
+        String serial = storageDevice.getSerial();
+        if ((serial != null) && !serial.isEmpty()) {
+            stringBuilder.append(STRINGS.getString("Serial"));
+            stringBuilder.append(": ");
+            stringBuilder.append(serial);
+            stringBuilder.append(", ");
+        }
+        stringBuilder.append("&#47;dev&#47;");
+        stringBuilder.append(storageDevice.getDevice());
+        stringBuilder.append("</html>");
+        label.setText(stringBuilder.toString());
     }
 
     /**
@@ -3718,6 +3758,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private void isoSourceRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_isoSourceRadioButtonActionPerformed
         updateInstallSourceGUI();
     }//GEN-LAST:event_isoSourceRadioButtonActionPerformed
+
+    private void setSpinnerColums(JSpinner spinner, int columns) {
+        JComponent editor = spinner.getEditor();
+        JFormattedTextField tf
+                = ((JSpinner.DefaultEditor) editor).getTextField();
+        tf.setColumns(columns);
+    }
 
     private void updateInstallSourceGUI() {
         boolean isoSource = isoSourceRadioButton.isSelected();

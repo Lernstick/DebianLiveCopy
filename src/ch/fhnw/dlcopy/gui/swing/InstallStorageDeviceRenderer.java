@@ -85,22 +85,39 @@ public class InstallStorageDeviceRenderer extends JPanel
                 "maxStorageDeviceSize = {0}", maxStorageDeviceSize);
 
         // set device text and icon based on storage type
-        String deviceText;
-        long storageSize = storageDevice.getSize();
-        StorageDevice.Type deviceType = storageDevice.getType();
-        switch (deviceType) {
-            case SDMemoryCard:
-                deviceText = storageDevice.getModel() + " "
-                        + LernstickFileTools.getDataVolumeString(storageSize, 1)
-                        + " (/dev/" + storageDevice.getDevice() + ")";
-                break;
-            default:
-                deviceText = storageDevice.getVendor() + " "
-                        + storageDevice.getModel() + ", "
-                        + LernstickFileTools.getDataVolumeString(storageSize, 1)
-                        + " (/dev/" + storageDevice.getDevice() + ")";
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (storageDevice.isRaid()) {
+            stringBuilder.append("RAID (");
+            storageDevice.getRaidLevel();
+            stringBuilder.append(", ");
+            storageDevice.getRaidDeviceCount();
+            stringBuilder.append(" ");
+            stringBuilder.append(STRINGS.getString("Devices"));
+            stringBuilder.append(")");
+        } else {
+            // the vendor string is sometimes empty
+            String vendor = storageDevice.getVendor();
+            if ((vendor != null) && !vendor.isEmpty()) {
+                stringBuilder.append(vendor);
+                stringBuilder.append(" ");
+            }
+
+            stringBuilder.append(storageDevice.getModel());
+            stringBuilder.append(", ");
         }
 
+        long storageSize = storageDevice.getSize();
+        String sizeString
+                = LernstickFileTools.getDataVolumeString(storageSize, 1);
+        stringBuilder.append(sizeString);
+
+        stringBuilder.append(" (/dev/");
+        stringBuilder.append(storageDevice.getDevice());
+        stringBuilder.append(")");
+        String deviceText = stringBuilder.toString();
+
+        StorageDevice.Type deviceType = storageDevice.getType();
         switch (deviceType) {
             case HardDrive:
                 iconLabel.setIcon(new ImageIcon(getClass().getResource(
@@ -139,9 +156,9 @@ public class InstallStorageDeviceRenderer extends JPanel
         if (partitionState == PartitionState.TOO_SMALL) {
             rectangleTop = drawTopText(graphics2D, deviceText);
         } else {
-            String text = STRINGS.getString("Proposed_Partitioning");
-            text = MessageFormat.format(text, deviceText);
-            rectangleTop = drawTopText(graphics2D, text);
+            // String text = STRINGS.getString("Proposed_Partitioning");
+            // text = MessageFormat.format(text, deviceText);
+            rectangleTop = drawTopText(graphics2D, deviceText);
         }
 
         // paint usb stick rectangle

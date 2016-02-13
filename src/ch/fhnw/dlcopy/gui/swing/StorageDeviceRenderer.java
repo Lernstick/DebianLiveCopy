@@ -8,9 +8,9 @@ package ch.fhnw.dlcopy.gui.swing;
 public interface StorageDeviceRenderer {
 
     /**
-     * sets the size of the largest USB stick
+     * sets the size of the largest storage device
      *
-     * @param maxSize the size of the largest USB stick
+     * @param maxSize the size of the largest storage device
      */
     public void setMaxSize(long maxSize);
 }

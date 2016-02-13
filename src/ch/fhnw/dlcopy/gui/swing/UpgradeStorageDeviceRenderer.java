@@ -94,7 +94,8 @@ public class UpgradeStorageDeviceRenderer extends JPanel
             }
 
             // set device text
-            fillDeviceText(descriptionLabel, storageDevice);
+            DLCopySwingGUI.setStorageDeviceLabel(
+                    descriptionLabel, storageDevice);
 
             // partition caption
             partitionCaptionPanel.removeAll();
@@ -438,33 +439,6 @@ public class UpgradeStorageDeviceRenderer extends JPanel
         add(separator, gridBagConstraints);
     }// </editor-fold>//GEN-END:initComponents
 
-    private void fillDeviceText(JLabel label, StorageDevice storageDevice) {
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("<html><b>");
-        String vendor = storageDevice.getVendor();
-        if (!vendor.isEmpty()) {
-            stringBuilder.append(vendor);
-            stringBuilder.append(" ");
-        }
-        stringBuilder.append(storageDevice.getModel());
-        stringBuilder.append("</b>, ");
-        stringBuilder.append(STRINGS.getString("Size"));
-        stringBuilder.append(": ");
-        stringBuilder.append(LernstickFileTools.getDataVolumeString(
-                storageDevice.getSize(), 1));
-        stringBuilder.append(", ");
-        stringBuilder.append(STRINGS.getString("Revision"));
-        stringBuilder.append(": ");
-        stringBuilder.append(storageDevice.getRevision());
-        stringBuilder.append(", ");
-        stringBuilder.append(STRINGS.getString("Serial"));
-        stringBuilder.append(": ");
-        stringBuilder.append(storageDevice.getSerial());
-        stringBuilder.append(", &#47;dev&#47;");
-        stringBuilder.append(storageDevice.getDevice());
-        stringBuilder.append("</html>");
-        label.setText(stringBuilder.toString());
-    }
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel descriptionLabel;
     private javax.swing.JLabel iconLabel;
