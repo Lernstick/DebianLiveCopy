@@ -89,9 +89,9 @@ public class InstallStorageDeviceRenderer extends JPanel
 
         if (storageDevice.isRaid()) {
             stringBuilder.append("RAID (");
-            storageDevice.getRaidLevel();
+            stringBuilder.append(storageDevice.getRaidLevel());
             stringBuilder.append(", ");
-            storageDevice.getRaidDeviceCount();
+            stringBuilder.append(storageDevice.getRaidDeviceCount());
             stringBuilder.append(" ");
             stringBuilder.append(STRINGS.getString("Devices"));
             stringBuilder.append(") ");

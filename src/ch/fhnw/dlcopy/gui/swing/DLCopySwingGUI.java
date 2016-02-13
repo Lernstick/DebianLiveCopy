@@ -981,9 +981,9 @@ public class DLCopySwingGUI extends JFrame
         stringBuilder.append("<html><b>");
         if (storageDevice.isRaid()) {
             stringBuilder.append("RAID (");
-            storageDevice.getRaidLevel();
+            stringBuilder.append(storageDevice.getRaidLevel());
             stringBuilder.append(", ");
-            storageDevice.getRaidDeviceCount();
+            stringBuilder.append(storageDevice.getRaidDeviceCount());
             stringBuilder.append(" ");
             stringBuilder.append(STRINGS.getString("Devices"));
             stringBuilder.append(")");
