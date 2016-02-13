@@ -1,3 +1,9 @@
+dlcopy (201602131000-1) lernstick-8; urgency=medium
+
+  * [0e6f77] added support for RAID
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 13 Feb 2016 10:00:31 +0100
+
 dlcopy (201601252025-1) lernstick-8; urgency=medium
 
   * [47d9fa] code cleanup
