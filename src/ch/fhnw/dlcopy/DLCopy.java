@@ -260,7 +260,7 @@ public class DLCopy {
         String device = "/dev/" + storageDevice.getDevice();
         long size = storageDevice.getSize();
         PartitionSizes partitionSizes
-                = installerOrUpgrader.getPartitions(storageDevice);
+                = installerOrUpgrader.getPartitionSizes(storageDevice);
         int exchangeMB = partitionSizes.getExchangeMB();
         PartitionState partitionState
                 = getPartitionState(size, systemSizeEnlarged);

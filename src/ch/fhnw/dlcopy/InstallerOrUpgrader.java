@@ -82,7 +82,8 @@ public abstract class InstallerOrUpgrader
      * @param storageDevice the StorageDevice to check
      * @return the partition sizes on a storage device
      */
-    public abstract PartitionSizes getPartitions(StorageDevice storageDevice);
+    public abstract PartitionSizes getPartitionSizes(
+            StorageDevice storageDevice);
 
     /**
      * shows that file systems are being created

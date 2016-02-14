@@ -28,19 +28,23 @@ public class IsoInstallationSource implements InstallationSource {
 
     /**
      * Creates a new IsoInstallationSource
+     *
      * @param imagePath the path to the ISO image
      * @param processExecutor the ProcessExecutor to use
+     * @throws java.io.IOException if the ISO has no extlinux installed
      */
     public IsoInstallationSource(String imagePath,
-            ProcessExecutor processExecutor) {
+            ProcessExecutor processExecutor) throws IOException {
         this.imagePath = imagePath;
         this.processExecutor = processExecutor;
-        this.version = validateIsoImage();
+        this.version = getDebianLiveVersion();
 
         if (version == null) {
             throw new IllegalStateException(imagePath
                     + " is not a valid LernStick distribution image");
         }
+        
+        checkForExtlinux();
 
         LOGGER.log(Level.INFO, "Install from ISO image at '{0}'", mediaPath);
         LOGGER.log(Level.INFO, "ISO system version {0}", version);
@@ -142,8 +146,15 @@ public class IsoInstallationSource implements InstallationSource {
         mountSystemImageIfNeeded();
         processExecutor.executeProcess("sync");
         String syslinuxDir = DLCopy.createSyslinuxDir(bootPartition);
+        String rootFsSyslinuxDir = LernstickFileTools.createTempDirectory(
+                new File(rootFsPath + "/tmp"), "syslinux").getPath();
+        processExecutor.executeProcess(
+                "mount", "-o", "bind", syslinuxDir, rootFsSyslinuxDir);
+        String chrootSyslinuxDir
+                = rootFsSyslinuxDir.substring(rootFsPath.length());
         int returnValue = processExecutor.executeProcess(true, true,
-                "chroot", rootFsPath, "extlinux", "-i", syslinuxDir);
+                "chroot", rootFsPath, "extlinux", "-i", chrootSyslinuxDir);
+        processExecutor.executeProcess("umount", rootFsSyslinuxDir);
         if (returnValue != 0) {
             throw new IOException(
                     "extlinux failed with the following output: "
@@ -165,7 +176,7 @@ public class IsoInstallationSource implements InstallationSource {
                         rootFsPath, rootFsPath, rootFsPath,
                         rootFsPath, rootFsPath, rootFsPath));
             } catch (IOException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, "", ex);
             }
             rootFsPath = null;
         }
@@ -174,7 +185,7 @@ public class IsoInstallationSource implements InstallationSource {
                 processExecutor.executeScript(String.format("umount %s\n",
                         mediaPath));
             } catch (IOException ex) {
-                LOGGER.log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, "", ex);
             }
             mediaPath = null;
         }
@@ -219,9 +230,10 @@ public class IsoInstallationSource implements InstallationSource {
         }
     }
 
-    private DebianLiveVersion validateIsoImage() {
+    private DebianLiveVersion getDebianLiveVersion() {
         mountIsoImageIfNeeded();
         if (mediaPath == null) {
+            unmountTmpPartitions();
             return null;
         }
         try {
@@ -229,6 +241,7 @@ public class IsoInstallationSource implements InstallationSource {
             if (!infoFile.exists()) {
                 LOGGER.severe("Can't find .disk/info file"
                         + "- not a valid Lernstick image");
+                unmountTmpPartitions();
                 return null;
             }
             String signature = LernstickFileTools.readFile(infoFile).get(0);
@@ -239,11 +252,23 @@ public class IsoInstallationSource implements InstallationSource {
             }
             LOGGER.log(Level.SEVERE, "Invalid version signature:  {0}",
                     signature);
+            unmountTmpPartitions();
             return null;
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "Could not read .disk/info", ex);
+            unmountTmpPartitions();
             return null;
+        }        
+    }
+    
+    private void checkForExtlinux() throws IOException {
+        // check that extlinux is available
+        mountSystemImageIfNeeded();
+        int returnValue = processExecutor.executeProcess(true, true,
+                "chroot", rootFsPath, "extlinux", "--version");
+        if (returnValue != 0) {
+            unmountTmpPartitions();
+            throw new IOException("The ISO image has no extlinux");
         }
     }
-
 }

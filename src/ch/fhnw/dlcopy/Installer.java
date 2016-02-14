@@ -142,7 +142,7 @@ public class Installer extends InstallerOrUpgrader
     }
 
     @Override
-    public PartitionSizes getPartitions(StorageDevice storageDevice) {
+    public PartitionSizes getPartitionSizes(StorageDevice storageDevice) {
         return DLCopy.getInstallPartitionSizes(
                 storageDevice, exchangePartitionSize);
     }

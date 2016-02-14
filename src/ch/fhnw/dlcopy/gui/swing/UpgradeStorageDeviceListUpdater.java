@@ -26,11 +26,12 @@ public class UpgradeStorageDeviceListUpdater extends StorageDeviceListUpdater {
      * @param list the list to fill
      * @param listModel the list model
      * @param showHardDisks if true, hard disks are added, otherwise ignored
+     * @param bootDeviceName the name of the boot device
      */
     public UpgradeStorageDeviceListUpdater(DLCopySwingGUI swingGUI,
             JList list, DefaultListModel<StorageDevice> listModel,
-            boolean showHardDisks) {
-        super(swingGUI, list, listModel, showHardDisks, false, null);
+            boolean showHardDisks, String bootDeviceName) {
+        super(swingGUI, list, listModel, showHardDisks, false, bootDeviceName);
     }
 
     @Override

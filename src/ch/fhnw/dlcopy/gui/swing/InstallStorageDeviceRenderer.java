@@ -13,7 +13,6 @@ import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.StorageDevice;
 import java.awt.*;
 import java.awt.geom.Rectangle2D;
-import java.text.MessageFormat;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
@@ -34,9 +33,9 @@ public class InstallStorageDeviceRenderer extends JPanel
     private final static int OFFSET = 5;
     private final static int BAR_HEIGHT = 30;
     private final DLCopySwingGUI dlCopy;
-    private final long systemSize;
     private final Color LIGHT_BLUE = new Color(170, 170, 255);
     private final Color DARK_BLUE = new Color(69, 69, 255);
+    private long systemSize;
     private long maxStorageDeviceSize;
     private StorageDevice storageDevice;
     private boolean isSelected;
@@ -335,6 +334,15 @@ public class InstallStorageDeviceRenderer extends JPanel
     @Override
     public void setMaxSize(long maxSize) {
         this.maxStorageDeviceSize = maxSize;
+    }
+
+    /**
+     * sets the size of the installation source
+     *
+     * @param systemSize the size of the installation source
+     */
+    public void setSystemSize(long systemSize) {
+        this.systemSize = systemSize;
     }
 
     /**

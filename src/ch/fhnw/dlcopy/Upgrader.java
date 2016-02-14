@@ -791,7 +791,7 @@ public class Upgrader extends InstallerOrUpgrader {
     }
 
     @Override
-    public PartitionSizes getPartitions(StorageDevice storageDevice) {
+    public PartitionSizes getPartitionSizes(StorageDevice storageDevice) {
         return DLCopy.getUpgradePartitionSizes(storageDevice,
                 repartitionStrategy, resizedExchangePartitionSize);
     }

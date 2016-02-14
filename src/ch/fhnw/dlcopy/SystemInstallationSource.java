@@ -33,6 +33,12 @@ public final class SystemInstallationSource implements InstallationSource {
     private String exchangePath = null;
     private boolean isExchangeTmpMounted = false;
 
+    /**
+     * creates a new SystemInstallationSource
+     * @param processExecutor the ProcessExecutor to use
+     * @throws DBusException
+     * @throws IOException
+     */
     public SystemInstallationSource(ProcessExecutor processExecutor)
             throws DBusException, IOException {
         this.processExecutor = processExecutor;
