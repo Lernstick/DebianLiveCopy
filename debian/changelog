@@ -1,3 +1,9 @@
+dlcopy (201602142015-1) lernstick-8; urgency=medium
+
+  * [0c3d93] finished support for direct ISO installation
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 14 Feb 2016 20:25:19 +0100
+
 dlcopy (201602131150-1) lernstick-8; urgency=medium
 
   * [0e6f77] added support for RAID
