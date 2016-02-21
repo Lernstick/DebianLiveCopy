@@ -572,7 +572,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
         String device = storageDevice.getDevice();
         String devicePath = "/dev/" + device;
-        Partition bootPartition = storageDevice.getEfiPartition();
+        Partition efiPartition = storageDevice.getEfiPartition();
         Partition exchangePartition = storageDevice.getExchangePartition();
         Partition dataPartition = storageDevice.getDataPartition();
         Partition systemPartition = storageDevice.getSystemPartition();
@@ -730,12 +730,29 @@ public class Upgrader extends InstallerOrUpgrader {
             systemPartition = partitions.get(systemPartitionNumber - 1);
 
             DLCopy.formatEfiAndSystemPartition(
-                    "/dev/" + bootPartition.getDeviceAndNumber(),
+                    "/dev/" + efiPartition.getDeviceAndNumber(),
                     "/dev/" + systemPartition.getDeviceAndNumber());
+
+            // update boot flag
+            efiPartition.setBootFlag(false);
+            systemPartition.setBootFlag(true);
+            // we have to wait for d-bus to settle after changing the boot flag
+            TimeUnit.SECONDS.sleep(7);
         }
 
         // upgrade boot and system partition
         dlCopyGUI.showUpgradeSystemPartitionReset();
+
+        if (!efiPartition.getIdLabel().equals(Partition.EFI_LABEL)) {
+            // The EFI partition is a pre 2016-02 boot partition with a boot
+            // flag and the system partition has no boot flag.
+            // We need to flip that to the current boot flag schema where
+            // the EFI partition has no boot flag but the system partition.
+            efiPartition.setBootFlag(false);
+            systemPartition.setBootFlag(true);
+            // we have to wait for d-bus to settle after changing the boot flag
+            TimeUnit.SECONDS.sleep(7);
+        }
 
         // define CopyJobs for boot and system parititions
         String exchangePartitionFS = null;
@@ -746,7 +763,7 @@ public class Upgrader extends InstallerOrUpgrader {
         // TODO: mapping of other file systems
 
         CopyJobsInfo copyJobsInfo = DLCopy.prepareBootAndSystemCopyJobs(source,
-                storageDevice, bootPartition, exchangePartition,
+                storageDevice, efiPartition, exchangePartition,
                 systemPartition, exchangePartitionFS);
         File bootMountPointFile = new File(
                 copyJobsInfo.getDestinationEfiPath());
@@ -775,8 +792,8 @@ public class Upgrader extends InstallerOrUpgrader {
         }
 
         dlCopyGUI.showUpgradeUnmounting();
-        DLCopy.isolinuxToSyslinux(copyJobsInfo.getDestinationEfiPath(),
-                dlCopyGUI);
+        DLCopy.isolinuxToSyslinux(
+                copyJobsInfo.getDestinationSystemPath(), dlCopyGUI);
 
         // make storage device bootable
         dlCopyGUI.showUpgradeWritingBootSector();
@@ -784,7 +801,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
         // cleanup
         source.unmountTmpPartitions();
-        if (!DLCopy.umount(bootPartition, dlCopyGUI)) {
+        if (!DLCopy.umount(efiPartition, dlCopyGUI)) {
             return false;
         }
         return DLCopy.umount(systemPartition, dlCopyGUI);
