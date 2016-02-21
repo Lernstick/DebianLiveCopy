@@ -1,3 +1,10 @@
+dlcopy (201602211746-1) lernstick-8; urgency=medium
+
+  * [8e721b] changed upgrader to new disk layout
+  * [cde4b0] upgrader: also upgrade EFI partition label
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 21 Feb 2016 17:46:20 +0100
+
 dlcopy (201602142015-1) lernstick-8; urgency=medium
 
   * [0c3d93] finished support for direct ISO installation
