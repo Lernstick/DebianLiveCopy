@@ -43,7 +43,7 @@ public class IsoInstallationSource implements InstallationSource {
             throw new IllegalStateException(imagePath
                     + " is not a valid LernStick distribution image");
         }
-        
+
         checkForExtlinux();
 
         LOGGER.log(Level.INFO, "Install from ISO image at '{0}'", mediaPath);
@@ -105,9 +105,15 @@ public class IsoInstallationSource implements InstallationSource {
     }
 
     @Override
-    public Source getSystemCopySource() {
+    public Source getSystemCopySourceBoot() {
         return new Source(getSystemPath(),
-                InstallationSource.SYSTEM_COPY_PATTERM);
+                InstallationSource.SYSTEM_COPY_PATTERN_BOOT);
+    }
+
+    @Override
+    public Source getSystemCopySourceFull() {
+        return new Source(getSystemPath(),
+                InstallationSource.SYSTEM_COPY_PATTERN_FULL);
     }
 
     @Override
@@ -258,9 +264,9 @@ public class IsoInstallationSource implements InstallationSource {
             LOGGER.log(Level.SEVERE, "Could not read .disk/info", ex);
             unmountTmpPartitions();
             return null;
-        }        
+        }
     }
-    
+
     private void checkForExtlinux() throws IOException {
         // check that extlinux is available
         mountSystemImageIfNeeded();

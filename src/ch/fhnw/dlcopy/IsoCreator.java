@@ -122,8 +122,7 @@ public class IsoCreator
                 CopyJob bootCopyJob = new CopyJob(
                         new Source[]{
                             installationSource.getEfiCopySource(),
-                            new Source(installationSource.getSystemPath(),
-                                    "\\.disk.*")
+                            installationSource.getSystemCopySourceBoot()
                         },
                         new String[]{targetDirectory});
                 FileCopier fileCopier = new FileCopier();

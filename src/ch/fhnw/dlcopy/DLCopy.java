@@ -662,7 +662,7 @@ public class DLCopy {
                 = destinationSystemPartition.mount().getMountPath();
 
         Source efiCopyJobSource = source.getEfiCopySource();
-        Source systemCopyJobSource = source.getSystemCopySource();
+        Source systemCopyJobSource = source.getSystemCopySourceFull();
 
         CopyJob bootCopyJob = new CopyJob(
                 new Source[]{efiCopyJobSource},

@@ -35,6 +35,7 @@ public final class SystemInstallationSource implements InstallationSource {
 
     /**
      * creates a new SystemInstallationSource
+     *
      * @param processExecutor the ProcessExecutor to use
      * @throws DBusException
      * @throws IOException
@@ -143,9 +144,15 @@ public final class SystemInstallationSource implements InstallationSource {
     }
 
     @Override
-    public Source getSystemCopySource() {
+    public Source getSystemCopySourceBoot() {
         return new Source(getSystemPath(),
-                InstallationSource.SYSTEM_COPY_PATTERM);
+                InstallationSource.SYSTEM_COPY_PATTERN_BOOT);
+    }
+
+    @Override
+    public Source getSystemCopySourceFull() {
+        return new Source(getSystemPath(),
+                InstallationSource.SYSTEM_COPY_PATTERN_FULL);
     }
 
     @Override

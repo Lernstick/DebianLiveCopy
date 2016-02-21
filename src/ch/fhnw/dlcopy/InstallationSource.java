@@ -13,18 +13,24 @@ import org.freedesktop.dbus.exceptions.DBusException;
 public interface InstallationSource {
 
     /**
-     * The pattern of files that need to be copied to the boot partition
+     * the pattern of files that need to be copied to the EFI partition
      */
     public final static String EFI_COPY_PATTERN
-            = "efi.*|.VolumeIcon.icns|\\.disk_label.*";
+            = "efi.*|\\.VolumeIcon.icns|\\.disk_label.*";
 
     /**
-     * The pattern of files that need to be copied to the system partition
+     * the pattern of files that need to be copied to the system partition (only
+     * the files that are needed to boot the system, without the squashfs files)
      */
-    public final static String SYSTEM_COPY_PATTERM
-            = "boot.*|live/initrd.*|live/vmlinuz.*|lernstick.ico|autorun.inf"
-            + "|.VolumeIcon.icns|\\.disk_label.*|\\.disk/.*|live/filesystem.*"
-            + "|md5sum.txt|isolinux.*|syslinux.*|live/memtest";
+    public final static String SYSTEM_COPY_PATTERN_BOOT
+            = "isolinux.*|syslinux.*|live/memtest|boot.*|live/initrd.*|"
+            + "live/vmlinuz.*|\\.disk/.*|md5sum.txt|lernstick.ico|autorun.inf";
+
+    /**
+     * the pattern of files that need to be copied to the system partition
+     */
+    public final static String SYSTEM_COPY_PATTERN_FULL
+            = SYSTEM_COPY_PATTERN_BOOT + "|live/filesystem.*";
 
     public String getDeviceName();
 
@@ -48,7 +54,19 @@ public interface InstallationSource {
 
     public Source getExchangeEfiCopySource() throws DBusException;
 
-    public Source getSystemCopySource();
+    /**
+     * returns a copy source for the system, without the squashfs files
+     *
+     * @return a copy source for the system, without the squashfs files
+     */
+    public Source getSystemCopySourceBoot();
+
+    /**
+     * returns a copy source for the system, including the squashfs files
+     *
+     * @return a copy source for the system, including the squashfs files
+     */
+    public Source getSystemCopySourceFull();
 
     public Source getPersistentCopySource();
 
