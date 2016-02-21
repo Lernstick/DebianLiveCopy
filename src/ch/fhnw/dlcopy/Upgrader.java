@@ -744,10 +744,15 @@ public class Upgrader extends InstallerOrUpgrader {
         dlCopyGUI.showUpgradeSystemPartitionReset();
 
         if (!efiPartition.getIdLabel().equals(Partition.EFI_LABEL)) {
-            // The EFI partition is a pre 2016-02 boot partition with a boot
-            // flag and the system partition has no boot flag.
-            // We need to flip that to the current boot flag schema where
-            // the EFI partition has no boot flag but the system partition.
+            // The EFI partition is a pre 2016-02 boot partition with the label
+            // "boot" a boot flag and the system partition has no boot flag.
+            // We need to upgrade that to the current partitioning schema where
+            // the EFI partition has the label "EFI" and has no boot flag but
+            // the system partition has one.
+            DLCopy.formatEfiAndSystemPartition(
+                    "/dev/" + efiPartition.getDeviceAndNumber(),
+                    "/dev/" + systemPartition.getDeviceAndNumber());
+
             efiPartition.setBootFlag(false);
             systemPartition.setBootFlag(true);
             // we have to wait for d-bus to settle after changing the boot flag
