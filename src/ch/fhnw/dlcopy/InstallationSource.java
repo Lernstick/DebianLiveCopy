@@ -15,15 +15,15 @@ public interface InstallationSource {
     /**
      * the pattern of files that need to be copied to the EFI partition
      */
-    public final static String EFI_COPY_PATTERN
-            = "efi.*|\\.VolumeIcon.icns|\\.disk_label.*";
+    public final static String EFI_COPY_PATTERN = "efi.*|\\.VolumeIcon.icns|"
+            + "\\.disk_label.*|boot.*|live/initrd2.img|live/vmlinuz2";
 
     /**
      * the pattern of files that need to be copied to the system partition (only
      * the files that are needed to boot the system, without the squashfs files)
      */
     public final static String SYSTEM_COPY_PATTERN_BOOT
-            = "isolinux.*|syslinux.*|live/memtest|boot.*|live/initrd.*|"
+            = "isolinux.*|syslinux.*|live/memtest|live/initrd.*|"
             + "live/vmlinuz.*|\\.disk/.*|md5sum.txt|lernstick.ico|autorun.inf";
 
     /**
