@@ -1,3 +1,9 @@
+dlcopy (201603012043-1) lernstick-8; urgency=medium
+
+  * [4e70c4] fixed copy patterns (GRUB needs boot/grub/*, the initrd and the kernel on the EFI partition)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Tue, 01 Mar 2016 20:43:39 +0100
+
 dlcopy (201602211919-1) lernstick-8; urgency=medium
 
   * [d471ef] fixed copy patterns
