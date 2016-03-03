@@ -1,3 +1,9 @@
+dlcopy (201603031637-1) lernstick-8; urgency=medium
+
+  * [480090] added support for current and legacy (pre 2016-03) GRUB
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 03 Mar 2016 16:37:42 +0100
+
 dlcopy (201603012043-1) lernstick-8; urgency=medium
 
   * [4e70c4] fixed copy patterns (GRUB needs boot/grub/*, the initrd and the kernel on the EFI partition)
