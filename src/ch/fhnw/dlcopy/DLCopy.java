@@ -20,6 +20,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,6 +32,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.ParserConfigurationException;
 import org.freedesktop.DBus;
 import org.freedesktop.dbus.DBusConnection;
@@ -678,7 +682,7 @@ public class DLCopy {
                 String destinationExchangePath
                         = destinationExchangePartition.mount().getMountPath();
                 bootFilesCopyJob = new CopyJob(
-                        new Source[]{source.getExchangeEfiCopySource()},
+                        new Source[]{source.getEfiCopySource()},
                         new String[]{destinationExchangePath});
             }
         }
@@ -964,6 +968,28 @@ public class DLCopy {
             return syslinuxDir.getPath();
         } catch (DBusException ex) {
             throw new IOException(ex);
+        }
+    }
+
+    /**
+     * returns the textual representation of the MD5 sum of a file
+     *
+     * @param filePath the path of the file to digest
+     * @return the textual representation of the MD5 sum of a file
+     * @throws NoSuchAlgorithmException if MD5 is not available
+     * @throws IOException if reading from the file fails
+     */
+    public static String getMd5String(String filePath)
+            throws NoSuchAlgorithmException, IOException {
+        MessageDigest md5 = MessageDigest.getInstance("MD5");
+        try (DigestInputStream digestInputStream = new DigestInputStream(
+                Files.newInputStream(Paths.get(filePath)), md5)) {
+            byte[] byteArray = new byte[1024];
+            for (int i = digestInputStream.read(byteArray); i > 0;) {
+                i = digestInputStream.read(byteArray);
+            }
+            byte[] digest = md5.digest();
+            return DatatypeConverter.printHexBinary(digest).toLowerCase();
         }
     }
 

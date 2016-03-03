@@ -117,7 +117,7 @@ public class IsoCreator
             }
 
             // copy boot files
-            if (installationSource.hasBootPartition()) {
+            if (installationSource.hasEfiPartition()) {
                 // system with a separate boot partition
                 CopyJob bootCopyJob = new CopyJob(
                         new Source[]{

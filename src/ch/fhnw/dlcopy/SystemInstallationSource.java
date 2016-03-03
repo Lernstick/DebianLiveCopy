@@ -7,6 +7,7 @@ import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
 import ch.fhnw.util.StorageTools;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -23,12 +24,13 @@ public final class SystemInstallationSource implements InstallationSource {
     private final DebianLiveVersion runningVersion;
     private final DataPartitionMode dataPartitionMode;
     private final StorageDevice storageDevice;
+    private final Partition efiPartition;
     private final Partition exchangePartition;
     private final Partition dataPartition;
-    private final Partition bootPartition;
+    private final boolean hasLegacyGrub;
 
-    private String bootPath = null;
-    private boolean isBootTmpMounted = false;
+    private String efiPath = null;
+    private boolean isEfiTmpMounted = false;
 
     private String exchangePath = null;
     private boolean isExchangeTmpMounted = false;
@@ -51,33 +53,38 @@ public final class SystemInstallationSource implements InstallationSource {
         storageDevice = StorageTools.getSystemStorageDevice();
 
         LOGGER.log(Level.INFO,
-                "boot storage device: {0}", storageDevice);
+                "system storage device: {0}", storageDevice);
 
         exchangePartition = storageDevice.getExchangePartition();
         LOGGER.log(Level.INFO,
-                "boot exchange partition: {0}", exchangePartition);
+                "system exchange partition: {0}", exchangePartition);
 
         dataPartition = storageDevice.getDataPartition();
         LOGGER.log(Level.INFO,
-                "boot data partition: {0}", dataPartition);
+                "system data partition: {0}", dataPartition);
 
-        bootPartition = storageDevice.getEfiPartition();
+        efiPartition = storageDevice.getEfiPartition();
         LOGGER.log(Level.INFO,
-                "boot boot partition: {0}", bootPartition);
+                "system EFI partition: {0}", efiPartition);
 
         // determine mode of data partition
-        if (hasBootPartition()) {
-            MountInfo bootMountInfo = bootPartition.mount();
+        if (hasEfiPartition()) {
+            MountInfo bootMountInfo = efiPartition.mount();
             dataPartitionMode
                     = BootConfigUtil.getDataPartitionMode(
                             bootMountInfo.getMountPath());
             if (!bootMountInfo.alreadyMounted()) {
-                bootPartition.umount();
+                efiPartition.umount();
             }
         } else {
             dataPartitionMode
                     = BootConfigUtil.getDataPartitionMode(getSystemPath());
         }
+
+        hasLegacyGrub = hasLegacyGrub();
+        LOGGER.log(Level.INFO, "system GRUB is a {0} version",
+                (hasLegacyGrub ? "legacy" : "current"));
+
     }
 
     @Override
@@ -91,8 +98,8 @@ public final class SystemInstallationSource implements InstallationSource {
     }
 
     @Override
-    public boolean hasBootPartition() {
-        return bootPartition != null;
+    public boolean hasEfiPartition() {
+        return efiPartition != null;
     }
 
     @Override
@@ -122,37 +129,30 @@ public final class SystemInstallationSource implements InstallationSource {
 
     @Override
     public Source getEfiCopySource() throws DBusException {
-        if (hasBootPartition()) {
-            mountBootIfNeeded();
-            return new Source(bootPath, InstallationSource.EFI_COPY_PATTERN);
+        String basePath;
+        if (hasEfiPartition()) {
+            mountEfiIfNeeded();
+            basePath = efiPath;
         } else {
-            return new Source(getSystemPath(),
-                    InstallationSource.EFI_COPY_PATTERN);
+            basePath = getSystemPath();
         }
-    }
-
-    @Override
-    public Source getExchangeEfiCopySource() throws DBusException {
-        if (hasBootPartition()) {
-            mountBootIfNeeded();
-            return new Source(bootPath,
-                    InstallationSource.EFI_COPY_PATTERN);
-        } else {
-            return new Source(getSystemPath(),
-                    InstallationSource.EFI_COPY_PATTERN);
-        }
+        return new Source(basePath, hasLegacyGrub
+                ? InstallationSource.LEGACY_EFI_COPY_PATTERN
+                : InstallationSource.EFI_COPY_PATTERN);
     }
 
     @Override
     public Source getSystemCopySourceBoot() {
-        return new Source(getSystemPath(),
-                InstallationSource.SYSTEM_COPY_PATTERN_BOOT);
+        return new Source(getSystemPath(), hasLegacyGrub
+                ? InstallationSource.LEGACY_SYSTEM_COPY_PATTERN_BOOT
+                : InstallationSource.SYSTEM_COPY_PATTERN_BOOT);
     }
 
     @Override
     public Source getSystemCopySourceFull() {
-        return new Source(getSystemPath(),
-                InstallationSource.SYSTEM_COPY_PATTERN_FULL);
+        return new Source(getSystemPath(), hasLegacyGrub
+                ? InstallationSource.LEGACY_SYSTEM_COPY_PATTERN_FULL
+                : InstallationSource.SYSTEM_COPY_PATTERN_FULL);
     }
 
     @Override
@@ -172,7 +172,7 @@ public final class SystemInstallationSource implements InstallationSource {
 
     @Override
     public Partition getEfiPartition() {
-        return bootPartition;
+        return efiPartition;
     }
 
     @Override
@@ -204,13 +204,13 @@ public final class SystemInstallationSource implements InstallationSource {
 
     @Override
     public void unmountTmpPartitions() {
-        if (isBootTmpMounted && bootPath != null) {
+        if (isEfiTmpMounted && efiPath != null) {
             try {
-                bootPartition.umount();
+                efiPartition.umount();
             } catch (DBusException ex) {
                 LOGGER.log(Level.SEVERE, "unmount boot", ex);
             }
-            bootPath = null;
+            efiPath = null;
         }
         if (isExchangeTmpMounted && exchangePath != null) {
             try {
@@ -223,11 +223,11 @@ public final class SystemInstallationSource implements InstallationSource {
 
     }
 
-    private void mountBootIfNeeded() throws DBusException {
-        if (bootPath == null) {
-            MountInfo bootMountInfo = bootPartition.mount();
-            bootPath = bootMountInfo.getMountPath();
-            isBootTmpMounted = bootMountInfo.alreadyMounted();
+    private void mountEfiIfNeeded() throws DBusException {
+        if (efiPath == null) {
+            MountInfo efiMountInfo = efiPartition.mount();
+            efiPath = efiMountInfo.getMountPath();
+            isEfiTmpMounted = efiMountInfo.alreadyMounted();
         }
     }
 
@@ -236,6 +236,22 @@ public final class SystemInstallationSource implements InstallationSource {
             MountInfo bootMountInfo = exchangePartition.mount();
             exchangePath = bootMountInfo.getMountPath();
             isExchangeTmpMounted = bootMountInfo.alreadyMounted();
+        }
+    }
+
+    private boolean hasLegacyGrub() throws IOException, DBusException {
+        try {
+            String basePath;
+            if (hasEfiPartition()) {
+                mountEfiIfNeeded();
+                basePath = efiPath;
+            } else {
+                basePath = getSystemPath();
+            }
+            return GRUB_LEGACY_MD5.equals(
+                    DLCopy.getMd5String(basePath + GRUB_EFI_PATH));
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IOException(ex);
         }
     }
 }

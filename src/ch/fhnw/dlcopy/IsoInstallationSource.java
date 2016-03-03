@@ -7,6 +7,7 @@ import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
 import java.io.File;
 import java.io.IOException;
+import java.security.NoSuchAlgorithmException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,6 +23,7 @@ public class IsoInstallationSource implements InstallationSource {
     private final String imagePath;
     private final ProcessExecutor processExecutor;
     private final DebianLiveVersion version;
+    private final boolean hasLegacyGrub;
 
     private String mediaPath;
     private String rootFsPath = null;
@@ -46,8 +48,12 @@ public class IsoInstallationSource implements InstallationSource {
 
         checkForExtlinux();
 
+        hasLegacyGrub = hasLegacyGrub();
+
         LOGGER.log(Level.INFO, "Install from ISO image at '{0}'", mediaPath);
         LOGGER.log(Level.INFO, "ISO system version {0}", version);
+        LOGGER.log(Level.INFO, "ISO GRUB is a {0} version",
+                (hasLegacyGrub ? "legacy" : "current"));
     }
 
     @Override
@@ -61,7 +67,7 @@ public class IsoInstallationSource implements InstallationSource {
     }
 
     @Override
-    public boolean hasBootPartition() {
+    public boolean hasEfiPartition() {
         return false;
     }
 
@@ -94,26 +100,23 @@ public class IsoInstallationSource implements InstallationSource {
 
     @Override
     public Source getEfiCopySource() {
-        return new Source(getSystemPath(),
-                InstallationSource.EFI_COPY_PATTERN);
-    }
-
-    @Override
-    public Source getExchangeEfiCopySource() {
-        return new Source(getSystemPath(),
-                InstallationSource.EFI_COPY_PATTERN);
+        return new Source(getSystemPath(), hasLegacyGrub
+                ? InstallationSource.LEGACY_EFI_COPY_PATTERN
+                : InstallationSource.EFI_COPY_PATTERN);
     }
 
     @Override
     public Source getSystemCopySourceBoot() {
-        return new Source(getSystemPath(),
-                InstallationSource.SYSTEM_COPY_PATTERN_BOOT);
+        return new Source(getSystemPath(), hasLegacyGrub
+                ? InstallationSource.LEGACY_SYSTEM_COPY_PATTERN_BOOT
+                : InstallationSource.SYSTEM_COPY_PATTERN_BOOT);
     }
 
     @Override
     public Source getSystemCopySourceFull() {
-        return new Source(getSystemPath(),
-                InstallationSource.SYSTEM_COPY_PATTERN_FULL);
+        return new Source(getSystemPath(), hasLegacyGrub
+                ? InstallationSource.LEGACY_SYSTEM_COPY_PATTERN_FULL
+                : InstallationSource.SYSTEM_COPY_PATTERN_FULL);
     }
 
     @Override
@@ -264,6 +267,16 @@ public class IsoInstallationSource implements InstallationSource {
             LOGGER.log(Level.SEVERE, "Could not read .disk/info", ex);
             unmountTmpPartitions();
             return null;
+        }
+    }
+
+    private boolean hasLegacyGrub() throws IOException {
+        mountIsoImageIfNeeded();
+        try {
+            return GRUB_LEGACY_MD5.equals(
+                    DLCopy.getMd5String(mediaPath + GRUB_EFI_PATH));
+        } catch (NoSuchAlgorithmException ex) {
+            throw new IOException(ex);
         }
     }
 
