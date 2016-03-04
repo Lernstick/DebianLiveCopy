@@ -1,3 +1,9 @@
+dlcopy (201603041318-1) lernstick-8; urgency=medium
+
+  * [5c49bb] increased safety timeout when formatting the system partition
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 04 Mar 2016 13:18:04 +0100
+
 dlcopy (201603031637-1) lernstick-8; urgency=medium
 
   * [480090] added support for current and legacy (pre 2016-03) GRUB
