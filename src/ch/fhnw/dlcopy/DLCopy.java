@@ -620,8 +620,9 @@ public class DLCopy {
         // below:
         // org.freedesktop.dbus.exceptions.DBusExecutionException:
         // No such interface 'org.freedesktop.UDisks2.Filesystem'
+        // 5 seconds were too short!
         try {
-            TimeUnit.SECONDS.sleep(5);
+            TimeUnit.SECONDS.sleep(10);
         } catch (InterruptedException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
         }
