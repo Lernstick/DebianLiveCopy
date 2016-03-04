@@ -68,23 +68,39 @@ public final class SystemInstallationSource implements InstallationSource {
                 "system EFI partition: {0}", efiPartition);
 
         // determine mode of data partition
-        if (hasEfiPartition()) {
-            MountInfo bootMountInfo = efiPartition.mount();
-            dataPartitionMode
-                    = BootConfigUtil.getDataPartitionMode(
-                            bootMountInfo.getMountPath());
-            if (!bootMountInfo.alreadyMounted()) {
-                efiPartition.umount();
+        // The boot config files were on the system partition on legacy systems
+        // and are there again after 2016-03 when we changed the partition/file
+        // structure once more to support kernel updates.
+        DataPartitionMode tmpMode
+                = BootConfigUtil.getDataPartitionMode(getSystemPath());
+        if (tmpMode == null) {
+            // There was a longer timeframe before 2016-03 when we had the boot
+            // config files on the boot/EFI partition.
+            if (hasEfiPartition()) {
+                MountInfo efiMountInfo = efiPartition.mount();
+                dataPartitionMode = BootConfigUtil.getDataPartitionMode(
+                        efiMountInfo.getMountPath());
+                if (!efiMountInfo.alreadyMounted()) {
+                    efiPartition.umount();
+                }
+            } else {
+                dataPartitionMode = null;
             }
         } else {
-            dataPartitionMode
-                    = BootConfigUtil.getDataPartitionMode(getSystemPath());
+            dataPartitionMode = tmpMode;
+        }
+
+        if (dataPartition == null) {
+            LOGGER.log(Level.WARNING,
+                    "unable to determine data partition mode");
+        } else {
+            LOGGER.log(Level.INFO, "data partition mode: {0}",
+                    dataPartitionMode);
         }
 
         hasLegacyGrub = hasLegacyGrub();
         LOGGER.log(Level.INFO, "system GRUB is a {0} version",
                 (hasLegacyGrub ? "legacy" : "current"));
-
     }
 
     @Override

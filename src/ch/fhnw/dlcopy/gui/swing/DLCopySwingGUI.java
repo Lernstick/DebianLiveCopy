@@ -342,8 +342,8 @@ public class DLCopySwingGUI extends JFrame
         setSpinnerColums(autoNumberStartSpinner, 2);
         setSpinnerColums(autoNumberIncrementSpinner, 2);
 
-        installationResultsTableModel
-                = new ResultsTableModel(installationResultsTable);
+        installationResultsTableModel = new ResultsTableModel(
+                installationResultsTable);
         installationResultsTable.setModel(installationResultsTableModel);
         TableColumn sizeColumn
                 = installationResultsTable.getColumnModel().getColumn(
@@ -352,8 +352,8 @@ public class DLCopySwingGUI extends JFrame
         installationResultsTable.setRowSorter(
                 new ResultsTableRowSorter(installationResultsTableModel));
 
-        upgradeResultsTableModel
-                = new ResultsTableModel(upgradeResultsTable);
+        upgradeResultsTableModel = new ResultsTableModel(
+                upgradeResultsTable);
         upgradeResultsTable.setModel(upgradeResultsTableModel);
         sizeColumn = upgradeResultsTable.getColumnModel().getColumn(
                 ResultsTableModel.SIZE_COLUMN);
@@ -3780,7 +3780,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             copyPersistenceCheckBox.setText(checkBoxText);
         }
 
-        DataPartitionMode sourceDataPartitionMode
+        DataPartitionMode sourceDataPartitionMode 
                 = source.getDataPartitionMode();
         if (sourceDataPartitionMode != null) {
             String selectedItem = null;
