@@ -1,3 +1,9 @@
+dlcopy (201603041753-1) lernstick-8; urgency=medium
+
+  * [336c89] fixed data partition mode detection
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 04 Mar 2016 17:53:19 +0100
+
 dlcopy (201603041318-1) lernstick-8; urgency=medium
 
   * [5c49bb] increased safety timeout when formatting the system partition
