@@ -951,7 +951,7 @@ public class DLCopySwingGUI extends JFrame
                 installStorageDeviceListModel, installSelectionCardPanel,
                 "installNoMediaPanel", "installListPanel",
                 installStorageDeviceRenderer, installStorageDeviceList);
-        updateInstallNextButton();
+        updateInstallSelectionCountAndExchangeInfo();
     }
 
     /**
@@ -964,6 +964,7 @@ public class DLCopySwingGUI extends JFrame
                 upgradeStorageDeviceListModel, upgradeSelectionCardPanel,
                 "upgradeNoMediaPanel", "upgradeSelectionDeviceListPanel",
                 upgradeStorageDeviceRenderer, upgradeStorageDeviceList);
+        updateUpgradeSelectionCountAndNextButton();
     }
 
     /**
