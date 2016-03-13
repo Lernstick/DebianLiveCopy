@@ -1,3 +1,9 @@
+dlcopy (201603131434-1) lernstick-8; urgency=medium
+
+  * [3b2477] fixed selection count updates
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 13 Mar 2016 14:34:00 +0100
+
 dlcopy (201603041753-1) lernstick-8; urgency=medium
 
   * [336c89] fixed data partition mode detection
