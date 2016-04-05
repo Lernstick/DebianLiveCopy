@@ -1,3 +1,9 @@
+dlcopy (201604052118-1) lernstick-8; urgency=medium
+
+  * [85ae5f] added support for creating a squashfs of the data partition
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Tue, 05 Apr 2016 21:18:36 +0200
+
 dlcopy (201603131434-1) lernstick-8; urgency=medium
 
   * [3b2477] fixed selection count updates
