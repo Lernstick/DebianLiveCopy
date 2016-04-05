@@ -18,6 +18,7 @@ import ch.fhnw.dlcopy.IsoInstallationSource;
 import ch.fhnw.dlcopy.PartitionSizes;
 import ch.fhnw.dlcopy.Repairer;
 import ch.fhnw.dlcopy.RepartitionStrategy;
+import ch.fhnw.dlcopy.SquashFSCreator;
 import ch.fhnw.dlcopy.StorageDeviceResult;
 import ch.fhnw.dlcopy.SystemInstallationSource;
 import ch.fhnw.dlcopy.Upgrader;
@@ -1369,6 +1370,7 @@ public class DLCopySwingGUI extends JFrame
         isoLabelTextField = new javax.swing.JTextField();
         radioButtonPanel = new javax.swing.JPanel();
         bootMediumRadioButton = new javax.swing.JRadioButton();
+        dataPartitionRadioButton = new javax.swing.JRadioButton();
         systemMediumRadioButton = new javax.swing.JRadioButton();
         isoOptionsPanel = new javax.swing.JPanel();
         isoDataPartitionModeLabel = new javax.swing.JLabel();
@@ -1595,7 +1597,7 @@ public class DLCopySwingGUI extends JFrame
                 .addComponent(selectionLabel)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(executionLabel)
-                .addContainerGap(433, Short.MAX_VALUE))
+                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         cardPanel.setLayout(new java.awt.CardLayout());
@@ -2948,6 +2950,18 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         radioButtonPanel.add(bootMediumRadioButton, gridBagConstraints);
 
+        isoButtonGroup.add(dataPartitionRadioButton);
+        dataPartitionRadioButton.setText(bundle.getString("DLCopySwingGUI.dataPartitionRadioButton.text")); // NOI18N
+        dataPartitionRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dataPartitionRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        radioButtonPanel.add(dataPartitionRadioButton, gridBagConstraints);
+
         isoButtonGroup.add(systemMediumRadioButton);
         systemMediumRadioButton.setSelected(true);
         systemMediumRadioButton.setText(bundle.getString("DLCopySwingGUI.systemMediumRadioButton.text")); // NOI18N
@@ -3182,7 +3196,7 @@ public class DLCopySwingGUI extends JFrame
                     .addGroup(executionPanelLayout.createSequentialGroup()
                         .addComponent(stepsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 702, Short.MAX_VALUE))
+                        .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, executionPanelLayout.createSequentialGroup()
                         .addContainerGap()
                         .addComponent(previousButton)
@@ -3263,14 +3277,23 @@ public class DLCopySwingGUI extends JFrame
                 showCard(cardPanel, "toISOProgressPanel");
                 previousButton.setEnabled(false);
                 nextButton.setEnabled(false);
-                DataPartitionMode dataPartitionMode
-                        = getDataPartitionMode(isoDataPartitionModeComboBox);
-                new IsoCreator(this, systemSource,
-                        bootMediumRadioButton.isSelected(),
-                        tmpDirTextField.getText(), dataPartitionMode,
-                        showNotUsedDialogCheckBox.isSelected(),
-                        autoStartInstallerCheckBox.isSelected(),
-                        isoLabelTextField.getText()).execute();
+
+                if (dataPartitionRadioButton.isSelected()) {
+                    new SquashFSCreator(this, systemSource,
+                            tmpDirTextField.getText(),
+                            showNotUsedDialogCheckBox.isSelected(),
+                            autoStartInstallerCheckBox.isSelected()).execute();
+                } else {
+                    DataPartitionMode dataPartitionMode
+                            = getDataPartitionMode(isoDataPartitionModeComboBox);
+                    new IsoCreator(this, systemSource,
+                            bootMediumRadioButton.isSelected(),
+                            tmpDirTextField.getText(), dataPartitionMode,
+                            showNotUsedDialogCheckBox.isSelected(),
+                            autoStartInstallerCheckBox.isSelected(),
+                            isoLabelTextField.getText()).execute();
+                }
+
                 break;
 
             case UPGRADE_SELECTION:
@@ -3658,11 +3681,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }//GEN-LAST:event_upgradeOverwriteImportButtonActionPerformed
 
     private void bootMediumRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_bootMediumRadioButtonActionPerformed
-        showMediumPanel();
+        updateMediumPanel();
+        setISOElementsEnabled(true);
     }//GEN-LAST:event_bootMediumRadioButtonActionPerformed
 
     private void systemMediumRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_systemMediumRadioButtonActionPerformed
-        showMediumPanel();
+        updateMediumPanel();
+        setISOElementsEnabled(true);
     }//GEN-LAST:event_systemMediumRadioButtonActionPerformed
 
     private void isoSourceFileChooserButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_isoSourceFileChooserButtonActionPerformed
@@ -3710,6 +3735,18 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         updateInstallSourceGUI();
         setInstallationSource(isoInstallationSource);
     }//GEN-LAST:event_isoSourceRadioButtonActionPerformed
+
+    private void dataPartitionRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dataPartitionRadioButtonActionPerformed
+        updateMediumPanel();
+        setISOElementsEnabled(false);
+    }//GEN-LAST:event_dataPartitionRadioButtonActionPerformed
+
+    private void setISOElementsEnabled(boolean enabled) {
+        isoLabelLabel.setEnabled(enabled);
+        isoLabelTextField.setEnabled(enabled);
+        isoDataPartitionModeLabel.setEnabled(enabled);
+        isoDataPartitionModeComboBox.setEnabled(enabled);
+    }
 
     private void setInstallationSource(InstallationSource installationSource) {
 
@@ -3780,7 +3817,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             copyPersistenceCheckBox.setText(checkBoxText);
         }
 
-        DataPartitionMode sourceDataPartitionMode 
+        DataPartitionMode sourceDataPartitionMode
                 = source.getDataPartitionMode();
         if (sourceDataPartitionMode != null) {
             String selectedItem = null;
@@ -3851,12 +3888,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         enableNextButton();
     }
 
-    private void showMediumPanel() {
+    private void updateMediumPanel() {
         CardLayout cardLayout = (CardLayout) isoOptionsCardPanel.getLayout();
-        if (systemMediumRadioButton.isSelected()) {
-            cardLayout.show(isoOptionsCardPanel, "systemMediumPanel");
-        } else {
+        if (bootMediumRadioButton.isSelected()) {
             cardLayout.show(isoOptionsCardPanel, "bootMediumPanel");
+        } else {
+            cardLayout.show(isoOptionsCardPanel, "systemMediumPanel");
         }
     }
 
@@ -4974,6 +5011,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JComboBox dataPartitionModeComboBox;
     private javax.swing.JLabel dataPartitionModeLabel;
     private javax.swing.JPanel dataPartitionPanel;
+    private javax.swing.JRadioButton dataPartitionRadioButton;
     private javax.swing.JLabel doneLabel;
     private javax.swing.JPanel donePanel;
     private javax.swing.ButtonGroup exchangeButtonGroup;
