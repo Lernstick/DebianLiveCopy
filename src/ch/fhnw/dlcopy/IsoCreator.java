@@ -162,11 +162,11 @@ public class IsoCreator
 
                 // replace "syslinux" with "isolinux" in some files
                 Pattern pattern = Pattern.compile("syslinux");
-                DLCopy.replaceText(ISOLINUX_DIR + "/exithelp.cfg",
+                LernstickFileTools.replaceText(ISOLINUX_DIR + "/exithelp.cfg",
                         pattern, "isolinux");
-                DLCopy.replaceText(ISOLINUX_DIR + "/stdmenu.cfg",
+                LernstickFileTools.replaceText(ISOLINUX_DIR + "/stdmenu.cfg",
                         pattern, "isolinux");
-                DLCopy.replaceText(ISOLINUX_DIR + "/isolinux.cfg",
+                LernstickFileTools.replaceText(ISOLINUX_DIR + "/isolinux.cfg",
                         pattern, "isolinux");
             }
 

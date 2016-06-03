@@ -146,66 +146,6 @@ public class DLCopy {
     }
 
     /**
-     * replaces a text in a file
-     *
-     * @param fileName the path to the file
-     * @param pattern the pattern to search for
-     * @param replacement the replacemtent text to set
-     * @throws IOException
-     */
-    public static void replaceText(String fileName, Pattern pattern,
-            String replacement) throws IOException {
-        File file = new File(fileName);
-        if (file.exists()) {
-            if (LOGGER.isLoggable(Level.INFO)) {
-                LOGGER.log(Level.INFO,
-                        "replacing pattern \"{0}\" with \"{1}\" in file \"{2}\"",
-                        new Object[]{pattern.pattern(), replacement, fileName});
-            }
-            List<String> lines = LernstickFileTools.readFile(file);
-            boolean changed = false;
-            for (int i = 0, size = lines.size(); i < size; i++) {
-                String line = lines.get(i);
-                Matcher matcher = pattern.matcher(line);
-                if (matcher.find()) {
-                    LOGGER.log(Level.INFO, "line \"{0}\" matches", line);
-                    lines.set(i, matcher.replaceAll(replacement));
-                    changed = true;
-                } else {
-                    LOGGER.log(Level.INFO, "line \"{0}\" does NOT match", line);
-                }
-            }
-            if (changed) {
-                writeFile(file, lines);
-            }
-        } else {
-            LOGGER.log(Level.WARNING, "file \"{0}\" does not exist!", fileName);
-        }
-    }
-
-    /**
-     * writes lines of text into a file
-     *
-     * @param file the file to write into
-     * @param lines the lines to write
-     * @throws IOException
-     */
-    public static void writeFile(File file, List<String> lines)
-            throws IOException {
-        // delete old version of file
-        if (file.exists()) {
-            file.delete();
-        }
-        try (FileOutputStream outputStream = new FileOutputStream(file)) {
-            String lineSeparator = System.getProperty("line.separator");
-            for (String line : lines) {
-                outputStream.write((line + lineSeparator).getBytes());
-            }
-            outputStream.flush();
-        }
-    }
-
-    /**
      * installs syslinux from an InstallationSource to a target device
      *
      * @param source the installation source
@@ -762,9 +702,12 @@ public class DLCopy {
 
             // replace "isolinux" with "syslinux" in some files
             Pattern pattern = Pattern.compile("isolinux");
-            replaceText(syslinuxPath + "/exithelp.cfg", pattern, "syslinux");
-            replaceText(syslinuxPath + "/stdmenu.cfg", pattern, "syslinux");
-            replaceText(syslinuxPath + "/syslinux.cfg", pattern, "syslinux");
+            LernstickFileTools.replaceText(
+                    syslinuxPath + "/exithelp.cfg", pattern, "syslinux");
+            LernstickFileTools.replaceText(
+                    syslinuxPath + "/stdmenu.cfg", pattern, "syslinux");
+            LernstickFileTools.replaceText(
+                    syslinuxPath + "/syslinux.cfg", pattern, "syslinux");
 
             // remove boot.cat
             String bootCatFileName = syslinuxPath + "/boot.cat";
@@ -776,7 +719,7 @@ public class DLCopy {
 
             // update md5sum.txt
             String md5sumFileName = mountPoint + "/md5sum.txt";
-            replaceText(md5sumFileName, pattern, "syslinux");
+            LernstickFileTools.replaceText(md5sumFileName, pattern, "syslinux");
             File md5sumFile = new File(md5sumFileName);
             if (md5sumFile.exists()) {
                 List<String> lines = LernstickFileTools.readFile(md5sumFile);
@@ -787,7 +730,7 @@ public class DLCopy {
                         lines.remove(i);
                     }
                 }
-                writeFile(md5sumFile, lines);
+                LernstickFileTools.writeFile(md5sumFile, lines);
                 PROCESS_EXECUTOR.executeProcess("sync");
             } else {
                 LOGGER.log(Level.WARNING,
