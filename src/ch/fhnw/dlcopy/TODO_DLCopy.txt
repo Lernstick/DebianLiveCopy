@@ -4,6 +4,10 @@ kdesudo "java -Djava.library.path=/usr/lib/jni -jar dist/DLCopy_orig.jar --varia
 
 - ISO source for upgrades
 
+- custom and auto-incrementable "media ID" that can be applied to (both optional):
+	- exchange partition name
+	- host name (important for epoptes)
+
 - similar label pattern in installingDeviceStarted() and upgradingDeviceStarted()?
 
 - Berechnung der Partitionsgrössen bei Installation und Upgrade nochmal genauer ansehen

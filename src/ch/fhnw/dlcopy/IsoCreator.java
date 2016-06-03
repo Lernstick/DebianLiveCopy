@@ -253,8 +253,7 @@ public class IsoCreator
                             dlCopyGUI.showIsoProgressMessage(message, progress);
                         } catch (NumberFormatException ex) {
                             LOGGER.log(Level.WARNING,
-                                    "could not parse xorriso progress",
-                                    ex);
+                                    "could not parse xorriso progress", ex);
                         }
                     }
 
@@ -276,8 +275,7 @@ public class IsoCreator
                             dlCopyGUI.showIsoProgressMessage(message, progress);
                         } catch (NumberFormatException ex) {
                             LOGGER.log(Level.WARNING,
-                                    "could not parse mksquashfs progress",
-                                    ex);
+                                    "could not parse mksquashfs progress", ex);
                         }
                     }
                     break;
