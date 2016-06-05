@@ -107,6 +107,8 @@ public class DLCopySwingGUI extends JFrame
 
     private boolean persistenceBoot;
     private boolean textFieldTriggeredSliderChange;
+    private boolean listSelectionTriggeredSliderChange;
+    private int explicitExchangeSize;
 
     private DebianLiveDistribution debianLiveDistribution;
 
@@ -115,6 +117,7 @@ public class DLCopySwingGUI extends JFrame
     private JFileChooser addFileChooser;
     private RdiffBackupRestore rdiffBackupRestore;
     private Preferences preferences;
+    private final static String EXPLICIT_EXCHANGE_SIZE = "explicitExchangeSize";
     private final static String UPGRADE_SYSTEM_PARTITION = "upgradeSystemPartition";
     private final static String REACTIVATE_WELCOME = "reactivateWelcome";
     private final static String KEEP_PRINTER_SETTINGS = "keepPrinterSettings";
@@ -307,6 +310,7 @@ public class DLCopySwingGUI extends JFrame
         upgradeOverwriteList.setModel(upgradeOverwriteListModel);
 
         preferences = Preferences.userNodeForPackage(DLCopySwingGUI.class);
+        explicitExchangeSize = preferences.getInt(EXPLICIT_EXCHANGE_SIZE, 0);
         upgradeSystemPartitionCheckBox.setSelected(
                 preferences.getBoolean(UPGRADE_SYSTEM_PARTITION, true));
         reactivateWelcomeCheckBox.setSelected(
@@ -1028,9 +1032,13 @@ public class DLCopySwingGUI extends JFrame
         exchangePartitionSizeSlider.setEnabled(exchange);
         exchangePartitionSizeTextField.setEnabled(exchange);
         exchangePartitionSizeUnitLabel.setEnabled(exchange);
+
+        listSelectionTriggeredSliderChange = true;
         if (exchange) {
             int overheadMega = (int) (minOverhead / DLCopy.MEGA);
             exchangePartitionSizeSlider.setMaximum(overheadMega);
+            exchangePartitionSizeSlider.setValue(
+                    Math.min(explicitExchangeSize, overheadMega));
             setMajorTickSpacing(exchangePartitionSizeSlider, overheadMega);
             exchangePartitionSizeTextField.setText(
                     String.valueOf(exchangePartitionSizeSlider.getValue()));
@@ -1040,6 +1048,8 @@ public class DLCopySwingGUI extends JFrame
             // remove text
             exchangePartitionSizeTextField.setText(null);
         }
+        listSelectionTriggeredSliderChange = false;
+
         exchangePartitionLabel.setEnabled(exchange);
         exchangePartitionTextField.setEnabled(exchange);
         autoNumberPatternLabel.setEnabled(exchange);
@@ -3381,11 +3391,17 @@ public class DLCopySwingGUI extends JFrame
     }//GEN-LAST:event_formWindowClosing
 
     private void exchangePartitionSizeSliderStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_exchangePartitionSizeSliderStateChanged
+
         if (!textFieldTriggeredSliderChange) {
             // update value text field
             exchangePartitionSizeTextField.setText(
                     String.valueOf(exchangePartitionSizeSlider.getValue()));
         }
+
+        if (!listSelectionTriggeredSliderChange) {
+            explicitExchangeSize = exchangePartitionSizeSlider.getValue();
+        }
+
         // repaint partition list
         installStorageDeviceList.repaint();
 }//GEN-LAST:event_exchangePartitionSizeSliderStateChanged
@@ -4142,6 +4158,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private void exitProgram() {
         // save preferences
+        preferences.putInt(EXPLICIT_EXCHANGE_SIZE, explicitExchangeSize);
         preferences.putBoolean(UPGRADE_SYSTEM_PARTITION,
                 upgradeSystemPartitionCheckBox.isSelected());
         preferences.putBoolean(REACTIVATE_WELCOME,
