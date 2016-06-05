@@ -117,7 +117,18 @@ public class DLCopySwingGUI extends JFrame
     private JFileChooser addFileChooser;
     private RdiffBackupRestore rdiffBackupRestore;
     private Preferences preferences;
+    private final static String ISO_SOURCE_SELECTED = "isoSourceSelected";
+    private final static String ISO_SOURCE = "isoSource";
     private final static String EXPLICIT_EXCHANGE_SIZE = "explicitExchangeSize";
+    private final static String EXCHANGE_PARTITION_LABEL = "exchangePartitionLabel";
+    private final static String AUTO_NUMBER_PATTERN = "autoNumberPattern";
+    private final static String AUTO_NUMBER_START = "autoNumberStart";
+    private final static String AUTO_NUMBER_INCREMENT = "autoNumberIncrement";
+    private final static String EXCHANGE_PARTITION_FILESYSTEM = "exchangePartitionFileSystem";
+    private final static String COPY_EXCHANGE_PARTITION = "copyExchangePartition";
+    private final static String DATA_PARTITION_FILESYSTEM = "dataPartitionFileSystem";
+    private final static String DATA_PARTITION_MODE = "dataPartitionMode";
+    private final static String COPY_DATA_PARTITION = "copyDataPartition";
     private final static String UPGRADE_SYSTEM_PARTITION = "upgradeSystemPartition";
     private final static String REACTIVATE_WELCOME = "reactivateWelcome";
     private final static String KEEP_PRINTER_SETTINGS = "keepPrinterSettings";
@@ -180,6 +191,8 @@ public class DLCopySwingGUI extends JFrame
         Map<String, String> environment = new HashMap<>();
         environment.put("LC_ALL", "C");
         PROCESS_EXECUTOR.setEnvironment(environment);
+
+        preferences = Preferences.userNodeForPackage(DLCopySwingGUI.class);
 
         ToolTipManager.sharedInstance().setDismissDelay(60000);
 
@@ -276,30 +289,64 @@ public class DLCopySwingGUI extends JFrame
         repairStorageDeviceRenderer = new RepairStorageDeviceRenderer();
         repairStorageDeviceList.setCellRenderer(repairStorageDeviceRenderer);
 
+        try {
+            systemSource = new SystemInstallationSource(PROCESS_EXECUTOR);
+        } catch (IOException | DBusException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+        }
+        isoSourceRadioButton.setSelected(
+                preferences.getBoolean(ISO_SOURCE_SELECTED, false));
+        String isoSource = preferences.get(ISO_SOURCE, "");
+        if (!isoSource.isEmpty()) {
+            setISOInstallationSourcePath(isoSource);
+        }
+        updateInstallSourceGUI();
+
+        exchangePartitionTextField.setText(preferences.get(
+                EXCHANGE_PARTITION_LABEL, STRINGS.getString("Exchange")));
         AbstractDocument exchangePartitionDocument
                 = (AbstractDocument) exchangePartitionTextField.getDocument();
         exchangePartitionDocument.setDocumentFilter(new DocumentSizeFilter());
         exchangePartitionSizeTextField.getDocument().addDocumentListener(this);
 
+        autoNumberPatternTextField.setText(
+                preferences.get(AUTO_NUMBER_PATTERN, ""));
+        setSpinnerColums(autoNumberStartSpinner, 2);
+        autoNumberStartSpinner.setValue(
+                preferences.getInt(AUTO_NUMBER_START, 1));
+        setSpinnerColums(autoNumberIncrementSpinner, 2);
+        autoNumberIncrementSpinner.setValue(
+                preferences.getInt(AUTO_NUMBER_INCREMENT, 1));
+
+        isoLabelTextField.setText("lernstick");
+
+        String[] exchangePartitionFileSystemItems = null;
         switch (debianLiveDistribution) {
             case LERNSTICK:
-                isoLabelTextField.setText("lernstick");
-                // default to exFAT for exchange partition
-                ComboBoxModel model = new DefaultComboBoxModel(
-                        new String[]{"exFAT", "FAT32", "NTFS"});
-                exchangePartitionFileSystemComboBox.setModel(model);
-                exchangePartitionFileSystemComboBox.setSelectedItem("exFAT");
+                // default to exFAT for exchange partition                
+                exchangePartitionFileSystemItems
+                        = new String[]{"exFAT", "FAT32", "NTFS"};
                 break;
             case LERNSTICK_EXAM:
-                isoLabelTextField.setText("lernstick");
                 // default to FAT32 for exchange partition
                 // (rdiff-backup can't cope with destinations on exFAT)
-                model = new DefaultComboBoxModel(
-                        new String[]{"FAT32", "exFAT", "NTFS"});
-                exchangePartitionFileSystemComboBox.setModel(model);
-                exchangePartitionFileSystemComboBox.setSelectedItem("FAT32");
+                exchangePartitionFileSystemItems
+                        = new String[]{"FAT32", "exFAT", "NTFS"};
                 break;
         }
+        exchangePartitionFileSystemComboBox.setModel(
+                new DefaultComboBoxModel(exchangePartitionFileSystemItems));
+        exchangePartitionFileSystemComboBox.setSelectedItem(
+                preferences.get(EXCHANGE_PARTITION_FILESYSTEM,
+                        exchangePartitionFileSystemItems[0]));
+
+        copyExchangeCheckBox.setSelected(
+                preferences.getBoolean(COPY_EXCHANGE_PARTITION, false));
+
+        dataPartitionFileSystemComboBox.setSelectedItem(
+                preferences.get(DATA_PARTITION_FILESYSTEM, "ext4"));
+        copyDataPartitionCheckBox.setSelected(
+                preferences.getBoolean(COPY_DATA_PARTITION, false));
 
         // monitor udisks changes
         udisksMonitorThread = new UdisksMonitorThread();
@@ -309,7 +356,6 @@ public class DLCopySwingGUI extends JFrame
         upgradeOverwriteListModel.addListDataListener(this);
         upgradeOverwriteList.setModel(upgradeOverwriteListModel);
 
-        preferences = Preferences.userNodeForPackage(DLCopySwingGUI.class);
         explicitExchangeSize = preferences.getInt(EXPLICIT_EXCHANGE_SIZE, 0);
         upgradeSystemPartitionCheckBox.setSelected(
                 preferences.getBoolean(UPGRADE_SYSTEM_PARTITION, true));
@@ -329,9 +375,6 @@ public class DLCopySwingGUI extends JFrame
                 UPGRADE_OVERWRITE_LIST, "");
         fillUpgradeOverwriteList(upgradeOverWriteList);
 
-        // default to ext4 for data partition
-        dataPartitionFilesystemComboBox.setSelectedItem("ext4");
-
         // init data partition modes
         String[] dataPartitionModes = new String[]{
             STRINGS.getString("Read_Write"),
@@ -340,12 +383,11 @@ public class DLCopySwingGUI extends JFrame
         };
         dataPartitionModeComboBox.setModel(
                 new DefaultComboBoxModel(dataPartitionModes));
+        dataPartitionModeComboBox.setSelectedIndex(
+                preferences.getInt(DATA_PARTITION_MODE, 0));
+
         isoDataPartitionModeComboBox.setModel(
                 new DefaultComboBoxModel(dataPartitionModes));
-
-        // set colums for spinners
-        setSpinnerColums(autoNumberStartSpinner, 2);
-        setSpinnerColums(autoNumberIncrementSpinner, 2);
 
         installationResultsTableModel = new ResultsTableModel(
                 installationResultsTable);
@@ -372,13 +414,6 @@ public class DLCopySwingGUI extends JFrame
                 ResultsTableModel.SIZE_COLUMN);
         sizeColumn.setCellRenderer(new SizeTableCellRenderer());
         resultsTable.setRowSorter(new ResultsTableRowSorter(resultsTableModel));
-
-        try {
-            systemSource = new SystemInstallationSource(PROCESS_EXECUTOR);
-            setInstallationSource(systemSource);
-        } catch (IOException | DBusException ex) {
-            LOGGER.log(Level.SEVERE, "", ex);
-        }
 
         // TODO: pack() does not work reliably, it always uses the window size
         // from the NetBeans GUI designer!?
@@ -1061,7 +1096,7 @@ public class DLCopySwingGUI extends JFrame
         exchangePartitionFileSystemLabel.setEnabled(exchange);
         exchangePartitionFileSystemComboBox.setEnabled(exchange);
         copyExchangeCheckBox.setEnabled(exchange
-                && (source.hasExchangePartition()));
+                && (source != null) && source.hasExchangePartition());
 
         // enable nextButton?
         updateInstallNextButton();
@@ -1245,10 +1280,10 @@ public class DLCopySwingGUI extends JFrame
         copyExchangeCheckBox = new javax.swing.JCheckBox();
         dataPartitionPanel = new javax.swing.JPanel();
         dataPartitionFileSystemLabel = new javax.swing.JLabel();
-        dataPartitionFilesystemComboBox = new javax.swing.JComboBox();
+        dataPartitionFileSystemComboBox = new javax.swing.JComboBox();
         dataPartitionModeLabel = new javax.swing.JLabel();
         dataPartitionModeComboBox = new javax.swing.JComboBox();
-        copyPersistenceCheckBox = new javax.swing.JCheckBox();
+        copyDataPartitionCheckBox = new javax.swing.JCheckBox();
         installNoMediaPanel = new javax.swing.JPanel();
         installNoMediaLabel = new javax.swing.JLabel();
         installNoSourcePanel = new javax.swing.JPanel();
@@ -1935,13 +1970,13 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 0);
         dataPartitionPanel.add(dataPartitionFileSystemLabel, gridBagConstraints);
 
-        dataPartitionFilesystemComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ext2", "ext3", "ext4" }));
+        dataPartitionFileSystemComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ext2", "ext3", "ext4" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 10);
-        dataPartitionPanel.add(dataPartitionFilesystemComboBox, gridBagConstraints);
+        dataPartitionPanel.add(dataPartitionFileSystemComboBox, gridBagConstraints);
 
         dataPartitionModeLabel.setText(bundle.getString("DLCopySwingGUI.dataPartitionModeLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1954,13 +1989,13 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 10);
         dataPartitionPanel.add(dataPartitionModeComboBox, gridBagConstraints);
 
-        copyPersistenceCheckBox.setText(bundle.getString("Copy_Data_Partition")); // NOI18N
+        copyDataPartitionCheckBox.setText(bundle.getString("Copy_Data_Partition")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
-        dataPartitionPanel.add(copyPersistenceCheckBox, gridBagConstraints);
+        dataPartitionPanel.add(copyDataPartitionCheckBox, gridBagConstraints);
 
         installListTabbedPane.addTab(bundle.getString("DLCopySwingGUI.dataPartitionPanel.TabConstraints.tabTitle"), new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/green_box.png")), dataPartitionPanel); // NOI18N
 
@@ -3717,46 +3752,47 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             fileChooser.setSelectedFile(new File(isoSource));
         }
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            String selectedPath = fileChooser.getSelectedFile().getPath();
-            try {
-                IsoInstallationSource newIsoInstallationSource
-                        = new IsoInstallationSource(
-                                selectedPath, PROCESS_EXECUTOR);
-                if (isoInstallationSource != null) {
-                    isoInstallationSource.unmountTmpPartitions();
-                }
-                isoInstallationSource = newIsoInstallationSource;
-                setInstallationSource(isoInstallationSource);
-                isoSourceTextField.setText(selectedPath);
-                updateInstallationSource();
-            } catch (IllegalStateException ex) {
-                LOGGER.log(Level.INFO, "", ex);
-                String errorMessage = STRINGS.getString("Error_Invalid_ISO");
-                errorMessage = MessageFormat.format(errorMessage, selectedPath);
-                showErrorMessage(errorMessage);
-            } catch (IOException ex) {
-                LOGGER.log(Level.INFO, "", ex);
-                String errorMessage = STRINGS.getString("Error_Deprecyted_ISO");
-                errorMessage = MessageFormat.format(errorMessage, selectedPath);
-                showErrorMessage(errorMessage);
-            }
+            setISOInstallationSourcePath(
+                    fileChooser.getSelectedFile().getPath());
         }
     }//GEN-LAST:event_isoSourceFileChooserButtonActionPerformed
 
     private void runningSystemSourceRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_runningSystemSourceRadioButtonActionPerformed
         updateInstallSourceGUI();
-        setInstallationSource(systemSource);
     }//GEN-LAST:event_runningSystemSourceRadioButtonActionPerformed
 
     private void isoSourceRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_isoSourceRadioButtonActionPerformed
         updateInstallSourceGUI();
-        setInstallationSource(isoInstallationSource);
     }//GEN-LAST:event_isoSourceRadioButtonActionPerformed
 
     private void dataPartitionRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dataPartitionRadioButtonActionPerformed
         updateMediumPanel();
         setISOElementsEnabled(false);
     }//GEN-LAST:event_dataPartitionRadioButtonActionPerformed
+
+    private void setISOInstallationSourcePath(String path) {
+        try {
+            IsoInstallationSource newIsoInstallationSource
+                    = new IsoInstallationSource(path, PROCESS_EXECUTOR);
+            if (isoInstallationSource != null) {
+                isoInstallationSource.unmountTmpPartitions();
+            }
+            isoInstallationSource = newIsoInstallationSource;
+            setInstallationSource(isoInstallationSource);
+            isoSourceTextField.setText(path);
+            updateInstallationSource();
+        } catch (IllegalStateException ex) {
+            LOGGER.log(Level.INFO, "", ex);
+            String errorMessage = STRINGS.getString("Error_Invalid_ISO");
+            errorMessage = MessageFormat.format(errorMessage, path);
+            showErrorMessage(errorMessage);
+        } catch (IOException ex) {
+            LOGGER.log(Level.INFO, "", ex);
+            String errorMessage = STRINGS.getString("Error_Deprecyted_ISO");
+            errorMessage = MessageFormat.format(errorMessage, path);
+            showErrorMessage(errorMessage);
+        }
+    }
 
     private void setISOElementsEnabled(boolean enabled) {
         isoLabelLabel.setEnabled(enabled);
@@ -3800,17 +3836,21 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         upgradeSelectionHeaderLabel.setText(text);
 
         // detect if system has an exchange partition
-        if (!source.hasExchangePartition()) {
-            copyExchangeCheckBox.setEnabled(false);
+        boolean hasExchange = source.hasExchangePartition();
+        copyExchangeCheckBox.setEnabled(hasExchange);
+        if (!hasExchange) {
             copyExchangeCheckBox.setToolTipText(
                     STRINGS.getString("No_Exchange_Partition"));
         }
 
         Partition dataPartition = source.getDataPartition();
         if (dataPartition == null) {
-            copyPersistenceCheckBox.setEnabled(false);
-            copyPersistenceCheckBox.setToolTipText(
+            copyDataPartitionCheckBox.setEnabled(false);
+            copyDataPartitionCheckBox.setText(
+                    STRINGS.getString("Copy_Data_Partition"));
+            copyDataPartitionCheckBox.setToolTipText(
                     STRINGS.getString("No_Data_Partition"));
+
         } else {
             final String CMD_LINE_FILENAME = "/proc/cmdline";
             try {
@@ -3826,12 +3866,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             // We don't just disable the copyPersistenceCheckBox in the case of
             // persistenceBoot but show a more helpful error/hint dialog later.
-            copyPersistenceCheckBox.setEnabled(true);
+            copyDataPartitionCheckBox.setEnabled(true);
 
             String checkBoxText = STRINGS.getString("Copy_Data_Partition")
                     + " (" + LernstickFileTools.getDataVolumeString(
                             dataPartition.getUsedSpace(false), 1) + ')';
-            copyPersistenceCheckBox.setText(checkBoxText);
+            copyDataPartitionCheckBox.setText(checkBoxText);
         }
 
         DataPartitionMode sourceDataPartitionMode
@@ -3854,7 +3894,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 default:
                     LOGGER.warning("Unsupported data partition mode!");
             }
-            dataPartitionModeComboBox.setSelectedItem(selectedItem);
             isoDataPartitionModeComboBox.setSelectedItem(selectedItem);
         }
 
@@ -3877,6 +3916,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         boolean isoSource = isoSourceRadioButton.isSelected();
         isoSourceTextField.setEnabled(isoSource);
         isoSourceFileChooserButton.setEnabled(isoSource);
+        setInstallationSource(isoSource ? isoInstallationSource : systemSource);
         updateInstallationSource();
     }
 
@@ -3967,10 +4007,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         for (int i : selectedIndices) {
             deviceList.add(repairStorageDeviceListModel.get(i));
         }
-        // TODO: using dataPartitionFilesystemComboBox.getSelectedItem() here is
+        // TODO: using dataPartitionFileSystemComboBox.getSelectedItem() here is
         // ugly because the input field it is not visible when upgrading
         String dataPartitionFileSystem
-                = dataPartitionFilesystemComboBox.getSelectedItem().toString();
+                = dataPartitionFileSystemComboBox.getSelectedItem().toString();
 
         new Repairer(this, deviceList,
                 formatDataPartitionRadioButton.isSelected(),
@@ -4158,7 +4198,28 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private void exitProgram() {
         // save preferences
+        preferences.putBoolean(ISO_SOURCE_SELECTED,
+                isoSourceRadioButton.isSelected());
+        preferences.put(ISO_SOURCE, isoSourceTextField.getText());
         preferences.putInt(EXPLICIT_EXCHANGE_SIZE, explicitExchangeSize);
+        preferences.put(EXCHANGE_PARTITION_LABEL,
+                exchangePartitionTextField.getText());
+        preferences.put(AUTO_NUMBER_PATTERN,
+                autoNumberPatternTextField.getText());
+        preferences.putInt(AUTO_NUMBER_START,
+                ((Number) autoNumberStartSpinner.getValue()).intValue());
+        preferences.putInt(AUTO_NUMBER_INCREMENT,
+                ((Number) autoNumberIncrementSpinner.getValue()).intValue());
+        preferences.put(EXCHANGE_PARTITION_FILESYSTEM,
+                exchangePartitionFileSystemComboBox.getSelectedItem().toString());
+        preferences.putBoolean(COPY_EXCHANGE_PARTITION,
+                copyExchangeCheckBox.isSelected());
+        preferences.put(DATA_PARTITION_FILESYSTEM,
+                dataPartitionFileSystemComboBox.getSelectedItem().toString());
+        preferences.putInt(DATA_PARTITION_MODE,
+                dataPartitionModeComboBox.getSelectedIndex());
+        preferences.putBoolean(COPY_DATA_PARTITION,
+                copyDataPartitionCheckBox.isSelected());
         preferences.putBoolean(UPGRADE_SYSTEM_PARTITION,
                 upgradeSystemPartitionCheckBox.isSelected());
         preferences.putBoolean(REACTIVATE_WELCOME,
@@ -4228,9 +4289,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 systemSource.getDeviceName()).execute();
 
         // update copyExchangeCheckBox
-        if (source.hasExchangePartition()) {
-            long exchangeSize = source.getExchangePartition()
-                    .getUsedSpace(false);
+        if ((source != null) && source.hasExchangePartition()) {
+            long exchangeSize
+                    = source.getExchangePartition().getUsedSpace(false);
             String dataVolumeString
                     = LernstickFileTools.getDataVolumeString(exchangeSize, 1);
             copyExchangeCheckBox.setText(
@@ -4543,19 +4604,21 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 = exchangePartitionFileSystemComboBox.getSelectedItem();
         String exchangePartitionFileSystem = selectedFileSystem.toString();
         String dataPartitionFileSystem
-                = dataPartitionFilesystemComboBox.getSelectedItem().toString();
+                = dataPartitionFileSystemComboBox.getSelectedItem().toString();
         DataPartitionMode dataPartitionMode
                 = getDataPartitionMode(dataPartitionModeComboBox);
+        boolean copyExchange = copyExchangeCheckBox.isEnabled()
+                && copyExchangeCheckBox.isSelected();
+        boolean copyData = copyDataPartitionCheckBox.isEnabled()
+                & copyDataPartitionCheckBox.isSelected();
         resultsList = new ArrayList<>();
         batchCounter = 0;
 
         new Installer(source, deviceList, exchangePartitionTextField.getText(),
                 exchangePartitionFileSystem, dataPartitionFileSystem, this,
-                exchangePartitionSizeSlider.getValue(),
-                copyExchangeCheckBox.isSelected(), autoNumber,
-                autoIncrement, autoNumberPatternTextField.getText(),
-                copyPersistenceCheckBox.isSelected(),
-                dataPartitionMode).execute();
+                exchangePartitionSizeSlider.getValue(), copyExchange,
+                autoNumber, autoIncrement, autoNumberPatternTextField.getText(),
+                copyData, dataPartitionMode).execute();
     }
 
     private void upgrade() {
@@ -4693,10 +4756,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         Object selectedItem
                 = exchangePartitionFileSystemComboBox.getSelectedItem();
         String exchangePartitionFileSystem = selectedItem.toString();
-        // TODO: using dataPartitionFilesystemComboBox.getSelectedItem() here is
+        // TODO: using dataPartitionFileSystemComboBox.getSelectedItem() here is
         // ugly because the input field it is not visible when upgrading
         String dataPartitionFileSystem
-                = dataPartitionFilesystemComboBox.getSelectedItem().toString();
+                = dataPartitionFileSystemComboBox.getSelectedItem().toString();
 
         // TODO: using exchangePartitionTextField.getText() here is ugly
         // because the input field it is not visible when upgrading
@@ -4811,7 +4874,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private boolean checkPersistence(PartitionSizes partitionSizes)
             throws IOException, DBusException {
 
-        if (!copyPersistenceCheckBox.isSelected()) {
+        if (!(copyDataPartitionCheckBox.isEnabled()
+                && copyDataPartitionCheckBox.isSelected())) {
             return true;
         }
 
@@ -5014,8 +5078,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JPanel cardPanel;
     private javax.swing.JLabel choiceLabel;
     private javax.swing.JPanel choicePanel;
+    private javax.swing.JCheckBox copyDataPartitionCheckBox;
     private javax.swing.JCheckBox copyExchangeCheckBox;
-    private javax.swing.JCheckBox copyPersistenceCheckBox;
     private javax.swing.JLabel cpFilenameLabel;
     private javax.swing.JPanel cpPanel;
     private javax.swing.JProgressBar cpPogressBar;
@@ -5024,8 +5088,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel currentlyRepairedDeviceLabel;
     private javax.swing.JLabel currentlyUpgradedDeviceLabel;
     private javax.swing.JLabel dataDefinitionLabel;
+    private javax.swing.JComboBox dataPartitionFileSystemComboBox;
     private javax.swing.JLabel dataPartitionFileSystemLabel;
-    private javax.swing.JComboBox dataPartitionFilesystemComboBox;
     private javax.swing.JComboBox dataPartitionModeComboBox;
     private javax.swing.JLabel dataPartitionModeLabel;
     private javax.swing.JPanel dataPartitionPanel;
