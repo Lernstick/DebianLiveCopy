@@ -1,3 +1,9 @@
+dlcopy (201606051629-1) lernstick-8; urgency=medium
+
+  * [db1574] added support for instant installation via command line arguments
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 05 Jun 2016 16:29:52 +0200
+
 dlcopy (201606051412-1) lernstick-8; urgency=medium
 
   * [548f20] updated todo
