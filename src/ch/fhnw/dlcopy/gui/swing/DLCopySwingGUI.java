@@ -156,6 +156,12 @@ public class DLCopySwingGUI extends JFrame
     private StorageDevice currentDevice;
     private List<StorageDeviceResult> resultsList;
 
+    private Integer commandLineExchangePartitionSize;
+    private String commandLineExchangePartitionFileSystem;
+    private Boolean commandLineCopyDataPartition;
+    private boolean instantInstallation;
+    private boolean instantInstallationDone;
+
     /**
      * Creates new form DLCopy
      *
@@ -214,19 +220,8 @@ public class DLCopySwingGUI extends JFrame
 
         // parse command line arguments
         debianLiveDistribution = DebianLiveDistribution.DEFAULT;
-        for (int i = 0, length = arguments.length; i < length; i++) {
+        parseCommandLineArguments(arguments);
 
-            if (arguments[i].equals("--variant")
-                    && (i != length - 1)
-                    && (arguments[i + 1].equals("lernstick"))) {
-                debianLiveDistribution = DebianLiveDistribution.LERNSTICK;
-            }
-            if (arguments[i].equals("--variant")
-                    && (i != length - 1)
-                    && (arguments[i + 1].equals("lernstick-pu"))) {
-                debianLiveDistribution = DebianLiveDistribution.LERNSTICK_EXAM;
-            }
-        }
         if (LOGGER.isLoggable(Level.INFO)) {
             switch (debianLiveDistribution) {
                 case LERNSTICK:
@@ -336,17 +331,26 @@ public class DLCopySwingGUI extends JFrame
         }
         exchangePartitionFileSystemComboBox.setModel(
                 new DefaultComboBoxModel(exchangePartitionFileSystemItems));
-        exchangePartitionFileSystemComboBox.setSelectedItem(
-                preferences.get(EXCHANGE_PARTITION_FILESYSTEM,
-                        exchangePartitionFileSystemItems[0]));
+        if (commandLineExchangePartitionFileSystem == null) {
+            exchangePartitionFileSystemComboBox.setSelectedItem(
+                    preferences.get(EXCHANGE_PARTITION_FILESYSTEM,
+                            exchangePartitionFileSystemItems[0]));
+        } else {
+            exchangePartitionFileSystemComboBox.setSelectedItem(
+                    commandLineExchangePartitionFileSystem);
+        }
 
         copyExchangeCheckBox.setSelected(
                 preferences.getBoolean(COPY_EXCHANGE_PARTITION, false));
 
         dataPartitionFileSystemComboBox.setSelectedItem(
                 preferences.get(DATA_PARTITION_FILESYSTEM, "ext4"));
-        copyDataPartitionCheckBox.setSelected(
-                preferences.getBoolean(COPY_DATA_PARTITION, false));
+        if (commandLineCopyDataPartition == null) {
+            copyDataPartitionCheckBox.setSelected(
+                    preferences.getBoolean(COPY_DATA_PARTITION, false));
+        } else {
+            copyDataPartitionCheckBox.setSelected(commandLineCopyDataPartition);
+        }
 
         // monitor udisks changes
         udisksMonitorThread = new UdisksMonitorThread();
@@ -357,6 +361,9 @@ public class DLCopySwingGUI extends JFrame
         upgradeOverwriteList.setModel(upgradeOverwriteListModel);
 
         explicitExchangeSize = preferences.getInt(EXPLICIT_EXCHANGE_SIZE, 0);
+        if (commandLineExchangePartitionSize != null) {
+            explicitExchangeSize = commandLineExchangePartitionSize;
+        }
         upgradeSystemPartitionCheckBox.setSelected(
                 preferences.getBoolean(UPGRADE_SYSTEM_PARTITION, true));
         reactivateWelcomeCheckBox.setSelected(
@@ -420,6 +427,11 @@ public class DLCopySwingGUI extends JFrame
         //pack();
         setSize(1000, 600);
         setLocationRelativeTo(null);
+
+        if (instantInstallation) {
+            globalShow("executionPanel");
+            switchToInstallSelection();
+        }
     }
 
     @Override
@@ -640,6 +652,9 @@ public class DLCopySwingGUI extends JFrame
                 "Installation_Done_Message_From_Non_Removable_Boot_Device",
                 "Installation_Done_Message_From_Removable_Boot_Device",
                 "Installation_Report");
+        if (instantInstallation) {
+            instantInstallationDone = true;
+        }
     }
 
     @Override
@@ -987,11 +1002,24 @@ public class DLCopySwingGUI extends JFrame
      * checks
      */
     public void installStorageDeviceListChanged() {
+        // GUI changes
         storageDeviceListChanged(
                 installStorageDeviceListModel, installSelectionCardPanel,
                 "installNoMediaPanel", "installListPanel",
                 installStorageDeviceRenderer, installStorageDeviceList);
         updateInstallSelectionCountAndExchangeInfo();
+
+        // run instant installation if needed
+        if (instantInstallation && !instantInstallationDone) {
+            installStorageDeviceList.setSelectionInterval(
+                    0, installStorageDeviceListModel.size() - 1);
+            try {
+                checkAndInstallSelection(false);
+            } catch (IOException | DBusException ex) {
+                LOGGER.log(Level.SEVERE,
+                        "checking the selected usb flash drive failed", ex);
+            }
+        }
     }
 
     /**
@@ -3300,7 +3328,7 @@ public class DLCopySwingGUI extends JFrame
 
             case INSTALL_SELECTION:
                 try {
-                    checkInstallSelection();
+                    checkAndInstallSelection(true);
                 } catch (IOException | DBusException ex) {
                     LOGGER.log(Level.SEVERE,
                             "checking the selected usb flash drive failed", ex);
@@ -3375,7 +3403,7 @@ public class DLCopySwingGUI extends JFrame
                 break;
 
             case INSTALL_SELECTION:
-                switchToUSBInformation();
+                switchToInstallInformation();
                 break;
 
             case UPGRADE_SELECTION:
@@ -3455,7 +3483,7 @@ public class DLCopySwingGUI extends JFrame
 
     private void installButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_installButtonActionPerformed
         globalShow("executionPanel");
-        switchToUSBInformation();
+        switchToInstallInformation();
     }//GEN-LAST:event_installButtonActionPerformed
 
     private void toISOButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_toISOButtonActionPerformed
@@ -3770,6 +3798,52 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         setISOElementsEnabled(false);
     }//GEN-LAST:event_dataPartitionRadioButtonActionPerformed
 
+    private void parseCommandLineArguments(String[] arguments) {
+        for (int i = 0, length = arguments.length; i < length; i++) {
+
+            // lernstick variant
+            if (arguments[i].equals("--variant")
+                    && (i != length - 1)
+                    && (arguments[i + 1].equals("lernstick"))) {
+                debianLiveDistribution = DebianLiveDistribution.LERNSTICK;
+            }
+            if (arguments[i].equals("--variant")
+                    && (i != length - 1)
+                    && (arguments[i + 1].equals("lernstick-pu"))) {
+                debianLiveDistribution = DebianLiveDistribution.LERNSTICK_EXAM;
+            }
+
+            // exchange partition size
+            if (arguments[i].equals("--exchangePartitionSize")
+                    && (i != length - 1)) {
+                try {
+                    commandLineExchangePartitionSize
+                            = Integer.parseInt(arguments[i + 1]);
+                } catch (NumberFormatException numberFormatException) {
+                    LOGGER.log(Level.WARNING, "", numberFormatException);
+                }
+            }
+
+            // exchange partition file system
+            if (arguments[i].equals("--exchangePartitionFileSystem")
+                    && (i != length - 1)) {
+                commandLineExchangePartitionFileSystem = arguments[i + 1];
+            }
+
+            // if the data partition should be copied
+            if (arguments[i].equals("--copyDataPartition")
+                    && (i != length - 1)) {
+                if ("true".equalsIgnoreCase(arguments[i + 1])) {
+                    commandLineCopyDataPartition = true;
+                }
+            }
+
+            if (arguments[i].equals("--instantInstallation")) {
+                instantInstallation = true;
+            }
+        }
+    }
+
     private void setISOInstallationSourcePath(String path) {
         try {
             IsoInstallationSource newIsoInstallationSource
@@ -3838,7 +3912,16 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         // detect if system has an exchange partition
         boolean hasExchange = source.hasExchangePartition();
         copyExchangeCheckBox.setEnabled(hasExchange);
-        if (!hasExchange) {
+        if (hasExchange) {
+            long exchangeSize
+                    = source.getExchangePartition().getUsedSpace(false);
+            String dataVolumeString
+                    = LernstickFileTools.getDataVolumeString(exchangeSize, 1);
+            copyExchangeCheckBox.setText(STRINGS.getString(
+                    "DLCopySwingGUI.copyExchangeCheckBox.text")
+                    + " (" + dataVolumeString + ')');
+            copyExchangeCheckBox.setToolTipText(null);
+        } else {
             copyExchangeCheckBox.setToolTipText(
                     STRINGS.getString("No_Exchange_Partition"));
         }
@@ -4288,19 +4371,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 installShowHarddisksCheckBox.isSelected(),
                 systemSource.getDeviceName()).execute();
 
-        // update copyExchangeCheckBox
-        if ((source != null) && source.hasExchangePartition()) {
-            long exchangeSize
-                    = source.getExchangePartition().getUsedSpace(false);
-            String dataVolumeString
-                    = LernstickFileTools.getDataVolumeString(exchangeSize, 1);
-            copyExchangeCheckBox.setText(
-                    STRINGS.getString("DLCopySwingGUI.copyExchangeCheckBox.text")
-                    + " (" + dataVolumeString + ')');
-        }
-
         previousButton.setEnabled(true);
-        updateInstallSelectionCountAndExchangeInfo();
         showCard(cardPanel, "installSelectionPanel");
     }
 
@@ -4531,7 +4602,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         });
     }
 
-    private void checkInstallSelection() throws IOException, DBusException {
+    private void checkAndInstallSelection(boolean interactive)
+            throws IOException, DBusException {
 
         // check all selected target USB storage devices
         int[] selectedIndices = installStorageDeviceList.getSelectedIndices();
@@ -4574,7 +4646,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             JOptionPane.WARNING_MESSAGE);
                 }
             }
-        } else {
+        } else if (interactive) {
             int result = JOptionPane.showConfirmDialog(this,
                     STRINGS.getString("Final_Installation_Warning"),
                     STRINGS.getString("Warning"),
@@ -4921,7 +4993,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         state = State.ISO_INFORMATION;
     }
 
-    private void switchToUSBInformation() {
+    private void switchToInstallInformation() {
         setLabelHighlighted(infoStepLabel, true);
         setLabelHighlighted(selectionLabel, false);
         setLabelHighlighted(executionLabel, false);
