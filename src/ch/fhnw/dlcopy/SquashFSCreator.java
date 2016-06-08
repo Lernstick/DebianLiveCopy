@@ -178,6 +178,19 @@ public class SquashFSCreator
             LOGGER.log(Level.WARNING, "", iOException);
         }
 
+        // write exclude file
+        String excludes = "boot\n"
+                + "tmp\n"
+                + "var/log\n"
+                + "var/cache\n"
+                + "var/tmp";
+        File excludeFile = File.createTempFile("mksquashfs_exclude", null);
+        try (FileWriter writer = new FileWriter(excludeFile)) {
+            writer.write(excludes);
+        } catch (IOException iOException) {
+            LOGGER.log(Level.WARNING, "", iOException);
+        }
+
         // create new squashfs image
         squashFsPath = targetDirectory + "/lernstick.squashfs";
         dlCopyGUI.showIsoProgressMessage(
@@ -185,7 +198,9 @@ public class SquashFSCreator
         PROCESS_EXECUTOR.addPropertyChangeListener(this);
         String cowPath = cowDir.getPath();
         int exitValue = PROCESS_EXECUTOR.executeProcess("mksquashfs",
-                cowPath, squashFsPath, "-comp", "xz");
+                cowPath, squashFsPath,
+                "-comp", "xz",
+                "-ef", excludeFile.getPath());
         if (exitValue != 0) {
             throw new IOException(
                     STRINGS.getString("Error_Creating_Squashfs"));
