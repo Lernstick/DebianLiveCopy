@@ -1,3 +1,9 @@
+dlcopy (201606082302-1) lernstick-8; urgency=medium
+
+  * [d3fa29] added default excludes to SquashFSCreator
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Wed, 08 Jun 2016 23:02:33 +0200
+
 dlcopy (201606051629-1) lernstick-8; urgency=medium
 
   * [db1574] added support for instant installation via command line arguments
