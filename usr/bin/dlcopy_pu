@@ -1,3 +1,2 @@
 #!/bin/sh
-# because of https://savannah.nongnu.org/bugs/?37667 we need to redirect stderr to /dev/null
-java -Djava.library.path=/usr/lib/jni -Dawt.useSystemAAFontSettings=on -jar /usr/bin/DLCopy.jar --variant lernstick-pu $@ 2>/dev/null
+java -Djava.library.path=/usr/lib/jni -Dawt.useSystemAAFontSettings=on -jar /usr/bin/DLCopy.jar --variant lernstick-pu $@

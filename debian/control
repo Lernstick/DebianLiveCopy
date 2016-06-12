@@ -8,6 +8,7 @@ Homepage: http://www.imedias.ch/lernstick
 
 Package: dlcopy
 Architecture: all
+Conflicts: dlcopy-exam
 Depends: dlcopy-common (>= 201403091913)
 Description: an application to copy Debian Live to other storage media
  This is a small application that copies Debian Live to other storage media like
@@ -18,6 +19,7 @@ Description: an application to copy Debian Live to other storage media
 
 Package: dlcopy-exam
 Architecture: all
+Conflicts: dlcopy
 Depends: dlcopy-common
 Description: an application to copy Debian Live to other storage media
  This is a small application that copies Debian Live to other storage media like

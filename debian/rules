@@ -13,9 +13,11 @@ DESTDIR               = $(CURDIR)/debian/dlcopy
 DESTDIR_EXAM          = $(CURDIR)/debian/dlcopy-exam
 DESTDIR_COMMON        = $(CURDIR)/debian/dlcopy-common
 
+ACTIONSDIR            = $(DESTDIR)/usr/share/polkit-1/actions
 APPDIR                = $(DESTDIR)/usr/share/applications/
 BINDIR                = $(DESTDIR)/usr/bin/
 
+ACTIONSDIR_EXAM       = $(DESTDIR_EXAM)/usr/share/polkit-1/actions
 APPDIR_EXAM           = $(DESTDIR_EXAM)/usr/share/applications/
 BINDIR_EXAM           = $(DESTDIR_EXAM)/usr/bin/
 
@@ -53,12 +55,16 @@ install: build
 	cp usr/share/applications/ch-fhnw-dlcopy-dlcopy.desktop $(APPDIR)
 	mkdir -p $(BINDIR)
 	cp usr/bin/dlcopy $(BINDIR)
+	mkdir -p $(ACTIONSDIR)
+	cp usr/share/polkit-1/actions/ch.lernstick.dlcopy.policy $(ACTIONSDIR)
 
 	# exam environment package (binary and desktop file)
 	mkdir -p $(APPDIR_EXAM)
-	cp usr/share/applications/ch-fhnw-dlcopy-dlcopy-exam.desktop $(APPDIR_EXAM)/ch-fhnw-dlcopy-dlcopy.desktop
+	cp usr/share/applications/ch-fhnw-dlcopy-dlcopy.desktop $(APPDIR_EXAM)
 	mkdir -p $(BINDIR_EXAM)
-	cp usr/bin/dlcopy_pu $(BINDIR_EXAM)
+	cp usr/bin/dlcopy_pu $(BINDIR_EXAM)/dlcopy
+	mkdir -p $(ACTIONSDIR_EXAM)
+	cp usr/share/polkit-1/actions/ch.lernstick.dlcopy.policy $(ACTIONSDIR_EXAM)
 
 	# common package (JAR and icon)
 	mkdir -p $(ICON_DIR)
