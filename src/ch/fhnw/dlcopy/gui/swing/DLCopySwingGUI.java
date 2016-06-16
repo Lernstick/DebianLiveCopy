@@ -315,20 +315,18 @@ public class DLCopySwingGUI extends JFrame
 
         isoLabelTextField.setText("lernstick");
 
-        String[] exchangePartitionFileSystemItems = null;
-        switch (debianLiveDistribution) {
-            case LERNSTICK:
-                // default to exFAT for exchange partition                
-                exchangePartitionFileSystemItems
-                        = new String[]{"exFAT", "FAT32", "NTFS"};
-                break;
-            case LERNSTICK_EXAM:
-                // default to FAT32 for exchange partition
-                // (rdiff-backup can't cope with destinations on exFAT)
-                exchangePartitionFileSystemItems
-                        = new String[]{"FAT32", "exFAT", "NTFS"};
-                break;
+        String[] exchangePartitionFileSystemItems;
+        if (debianLiveDistribution == DebianLiveDistribution.LERNSTICK_EXAM) {
+            // default to FAT32 for exchange partition
+            // (rdiff-backup can't cope with destinations on exFAT)
+            exchangePartitionFileSystemItems
+                    = new String[]{"FAT32", "exFAT", "NTFS"};
+        } else {
+            // default to exFAT for exchange partition
+            exchangePartitionFileSystemItems
+                    = new String[]{"exFAT", "FAT32", "NTFS"};
         }
+
         exchangePartitionFileSystemComboBox.setModel(
                 new DefaultComboBoxModel(exchangePartitionFileSystemItems));
         if (commandLineExchangePartitionFileSystem == null) {
