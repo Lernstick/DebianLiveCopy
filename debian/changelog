@@ -1,3 +1,11 @@
+dlcopy (201606170923-1) lernstick-8; urgency=medium
+
+  [ Ronny Standtke ]
+  * [bf23bf] fixed NPE
+  * [fcdc07] updated French translation (thanks to Bastien Jacot-Guillarmod)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 17 Jun 2016 09:23:41 +0200
+
 dlcopy (201606121513-1) lernstick-8; urgency=medium
 
   * [4ec3da] switched from sudo to polkit
