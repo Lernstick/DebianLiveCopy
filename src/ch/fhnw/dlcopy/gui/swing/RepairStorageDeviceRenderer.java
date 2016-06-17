@@ -343,18 +343,7 @@ public class RepairStorageDeviceRenderer extends JPanel
 
         partitionGraphicsPanel.setOpaque(false);
         partitionGraphicsPanel.setPreferredSize(new java.awt.Dimension(0, 30));
-
-        javax.swing.GroupLayout partitionGraphicsPanelLayout = new javax.swing.GroupLayout(partitionGraphicsPanel);
-        partitionGraphicsPanel.setLayout(partitionGraphicsPanelLayout);
-        partitionGraphicsPanelLayout.setHorizontalGroup(
-            partitionGraphicsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 409, Short.MAX_VALUE)
-        );
-        partitionGraphicsPanelLayout.setVerticalGroup(
-            partitionGraphicsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 30, Short.MAX_VALUE)
-        );
-
+        partitionGraphicsPanel.setLayout(new java.awt.GridBagLayout());
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;

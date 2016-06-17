@@ -420,10 +420,21 @@ public class DLCopySwingGUI extends JFrame
         sizeColumn.setCellRenderer(new SizeTableCellRenderer());
         resultsTable.setRowSorter(new ResultsTableRowSorter(resultsTableModel));
 
-        // TODO: pack() does not work reliably, it always uses the window size
-        // from the NetBeans GUI designer!?
-        //pack();
-        setSize(1000, 600);
+        // The preferred heigth of our device lists is much too small. Therefore
+        // we hardcode it here.
+        Dimension preferredSize = 
+                installStorageDeviceListScrollPane.getPreferredSize();
+        preferredSize.height = 200;
+        installStorageDeviceListScrollPane.setPreferredSize(preferredSize);
+        pack();
+
+        // The preferred width of the labels with HTML text is much too wide.
+        // Therefore we reset the width to a sane size.
+        Dimension size = getSize();
+        size.width = 1000;
+        setSize(size);
+        
+        // center on screen
         setLocationRelativeTo(null);
 
         if (instantInstallation) {
@@ -1462,9 +1473,10 @@ public class DLCopySwingGUI extends JFrame
         resultsTitledPanel = new javax.swing.JPanel();
         resultsScrollPane = new javax.swing.JScrollPane();
         resultsTable = new javax.swing.JTable();
+        jSeparator2 = new javax.swing.JSeparator();
+        prevNextButtonPanel = new javax.swing.JPanel();
         previousButton = new javax.swing.JButton();
         nextButton = new javax.swing.JButton();
-        jSeparator2 = new javax.swing.JSeparator();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings"); // NOI18N
@@ -1499,14 +1511,14 @@ public class DLCopySwingGUI extends JFrame
         installButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         installButton.setName("installButton"); // NOI18N
         installButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        installButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                installButtonActionPerformed(evt);
-            }
-        });
         installButton.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 installButtonFocusGained(evt);
+            }
+        });
+        installButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                installButtonActionPerformed(evt);
             }
         });
         installButton.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -1625,52 +1637,54 @@ public class DLCopySwingGUI extends JFrame
 
         getContentPane().add(choicePanel, "choicePanel");
 
+        executionPanel.setLayout(new java.awt.GridBagLayout());
+
         stepsPanel.setBackground(java.awt.Color.white);
         stepsPanel.setBorder(javax.swing.BorderFactory.createEtchedBorder());
+        stepsPanel.setLayout(new java.awt.GridBagLayout());
 
         stepsLabel.setText(bundle.getString("DLCopySwingGUI.stepsLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
+        stepsPanel.add(stepsLabel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
+        stepsPanel.add(jSeparator1, gridBagConstraints);
 
         infoStepLabel.setFont(infoStepLabel.getFont().deriveFont(infoStepLabel.getFont().getStyle() | java.awt.Font.BOLD));
         infoStepLabel.setText(bundle.getString("DLCopySwingGUI.infoStepLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(15, 10, 0, 10);
+        stepsPanel.add(infoStepLabel, gridBagConstraints);
 
         selectionLabel.setFont(selectionLabel.getFont().deriveFont(selectionLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
         selectionLabel.setForeground(java.awt.Color.darkGray);
         selectionLabel.setText(bundle.getString("DLCopySwingGUI.selectionLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
+        stepsPanel.add(selectionLabel, gridBagConstraints);
 
         executionLabel.setFont(executionLabel.getFont().deriveFont(executionLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
         executionLabel.setForeground(java.awt.Color.darkGray);
         executionLabel.setText(bundle.getString("Installation_Label")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 10);
+        stepsPanel.add(executionLabel, gridBagConstraints);
 
-        javax.swing.GroupLayout stepsPanelLayout = new javax.swing.GroupLayout(stepsPanel);
-        stepsPanel.setLayout(stepsPanelLayout);
-        stepsPanelLayout.setHorizontalGroup(
-            stepsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(stepsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(stepsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jSeparator1, javax.swing.GroupLayout.DEFAULT_SIZE, 104, Short.MAX_VALUE)
-                    .addGroup(stepsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                        .addComponent(stepsLabel)
-                        .addComponent(infoStepLabel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addComponent(selectionLabel))
-                    .addComponent(executionLabel))
-                .addContainerGap())
-        );
-        stepsPanelLayout.setVerticalGroup(
-            stepsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(stepsPanelLayout.createSequentialGroup()
-                .addGap(6, 6, 6)
-                .addComponent(stepsLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator1, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(15, 15, 15)
-                .addComponent(infoStepLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(selectionLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(executionLabel)
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        executionPanel.add(stepsPanel, gridBagConstraints);
 
         cardPanel.setLayout(new java.awt.CardLayout());
 
@@ -1680,7 +1694,11 @@ public class DLCopySwingGUI extends JFrame
         infoLabel.setText(bundle.getString("DLCopySwingGUI.infoLabel.text")); // NOI18N
         infoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         infoLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        installInfoPanel.add(infoLabel, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        installInfoPanel.add(infoLabel, gridBagConstraints);
 
         cardPanel.add(installInfoPanel, "installInfoPanel");
 
@@ -2089,7 +2107,7 @@ public class DLCopySwingGUI extends JFrame
         installIndeterminateProgressPanel.setLayout(new java.awt.GridBagLayout());
 
         installIndeterminateProgressBar.setIndeterminate(true);
-        installIndeterminateProgressBar.setPreferredSize(new java.awt.Dimension(250, 25));
+        installIndeterminateProgressBar.setPreferredSize(new java.awt.Dimension(300, 25));
         installIndeterminateProgressBar.setString(bundle.getString("DLCopySwingGUI.installIndeterminateProgressBar.string")); // NOI18N
         installIndeterminateProgressBar.setStringPainted(true);
         installIndeterminateProgressPanel.add(installIndeterminateProgressBar, new java.awt.GridBagConstraints());
@@ -2191,33 +2209,15 @@ public class DLCopySwingGUI extends JFrame
 
         cardPanel.add(installTabbedPane, "installTabbedPane");
 
+        donePanel.setLayout(new java.awt.GridBagLayout());
+
         doneLabel.setFont(doneLabel.getFont().deriveFont(doneLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
         doneLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         doneLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/usbpendrive_unmount_tux.png"))); // NOI18N
         doneLabel.setText(bundle.getString("Installation_Done_Message_From_Removable_Boot_Device")); // NOI18N
         doneLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         doneLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-
-        javax.swing.GroupLayout donePanelLayout = new javax.swing.GroupLayout(donePanel);
-        donePanel.setLayout(donePanelLayout);
-        donePanelLayout.setHorizontalGroup(
-            donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 702, Short.MAX_VALUE)
-            .addGroup(donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(donePanelLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(doneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 678, Short.MAX_VALUE)
-                    .addContainerGap()))
-        );
-        donePanelLayout.setVerticalGroup(
-            donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 526, Short.MAX_VALUE)
-            .addGroup(donePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(donePanelLayout.createSequentialGroup()
-                    .addGap(83, 83, 83)
-                    .addComponent(doneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(277, Short.MAX_VALUE)))
-        );
+        donePanel.add(doneLabel, new java.awt.GridBagConstraints());
 
         cardPanel.add(donePanel, "donePanel");
 
@@ -2227,7 +2227,10 @@ public class DLCopySwingGUI extends JFrame
         upgradeInfoLabel.setText(bundle.getString("DLCopySwingGUI.upgradeInfoLabel.text")); // NOI18N
         upgradeInfoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         upgradeInfoLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        upgradeInfoPanel.add(upgradeInfoLabel, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        upgradeInfoPanel.add(upgradeInfoLabel, gridBagConstraints);
 
         cardPanel.add(upgradeInfoPanel, "upgradeInfoPanel");
 
@@ -2330,16 +2333,38 @@ public class DLCopySwingGUI extends JFrame
 
         upgradeSelectionTabbedPane.addTab(bundle.getString("DLCopySwingGUI.upgradeSelectionCardPanel.TabConstraints.tabTitle"), upgradeSelectionCardPanel); // NOI18N
 
+        upgradeOptionsPanel.setLayout(new java.awt.GridBagLayout());
+
         upgradeSystemPartitionCheckBox.setSelected(true);
         upgradeSystemPartitionCheckBox.setText(bundle.getString("DLCopySwingGUI.upgradeSystemPartitionCheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+        upgradeOptionsPanel.add(upgradeSystemPartitionCheckBox, gridBagConstraints);
 
         reactivateWelcomeCheckBox.setSelected(true);
         reactivateWelcomeCheckBox.setText(bundle.getString("DLCopySwingGUI.reactivateWelcomeCheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
+        upgradeOptionsPanel.add(reactivateWelcomeCheckBox, gridBagConstraints);
 
         keepPrinterSettingsCheckBox.setSelected(true);
         keepPrinterSettingsCheckBox.setText(bundle.getString("DLCopySwingGUI.keepPrinterSettingsCheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
+        upgradeOptionsPanel.add(keepPrinterSettingsCheckBox, gridBagConstraints);
 
         removeHiddenFilesCheckBox.setText(bundle.getString("DLCopySwingGUI.removeHiddenFilesCheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
+        upgradeOptionsPanel.add(removeHiddenFilesCheckBox, gridBagConstraints);
 
         automaticBackupCheckBox.setText(bundle.getString("DLCopySwingGUI.automaticBackupCheckBox.text")); // NOI18N
         automaticBackupCheckBox.addItemListener(new java.awt.event.ItemListener() {
@@ -2347,11 +2372,24 @@ public class DLCopySwingGUI extends JFrame
                 automaticBackupCheckBoxItemStateChanged(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
+        upgradeOptionsPanel.add(automaticBackupCheckBox, gridBagConstraints);
 
         automaticBackupLabel.setText(bundle.getString("DLCopySwingGUI.automaticBackupLabel.text")); // NOI18N
         automaticBackupLabel.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(0, 30, 0, 0);
+        upgradeOptionsPanel.add(automaticBackupLabel, gridBagConstraints);
 
         automaticBackupTextField.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        upgradeOptionsPanel.add(automaticBackupTextField, gridBagConstraints);
 
         automaticBackupButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/document-open-folder.png"))); // NOI18N
         automaticBackupButton.setEnabled(false);
@@ -2361,121 +2399,64 @@ public class DLCopySwingGUI extends JFrame
                 automaticBackupButtonActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 10);
+        upgradeOptionsPanel.add(automaticBackupButton, gridBagConstraints);
 
         automaticBackupRemoveCheckBox.setText(bundle.getString("DLCopySwingGUI.automaticBackupRemoveCheckBox.text")); // NOI18N
         automaticBackupRemoveCheckBox.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 28, 0, 10);
+        upgradeOptionsPanel.add(automaticBackupRemoveCheckBox, gridBagConstraints);
 
         repartitionExchangeOptionsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.repartitionExchangeOptionsPanel.border.title"))); // NOI18N
+        repartitionExchangeOptionsPanel.setLayout(new java.awt.GridBagLayout());
 
         exchangeButtonGroup.add(originalExchangeRadioButton);
         originalExchangeRadioButton.setSelected(true);
         originalExchangeRadioButton.setText(bundle.getString("DLCopySwingGUI.originalExchangeRadioButton.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        repartitionExchangeOptionsPanel.add(originalExchangeRadioButton, gridBagConstraints);
 
         exchangeButtonGroup.add(removeExchangeRadioButton);
         removeExchangeRadioButton.setText(bundle.getString("DLCopySwingGUI.removeExchangeRadioButton.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        repartitionExchangeOptionsPanel.add(removeExchangeRadioButton, gridBagConstraints);
 
         exchangeButtonGroup.add(resizeExchangeRadioButton);
         resizeExchangeRadioButton.setText(bundle.getString("DLCopySwingGUI.resizeExchangeRadioButton.text")); // NOI18N
+        repartitionExchangeOptionsPanel.add(resizeExchangeRadioButton, new java.awt.GridBagConstraints());
 
         resizeExchangeTextField.setColumns(4);
         resizeExchangeTextField.setHorizontalAlignment(javax.swing.JTextField.TRAILING);
+        repartitionExchangeOptionsPanel.add(resizeExchangeTextField, new java.awt.GridBagConstraints());
 
         resizeExchangeLabel.setText(bundle.getString("DLCopySwingGUI.resizeExchangeLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        repartitionExchangeOptionsPanel.add(resizeExchangeLabel, gridBagConstraints);
 
-        javax.swing.GroupLayout repartitionExchangeOptionsPanelLayout = new javax.swing.GroupLayout(repartitionExchangeOptionsPanel);
-        repartitionExchangeOptionsPanel.setLayout(repartitionExchangeOptionsPanelLayout);
-        repartitionExchangeOptionsPanelLayout.setHorizontalGroup(
-            repartitionExchangeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(repartitionExchangeOptionsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(repartitionExchangeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(removeExchangeRadioButton)
-                    .addComponent(originalExchangeRadioButton)
-                    .addGroup(repartitionExchangeOptionsPanelLayout.createSequentialGroup()
-                        .addComponent(resizeExchangeRadioButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(resizeExchangeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(resizeExchangeLabel)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-        );
-        repartitionExchangeOptionsPanelLayout.setVerticalGroup(
-            repartitionExchangeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(repartitionExchangeOptionsPanelLayout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(removeExchangeRadioButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(originalExchangeRadioButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(repartitionExchangeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(resizeExchangeRadioButton)
-                    .addComponent(resizeExchangeTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addComponent(resizeExchangeLabel)))
-        );
-
-        javax.swing.GroupLayout upgradeOptionsPanelLayout = new javax.swing.GroupLayout(upgradeOptionsPanel);
-        upgradeOptionsPanel.setLayout(upgradeOptionsPanelLayout);
-        upgradeOptionsPanelLayout.setHorizontalGroup(
-            upgradeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(upgradeOptionsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(upgradeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(repartitionExchangeOptionsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(upgradeOptionsPanelLayout.createSequentialGroup()
-                        .addGroup(upgradeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addGroup(upgradeOptionsPanelLayout.createSequentialGroup()
-                                .addGroup(upgradeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                                    .addComponent(automaticBackupLabel)
-                                    .addComponent(automaticBackupCheckBox))
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(automaticBackupTextField)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED))
-                            .addGroup(upgradeOptionsPanelLayout.createSequentialGroup()
-                                .addGap(14, 14, 14)
-                                .addComponent(automaticBackupRemoveCheckBox)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                        .addComponent(automaticBackupButton))
-                    .addGroup(upgradeOptionsPanelLayout.createSequentialGroup()
-                        .addGroup(upgradeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(upgradeSystemPartitionCheckBox)
-                            .addComponent(reactivateWelcomeCheckBox)
-                            .addComponent(keepPrinterSettingsCheckBox)
-                            .addComponent(removeHiddenFilesCheckBox))
-                        .addGap(0, 136, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        upgradeOptionsPanelLayout.setVerticalGroup(
-            upgradeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(upgradeOptionsPanelLayout.createSequentialGroup()
-                .addGroup(upgradeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(upgradeOptionsPanelLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(upgradeSystemPartitionCheckBox)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(reactivateWelcomeCheckBox)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(keepPrinterSettingsCheckBox)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(removeHiddenFilesCheckBox)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(automaticBackupCheckBox)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addGroup(upgradeOptionsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.CENTER)
-                            .addComponent(automaticBackupButton)
-                            .addComponent(automaticBackupTextField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(automaticBackupRemoveCheckBox))
-                    .addGroup(upgradeOptionsPanelLayout.createSequentialGroup()
-                        .addGap(127, 127, 127)
-                        .addComponent(automaticBackupLabel)))
-                .addGap(18, 18, 18)
-                .addComponent(repartitionExchangeOptionsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addContainerGap(134, Short.MAX_VALUE))
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(20, 10, 10, 10);
+        upgradeOptionsPanel.add(repartitionExchangeOptionsPanel, gridBagConstraints);
 
         upgradeDetailsTabbedPane.addTab(bundle.getString("DLCopySwingGUI.upgradeOptionsPanel.TabConstraints.tabTitle"), upgradeOptionsPanel); // NOI18N
 
         upgradeOverwritePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
+        upgradeOverwritePanel.setLayout(new java.awt.GridBagLayout());
 
         upgradeMoveUpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/arrow-up.png"))); // NOI18N
         upgradeMoveUpButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeMoveUpButton.toolTipText")); // NOI18N
@@ -2486,6 +2467,11 @@ public class DLCopySwingGUI extends JFrame
                 upgradeMoveUpButtonActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        upgradeOverwritePanel.add(upgradeMoveUpButton, gridBagConstraints);
 
         upgradeMoveDownButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/arrow-down.png"))); // NOI18N
         upgradeMoveDownButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeMoveDownButton.toolTipText")); // NOI18N
@@ -2496,6 +2482,11 @@ public class DLCopySwingGUI extends JFrame
                 upgradeMoveDownButtonActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
+        upgradeOverwritePanel.add(upgradeMoveDownButton, gridBagConstraints);
 
         sortAscendingButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/view-sort-ascending.png"))); // NOI18N
         sortAscendingButton.setToolTipText(bundle.getString("DLCopySwingGUI.sortAscendingButton.toolTipText")); // NOI18N
@@ -2506,6 +2497,11 @@ public class DLCopySwingGUI extends JFrame
                 sortAscendingButtonActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
+        upgradeOverwritePanel.add(sortAscendingButton, gridBagConstraints);
 
         sortDescendingButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/view-sort-descending.png"))); // NOI18N
         sortDescendingButton.setToolTipText(bundle.getString("DLCopySwingGUI.sortDescendingButton.toolTipText")); // NOI18N
@@ -2516,6 +2512,11 @@ public class DLCopySwingGUI extends JFrame
                 sortDescendingButtonActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
+        upgradeOverwritePanel.add(sortDescendingButton, gridBagConstraints);
 
         upgradeOverwriteList.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -2529,6 +2530,16 @@ public class DLCopySwingGUI extends JFrame
         });
         upgradeOverwriteScrollPane.setViewportView(upgradeOverwriteList);
 
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridheight = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
+        upgradeOverwritePanel.add(upgradeOverwriteScrollPane, gridBagConstraints);
+
         upgradeOverwriteAddButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/list-add.png"))); // NOI18N
         upgradeOverwriteAddButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeOverwriteAddButton.toolTipText")); // NOI18N
         upgradeOverwriteAddButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -2537,6 +2548,11 @@ public class DLCopySwingGUI extends JFrame
                 upgradeOverwriteAddButtonActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+        upgradeOverwritePanel.add(upgradeOverwriteAddButton, gridBagConstraints);
 
         upgradeOverwriteEditButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/document-edit.png"))); // NOI18N
         upgradeOverwriteEditButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeOverwriteEditButton.toolTipText")); // NOI18N
@@ -2547,6 +2563,11 @@ public class DLCopySwingGUI extends JFrame
                 upgradeOverwriteEditButtonActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
+        upgradeOverwritePanel.add(upgradeOverwriteEditButton, gridBagConstraints);
 
         upgradeOverwriteRemoveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/list-remove.png"))); // NOI18N
         upgradeOverwriteRemoveButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeOverwriteRemoveButton.toolTipText")); // NOI18N
@@ -2557,6 +2578,11 @@ public class DLCopySwingGUI extends JFrame
                 upgradeOverwriteRemoveButtonActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
+        upgradeOverwritePanel.add(upgradeOverwriteRemoveButton, gridBagConstraints);
 
         upgradeOverwriteExportButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/document-export.png"))); // NOI18N
         upgradeOverwriteExportButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeOverwriteExportButton.toolTipText")); // NOI18N
@@ -2566,6 +2592,11 @@ public class DLCopySwingGUI extends JFrame
                 upgradeOverwriteExportButtonActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
+        upgradeOverwritePanel.add(upgradeOverwriteExportButton, gridBagConstraints);
 
         upgradeOverwriteImportButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/document-import.png"))); // NOI18N
         upgradeOverwriteImportButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeOverwriteImportButton.toolTipText")); // NOI18N
@@ -2575,60 +2606,12 @@ public class DLCopySwingGUI extends JFrame
                 upgradeOverwriteImportButtonActionPerformed(evt);
             }
         });
-
-        javax.swing.GroupLayout upgradeOverwritePanelLayout = new javax.swing.GroupLayout(upgradeOverwritePanel);
-        upgradeOverwritePanel.setLayout(upgradeOverwritePanelLayout);
-        upgradeOverwritePanelLayout.setHorizontalGroup(
-            upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, upgradeOverwritePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                        .addComponent(upgradeMoveUpButton)
-                        .addComponent(upgradeMoveDownButton))
-                    .addComponent(sortAscendingButton)
-                    .addComponent(sortDescendingButton))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(upgradeOverwriteScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 602, Short.MAX_VALUE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(upgradeOverwriteAddButton, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(upgradeOverwriteEditButton, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(upgradeOverwriteRemoveButton, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(upgradeOverwriteExportButton, javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addComponent(upgradeOverwriteImportButton, javax.swing.GroupLayout.Alignment.TRAILING))
-                .addContainerGap())
-        );
-        upgradeOverwritePanelLayout.setVerticalGroup(
-            upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
-                        .addComponent(upgradeOverwriteAddButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(upgradeOverwriteEditButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(upgradeOverwriteRemoveButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(upgradeOverwriteExportButton)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(upgradeOverwriteImportButton)
-                        .addGap(0, 259, Short.MAX_VALUE))
-                    .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
-                        .addGroup(upgradeOverwritePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                            .addComponent(upgradeOverwriteScrollPane)
-                            .addGroup(upgradeOverwritePanelLayout.createSequentialGroup()
-                                .addComponent(upgradeMoveUpButton, javax.swing.GroupLayout.PREFERRED_SIZE, 26, javax.swing.GroupLayout.PREFERRED_SIZE)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(upgradeMoveDownButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(sortAscendingButton)
-                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                                .addComponent(sortDescendingButton)
-                                .addGap(0, 0, Short.MAX_VALUE)))
-                        .addContainerGap())))
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
+        upgradeOverwritePanel.add(upgradeOverwriteImportButton, gridBagConstraints);
 
         upgradeDetailsTabbedPane.addTab(bundle.getString("DLCopySwingGUI.upgradeOverwritePanel.TabConstraints.tabTitle"), upgradeOverwritePanel); // NOI18N
 
@@ -2756,7 +2739,10 @@ public class DLCopySwingGUI extends JFrame
         repairInfoLabel.setText(bundle.getString("DLCopySwingGUI.repairInfoLabel.text")); // NOI18N
         repairInfoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         repairInfoLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        repairInfoPanel.add(repairInfoLabel, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        repairInfoPanel.add(repairInfoLabel, gridBagConstraints);
 
         cardPanel.add(repairInfoPanel, "repairInfoPanel");
 
@@ -2798,7 +2784,14 @@ public class DLCopySwingGUI extends JFrame
 
         repairSelectionCardPanel.add(repairNoMediaPanel, "repairNoMediaPanel");
 
+        repairSelectionDeviceListPanel.setLayout(new java.awt.GridBagLayout());
+
         repairSelectionCountLabel.setText(bundle.getString("DLCopySwingGUI.repairSelectionCountLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        repairSelectionDeviceListPanel.add(repairSelectionCountLabel, gridBagConstraints);
 
         repairStorageDeviceList.setName("storageDeviceList"); // NOI18N
         repairStorageDeviceList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -2808,17 +2801,41 @@ public class DLCopySwingGUI extends JFrame
         });
         repairStorageDeviceListScrollPane.setViewportView(repairStorageDeviceList);
 
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+        repairSelectionDeviceListPanel.add(repairStorageDeviceListScrollPane, gridBagConstraints);
+
         repairExchangeDefinitionLabel.setFont(repairExchangeDefinitionLabel.getFont().deriveFont(repairExchangeDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, repairExchangeDefinitionLabel.getFont().getSize()-1));
         repairExchangeDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/yellow_box.png"))); // NOI18N
         repairExchangeDefinitionLabel.setText(bundle.getString("DLCopySwingGUI.repairExchangeDefinitionLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+        repairSelectionDeviceListPanel.add(repairExchangeDefinitionLabel, gridBagConstraints);
 
         repairDataDefinitionLabel.setFont(repairDataDefinitionLabel.getFont().deriveFont(repairDataDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, repairDataDefinitionLabel.getFont().getSize()-1));
         repairDataDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/green_box.png"))); // NOI18N
         repairDataDefinitionLabel.setText(bundle.getString("DLCopySwingGUI.repairDataDefinitionLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
+        repairSelectionDeviceListPanel.add(repairDataDefinitionLabel, gridBagConstraints);
 
         repairOsDefinitionLabel.setFont(repairOsDefinitionLabel.getFont().deriveFont(repairOsDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, repairOsDefinitionLabel.getFont().getSize()-1));
         repairOsDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/blue_box.png"))); // NOI18N
         repairOsDefinitionLabel.setText(bundle.getString("DLCopySwingGUI.repairOsDefinitionLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
+        repairSelectionDeviceListPanel.add(repairOsDefinitionLabel, gridBagConstraints);
 
         repairButtonGroup.add(formatDataPartitionRadioButton);
         formatDataPartitionRadioButton.setText(bundle.getString("DLCopySwingGUI.formatDataPartitionRadioButton.text")); // NOI18N
@@ -2827,6 +2844,11 @@ public class DLCopySwingGUI extends JFrame
                 formatDataPartitionRadioButtonActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+        repairSelectionDeviceListPanel.add(formatDataPartitionRadioButton, gridBagConstraints);
 
         repairButtonGroup.add(removeFilesRadioButton);
         removeFilesRadioButton.setSelected(true);
@@ -2836,56 +2858,25 @@ public class DLCopySwingGUI extends JFrame
                 removeFilesRadioButtonActionPerformed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
+        repairSelectionDeviceListPanel.add(removeFilesRadioButton, gridBagConstraints);
 
         systemFilesCheckBox.setSelected(true);
         systemFilesCheckBox.setText(bundle.getString("DLCopySwingGUI.systemFilesCheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 30, 10, 0);
+        repairSelectionDeviceListPanel.add(systemFilesCheckBox, gridBagConstraints);
 
         homeDirectoryCheckBox.setText(bundle.getString("DLCopySwingGUI.homeDirectoryCheckBox.text")); // NOI18N
-
-        javax.swing.GroupLayout repairSelectionDeviceListPanelLayout = new javax.swing.GroupLayout(repairSelectionDeviceListPanel);
-        repairSelectionDeviceListPanel.setLayout(repairSelectionDeviceListPanelLayout);
-        repairSelectionDeviceListPanelLayout.setHorizontalGroup(
-            repairSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(repairSelectionDeviceListPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(repairSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 678, Short.MAX_VALUE)
-                    .addComponent(repairSelectionCountLabel)
-                    .addComponent(repairDataDefinitionLabel)
-                    .addComponent(repairExchangeDefinitionLabel)
-                    .addComponent(repairOsDefinitionLabel)
-                    .addComponent(formatDataPartitionRadioButton)
-                    .addComponent(removeFilesRadioButton)
-                    .addGroup(repairSelectionDeviceListPanelLayout.createSequentialGroup()
-                        .addGap(21, 21, 21)
-                        .addComponent(systemFilesCheckBox)
-                        .addGap(18, 18, 18)
-                        .addComponent(homeDirectoryCheckBox)))
-                .addContainerGap())
-        );
-        repairSelectionDeviceListPanelLayout.setVerticalGroup(
-            repairSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(repairSelectionDeviceListPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(repairSelectionCountLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(repairStorageDeviceListScrollPane, javax.swing.GroupLayout.DEFAULT_SIZE, 290, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addComponent(repairExchangeDefinitionLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(repairDataDefinitionLabel)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(repairOsDefinitionLabel)
-                .addGap(18, 18, 18)
-                .addComponent(formatDataPartitionRadioButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(removeFilesRadioButton)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(repairSelectionDeviceListPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(systemFilesCheckBox)
-                    .addComponent(homeDirectoryCheckBox))
-                .addContainerGap())
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 10);
+        repairSelectionDeviceListPanel.add(homeDirectoryCheckBox, gridBagConstraints);
 
         repairSelectionCardPanel.add(repairSelectionDeviceListPanel, "repairSelectionDeviceListPanel");
 
@@ -2929,14 +2920,25 @@ public class DLCopySwingGUI extends JFrame
         toISOInfoLabel.setText(bundle.getString("DLCopySwingGUI.toISOInfoLabel.text")); // NOI18N
         toISOInfoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         toISOInfoLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        toISOInfoPanel.add(toISOInfoLabel, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        toISOInfoPanel.add(toISOInfoLabel, gridBagConstraints);
 
         cardPanel.add(toISOInfoPanel, "toISOInfoPanel");
+
+        toISOSelectionPanel.setLayout(new java.awt.GridBagLayout());
 
         tmpDriveInfoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         tmpDriveInfoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/file_temporary.png"))); // NOI18N
         tmpDriveInfoLabel.setText(bundle.getString("DLCopySwingGUI.tmpDriveInfoLabel.text")); // NOI18N
         tmpDriveInfoLabel.setIconTextGap(15);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+        toISOSelectionPanel.add(tmpDriveInfoLabel, gridBagConstraints);
 
         toIsoGridBagPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -3065,39 +3067,24 @@ public class DLCopySwingGUI extends JFrame
         isoOptionsCardPanel.setLayout(new java.awt.CardLayout());
 
         systemMediumPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.systemMediumPanel.border.title"))); // NOI18N
+        systemMediumPanel.setLayout(new java.awt.GridBagLayout());
 
         showNotUsedDialogCheckBox.setText(bundle.getString("DLCopySwingGUI.showNotUsedDialogCheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        systemMediumPanel.add(showNotUsedDialogCheckBox, gridBagConstraints);
 
         autoStartInstallerCheckBox.setText(bundle.getString("DLCopySwingGUI.autoStartInstallerCheckBox.text")); // NOI18N
-
-        javax.swing.GroupLayout systemMediumPanelLayout = new javax.swing.GroupLayout(systemMediumPanel);
-        systemMediumPanel.setLayout(systemMediumPanelLayout);
-        systemMediumPanelLayout.setHorizontalGroup(
-            systemMediumPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(showNotUsedDialogCheckBox)
-            .addComponent(autoStartInstallerCheckBox)
-        );
-        systemMediumPanelLayout.setVerticalGroup(
-            systemMediumPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(systemMediumPanelLayout.createSequentialGroup()
-                .addComponent(showNotUsedDialogCheckBox)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(autoStartInstallerCheckBox))
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        systemMediumPanel.add(autoStartInstallerCheckBox, gridBagConstraints);
 
         isoOptionsCardPanel.add(systemMediumPanel, "systemMediumPanel");
 
-        javax.swing.GroupLayout bootMediumPanelLayout = new javax.swing.GroupLayout(bootMediumPanel);
-        bootMediumPanel.setLayout(bootMediumPanelLayout);
-        bootMediumPanelLayout.setHorizontalGroup(
-            bootMediumPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 365, Short.MAX_VALUE)
-        );
-        bootMediumPanelLayout.setVerticalGroup(
-            bootMediumPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 68, Short.MAX_VALUE)
-        );
-
+        bootMediumPanel.setLayout(new java.awt.GridBagLayout());
         isoOptionsCardPanel.add(bootMediumPanel, "bootMediumPanel");
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -3112,26 +3099,13 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         toIsoGridBagPanel.add(isoOptionsPanel, gridBagConstraints);
 
-        javax.swing.GroupLayout toISOSelectionPanelLayout = new javax.swing.GroupLayout(toISOSelectionPanel);
-        toISOSelectionPanel.setLayout(toISOSelectionPanelLayout);
-        toISOSelectionPanelLayout.setHorizontalGroup(
-            toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(toISOSelectionPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(tmpDriveInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(toIsoGridBagPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 678, Short.MAX_VALUE))
-                .addContainerGap())
-        );
-        toISOSelectionPanelLayout.setVerticalGroup(
-            toISOSelectionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(toISOSelectionPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(tmpDriveInfoLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 201, Short.MAX_VALUE)
-                .addGap(18, 18, 18)
-                .addComponent(toIsoGridBagPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 283, Short.MAX_VALUE)
-                .addContainerGap())
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(30, 10, 10, 10);
+        toISOSelectionPanel.add(toIsoGridBagPanel, gridBagConstraints);
 
         cardPanel.add(toISOSelectionPanel, "toISOSelectionPanel");
 
@@ -3155,37 +3129,27 @@ public class DLCopySwingGUI extends JFrame
 
         cardPanel.add(toISOProgressPanel, "toISOProgressPanel");
 
+        toISODonePanel.setLayout(new java.awt.GridBagLayout());
+
         isoDoneLabel.setFont(isoDoneLabel.getFont().deriveFont(isoDoneLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
         isoDoneLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         isoDoneLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/usb2dvd.png"))); // NOI18N
         isoDoneLabel.setText(bundle.getString("DLCopySwingGUI.isoDoneLabel.text")); // NOI18N
         isoDoneLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         isoDoneLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-
-        javax.swing.GroupLayout toISODonePanelLayout = new javax.swing.GroupLayout(toISODonePanel);
-        toISODonePanel.setLayout(toISODonePanelLayout);
-        toISODonePanelLayout.setHorizontalGroup(
-            toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 702, Short.MAX_VALUE)
-            .addGroup(toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(toISODonePanelLayout.createSequentialGroup()
-                    .addContainerGap()
-                    .addComponent(isoDoneLabel, javax.swing.GroupLayout.DEFAULT_SIZE, 678, Short.MAX_VALUE)
-                    .addContainerGap()))
-        );
-        toISODonePanelLayout.setVerticalGroup(
-            toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 526, Short.MAX_VALUE)
-            .addGroup(toISODonePanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                .addGroup(toISODonePanelLayout.createSequentialGroup()
-                    .addGap(83, 83, 83)
-                    .addComponent(isoDoneLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addContainerGap(202, Short.MAX_VALUE)))
-        );
+        toISODonePanel.add(isoDoneLabel, new java.awt.GridBagConstraints());
 
         cardPanel.add(toISODonePanel, "toISODonePanel");
 
+        resultsPanel.setLayout(new java.awt.GridBagLayout());
+
         resultsInfoLabel.setText(bundle.getString("Installation_Done_Message_From_Removable_Boot_Device")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 15, 0, 10);
+        resultsPanel.add(resultsInfoLabel, gridBagConstraints);
 
         resultsTitledPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("Installation_Report"))); // NOI18N
         resultsTitledPanel.setLayout(new java.awt.GridBagLayout());
@@ -3200,38 +3164,41 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.weighty = 1.0;
         resultsTitledPanel.add(resultsScrollPane, gridBagConstraints);
 
-        javax.swing.GroupLayout resultsPanelLayout = new javax.swing.GroupLayout(resultsPanel);
-        resultsPanel.setLayout(resultsPanelLayout);
-        resultsPanelLayout.setHorizontalGroup(
-            resultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(resultsTitledPanel, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 702, Short.MAX_VALUE)
-            .addGroup(resultsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(resultsInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                .addContainerGap())
-        );
-        resultsPanelLayout.setVerticalGroup(
-            resultsPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(resultsPanelLayout.createSequentialGroup()
-                .addContainerGap()
-                .addComponent(resultsInfoLabel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(resultsTitledPanel, javax.swing.GroupLayout.DEFAULT_SIZE, 388, Short.MAX_VALUE))
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        resultsPanel.add(resultsTitledPanel, gridBagConstraints);
 
         cardPanel.add(resultsPanel, "resultsPanel");
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 10);
+        executionPanel.add(cardPanel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+        executionPanel.add(jSeparator2, gridBagConstraints);
+
+        prevNextButtonPanel.setLayout(new java.awt.GridBagLayout());
 
         previousButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/previous.png"))); // NOI18N
         previousButton.setText(bundle.getString("DLCopySwingGUI.previousButton.text")); // NOI18N
         previousButton.setName("previousButton"); // NOI18N
-        previousButton.addFocusListener(new java.awt.event.FocusAdapter() {
-            public void focusGained(java.awt.event.FocusEvent evt) {
-                previousButtonFocusGained(evt);
-            }
-        });
         previousButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 previousButtonActionPerformed(evt);
+            }
+        });
+        previousButton.addFocusListener(new java.awt.event.FocusAdapter() {
+            public void focusGained(java.awt.event.FocusEvent evt) {
+                previousButtonFocusGained(evt);
             }
         });
         previousButton.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -3239,6 +3206,10 @@ public class DLCopySwingGUI extends JFrame
                 previousButtonKeyPressed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.weightx = 1.0;
+        prevNextButtonPanel.add(previousButton, gridBagConstraints);
 
         nextButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/next.png"))); // NOI18N
         nextButton.setText(bundle.getString("DLCopySwingGUI.nextButton.text")); // NOI18N
@@ -3258,41 +3229,15 @@ public class DLCopySwingGUI extends JFrame
                 nextButtonKeyPressed(evt);
             }
         });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
+        prevNextButtonPanel.add(nextButton, gridBagConstraints);
 
-        javax.swing.GroupLayout executionPanelLayout = new javax.swing.GroupLayout(executionPanel);
-        executionPanel.setLayout(executionPanelLayout);
-        executionPanelLayout.setHorizontalGroup(
-            executionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(executionPanelLayout.createSequentialGroup()
-                .addGroup(executionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addGroup(executionPanelLayout.createSequentialGroup()
-                        .addComponent(stepsPanel, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(cardPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, executionPanelLayout.createSequentialGroup()
-                        .addContainerGap()
-                        .addComponent(previousButton)
-                        .addGap(18, 18, 18)
-                        .addComponent(nextButton)))
-                .addContainerGap())
-            .addComponent(jSeparator2)
-        );
-        executionPanelLayout.setVerticalGroup(
-            executionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, executionPanelLayout.createSequentialGroup()
-                .addGroup(executionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                    .addGroup(executionPanelLayout.createSequentialGroup()
-                        .addGap(12, 12, 12)
-                        .addComponent(cardPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE))
-                    .addComponent(stepsPanel, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jSeparator2, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addGroup(executionPanelLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(nextButton)
-                    .addComponent(previousButton))
-                .addContainerGap())
-        );
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 10, 10);
+        executionPanel.add(prevNextButtonPanel, gridBagConstraints);
 
         getContentPane().add(executionPanel, "executionPanel");
 
@@ -5243,6 +5188,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JPanel northEastPanel;
     private javax.swing.JPanel northWestPanel;
     private javax.swing.JRadioButton originalExchangeRadioButton;
+    private javax.swing.JPanel prevNextButtonPanel;
     private javax.swing.JButton previousButton;
     private javax.swing.JPanel radioButtonPanel;
     private javax.swing.JCheckBox reactivateWelcomeCheckBox;
