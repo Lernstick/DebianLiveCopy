@@ -1,3 +1,10 @@
+dlcopy (201606171648-1) lernstick-8; urgency=medium
+
+  * [b559c9] sorted French properties file
+  * [948dcf] layout and text formatting fixes
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 17 Jun 2016 16:47:47 +0200
+
 dlcopy (201606170923-1) lernstick-8; urgency=medium
 
   [ Ronny Standtke ]
