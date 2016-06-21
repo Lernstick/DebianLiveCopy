@@ -29,6 +29,7 @@ import ch.fhnw.jbackpack.RdiffBackupRestore;
 import ch.fhnw.jbackpack.chooser.SelectBackupDirectoryDialog;
 import ch.fhnw.util.DbusTools;
 import ch.fhnw.util.LernstickFileTools;
+import ch.fhnw.util.LuksUtil;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
@@ -161,13 +162,18 @@ public class DLCopySwingGUI extends JFrame
     private Boolean commandLineCopyDataPartition;
     private boolean instantInstallation;
     private boolean instantInstallationDone;
+    private File luksPasskey;
 
+    
+    public File getLuksPasskey() {
+        return luksPasskey;
+    }
     /**
      * Creates new form DLCopy
      *
      * @param arguments the command line arguments
      */
-    public DLCopySwingGUI(String[] arguments) {
+    public DLCopySwingGUI(String[] arguments) throws IOException {
         /**
          * set up logging
          */
@@ -3796,7 +3802,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         setISOElementsEnabled(false);
     }//GEN-LAST:event_dataPartitionRadioButtonActionPerformed
 
-    private void parseCommandLineArguments(String[] arguments) {
+    private void parseCommandLineArguments(String[] arguments) throws IOException {
         for (int i = 0, length = arguments.length; i < length; i++) {
 
             // lernstick variant
@@ -3838,6 +3844,16 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
             if (arguments[i].equals("--instantInstallation")) {
                 instantInstallation = true;
+            }
+            
+            if (arguments[i].equals("--luksPasskey")) {
+                luksPasskey = new File(arguments[i + 1]);
+                LOGGER.info("Using encryption for persistence partition with key "
+                        + luksPasskey.getAbsolutePath());
+                if (!luksPasskey.exists()) {
+                    LOGGER.warning("Keyfile does not exist - generating");
+                    LuksUtil.generateKey(luksPasskey);
+                }
             }
         }
     }
@@ -4096,7 +4112,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         new Repairer(this, deviceList,
                 formatDataPartitionRadioButton.isSelected(),
                 dataPartitionFileSystem, homeDirectoryCheckBox.isSelected(),
-                systemFilesCheckBox.isSelected()).execute();
+                systemFilesCheckBox.isSelected(), luksPasskey).execute();
     }
 
     private void sortList(boolean ascending) {
@@ -4688,7 +4704,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 exchangePartitionFileSystem, dataPartitionFileSystem, this,
                 exchangePartitionSizeSlider.getValue(), copyExchange,
                 autoNumber, autoIncrement, autoNumberPatternTextField.getText(),
-                copyData, dataPartitionMode).execute();
+                copyData, dataPartitionMode, luksPasskey).execute();
     }
 
     private void upgrade() {
@@ -4843,7 +4859,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 keepPrinterSettingsCheckBox.isSelected(),
                 reactivateWelcomeCheckBox.isSelected(),
                 removeHiddenFilesCheckBox.isSelected(), overWriteList,
-                DLCopy.systemSizeEnlarged).execute();
+                DLCopy.systemSizeEnlarged, luksPasskey).execute();
     }
 
     private boolean checkExchange(PartitionSizes partitionSizes)

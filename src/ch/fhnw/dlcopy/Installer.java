@@ -2,10 +2,12 @@ package ch.fhnw.dlcopy;
 
 import ch.fhnw.dlcopy.gui.DLCopyGUI;
 import ch.fhnw.filecopier.FileCopier;
+import ch.fhnw.util.LuksUtil;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
@@ -49,6 +51,7 @@ public class Installer extends InstallerOrUpgrader
      * @param copyDataPartition if the data partition should be copied
      * @param dataPartitionMode the mode of the data partition to set in the
      * bootloaders config
+     * @param luksPasskey master key for disk encryption
      */
     public Installer(InstallationSource source, List<StorageDevice> deviceList,
             String exchangePartitionLabel, String exchangePartitionFileSystem,
@@ -56,10 +59,10 @@ public class Installer extends InstallerOrUpgrader
             int exchangePartitionSize, boolean copyExchangePartition,
             int autoNumberStart, int autoNumberIncrement,
             String autoNumberPattern, boolean copyDataPartition,
-            DataPartitionMode dataPartitionMode) {
+            DataPartitionMode dataPartitionMode, File luksPasskey) {
         super(source, deviceList, exchangePartitionLabel,
                 exchangePartitionFileSystem, dataPartitionFileSystem,
-                dlCopyGUI);
+                luksPasskey, dlCopyGUI);
         this.exchangePartitionSize = exchangePartitionSize;
         this.copyExchangePartition = copyExchangePartition;
         this.autoNumberIncrement = autoNumberIncrement;
@@ -91,6 +94,7 @@ public class Installer extends InstallerOrUpgrader
             try {
                 DLCopy.copyToStorageDevice(source, fileCopier, storageDevice,
                         exchangePartitionLabel, this, dlCopyGUI);
+                LuksUtil.closeAll("/dev/" + storageDevice.getDevice());
             } catch (InterruptedException | IOException |
                     DBusException exception) {
                 LOGGER.log(Level.WARNING, "", exception);

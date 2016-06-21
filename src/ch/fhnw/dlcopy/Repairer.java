@@ -1,10 +1,12 @@
 package ch.fhnw.dlcopy;
 
 import ch.fhnw.dlcopy.gui.DLCopyGUI;
+import ch.fhnw.util.LuksUtil;
 import ch.fhnw.util.MountInfo;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -28,6 +30,7 @@ public class Repairer extends SwingWorker<Boolean, Void> {
     private final String dataPartitionFileSystem;
     private final boolean resetHome;
     private final boolean resetSystem;
+    private final File luksPasskey;
 
     private int deviceListSize;
     private int batchCounter;
@@ -44,13 +47,14 @@ public class Repairer extends SwingWorker<Boolean, Void> {
      */
     public Repairer(DLCopyGUI dlCopyGUI, List<StorageDevice> deviceList,
             boolean formatDataPartition, String dataPartitionFileSystem,
-            boolean resetHome, boolean resetSystem) {
+            boolean resetHome, boolean resetSystem, File luksPasskey) {
         this.dlCopyGUI = dlCopyGUI;
         this.deviceList = deviceList;
         this.formatDataPartition = formatDataPartition;
         this.dataPartitionFileSystem = dataPartitionFileSystem;
         this.resetHome = resetHome;
         this.resetSystem = resetSystem;
+        this.luksPasskey = luksPasskey;
     }
 
     @Override
@@ -78,7 +82,7 @@ public class Repairer extends SwingWorker<Boolean, Void> {
                 dlCopyGUI.showRepairFormattingDataPartition();
                 DLCopy.formatPersistencePartition(
                         "/dev/" + dataPartition.getDeviceAndNumber(),
-                        dataPartitionFileSystem, dlCopyGUI);
+                        dataPartitionFileSystem, luksPasskey, dlCopyGUI);
             } else {
                 // remove files from data partition
                 dlCopyGUI.showRepairRemovingFiles();
@@ -122,6 +126,7 @@ public class Repairer extends SwingWorker<Boolean, Void> {
                 }
                 if (!mountInfo.alreadyMounted()) {
                     DLCopy.umount(dataPartition, dlCopyGUI);
+                    LuksUtil.closeAll("/dev/" + storageDevice.getDevice());
                 }
             }
 

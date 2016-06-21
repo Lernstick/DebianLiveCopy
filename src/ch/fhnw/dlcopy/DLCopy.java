@@ -7,6 +7,7 @@ import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.filecopier.Source;
 import ch.fhnw.util.DbusTools;
 import ch.fhnw.util.LernstickFileTools;
+import ch.fhnw.util.LuksUtil;
 import ch.fhnw.util.MountInfo;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
@@ -94,7 +95,12 @@ public class DLCopy {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                new DLCopySwingGUI(args).setVisible(true);
+                try {
+                    new DLCopySwingGUI(args).setVisible(true);
+                } catch (IOException ex) {
+                    LOGGER.log(Level.SEVERE, "Exiting on System exception...",
+                            ex);
+                }
             }
         });
     }
@@ -514,12 +520,25 @@ public class DLCopy {
      * @throws IOException if an IOException occurs
      */
     public static void formatPersistencePartition(
-            String device, String fileSystem, DLCopyGUI dlCopyGUI)
+            String device, String fileSystem, File luksPasskey,
+            DLCopyGUI dlCopyGUI)
             throws DBusException, IOException {
+        String clearDevice = device;
 
         // make sure that the partition is unmounted
         if (isMounted(device)) {
             umount(device, dlCopyGUI);
+        }
+        
+        if (luksPasskey != null) {
+            if (!LuksUtil.create(device, luksPasskey)) {
+                throw new IOException("Unable to create Luks partition for "
+                        + device);
+            }
+            if (!LuksUtil.open(device, luksPasskey)) {
+                throw new IOException("Unable to open Luks partition " + device);
+            }
+            clearDevice = LuksUtil.deviceToLogical(device);
         }
 
         // If we want to create a partition at the exact same location of
@@ -533,7 +552,7 @@ public class DLCopy {
         // To make a long story short, this is the reason we have to use the
         // force flag "-F" here.
         int exitValue = PROCESS_EXECUTOR.executeProcess("/sbin/mkfs."
-                + fileSystem, "-F", "-L", Partition.PERSISTENCE_LABEL, device);
+                + fileSystem, "-F", "-L", Partition.PERSISTENCE_LABEL, clearDevice);
         if (exitValue != 0) {
             LOGGER.severe(PROCESS_EXECUTOR.getOutput());
             String errorMessage = STRINGS.getString(
@@ -544,7 +563,7 @@ public class DLCopy {
 
         // tuning
         exitValue = PROCESS_EXECUTOR.executeProcess(
-                "/sbin/tune2fs", "-m", "0", "-c", "0", "-i", "0", device);
+                "/sbin/tune2fs", "-m", "0", "-c", "0", "-i", "0", clearDevice);
         if (exitValue != 0) {
             LOGGER.severe(PROCESS_EXECUTOR.getOutput());
             String errorMessage = STRINGS.getString(
@@ -799,13 +818,14 @@ public class DLCopy {
      * @param includeBootDevice if the boot device should be included in the
      * list
      * @param bootDeviceName the name of the boot device
+     * @param luksPasskey master encryption key or null
      * @return
      * @throws IOException
      * @throws DBusException
      */
     public static List<StorageDevice> getStorageDevices(
             boolean includeHardDisks, boolean includeBootDevice,
-            String bootDeviceName) throws IOException, DBusException {
+            String bootDeviceName, File luksPasskey) throws IOException, DBusException {
 
         List<String> partitions = DbusTools.getPartitions();
         List<StorageDevice> storageDevices = new ArrayList<>();
@@ -829,7 +849,7 @@ public class DLCopy {
                 pathPrefix += "UDisks2/block_devices/";
             }
             StorageDevice storageDevice = getStorageDevice(
-                    pathPrefix + partition, includeHardDisks);
+                    pathPrefix + partition, includeHardDisks, luksPasskey);
             if (storageDevice != null) {
                 if (storageDevice.getType() == StorageDevice.Type.OpticalDisc) {
                     LOGGER.log(Level.INFO,
@@ -850,11 +870,13 @@ public class DLCopy {
      * @param path the dbus path
      * @param includeHardDisks if true, paths to hard disks are processed,
      * otherwise ignored
+     * @param luksPasskey master encryption key or null
      * @return the StorageDevice for a given dbus path after a timeout
      * @throws DBusException
      */
     public static StorageDevice getStorageDeviceAfterTimeout(
-            String path, boolean includeHardDisks) throws DBusException {
+            String path, boolean includeHardDisks,
+            File luksPasskey) throws DBusException {
         // It has happened that "udisks --enumerate" returns a valid storage
         // device but not yet its partitions. Therefore we give the system
         // a little break after storage devices have been added.
@@ -863,7 +885,8 @@ public class DLCopy {
         } catch (InterruptedException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
         }
-        StorageDevice storageDevice = getStorageDevice(path, includeHardDisks);
+        StorageDevice storageDevice = getStorageDevice(path, includeHardDisks,
+                luksPasskey);
         LOGGER.log(Level.INFO, "storage device of path {0}: {1}",
                 new Object[]{path, storageDevice});
         return storageDevice;
@@ -1131,6 +1154,7 @@ public class DLCopy {
 
         // umount all mounted partitions of device
         umountPartitions(device, dlCopyGUI);
+        LuksUtil.closeAll(device);
 
         // Create a new partition table before creating the partitions,
         // otherwise USB flash drives previously written with a dd'ed ISO
@@ -1312,7 +1336,7 @@ public class DLCopy {
             case PERSISTENCE:
                 formatPersistencePartition(persistenceDevice,
                         installerOrUpgrader.getDataPartitionFileSystem(),
-                        dlCopyGUI);
+                        installerOrUpgrader.getLuksPasskey(), dlCopyGUI);
                 formatEfiAndSystemPartition(efiDevice, systemDevice);
                 return;
 
@@ -1326,7 +1350,7 @@ public class DLCopy {
                 if (persistenceDevice != null) {
                     formatPersistencePartition(persistenceDevice,
                             installerOrUpgrader.getDataPartitionFileSystem(),
-                            dlCopyGUI);
+                            installerOrUpgrader.getLuksPasskey(), dlCopyGUI);
                 }
                 formatEfiAndSystemPartition(efiDevice, systemDevice);
                 return;
@@ -1639,11 +1663,12 @@ public class DLCopy {
      * @param path the dbus path
      * @param includeHardDisks if true, paths to hard disks are processed,
      * otherwise ignored
+     * @param luksPasskey master encryptio key or null
      * @return the StorageDevice for a given dbus path
      * @throws DBusException if a dbus exception occurs
      */
     private static StorageDevice getStorageDevice(
-            String path, boolean includeHardDisks) throws DBusException {
+            String path, boolean includeHardDisks, File luksPasskey) throws DBusException {
 
         LOGGER.log(Level.FINE, "path: {0}", path);
 
@@ -1693,6 +1718,10 @@ public class DLCopy {
             return null;
         }
 
+        if (luksPasskey != null) {
+            LuksUtil.openAll(deviceFile, luksPasskey);
+        }
+        
         StorageDevice storageDevice = new StorageDevice(
                 deviceFile.substring(5), systemSize);
 

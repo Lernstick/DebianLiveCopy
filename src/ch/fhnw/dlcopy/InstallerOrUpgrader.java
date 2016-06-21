@@ -3,6 +3,7 @@ package ch.fhnw.dlcopy;
 import ch.fhnw.dlcopy.gui.DLCopyGUI;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.StorageDevice;
+import java.io.File;
 import java.util.List;
 import javax.swing.SwingWorker;
 
@@ -48,6 +49,12 @@ public abstract class InstallerOrUpgrader
      * the size of the device list
      */
     protected int deviceListSize;
+    
+    /**
+     * Master passkey for LUKS encrypted persistency partition
+     * or null for unencrypted
+     */
+    protected final File luksPasskey;
 
     private final String exhangePartitionFileSystem;
     private final String dataPartitionFileSystem;
@@ -61,17 +68,19 @@ public abstract class InstallerOrUpgrader
      * @param exhangePartitionFileSystem the file system of the exchange
      * partition
      * @param dataPartitionFileSystem the file system of the data partition
+     * @param luksPasskey master key for disc encryption
      * @param dlCopyGUI the graphical user interface
      */
     public InstallerOrUpgrader(InstallationSource source,
             List<StorageDevice> deviceList, String exchangePartitionLabel,
             String exhangePartitionFileSystem, String dataPartitionFileSystem,
-            DLCopyGUI dlCopyGUI) {
+            File luksPasskey, DLCopyGUI dlCopyGUI) {
         this.source = source;
         this.deviceList = deviceList;
         this.exchangePartitionLabel = exchangePartitionLabel;
         this.exhangePartitionFileSystem = exhangePartitionFileSystem;
         this.dataPartitionFileSystem = dataPartitionFileSystem;
+        this.luksPasskey = luksPasskey;
         this.dlCopyGUI = dlCopyGUI;
         deviceListSize = deviceList.size();
     }
@@ -123,5 +132,14 @@ public abstract class InstallerOrUpgrader
      */
     public String getDataPartitionFileSystem() {
         return dataPartitionFileSystem;
+    }
+    
+    /**
+     * returns master password for disk encryption
+     * 
+     * @return master key for disk encryption or null
+     */
+    public File getLuksPasskey() {
+        return luksPasskey;
     }
 }

@@ -78,7 +78,8 @@ public abstract class StorageDeviceListUpdater extends SwingWorker<Void, Void> {
             listModel.clear();
             try {
                 storageDevices = DLCopy.getStorageDevices(
-                        showHardDisks, showBootDevice, bootDeviceName);
+                        showHardDisks, showBootDevice, bootDeviceName,
+                        swingGUI.getLuksPasskey());
                 Collections.sort(storageDevices);
                 initDevices();
             } catch (IOException | DBusException ex) {

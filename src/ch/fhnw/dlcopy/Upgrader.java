@@ -11,6 +11,7 @@ import ch.fhnw.jbackpack.chooser.Increment;
 import ch.fhnw.jbackpack.chooser.RdiffFile;
 import ch.fhnw.jbackpack.chooser.RdiffFileDatabase;
 import ch.fhnw.util.LernstickFileTools;
+import ch.fhnw.util.LuksUtil;
 import ch.fhnw.util.MountInfo;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
@@ -90,6 +91,8 @@ public class Upgrader extends InstallerOrUpgrader {
      * running system to the upgraded storage device
      * @param systemSizeEnlarged the "enlarged" system size (multiplied with a
      * small file system overhead factor)
+     * @param luksPasskey master management key for Luks or null if not
+     * encrypted
      */
     public Upgrader(InstallationSource source, List<StorageDevice> deviceList,
             String exchangePartitionLabel, String exchangePartitionFileSystem,
@@ -99,10 +102,11 @@ public class Upgrader extends InstallerOrUpgrader {
             String automaticBackupDestination, boolean removeBackup,
             boolean upgradeSystemPartition, boolean keepPrinterSettings,
             boolean reactivateWelcome, boolean removeHiddenFiles,
-            List<String> filesToOverwrite, long systemSizeEnlarged) {
+            List<String> filesToOverwrite, long systemSizeEnlarged,
+            File luksPasskey) {
         super(source, deviceList, exchangePartitionLabel,
                 exchangePartitionFileSystem, dataPartitionFileSystem,
-                dlCopyGUI);
+                luksPasskey, dlCopyGUI);
         this.repartitionStrategy = repartitionStrategy;
         this.resizedExchangePartitionSize = resizedExchangePartitionSize;
         this.automaticBackup = automaticBackup;
@@ -168,6 +172,7 @@ public class Upgrader extends InstallerOrUpgrader {
                 if (removeBackup) {
                     LernstickFileTools.recursiveDelete(backupDestination, true);
                 }
+                LuksUtil.closeAll("/dev/" + storageDevice.getDevice());
             } catch (DBusException | IOException | InterruptedException ex) {
                 LOGGER.log(Level.WARNING, "", ex);
                 errorMessage = ex.getMessage();
@@ -597,6 +602,9 @@ public class Upgrader extends InstallerOrUpgrader {
             }
             String dataDevPath
                     = "/dev/" + dataPartition.getDeviceAndNumber();
+            if (LuksUtil.isLuks(dataDevPath)) {
+                dataDevPath = "/dev/mapper/" + dataPartition.getDeviceAndNumber();
+            }
             int returnValue = processExecutor.executeProcess(true, true,
                     "e2fsck", "-f", "-y", "-v", dataDevPath);
             // e2fsck return values:
@@ -692,7 +700,8 @@ public class Upgrader extends InstallerOrUpgrader {
             partedCommand.add("100%");
             String[] command = partedCommand.toArray(
                     new String[partedCommand.size()]);
-
+            
+            LuksUtil.closeAll(devicePath);
             returnValue = processExecutor.executeProcess(
                     true, true, command);
             if (returnValue != 0) {
@@ -709,6 +718,9 @@ public class Upgrader extends InstallerOrUpgrader {
             // (7 seconds were NOT enough!)
             TimeUnit.SECONDS.sleep(7);
 
+            LuksUtil.open("/dev/" + dataPartition.getDeviceAndNumber(),
+                    getLuksPasskey());
+            
             returnValue = processExecutor.executeProcess(true, true,
                     "resize2fs", dataDevPath);
             if (returnValue != 0) {
