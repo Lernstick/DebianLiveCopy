@@ -75,6 +75,7 @@ public class Installer extends InstallerOrUpgrader
 
         dlCopyGUI.showInstallProgress();
 
+        String currentExchangePartitionLabel = exchangePartitionLabel;
         for (StorageDevice storageDevice : deviceList) {
 
             // update overall progress message
@@ -82,7 +83,7 @@ public class Installer extends InstallerOrUpgrader
 
             // auto numbering
             if (!autoNumberPattern.isEmpty()) {
-                exchangePartitionLabel = exchangePartitionLabel.replace(
+                currentExchangePartitionLabel = exchangePartitionLabel.replace(
                         autoNumberPattern, String.valueOf(autoNumber));
                 autoNumber += autoNumberIncrement;
             }
@@ -90,7 +91,7 @@ public class Installer extends InstallerOrUpgrader
             String errorMessage = null;
             try {
                 DLCopy.copyToStorageDevice(source, fileCopier, storageDevice,
-                        exchangePartitionLabel, this, dlCopyGUI);
+                        currentExchangePartitionLabel, this, dlCopyGUI);
             } catch (InterruptedException | IOException |
                     DBusException exception) {
                 LOGGER.log(Level.WARNING, "", exception);
