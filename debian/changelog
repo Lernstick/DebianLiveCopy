@@ -1,3 +1,9 @@
+dlcopy (201606301726-1) lernstick-8; urgency=medium
+
+  * [952281] fixed auto numbering of exchange partition in installer
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 30 Jun 2016 17:26:29 +0200
+
 dlcopy (201606171648-1) lernstick-8; urgency=medium
 
   * [b559c9] sorted French properties file
