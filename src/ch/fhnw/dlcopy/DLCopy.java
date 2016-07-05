@@ -103,7 +103,7 @@ public class DLCopy {
      * @return the enlarged system size (safe size for partition creation)
      */
     public static long getEnlargedSystemSize(long systemSize) {
-        return (long) (systemSize * SYSTEM_SIZE_FACTOR);
+        return 100 * MEGA + (long) (systemSize * SYSTEM_SIZE_FACTOR);
     }
 
     /**
