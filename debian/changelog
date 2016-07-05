@@ -1,3 +1,9 @@
+dlcopy (201607050207-1) lernstick-8; urgency=medium
+
+  * [92ebee] fixed partition size handling
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Tue, 05 Jul 2016 02:07:15 +0200
+
 dlcopy (201606301726-1) lernstick-8; urgency=medium
 
   * [952281] fixed auto numbering of exchange partition in installer
