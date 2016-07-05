@@ -1,3 +1,9 @@
+dlcopy (201607050312-1) lernstick-8; urgency=medium
+
+  * [3754af] enlarged save system partition size
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Tue, 05 Jul 2016 03:12:09 +0200
+
 dlcopy (201607050250-1) lernstick-8; urgency=medium
 
   * [fb6e17] fixed size handling
