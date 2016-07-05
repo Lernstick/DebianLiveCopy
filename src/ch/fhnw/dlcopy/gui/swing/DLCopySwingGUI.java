@@ -278,11 +278,9 @@ public class DLCopySwingGUI extends JFrame
         }
         isoSourceRadioButton.setSelected(
                 preferences.getBoolean(ISO_SOURCE_SELECTED, false));
-        String isoSource = preferences.get(ISO_SOURCE, "");
-        if (!isoSource.isEmpty()) {
-            setISOInstallationSourcePath(isoSource);
-        }
-        updateInstallSourceGUI();
+        source = isoSourceRadioButton.isSelected()
+                ? isoInstallationSource
+                : systemSource;
 
         installStorageDeviceList.setModel(installStorageDeviceListModel);
         installStorageDeviceRenderer = new InstallStorageDeviceRenderer(
@@ -297,6 +295,16 @@ public class DLCopySwingGUI extends JFrame
         repairStorageDeviceList.setModel(repairStorageDeviceListModel);
         repairStorageDeviceRenderer = new RepairStorageDeviceRenderer();
         repairStorageDeviceList.setCellRenderer(repairStorageDeviceRenderer);
+
+        // the following block must be called after creating
+        // installStorageDeviceRenderer! (otherwise we get an NPE)
+        // -----------------------------
+        String isoSource = preferences.get(ISO_SOURCE, "");
+        if (!isoSource.isEmpty()) {
+            setISOInstallationSourcePath(isoSource);
+        }
+        updateInstallSourceGUI();
+        // -----------------------------
 
         exchangePartitionTextField.setText(preferences.get(
                 EXCHANGE_PARTITION_LABEL, STRINGS.getString("Exchange")));
