@@ -115,6 +115,8 @@ public class DLCopy {
      */
     public static PartitionState getPartitionState(
             long storageSize, long systemSize) {
+        LOGGER.log(Level.FINE, "storageSize = {0}, systemSize = {1}",
+                new Object[]{storageSize, systemSize});
         if (storageSize > (systemSize + (2 * MINIMUM_PARTITION_SIZE))) {
             return PartitionState.EXCHANGE;
         } else if (storageSize > (systemSize + MINIMUM_PARTITION_SIZE)) {
@@ -207,12 +209,12 @@ public class DLCopy {
 
         // determine size and state
         String device = "/dev/" + storageDevice.getDevice();
-        long size = storageDevice.getSize();
+        long storageDeviceSize = storageDevice.getSize();
         PartitionSizes partitionSizes
                 = installerOrUpgrader.getPartitionSizes(storageDevice);
         int exchangeMB = partitionSizes.getExchangeMB();
-        PartitionState partitionState = getPartitionState(
-                size, DLCopy.getEnlargedSystemSize(size));
+        PartitionState partitionState = getPartitionState(storageDeviceSize,
+                DLCopy.getEnlargedSystemSize(source.getSystemSize()));
 
         boolean sdDevice = (storageDevice.getType()
                 == StorageDevice.Type.SDMemoryCard);
@@ -272,7 +274,7 @@ public class DLCopy {
 
         // create all necessary partitions
         try {
-            createPartitions(storageDevice, partitionSizes, size,
+            createPartitions(storageDevice, partitionSizes, storageDeviceSize,
                     partitionState, destinationExchangeDevice, exchangeMB,
                     exchangePartitionLabel, destinationDataDevice,
                     destinationEfiDevice, destinationSystemDevice,
@@ -322,7 +324,7 @@ public class DLCopy {
             // partitions are *NOT* correctly created the first time. Even
             // more strangely, it always works the second time. Therefore
             // we automatically retry once more in case of an error.
-            createPartitions(storageDevice, partitionSizes, size,
+            createPartitions(storageDevice, partitionSizes, storageDeviceSize,
                     partitionState, destinationExchangeDevice, exchangeMB,
                     exchangePartitionLabel, destinationDataDevice,
                     destinationEfiDevice, destinationSystemDevice,
