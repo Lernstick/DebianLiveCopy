@@ -1,5 +1,7 @@
 package ch.fhnw.dlcopy.gui.swing;
 
+import ch.fhnw.dlcopy.DLCopy;
+import ch.fhnw.dlcopy.InstallationSource;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.StorageDevice;
 import java.io.IOException;
@@ -18,27 +20,31 @@ public class UpgradeStorageDeviceListUpdater extends StorageDeviceListUpdater {
 
     private static final Logger LOGGER
             = Logger.getLogger(UpgradeStorageDeviceListUpdater.class.getName());
+    private final InstallationSource source;
 
     /**
      * creates a new InstallStorageDeviceListUpdater
      *
+     * @param source the source for upgrades
      * @param swingGUI the DLCopy Swing GUI
      * @param list the list to fill
      * @param listModel the list model
      * @param showHardDisks if true, hard disks are added, otherwise ignored
-     * @param bootDeviceName the name of the boot device
      */
-    public UpgradeStorageDeviceListUpdater(DLCopySwingGUI swingGUI,
-            JList list, DefaultListModel<StorageDevice> listModel,
-            boolean showHardDisks, String bootDeviceName) {
-        super(swingGUI, list, listModel, showHardDisks, false, bootDeviceName);
+    public UpgradeStorageDeviceListUpdater(InstallationSource source,
+            DLCopySwingGUI swingGUI, JList list,
+            DefaultListModel<StorageDevice> listModel, boolean showHardDisks) {
+        super(swingGUI, list, listModel, showHardDisks,
+                false, source.getDeviceName());
+        this.source = source;
     }
 
     @Override
     public void initDevices() {
         for (StorageDevice device : storageDevices) {
             try {
-                device.getUpgradeVariant();
+                device.getUpgradeVariant(
+                        DLCopy.getEnlargedSystemSize(source.getSystemSize()));
                 for (Partition partition : device.getPartitions()) {
                     try {
                         if (partition.isPersistencePartition()) {

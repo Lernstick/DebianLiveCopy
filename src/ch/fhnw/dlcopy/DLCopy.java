@@ -64,9 +64,6 @@ public class DLCopy {
      */
     public static final float SYSTEM_SIZE_FACTOR = 1.1f;
 
-    // TODO: always take them from the installation source
-    public static long systemSize = -1;
-    public static long systemSizeEnlarged = -1;
     public static String systemPartitionLabel;
 
     private static final Logger LOGGER
@@ -97,6 +94,16 @@ public class DLCopy {
                 new DLCopySwingGUI(args).setVisible(true);
             }
         });
+    }
+
+    /**
+     * returns the enlarged system size (safe size for partition creation)
+     *
+     * @param systemSize the original system size
+     * @return the enlarged system size (safe size for partition creation)
+     */
+    public static long getEnlargedSystemSize(long systemSize) {
+        return (long) (systemSize * SYSTEM_SIZE_FACTOR);
     }
 
     /**
@@ -204,8 +211,8 @@ public class DLCopy {
         PartitionSizes partitionSizes
                 = installerOrUpgrader.getPartitionSizes(storageDevice);
         int exchangeMB = partitionSizes.getExchangeMB();
-        PartitionState partitionState
-                = getPartitionState(size, systemSizeEnlarged);
+        PartitionState partitionState = getPartitionState(
+                size, DLCopy.getEnlargedSystemSize(size));
 
         boolean sdDevice = (storageDevice.getType()
                 == StorageDevice.Type.SDMemoryCard);
@@ -343,21 +350,20 @@ public class DLCopy {
         Partition destinationExchangePartition
                 = (destinationExchangeDevice == null) ? null
                         : Partition.getPartitionFromDeviceAndNumber(
-                                destinationExchangeDevice.substring(5),
-                                systemSize);
+                                destinationExchangeDevice.substring(5));
 
         Partition destinationDataPartition
                 = (destinationDataDevice == null) ? null
                         : Partition.getPartitionFromDeviceAndNumber(
-                                destinationDataDevice.substring(5), systemSize);
+                                destinationDataDevice.substring(5));
 
         Partition destinationBootPartition
                 = Partition.getPartitionFromDeviceAndNumber(
-                        destinationEfiDevice.substring(5), systemSize);
+                        destinationEfiDevice.substring(5));
 
         Partition destinationSystemPartition
                 = Partition.getPartitionFromDeviceAndNumber(
-                        destinationSystemDevice.substring(5), systemSize);
+                        destinationSystemDevice.substring(5));
 
         // copy operating system files
         copyExchangeBootAndSystem(source, fileCopier, storageDevice,
@@ -388,19 +394,22 @@ public class DLCopy {
     /**
      * returns the partitions sizes for a StorageDevice when installing
      *
+     * @param source the installation source
      * @param storageDevice the StorageDevice to check
      * @param exchangePartitionSize the planned size of the exchange partition
      * @return the partitions sizes for a StorageDevice when installing
      */
     public static PartitionSizes getInstallPartitionSizes(
-            StorageDevice storageDevice, int exchangePartitionSize) {
-        return getPartitionSizes(storageDevice, false,
-                null, 0, exchangePartitionSize);
+            InstallationSource source, StorageDevice storageDevice,
+            int exchangePartitionSize) {
+        return getPartitionSizes(source, storageDevice,
+                false, null, 0, exchangePartitionSize);
     }
 
     /**
      * returns the partitions sizes for a StorageDevice when upgrading
      *
+     * @param source the installation source
      * @param storageDevice the StorageDevice to check
      * @param exchangeRepartitionStrategy the repartitioning strategy for the
      * exchange partition
@@ -409,10 +418,10 @@ public class DLCopy {
      * @return the partitions sizes for a StorageDevice when upgrading
      */
     public static PartitionSizes getUpgradePartitionSizes(
-            StorageDevice storageDevice,
+            InstallationSource source, StorageDevice storageDevice,
             RepartitionStrategy exchangeRepartitionStrategy,
             int resizedExchangePartitionSize) {
-        return getPartitionSizes(storageDevice, true,
+        return getPartitionSizes(source, storageDevice, true,
                 exchangeRepartitionStrategy, resizedExchangePartitionSize, 0);
     }
 
@@ -568,7 +577,7 @@ public class DLCopy {
         // create default persistence configuration file
         Partition persistencePartition
                 = Partition.getPartitionFromDeviceAndNumber(
-                        device.substring(5), systemSize);
+                        device.substring(5));
         String mountPath = persistencePartition.mount().getMountPath();
         if (mountPath == null) {
             throw new IOException("could not mount persistence partition");
@@ -935,17 +944,19 @@ public class DLCopy {
         }
     }
 
-    // TODO: use installation source for calculation
-    private static PartitionSizes getPartitionSizes(StorageDevice storageDevice,
-            boolean upgrading, RepartitionStrategy upgradeRepartitionStrategy,
+    private static PartitionSizes getPartitionSizes(InstallationSource source,
+            StorageDevice storageDevice, boolean upgrading,
+            RepartitionStrategy upgradeRepartitionStrategy,
             int upgradeResizedExchangePartitionSize,
             int installExchangePartitionSize) {
-        long size = storageDevice.getSize();
-        long overhead = size
-                - (EFI_PARTITION_SIZE * MEGA) - systemSizeEnlarged;
+
+        long storageDeviceSize = storageDevice.getSize();
+        long enlargedSystemSize = getEnlargedSystemSize(source.getSystemSize());
+        long overhead = storageDeviceSize
+                - (EFI_PARTITION_SIZE * MEGA) - enlargedSystemSize;
         int overheadMB = (int) (overhead / MEGA);
-        PartitionState partitionState = getPartitionState(
-                size, systemSizeEnlarged);
+        PartitionState partitionState
+                = getPartitionState(storageDeviceSize, enlargedSystemSize);
         switch (partitionState) {
             case TOO_SMALL:
                 return null;
@@ -1002,7 +1013,8 @@ public class DLCopy {
         String device = "/dev/" + storageDevice.getDevice();
 
         // determine exact partition sizes
-        long overhead = storageDeviceSize - systemSizeEnlarged;
+        long overhead = storageDeviceSize - getEnlargedSystemSize(
+                installerOrUpgrader.getSourceSystemSize());
         int persistenceMB = partitionSizes.getPersistenceMB();
         if (LOGGER.isLoggable(Level.FINEST)) {
             LOGGER.log(Level.FINEST, "size of {0} = {1} Byte\n"
@@ -1693,8 +1705,8 @@ public class DLCopy {
             return null;
         }
 
-        StorageDevice storageDevice = new StorageDevice(
-                deviceFile.substring(5), systemSize);
+        StorageDevice storageDevice
+                = new StorageDevice(deviceFile.substring(5));
 
         if ((storageDevice.getType() == StorageDevice.Type.HardDrive)
                 && !includeHardDisks) {

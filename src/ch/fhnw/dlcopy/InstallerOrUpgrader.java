@@ -124,4 +124,13 @@ public abstract class InstallerOrUpgrader
     public String getDataPartitionFileSystem() {
         return dataPartitionFileSystem;
     }
+
+    /**
+     * returns the size of the source system
+     *
+     * @return the size of the source system
+     */
+    public long getSourceSystemSize() {
+        return source.getSystemSize();
+    }
 }

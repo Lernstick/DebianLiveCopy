@@ -5,7 +5,9 @@
  */
 package ch.fhnw.dlcopy.gui.swing;
 
+import ch.fhnw.dlcopy.DLCopy;
 import static ch.fhnw.dlcopy.DLCopy.STRINGS;
+import ch.fhnw.dlcopy.InstallationSource;
 import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.StorageDevice;
@@ -59,11 +61,15 @@ public class UpgradeStorageDeviceRenderer extends JPanel
     private final Color DARK_BLUE = new Color(69, 69, 255);
     private long maxStorageDeviceSize;
     private StorageDevice storageDevice;
+    private final InstallationSource source;
 
     /**
-     * Creates new form UsbRenderer
+     * Creates new form UpgradeStorageDeviceRenderer
+     *
+     * @param source the installation source
      */
-    public UpgradeStorageDeviceRenderer() {
+    public UpgradeStorageDeviceRenderer(InstallationSource source) {
+        this.source = source;
         initComponents();
     }
 
@@ -189,7 +195,9 @@ public class UpgradeStorageDeviceRenderer extends JPanel
             // upgrade info text
             try {
                 StorageDevice.UpgradeVariant upgradeVariant
-                        = storageDevice.getUpgradeVariant();
+                        = storageDevice.getUpgradeVariant(
+                                DLCopy.getEnlargedSystemSize(
+                                        source.getSystemSize()));
                 switch (upgradeVariant) {
                     case REGULAR:
                         upgradeInfoLabel.setIcon(OK_ICON);

@@ -1,5 +1,7 @@
 package ch.fhnw.dlcopy.gui.swing;
 
+import ch.fhnw.dlcopy.DLCopy;
+import ch.fhnw.dlcopy.InstallationSource;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.StorageDevice;
 import java.io.IOException;
@@ -44,14 +46,13 @@ public class RepairStorageDeviceAdder extends StorageDeviceAdder {
     public void initDevice() {
         try {
             TimeUnit.SECONDS.sleep(7);
-            addedDevice.getUpgradeVariant();
             for (Partition partition : addedDevice.getPartitions()) {
                 try {
                     partition.getUsedSpace(false);
                 } catch (Exception ignored) {
                 }
             }
-        } catch (DBusException | IOException | InterruptedException ex) {
+        } catch (InterruptedException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
         }
     }

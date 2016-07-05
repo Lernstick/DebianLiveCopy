@@ -28,7 +28,7 @@ public class InstallStorageDeviceRenderer extends JPanel
     private final static Logger LOGGER
             = Logger.getLogger(DLCopySwingGUI.class.getName());
     // here we need the boot partition size in bytes
-    private final static long BOOT_PARTITION_SIZE
+    private final static long EFI_PARTITION_SIZE
             = DLCopy.EFI_PARTITION_SIZE * MEGA;
     private final static int OFFSET = 5;
     private final static int BAR_HEIGHT = 30;
@@ -46,9 +46,10 @@ public class InstallStorageDeviceRenderer extends JPanel
      * Creates new form UsbRenderer
      *
      * @param dlCopy the main program
-     * @param systemSize the size of the system to be copied in Byte
+     * @param systemSize the size of the system partition
      */
-    public InstallStorageDeviceRenderer(DLCopySwingGUI dlCopy, long systemSize) {
+    public InstallStorageDeviceRenderer(
+            DLCopySwingGUI dlCopy, long systemSize) {
         this.dlCopy = dlCopy;
         this.systemSize = systemSize;
         initComponents();
@@ -141,7 +142,7 @@ public class InstallStorageDeviceRenderer extends JPanel
         Graphics2D graphics2D = (Graphics2D) g;
         int componentWidth = getWidth();
         int height = getHeight();
-        long overhead = storageSize - BOOT_PARTITION_SIZE - systemSize;
+        long overhead = storageSize - EFI_PARTITION_SIZE - systemSize;
         int usbStorageWidth = (int) (((componentWidth - iconGap - 2 * OFFSET)
                 * storageSize) / maxStorageDeviceSize);
         PartitionState partitionState
@@ -192,7 +193,7 @@ public class InstallStorageDeviceRenderer extends JPanel
 
             case PERSISTENCE:
                 // block widths
-                int bootWidth = (int) ((usbStorageWidth * BOOT_PARTITION_SIZE)
+                int bootWidth = (int) ((usbStorageWidth * EFI_PARTITION_SIZE)
                         / storageSize);
                 int systemWidth = (int) ((usbStorageWidth * systemSize)
                         / storageSize);
@@ -230,7 +231,7 @@ public class InstallStorageDeviceRenderer extends JPanel
 
             case EXCHANGE:
                 // block widths
-                bootWidth = (int) ((usbStorageWidth * BOOT_PARTITION_SIZE)
+                bootWidth = (int) ((usbStorageWidth * EFI_PARTITION_SIZE)
                         / storageSize);
                 systemWidth = (int) ((usbStorageWidth * systemSize)
                         / storageSize);
@@ -254,12 +255,12 @@ public class InstallStorageDeviceRenderer extends JPanel
                 if ((overheadMega != maximumExchangeSizeMega)
                         || (exchangeSize != maximumExchangeSize)) {
                     persistentSize = storageSize
-                            - BOOT_PARTITION_SIZE - exchangeSize - systemSize;
+                            - EFI_PARTITION_SIZE - exchangeSize - systemSize;
                     LOGGER.log(Level.FINEST,
                             "\nstorageSize: {0}\nBOOT_PARTITION_SIZE: {1}"
                             + "\nexchangeSize: {2}\nsystemSize: {3}"
                             + "\npersistentSize: {4}",
-                            new Object[]{storageSize, BOOT_PARTITION_SIZE,
+                            new Object[]{storageSize, EFI_PARTITION_SIZE,
                                 exchangeSize, systemSize, persistentSize});
                     persistentWidth = usbStorageWidth
                             - bootWidth - exchangeWidth - systemWidth;

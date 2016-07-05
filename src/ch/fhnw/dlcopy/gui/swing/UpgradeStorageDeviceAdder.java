@@ -1,5 +1,7 @@
 package ch.fhnw.dlcopy.gui.swing;
 
+import ch.fhnw.dlcopy.DLCopy;
+import ch.fhnw.dlcopy.InstallationSource;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.StorageDevice;
 import java.io.IOException;
@@ -20,10 +22,12 @@ public class UpgradeStorageDeviceAdder extends StorageDeviceAdder {
 
     private static final Logger LOGGER
             = Logger.getLogger(UpgradeStorageDeviceAdder.class.getName());
+    private final InstallationSource source;
 
     /**
      * creates a new UpgradeStorageDeviceAdder
      *
+     * @param source the installation source
      * @param addedPath the added udisks path
      * @param showHarddisks if true, paths to hard disks are processed,
      * otherwise ignored
@@ -32,19 +36,22 @@ public class UpgradeStorageDeviceAdder extends StorageDeviceAdder {
      * @param list the storage devices JList
      * @param swingGUI the DLCopySwingGUI
      */
-    public UpgradeStorageDeviceAdder(String addedPath, boolean showHarddisks,
+    public UpgradeStorageDeviceAdder(InstallationSource source,
+            String addedPath, boolean showHarddisks,
             StorageDeviceListUpdateDialogHandler dialogHandler,
             DefaultListModel<StorageDevice> listModel, JList list,
             DLCopySwingGUI swingGUI) {
         super(addedPath, showHarddisks, dialogHandler,
                 listModel, list, swingGUI);
+        this.source = source;
     }
 
     @Override
     public void initDevice() {
         try {
             TimeUnit.SECONDS.sleep(7);
-            addedDevice.getUpgradeVariant();
+            addedDevice.getUpgradeVariant(
+                    DLCopy.getEnlargedSystemSize(source.getSystemSize()));
             for (Partition partition : addedDevice.getPartitions()) {
                 try {
                     if (partition.isPersistencePartition()) {

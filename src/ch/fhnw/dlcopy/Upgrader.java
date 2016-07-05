@@ -138,7 +138,9 @@ public class Upgrader extends InstallerOrUpgrader {
             String errorMessage = null;
             try {
                 StorageDevice.UpgradeVariant upgradeVariant
-                        = storageDevice.getUpgradeVariant();
+                        = storageDevice.getUpgradeVariant(
+                                DLCopy.getEnlargedSystemSize(
+                                        source.getSystemSize()));
                 switch (upgradeVariant) {
                     case REGULAR:
                     case REPARTITION:
@@ -246,8 +248,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
         // !!! update reference to storage device !!!
         // copyToStorageDevice() may change the storage device completely
-        storageDevice = new StorageDevice(
-                storageDevice.getDevice(), source.getSystemSize());
+        storageDevice = new StorageDevice(storageDevice.getDevice());
         restoreDataPartition(storageDevice, dataDestination);
         restoreExchangePartition(storageDevice, exchangeDestination);
     }
@@ -585,7 +586,9 @@ public class Upgrader extends InstallerOrUpgrader {
             return false;
         }
 
-        if (storageDevice.getUpgradeVariant()
+        long enlargedSystemSize
+                = DLCopy.getEnlargedSystemSize(source.getSystemSize());
+        if (storageDevice.getUpgradeVariant(enlargedSystemSize)
                 == StorageDevice.UpgradeVariant.REPARTITION) {
 
             dlCopyGUI.showUpgradeChangingPartitionSizes();
@@ -720,7 +723,7 @@ public class Upgrader extends InstallerOrUpgrader {
                 return false;
             }
 
-            storageDevice = new StorageDevice(device, source.getSystemSize());
+            storageDevice = new StorageDevice(device);
             // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
             // ! We can't use storageDevice.getSystemPartition() here      !
             // ! because the partitions dont have the necessary properties,!
@@ -814,7 +817,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
     @Override
     public PartitionSizes getPartitionSizes(StorageDevice storageDevice) {
-        return DLCopy.getUpgradePartitionSizes(storageDevice,
+        return DLCopy.getUpgradePartitionSizes(source, storageDevice,
                 repartitionStrategy, resizedExchangePartitionSize);
     }
 }
