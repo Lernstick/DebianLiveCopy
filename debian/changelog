@@ -1,3 +1,9 @@
+dlcopy (201607050250-1) lernstick-8; urgency=medium
+
+  * [fb6e17] fixed size handling
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Tue, 05 Jul 2016 02:50:13 +0200
+
 dlcopy (201607050232-1) lernstick-8; urgency=medium
 
   * [1e6f84] fixed NPE
