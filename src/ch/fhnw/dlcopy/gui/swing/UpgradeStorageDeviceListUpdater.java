@@ -1,7 +1,7 @@
 package ch.fhnw.dlcopy.gui.swing;
 
 import ch.fhnw.dlcopy.DLCopy;
-import ch.fhnw.dlcopy.InstallationSource;
+import ch.fhnw.dlcopy.SystemSource;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.StorageDevice;
 import java.io.IOException;
@@ -20,7 +20,7 @@ public class UpgradeStorageDeviceListUpdater extends StorageDeviceListUpdater {
 
     private static final Logger LOGGER
             = Logger.getLogger(UpgradeStorageDeviceListUpdater.class.getName());
-    private final InstallationSource source;
+    private final SystemSource source;
 
     /**
      * creates a new InstallStorageDeviceListUpdater
@@ -31,7 +31,7 @@ public class UpgradeStorageDeviceListUpdater extends StorageDeviceListUpdater {
      * @param listModel the list model
      * @param showHardDisks if true, hard disks are added, otherwise ignored
      */
-    public UpgradeStorageDeviceListUpdater(InstallationSource source,
+    public UpgradeStorageDeviceListUpdater(SystemSource source,
             DLCopySwingGUI swingGUI, JList list,
             DefaultListModel<StorageDevice> listModel, boolean showHardDisks) {
         super(swingGUI, list, listModel, showHardDisks,

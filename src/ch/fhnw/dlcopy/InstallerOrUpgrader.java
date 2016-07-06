@@ -15,9 +15,9 @@ public abstract class InstallerOrUpgrader
         extends SwingWorker<Void, Void> {
 
     /**
-     * the source for installations or upgrades
+     * the system source
      */
-    protected final InstallationSource source;
+    protected final SystemSource source;
 
     /**
      * the list of storage devices to handle
@@ -55,7 +55,7 @@ public abstract class InstallerOrUpgrader
     /**
      * creates a new InstallerOrUpgrader
      *
-     * @param source the source for installations or upgrades
+     * @param source the system source
      * @param deviceList the list of storage devices to handle
      * @param exchangePartitionLabel the label of the exchange partition
      * @param exhangePartitionFileSystem the file system of the exchange
@@ -63,7 +63,7 @@ public abstract class InstallerOrUpgrader
      * @param dataPartitionFileSystem the file system of the data partition
      * @param dlCopyGUI the graphical user interface
      */
-    public InstallerOrUpgrader(InstallationSource source,
+    public InstallerOrUpgrader(SystemSource source,
             List<StorageDevice> deviceList, String exchangePartitionLabel,
             String exhangePartitionFileSystem, String dataPartitionFileSystem,
             DLCopyGUI dlCopyGUI) {

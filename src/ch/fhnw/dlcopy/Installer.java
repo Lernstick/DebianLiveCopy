@@ -37,7 +37,7 @@ public class Installer extends InstallerOrUpgrader
      * @param dlCopyGUI the DLCopy GUI
      * @param deviceList the list of StorageDevices to install
      * @param exchangePartitionLabel the label of the exchange partition
-     * @param source the installation source
+     * @param source the system source
      * @param exchangePartitionSize the size of the exchange partition
      * @param exchangePartitionFileSystem the file system of the exchange
      * partition
@@ -50,7 +50,7 @@ public class Installer extends InstallerOrUpgrader
      * @param dataPartitionMode the mode of the data partition to set in the
      * bootloaders config
      */
-    public Installer(InstallationSource source, List<StorageDevice> deviceList,
+    public Installer(SystemSource source, List<StorageDevice> deviceList,
             String exchangePartitionLabel, String exchangePartitionFileSystem,
             String dataPartitionFileSystem, DLCopyGUI dlCopyGUI,
             int exchangePartitionSize, boolean copyExchangePartition,

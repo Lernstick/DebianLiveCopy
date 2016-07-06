@@ -1,16 +1,18 @@
 package ch.fhnw.dlcopy;
 
 import ch.fhnw.filecopier.Source;
+import ch.fhnw.util.MountInfo;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.StorageDevice.Type;
+import java.io.File;
 import java.io.IOException;
+import java.text.MessageFormat;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 /**
- * Encapsulate the source of an install or update operation TODO: rename class
- * so that upgrading is also reflected in its name
+ * Encapsulate the source of an install or update operation
  */
-public interface InstallationSource {
+public abstract class SystemSource {
 
     /**
      * the pattern of files that need to be copied to the EFI partition
@@ -66,9 +68,20 @@ public interface InstallationSource {
      */
     public static final String GRUB_EFI_PATH = "/efi/boot/grubx64.efi";
 
-    public String getDeviceName();
+    /**
+     * Returns the device name (e.g. sda) of this system source. This is mostly
+     * used for filtering out the system source in installation or upgrade
+     * lists.
+     *
+     * @return the device name (e.g. sda) of this system source
+     */
+    public abstract String getDeviceName();
 
-    public Type getDeviceType();
+    /**
+     * returns the device type if this system source
+     * @return the device type if this system source
+     */
+    public abstract Type getDeviceType();
 
     /**
      * returns <tt>true</tt> if the InstallationSource has a boot/EFI partition,
@@ -77,7 +90,7 @@ public interface InstallationSource {
      * @return <tt>true</tt> if the InstallationSource has a boot/EFI partition,
      * <tt>false</tt> otherwise
      */
-    public boolean hasEfiPartition();
+    public abstract boolean hasEfiPartition();
 
     /**
      * returns <tt>true</tt> if the InstallationSource has an exchange
@@ -86,25 +99,29 @@ public interface InstallationSource {
      * @return <tt>true</tt> if the InstallationSource has an exchange
      * partition, <tt>false</tt> otherwise
      */
-    public boolean hasExchangePartition();
+    public abstract boolean hasExchangePartition();
 
     /**
      * returns the mode of the data partition
      *
      * @return the mode of the data partition
      */
-    public DataPartitionMode getDataPartitionMode();
+    public abstract DataPartitionMode getDataPartitionMode();
 
     /**
      * returns the Debian Live version of the system
      *
      * @return the Debian Live version of the system
      */
-    public DebianLiveVersion getSystemVersion();
+    public abstract DebianLiveVersion getSystemVersion();
 
-    public String getSystemPath();
+    /**
+     * returns the path where the system is mounted
+     * @return the path where the system is mounted
+     */
+    public abstract String getSystemPath();
 
-    public long getSystemSize();
+    public abstract long getSystemSize();
 
     /**
      * Returns Source definitions for copy jobs to the EFI partition. Partitions
@@ -113,45 +130,69 @@ public interface InstallationSource {
      * @return the Source definitions for copy jobs to the EFI partition
      * @throws DBusException
      */
-    public Source getEfiCopySource() throws DBusException;
+    public abstract Source getEfiCopySource() throws DBusException;
 
     /**
      * returns a copy source for the system, without the squashfs files
      *
      * @return a copy source for the system, without the squashfs files
      */
-    public Source getSystemCopySourceBoot();
+    public abstract Source getSystemCopySourceBoot();
 
     /**
      * returns a copy source for the system, including the squashfs files
      *
      * @return a copy source for the system, including the squashfs files
      */
-    public Source getSystemCopySourceFull();
+    public abstract Source getSystemCopySourceFull();
 
-    public Source getPersistentCopySource();
+    public abstract Source getPersistentCopySource();
 
-    public Source getExchangeCopySource() throws DBusException;
+    public abstract Source getExchangeCopySource() throws DBusException;
 
-    public Partition getEfiPartition();
+    public abstract Partition getEfiPartition();
 
-    public Partition getExchangePartition();
+    public abstract Partition getExchangePartition();
 
-    public Partition getDataPartition();
+    public abstract Partition getDataPartition();
 
-    public String getMbrPath();
+    public abstract String getMbrPath();
 
     /**
-     * installs extlinux from the source to the target boot partition
+     * installs extlinux from this source to another partition
      *
-     * @param systemPartition the target system partition
+     * @param partition the partition where to install extLinux
      * @throws java.io.IOException if installing extlinux on the bootPartition
      * fails
      */
-    public void installExtlinux(Partition systemPartition) throws IOException;
+    public abstract void installExtlinux(Partition partition) throws IOException;
 
     /**
      * Unmount any partitions that were mounted by any get*CopySource()
      */
-    public void unmountTmpPartitions();
+    public abstract void unmountTmpPartitions();
+
+    /**
+     * creates a syslinux directory on a partition
+     *
+     * @param partition the partition where to create the syslinux directory
+     * @return the path to the newly created syslinux directory
+     * @throws IOException if creating the syslinux directory fails
+     */
+    protected static String createSyslinuxDir(Partition partition)
+            throws IOException {
+        try {
+            MountInfo mountInfo = partition.mount();
+            File syslinuxDir = new File(mountInfo.getMountPath() + "/syslinux");
+            if (!syslinuxDir.exists() && !syslinuxDir.mkdirs()) {
+                String errorMessage = DLCopy.STRINGS.getString(
+                        "Error_Creating_Directory");
+                errorMessage = MessageFormat.format(errorMessage, syslinuxDir);
+                throw new IOException(errorMessage);
+            }
+            return syslinuxDir.getPath();
+        } catch (DBusException ex) {
+            throw new IOException(ex);
+        }
+    }
 }

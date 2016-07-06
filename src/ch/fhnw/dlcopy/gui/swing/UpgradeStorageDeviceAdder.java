@@ -1,7 +1,7 @@
 package ch.fhnw.dlcopy.gui.swing;
 
 import ch.fhnw.dlcopy.DLCopy;
-import ch.fhnw.dlcopy.InstallationSource;
+import ch.fhnw.dlcopy.SystemSource;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.StorageDevice;
 import java.io.IOException;
@@ -22,12 +22,12 @@ public class UpgradeStorageDeviceAdder extends StorageDeviceAdder {
 
     private static final Logger LOGGER
             = Logger.getLogger(UpgradeStorageDeviceAdder.class.getName());
-    private final InstallationSource source;
+    private final SystemSource source;
 
     /**
      * creates a new UpgradeStorageDeviceAdder
      *
-     * @param source the installation source
+     * @param source the system source
      * @param addedPath the added udisks path
      * @param showHarddisks if true, paths to hard disks are processed,
      * otherwise ignored
@@ -36,7 +36,7 @@ public class UpgradeStorageDeviceAdder extends StorageDeviceAdder {
      * @param list the storage devices JList
      * @param swingGUI the DLCopySwingGUI
      */
-    public UpgradeStorageDeviceAdder(InstallationSource source,
+    public UpgradeStorageDeviceAdder(SystemSource source,
             String addedPath, boolean showHarddisks,
             StorageDeviceListUpdateDialogHandler dialogHandler,
             DefaultListModel<StorageDevice> listModel, JList list,

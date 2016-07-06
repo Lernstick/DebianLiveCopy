@@ -1,16 +1,12 @@
 package ch.fhnw.dlcopy.gui.swing;
 
-import ch.fhnw.dlcopy.DLCopy;
-import ch.fhnw.dlcopy.InstallationSource;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.StorageDevice;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
-import org.freedesktop.dbus.exceptions.DBusException;
 
 /**
  * parses udisks output paths and adds the corresponding storage devices to the

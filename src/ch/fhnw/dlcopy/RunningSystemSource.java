@@ -13,12 +13,12 @@ import java.util.logging.Logger;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 /**
- * Install from the currently running live system
+ * The currently running live system.
  */
-public final class SystemInstallationSource implements InstallationSource {
+public final class RunningSystemSource extends SystemSource {
 
     private final static Logger LOGGER
-            = Logger.getLogger(SystemInstallationSource.class.getName());
+            = Logger.getLogger(RunningSystemSource.class.getName());
 
     private final ProcessExecutor processExecutor;
     private final DebianLiveVersion runningVersion;
@@ -42,7 +42,7 @@ public final class SystemInstallationSource implements InstallationSource {
      * @throws DBusException
      * @throws IOException
      */
-    public SystemInstallationSource(ProcessExecutor processExecutor)
+    public RunningSystemSource(ProcessExecutor processExecutor)
             throws DBusException, IOException {
         this.processExecutor = processExecutor;
         runningVersion = DebianLiveVersion.getRunningVersion();
@@ -153,22 +153,22 @@ public final class SystemInstallationSource implements InstallationSource {
             basePath = getSystemPath();
         }
         return new Source(basePath, hasLegacyGrub
-                ? InstallationSource.LEGACY_EFI_COPY_PATTERN
-                : InstallationSource.EFI_COPY_PATTERN);
+                ? SystemSource.LEGACY_EFI_COPY_PATTERN
+                : SystemSource.EFI_COPY_PATTERN);
     }
 
     @Override
     public Source getSystemCopySourceBoot() {
         return new Source(getSystemPath(), hasLegacyGrub
-                ? InstallationSource.LEGACY_SYSTEM_COPY_PATTERN_BOOT
-                : InstallationSource.SYSTEM_COPY_PATTERN_BOOT);
+                ? SystemSource.LEGACY_SYSTEM_COPY_PATTERN_BOOT
+                : SystemSource.SYSTEM_COPY_PATTERN_BOOT);
     }
 
     @Override
     public Source getSystemCopySourceFull() {
         return new Source(getSystemPath(), hasLegacyGrub
-                ? InstallationSource.LEGACY_SYSTEM_COPY_PATTERN_FULL
-                : InstallationSource.SYSTEM_COPY_PATTERN_FULL);
+                ? SystemSource.LEGACY_SYSTEM_COPY_PATTERN_FULL
+                : SystemSource.SYSTEM_COPY_PATTERN_FULL);
     }
 
     @Override
@@ -208,7 +208,7 @@ public final class SystemInstallationSource implements InstallationSource {
 
     @Override
     public void installExtlinux(Partition bootPartition) throws IOException {
-        String syslinuxDir = DLCopy.createSyslinuxDir(bootPartition);
+        String syslinuxDir = createSyslinuxDir(bootPartition);
         int returnValue = processExecutor.executeProcess(true, true,
                 "extlinux", "-i", syslinuxDir);
         if (returnValue != 0) {

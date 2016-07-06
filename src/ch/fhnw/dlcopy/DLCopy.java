@@ -57,13 +57,11 @@ public class DLCopy {
     /**
      * the size of the efi partition (given in MiB)
      */
-    public static final long EFI_PARTITION_SIZE = 100;
+    public static final long EFI_PARTITION_SIZE = 10;
 
     /**
-     * Scale factor for system partition sizing.
+     * the label to use for the system partition
      */
-    public static final float SYSTEM_SIZE_FACTOR = 1.1f;
-
     public static String systemPartitionLabel;
 
     private static final Logger LOGGER
@@ -103,7 +101,7 @@ public class DLCopy {
      * @return the enlarged system size (safe size for partition creation)
      */
     public static long getEnlargedSystemSize(long systemSize) {
-        return 100 * MEGA + (long) (systemSize * SYSTEM_SIZE_FACTOR);
+        return 100 * MEGA + (long) (systemSize * 1.1);
     }
 
     /**
@@ -155,13 +153,13 @@ public class DLCopy {
     /**
      * installs syslinux from an InstallationSource to a target device
      *
-     * @param source the installation source
+     * @param source the system source
      * @param device the device where the MBR should be installed
      * @param systemPartition the boot partition of the device, where syslinux
      * is installed
      * @throws IOException when an IOException occurs
      */
-    public static void makeBootable(InstallationSource source, String device,
+    public static void makeBootable(SystemSource source, String device,
             Partition systemPartition) throws IOException {
 
         // install syslinux
@@ -190,7 +188,7 @@ public class DLCopy {
     /**
      * Installs the installation source to a target storage device
      *
-     * @param source the installation source
+     * @param source the system source
      * @param fileCopier the Filecopier used for copying the system partition
      * @param storageDevice the target storage device
      * @param exchangePartitionLabel the label of the exchange partition
@@ -201,7 +199,7 @@ public class DLCopy {
      * @throws IOException when an I/O exception occurs
      * @throws DBusException when there was a problem with DBus
      */
-    public static void copyToStorageDevice(InstallationSource source,
+    public static void copyToStorageDevice(SystemSource source,
             FileCopier fileCopier, StorageDevice storageDevice,
             String exchangePartitionLabel,
             InstallerOrUpgrader installerOrUpgrader, DLCopyGUI dlCopyGUI)
@@ -396,13 +394,13 @@ public class DLCopy {
     /**
      * returns the partitions sizes for a StorageDevice when installing
      *
-     * @param source the installation source
+     * @param source the system source
      * @param storageDevice the StorageDevice to check
      * @param exchangePartitionSize the planned size of the exchange partition
      * @return the partitions sizes for a StorageDevice when installing
      */
     public static PartitionSizes getInstallPartitionSizes(
-            InstallationSource source, StorageDevice storageDevice,
+            SystemSource source, StorageDevice storageDevice,
             int exchangePartitionSize) {
         return getPartitionSizes(source, storageDevice,
                 false, null, 0, exchangePartitionSize);
@@ -411,7 +409,7 @@ public class DLCopy {
     /**
      * returns the partitions sizes for a StorageDevice when upgrading
      *
-     * @param source the installation source
+     * @param source the system source
      * @param storageDevice the StorageDevice to check
      * @param exchangeRepartitionStrategy the repartitioning strategy for the
      * exchange partition
@@ -420,7 +418,7 @@ public class DLCopy {
      * @return the partitions sizes for a StorageDevice when upgrading
      */
     public static PartitionSizes getUpgradePartitionSizes(
-            InstallationSource source, StorageDevice storageDevice,
+            SystemSource source, StorageDevice storageDevice,
             RepartitionStrategy exchangeRepartitionStrategy,
             int resizedExchangePartitionSize) {
         return getPartitionSizes(source, storageDevice, true,
@@ -591,7 +589,7 @@ public class DLCopy {
     /**
      * creates a CopyJobsInfo for a given source / destination combination
      *
-     * @param source the installation source
+     * @param source the system source
      * @param storageDevice the destination StorageDevice
      * @param destinationBootPartition the destination boot partition
      * @param destinationExchangePartition the destination exchange partition
@@ -601,10 +599,8 @@ public class DLCopy {
      * @return the CopyJobsInfo for the given source / destination combination
      * @throws DBusException
      */
-    public static CopyJobsInfo prepareBootAndSystemCopyJobs(
-            InstallationSource source,
-            StorageDevice storageDevice,
-            Partition destinationBootPartition,
+    public static CopyJobsInfo prepareBootAndSystemCopyJobs(SystemSource source,
+            StorageDevice storageDevice, Partition destinationBootPartition,
             Partition destinationExchangePartition,
             Partition destinationSystemPartition,
             String destinationExchangePartitionFileSystem)
@@ -786,11 +782,11 @@ public class DLCopy {
     /**
      * sets the data partition mode on a target system
      *
-     * @param source the installation source
+     * @param source the system source
      * @param dataPartitionMode the data partition mode to set
      * @param imagePath the path where the target image is mounted
      */
-    public static void setDataPartitionMode(InstallationSource source,
+    public static void setDataPartitionMode(SystemSource source,
             DataPartitionMode dataPartitionMode, String imagePath) {
         LOGGER.log(Level.INFO,
                 "data partition mode of installation source: {0}",
@@ -901,30 +897,6 @@ public class DLCopy {
     }
 
     /**
-     * creates a syslinux directory on an EFI partition
-     *
-     * @param efiPartition the EFI partition
-     * @return the path to the newly created syslinux directory
-     * @throws IOException if creating the syslinux directory fails
-     */
-    public static String createSyslinuxDir(Partition efiPartition)
-            throws IOException {
-        try {
-            MountInfo mountInfo = efiPartition.mount();
-            File syslinuxDir = new File(mountInfo.getMountPath() + "/syslinux");
-            if (!syslinuxDir.exists() && !syslinuxDir.mkdirs()) {
-                String errorMessage = DLCopy.STRINGS.getString(
-                        "Error_Creating_Directory");
-                errorMessage = MessageFormat.format(errorMessage, syslinuxDir);
-                throw new IOException(errorMessage);
-            }
-            return syslinuxDir.getPath();
-        } catch (DBusException ex) {
-            throw new IOException(ex);
-        }
-    }
-
-    /**
      * returns the textual representation of the MD5 sum of a file
      *
      * @param filePath the path of the file to digest
@@ -946,7 +918,7 @@ public class DLCopy {
         }
     }
 
-    private static PartitionSizes getPartitionSizes(InstallationSource source,
+    private static PartitionSizes getPartitionSizes(SystemSource source,
             StorageDevice storageDevice, boolean upgrading,
             RepartitionStrategy upgradeRepartitionStrategy,
             int upgradeResizedExchangePartitionSize,
@@ -1270,8 +1242,8 @@ public class DLCopy {
                 } else {
                     // determine ID for exchange partition
                     String exchangePartitionID;
-                    String fileSystem
-                            = installerOrUpgrader.getExhangePartitionFileSystem();
+                    String fileSystem = installerOrUpgrader.
+                            getExhangePartitionFileSystem();
                     if (fileSystem.equalsIgnoreCase("fat32")) {
                         exchangePartitionID = "c";
                     } else {
@@ -1334,8 +1306,8 @@ public class DLCopy {
                 if (exchangeMB != 0) {
                     // create file system for exchange partition
                     formatExchangePartition(exchangeDevice,
-                            exchangePartitionLabel,
-                            installerOrUpgrader.getExhangePartitionFileSystem());
+                            exchangePartitionLabel, installerOrUpgrader.
+                            getExhangePartitionFileSystem());
                 }
                 if (persistenceDevice != null) {
                     formatPersistencePartition(persistenceDevice,
@@ -1353,7 +1325,7 @@ public class DLCopy {
         }
     }
 
-    private static void copyExchangeBootAndSystem(InstallationSource source,
+    private static void copyExchangeBootAndSystem(SystemSource source,
             FileCopier fileCopier, StorageDevice storageDevice,
             Partition destinationExchangePartition,
             Partition destinationEfiPartition,
@@ -1439,7 +1411,7 @@ public class DLCopy {
         }
     }
 
-    private static void copyPersistence(InstallationSource source,
+    private static void copyPersistence(SystemSource source,
             InstallerOrUpgrader installerOrUpgrader,
             Partition destinationDataPartition, DLCopyGUI dlCopyGUI)
             throws IOException, InterruptedException, DBusException {

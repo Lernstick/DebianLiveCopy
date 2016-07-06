@@ -12,13 +12,13 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * Installation source from a loop mounted ISO file
+ * A system source from a loop mounted ISO file.
  *
  */
-public class IsoInstallationSource implements InstallationSource {
+public class IsoSystemSource extends SystemSource {
 
     private final static Logger LOGGER
-            = Logger.getLogger(IsoInstallationSource.class.getName());
+            = Logger.getLogger(IsoSystemSource.class.getName());
 
     private final String imagePath;
     private final ProcessExecutor processExecutor;
@@ -35,8 +35,9 @@ public class IsoInstallationSource implements InstallationSource {
      * @param processExecutor the ProcessExecutor to use
      * @throws java.io.IOException if the ISO has no extlinux installed
      */
-    public IsoInstallationSource(String imagePath,
+    public IsoSystemSource(String imagePath,
             ProcessExecutor processExecutor) throws IOException {
+        
         this.imagePath = imagePath;
         this.processExecutor = processExecutor;
         this.version = getDebianLiveVersion();
@@ -101,22 +102,22 @@ public class IsoInstallationSource implements InstallationSource {
     @Override
     public Source getEfiCopySource() {
         return new Source(getSystemPath(), hasLegacyGrub
-                ? InstallationSource.LEGACY_EFI_COPY_PATTERN
-                : InstallationSource.EFI_COPY_PATTERN);
+                ? SystemSource.LEGACY_EFI_COPY_PATTERN
+                : SystemSource.EFI_COPY_PATTERN);
     }
 
     @Override
     public Source getSystemCopySourceBoot() {
         return new Source(getSystemPath(), hasLegacyGrub
-                ? InstallationSource.LEGACY_SYSTEM_COPY_PATTERN_BOOT
-                : InstallationSource.SYSTEM_COPY_PATTERN_BOOT);
+                ? SystemSource.LEGACY_SYSTEM_COPY_PATTERN_BOOT
+                : SystemSource.SYSTEM_COPY_PATTERN_BOOT);
     }
 
     @Override
     public Source getSystemCopySourceFull() {
         return new Source(getSystemPath(), hasLegacyGrub
-                ? InstallationSource.LEGACY_SYSTEM_COPY_PATTERN_FULL
-                : InstallationSource.SYSTEM_COPY_PATTERN_FULL);
+                ? SystemSource.LEGACY_SYSTEM_COPY_PATTERN_FULL
+                : SystemSource.SYSTEM_COPY_PATTERN_FULL);
     }
 
     @Override
@@ -151,10 +152,10 @@ public class IsoInstallationSource implements InstallationSource {
     }
 
     @Override
-    public void installExtlinux(Partition bootPartition) throws IOException {
+    public void installExtlinux(Partition partition) throws IOException {
         mountSystemImageIfNeeded();
         processExecutor.executeProcess("sync");
-        String syslinuxDir = DLCopy.createSyslinuxDir(bootPartition);
+        String syslinuxDir = createSyslinuxDir(partition);
         String rootFsSyslinuxDir = LernstickFileTools.createTempDirectory(
                 new File(rootFsPath + "/tmp"), "syslinux").getPath();
         processExecutor.executeProcess(

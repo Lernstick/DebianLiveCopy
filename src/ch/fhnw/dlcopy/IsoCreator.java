@@ -53,7 +53,7 @@ public class IsoCreator
             = Pattern.compile("\\[.* (.*)/(.*) .*");
 
     private final DLCopyGUI dlCopyGUI;
-    private final InstallationSource installationSource;
+    private final SystemSource systemSource;
     private final boolean onlyBootMedium;
     private final String tmpDirectory;
     private final DataPartitionMode dataPartitionMode;
@@ -72,7 +72,7 @@ public class IsoCreator
      * creates a new ISOCreator
      *
      * @param dlCopyGUI the DLCopy GUI
-     * @param installationSource the installation source
+     * @param systemSource the system source
      * @param onlyBootMedium if only a boot medium should be created
      * @param tmpDirectory the path to a temporary directory
      * @param dataPartitionMode the data partition mode
@@ -82,14 +82,13 @@ public class IsoCreator
      * no datapartition is in use
      * @param isoLabel the label to use for the final ISO
      */
-    public IsoCreator(DLCopyGUI dlCopyGUI,
-            InstallationSource installationSource,
+    public IsoCreator(DLCopyGUI dlCopyGUI, SystemSource systemSource,
             boolean onlyBootMedium, String tmpDirectory,
             DataPartitionMode dataPartitionMode,
             boolean showNotUsedDialog, boolean autoStartInstaller,
             String isoLabel) {
         this.dlCopyGUI = dlCopyGUI;
-        this.installationSource = installationSource;
+        this.systemSource = systemSource;
         this.onlyBootMedium = onlyBootMedium;
         this.tmpDirectory = tmpDirectory;
         this.dataPartitionMode = dataPartitionMode;
@@ -117,22 +116,22 @@ public class IsoCreator
             }
 
             // copy boot files
-            if (installationSource.hasEfiPartition()) {
+            if (systemSource.hasEfiPartition()) {
                 // system with a separate boot partition
                 CopyJob bootCopyJob = new CopyJob(
                         new Source[]{
-                            installationSource.getEfiCopySource(),
-                            installationSource.getSystemCopySourceBoot()
+                            systemSource.getEfiCopySource(),
+                            systemSource.getSystemCopySourceBoot()
                         },
                         new String[]{targetDirectory});
                 FileCopier fileCopier = new FileCopier();
                 fileCopier.copy(bootCopyJob);
-                installationSource.unmountTmpPartitions();
+                systemSource.unmountTmpPartitions();
 
             } else {
                 // legacy system without separate boot partition
                 String copyScript = "#!/bin/sh" + '\n'
-                        + "cd " + installationSource.getSystemPath() + '\n'
+                        + "cd " + systemSource.getSystemPath() + '\n'
                         + "find -not -name filesystem*.squashfs | cpio -pvdum \""
                         + targetDirectory + "\"";
                 PROCESS_EXECUTOR.executeScript(copyScript);
@@ -142,7 +141,7 @@ public class IsoCreator
                 createSquashFS(targetDirectory);
             }
 
-            DLCopy.setDataPartitionMode(installationSource,
+            DLCopy.setDataPartitionMode(systemSource,
                     dataPartitionMode, targetDirectory);
 
             // syslinux -> isolinux
@@ -295,10 +294,10 @@ public class IsoCreator
         // mount all readonly squashfs files
         List<String> readOnlyMountPoints
                 = LernstickFileTools.mountAllSquashFS(
-                        installationSource.getSystemPath());
+                        systemSource.getSystemPath());
 
         // mount persistence (data partition)
-        MountInfo dataMountInfo = installationSource.getDataPartition().mount();
+        MountInfo dataMountInfo = systemSource.getDataPartition().mount();
         String dataPartitionPath = dataMountInfo.getMountPath();
 
         // create aufs union of squashfs files with persistence
@@ -364,7 +363,7 @@ public class IsoCreator
         // umount all partitions
         DLCopy.umount(cowPath, dlCopyGUI);
         if (!dataMountInfo.alreadyMounted()) {
-            installationSource.getDataPartition().umount();
+            systemSource.getDataPartition().umount();
         }
         for (String readOnlyMountPoint : readOnlyMountPoints) {
             DLCopy.umount(readOnlyMountPoint, dlCopyGUI);

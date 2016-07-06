@@ -64,7 +64,7 @@ public class Upgrader extends InstallerOrUpgrader {
     /**
      * Creates a new Upgrader
      *
-     * @param source the installation source
+     * @param source the system source
      * @param deviceList the list of StorageDevices to upgrade
      * @param exchangePartitionLabel the label of the exchange partition
      * @param exchangePartitionFileSystem the file system of the exchange
@@ -91,7 +91,7 @@ public class Upgrader extends InstallerOrUpgrader {
      * @param systemSizeEnlarged the "enlarged" system size (multiplied with a
      * small file system overhead factor)
      */
-    public Upgrader(InstallationSource source, List<StorageDevice> deviceList,
+    public Upgrader(SystemSource source, List<StorageDevice> deviceList,
             String exchangePartitionLabel, String exchangePartitionFileSystem,
             String dataPartitionFileSystem, DLCopySwingGUI dlCopy,
             DLCopyGUI dlCopyGUI, RepartitionStrategy repartitionStrategy,

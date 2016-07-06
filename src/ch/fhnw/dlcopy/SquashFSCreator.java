@@ -41,7 +41,7 @@ public class SquashFSCreator
             = Pattern.compile("\\[.* (.*)/(.*) .*");
 
     private final DLCopyGUI dlCopyGUI;
-    private final InstallationSource installationSource;
+    private final SystemSource systemSource;
     private final String tmpDirectory;
     private final boolean showNotUsedDialog;
     private final boolean autoStartInstaller;
@@ -53,18 +53,18 @@ public class SquashFSCreator
      * creates a new ISOCreator
      *
      * @param dlCopyGUI the DLCopy GUI
-     * @param installationSource the installation source
+     * @param systemSource the system source
      * @param tmpDirectory the path to a temporary directory
      * @param showNotUsedDialog if the dialog that data partition is not in use
      * should be shown
      * @param autoStartInstaller if the installer should start automatically if
      * no datapartition is in use
      */
-    public SquashFSCreator(DLCopyGUI dlCopyGUI,
-            InstallationSource installationSource, String tmpDirectory,
-            boolean showNotUsedDialog, boolean autoStartInstaller) {
+    public SquashFSCreator(DLCopyGUI dlCopyGUI, SystemSource systemSource,
+            String tmpDirectory, boolean showNotUsedDialog,
+            boolean autoStartInstaller) {
         this.dlCopyGUI = dlCopyGUI;
-        this.installationSource = installationSource;
+        this.systemSource = systemSource;
         this.tmpDirectory = tmpDirectory;
         this.showNotUsedDialog = showNotUsedDialog;
         this.autoStartInstaller = autoStartInstaller;
@@ -134,7 +134,7 @@ public class SquashFSCreator
         dlCopyGUI.showIsoProgressMessage(
                 STRINGS.getString("Mounting_Partitions"));
         // mount persistence (data partition)
-        MountInfo dataMountInfo = installationSource.getDataPartition().mount();
+        MountInfo dataMountInfo = systemSource.getDataPartition().mount();
         String dataPartitionPath = dataMountInfo.getMountPath();
 
         // create aufs union of squashfs files with persistence
@@ -210,7 +210,7 @@ public class SquashFSCreator
         // cleanup
         DLCopy.umount(cowPath, dlCopyGUI);
         if (!dataMountInfo.alreadyMounted()) {
-            installationSource.getDataPartition().umount();
+            systemSource.getDataPartition().umount();
         }
     }
 }

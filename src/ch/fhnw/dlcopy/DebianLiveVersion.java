@@ -27,14 +27,26 @@ public enum DebianLiveVersion {
         this.mbrFilePath = mbrFilePath;
     }
 
+    /**
+     * returns the path where the live medium is mounted
+     * @return the path where the live medium is mounted
+     */
     public String getLiveSystemPath() {
         return liveSystemPath;
     }
 
+    /**
+     * returns the path to the MBR file
+     * @return the path to the MBR file
+     */
     public String getMbrFilePath() {
         return mbrFilePath;
     }
 
+    /**
+     * tries to detect the running Debian Live version
+     * @return the detected Debian Live version
+     */
     public static DebianLiveVersion getRunningVersion() {
         for (DebianLiveVersion version : values()) {
             File liveDir = new File(version.liveSystemPath);
@@ -43,12 +55,6 @@ public enum DebianLiveVersion {
                 return version;
             }
         }
-        return null;
-    }
-
-    public static DebianLiveVersion getDistroVersion(String path) {
-        // TODO: find out a way to determine the version from an ISO install
-        // image
         return null;
     }
 }
