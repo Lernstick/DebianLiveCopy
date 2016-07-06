@@ -1,3 +1,9 @@
+dlcopy (201607061212-1) lernstick-8; urgency=medium
+
+  * [0987c1] code cleanup, downsized EFI partition from 100 to 10 MB
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Wed, 06 Jul 2016 12:12:35 +0200
+
 dlcopy (201607050312-1) lernstick-8; urgency=medium
 
   * [3754af] enlarged save system partition size
