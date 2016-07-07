@@ -1,3 +1,9 @@
+dlcopy (201607071450-1) lernstick-8; urgency=medium
+
+  * [161ac7] made sure that the tiny EFI partition is rendered in the install list
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 07 Jul 2016 14:50:05 +0200
+
 dlcopy (201607061212-1) lernstick-8; urgency=medium
 
   * [0987c1] code cleanup, downsized EFI partition from 100 to 10 MB
