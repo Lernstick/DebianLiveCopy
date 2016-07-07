@@ -27,11 +27,12 @@ public class InstallStorageDeviceRenderer extends JPanel
 
     private final static Logger LOGGER
             = Logger.getLogger(DLCopySwingGUI.class.getName());
-    // here we need the boot partition size in bytes
+    // here we need the EFI partition size in bytes
     private final static long EFI_PARTITION_SIZE
             = DLCopy.EFI_PARTITION_SIZE * MEGA;
     private final static int OFFSET = 5;
     private final static int BAR_HEIGHT = 30;
+    private final static int MIN_WIDTH = 3;
     private final DLCopySwingGUI dlCopy;
     private final Color LIGHT_BLUE = new Color(170, 170, 255);
     private final Color DARK_BLUE = new Color(69, 69, 255);
@@ -193,11 +194,18 @@ public class InstallStorageDeviceRenderer extends JPanel
 
             case PERSISTENCE:
                 // block widths
-                int bootWidth = (int) ((usbStorageWidth * EFI_PARTITION_SIZE)
+                int efiWidth = (int) ((usbStorageWidth * EFI_PARTITION_SIZE)
                         / storageSize);
                 int systemWidth = (int) ((usbStorageWidth * systemSize)
                         / storageSize);
-                int persistentWidth = usbStorageWidth - bootWidth - systemWidth;
+                int persistentWidth = usbStorageWidth - efiWidth - systemWidth;
+                
+                // make sure that our tiny EFI partition is still visible
+                if (efiWidth < MIN_WIDTH) {
+                    int diff = MIN_WIDTH - efiWidth;
+                    efiWidth = MIN_WIDTH;
+                    systemWidth -= diff;
+                }
 
                 // texts
                 String persistentText
@@ -205,14 +213,14 @@ public class InstallStorageDeviceRenderer extends JPanel
                 String systemText
                         = LernstickFileTools.getDataVolumeString(systemSize, 1);
 
-                // paint boot partition block
-                int bootPartitionX = iconGap + OFFSET;
+                // paint EFI partition block
+                int efiPartitionX = iconGap + OFFSET;
                 graphics2D.setPaint(DARK_BLUE);
-                graphics2D.fillRect(bootPartitionX, rectangleTop,
-                        bootWidth, BAR_HEIGHT);
+                graphics2D.fillRect(efiPartitionX, rectangleTop,
+                        efiWidth, BAR_HEIGHT);
 
                 // paint persistent partition block
-                int persistentPartitionX = bootPartitionX + bootWidth;
+                int persistentPartitionX = efiPartitionX + efiWidth;
                 graphics2D.setPaint(Color.GREEN);
                 graphics2D.fillRect(persistentPartitionX, rectangleTop,
                         persistentWidth, BAR_HEIGHT);
@@ -231,7 +239,7 @@ public class InstallStorageDeviceRenderer extends JPanel
 
             case EXCHANGE:
                 // block widths
-                bootWidth = (int) ((usbStorageWidth * EFI_PARTITION_SIZE)
+                efiWidth = (int) ((usbStorageWidth * EFI_PARTITION_SIZE)
                         / storageSize);
                 systemWidth = (int) ((usbStorageWidth * systemSize)
                         / storageSize);
@@ -257,13 +265,19 @@ public class InstallStorageDeviceRenderer extends JPanel
                     persistentSize = storageSize
                             - EFI_PARTITION_SIZE - exchangeSize - systemSize;
                     LOGGER.log(Level.FINEST,
-                            "\nstorageSize: {0}\nBOOT_PARTITION_SIZE: {1}"
+                            "\nstorageSize: {0}\nEFI_PARTITION_SIZE: {1}"
                             + "\nexchangeSize: {2}\nsystemSize: {3}"
                             + "\npersistentSize: {4}",
                             new Object[]{storageSize, EFI_PARTITION_SIZE,
                                 exchangeSize, systemSize, persistentSize});
                     persistentWidth = usbStorageWidth
-                            - bootWidth - exchangeWidth - systemWidth;
+                            - efiWidth - exchangeWidth - systemWidth;
+                }
+                // make sure that our tiny EFI partition is still visible
+                if (efiWidth < MIN_WIDTH) {
+                    int diff = MIN_WIDTH - efiWidth;
+                    efiWidth = MIN_WIDTH;
+                    systemWidth -= diff;
                 }
 
                 // texts
@@ -277,11 +291,11 @@ public class InstallStorageDeviceRenderer extends JPanel
                 int exchangePartitionX;
                 if (storageDevice.isRemovable()) {
                     exchangePartitionX = iconGap + OFFSET;
-                    bootPartitionX = exchangePartitionX + exchangeWidth;
-                    persistentPartitionX = bootPartitionX + bootWidth;
+                    efiPartitionX = exchangePartitionX + exchangeWidth;
+                    persistentPartitionX = efiPartitionX + efiWidth;
                 } else {
-                    bootPartitionX = iconGap + OFFSET;
-                    exchangePartitionX = bootPartitionX + bootWidth;
+                    efiPartitionX = iconGap + OFFSET;
+                    exchangePartitionX = efiPartitionX + efiWidth;
                     persistentPartitionX = exchangePartitionX + exchangeWidth;
                 }
 
@@ -290,8 +304,8 @@ public class InstallStorageDeviceRenderer extends JPanel
                 // exchange text...
                 // color blocks
                 graphics2D.setPaint(DARK_BLUE);
-                graphics2D.fillRect(bootPartitionX, rectangleTop,
-                        bootWidth, BAR_HEIGHT);
+                graphics2D.fillRect(efiPartitionX, rectangleTop,
+                        efiWidth, BAR_HEIGHT);
                 if (exchangeWidth > 0) {
                     graphics2D.setPaint(Color.YELLOW);
                     graphics2D.fillRect(exchangePartitionX, rectangleTop,
