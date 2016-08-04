@@ -1,3 +1,9 @@
+dlcopy (201608041740-1) lernstick-8; urgency=medium
+
+  * rebuild with fixed lernstickTools
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 04 Aug 2016 17:40:33 +0200
+
 dlcopy (201607071450-1) lernstick-8; urgency=medium
 
   * [161ac7] made sure that the tiny EFI partition is rendered in the install list
