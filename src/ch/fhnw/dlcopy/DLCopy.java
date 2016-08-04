@@ -769,7 +769,7 @@ public class DLCopy {
         }
 
         exitValue = PROCESS_EXECUTOR.executeProcess(
-                "/sbin/mkfs.ext4", "-L", systemPartitionLabel, systemDevice);
+                "/sbin/mkfs.ext3", "-L", systemPartitionLabel, systemDevice);
         if (exitValue != 0) {
             LOGGER.severe(PROCESS_EXECUTOR.getOutput());
             String errorMessage
