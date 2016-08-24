@@ -14,6 +14,10 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Properties;
@@ -344,6 +348,23 @@ public class IsoCreator
         } catch (IOException iOException) {
             LOGGER.log(Level.WARNING, "", iOException);
         }
+
+        // To make sure that every machine has its unique ssh host key we have
+        // to remove the ssh configuration created by live-config in the cow
+        // directory.
+        // 
+        // remove ssh host keys
+        Path sshPath = Paths.get(cowDir.getPath(), "/etc/ssh");
+        try (DirectoryStream<Path> stream
+                = Files.newDirectoryStream(sshPath, "ssh_host_*")) {
+            for (Path path : stream) {
+                Files.deleteIfExists(path);
+            }
+        }
+        // remove state file of /lib/live/config/1160-openssh-server so that new
+        // keys are generated for this new image
+        Files.deleteIfExists(Paths.get(cowDir.getPath(),
+                "/var/lib/live/config/openssh-server"));
 
         // create new squashfs image
         step = Step.MKSQUASHFS;
