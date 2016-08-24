@@ -1,3 +1,11 @@
+dlcopy (201608241832-1) lernstick-8; urgency=medium
+
+  * [796c6a] ensure unique ssh host keys in ISO creator
+  * [c0c2b9] ensure unique ssh host keys when copying system
+             improved cleanup in ISO creator
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Wed, 24 Aug 2016 18:32:38 +0200
+
 dlcopy (201608041740-1) lernstick-8; urgency=medium
 
   * rebuild with fixed lernstickTools
