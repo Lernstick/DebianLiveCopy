@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -918,6 +919,28 @@ public class DLCopy {
         }
     }
 
+    /**
+     * To make sure that every machine has its unique ssh host key we have to
+     * remove the ssh configuration created by live-config in the system copies.
+     *
+     * @param root the root file system of the system copy
+     * @throws IOException if an I/O exception occurs
+     */
+    public static void removeSshConfig(String root) throws IOException {
+        // remove ssh host keys
+        Path sshPath = Paths.get(root, "/etc/ssh");
+        try (DirectoryStream<Path> stream
+                = Files.newDirectoryStream(sshPath, "ssh_host_*")) {
+            for (Path path : stream) {
+                Files.deleteIfExists(path);
+            }
+        }
+        // remove state file of /lib/live/config/1160-openssh-server so that new
+        // keys are generated for this new image
+        Files.deleteIfExists(Paths.get(root,
+                "/var/lib/live/config/openssh-server"));
+    }
+
     private static PartitionSizes getPartitionSizes(SystemSource source,
             StorageDevice storageDevice, boolean upgrading,
             RepartitionStrategy upgradeRepartitionStrategy,
@@ -1447,6 +1470,9 @@ public class DLCopy {
         // TODO: use filecopier as soon as it supports symlinks etc.
         copyPersistenceCp(installer, sourceDataPath,
                 destinationDataPath, dlCopyGUI);
+
+        // remove original ssh config to make it unique for every system
+        removeSshConfig(destinationDataPath);
 
         // update GUI
         dlCopyGUI.showInstallUnmounting();
