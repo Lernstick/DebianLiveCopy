@@ -1,3 +1,9 @@
+dlcopy (201608251133-1) lernstick-8; urgency=medium
+
+  * [cf375b] fixed unmounting of temporary mounts
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 25 Aug 2016 11:33:30 +0200
+
 dlcopy (201608241832-1) lernstick-8; urgency=medium
 
   * [796c6a] ensure unique ssh host keys in ISO creator
