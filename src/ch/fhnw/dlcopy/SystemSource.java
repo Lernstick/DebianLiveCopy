@@ -121,6 +121,10 @@ public abstract class SystemSource {
      */
     public abstract String getSystemPath();
 
+    /**
+     * returns the size of the system in byte
+     * @return the size of the system in byte
+     */
     public abstract long getSystemSize();
 
     /**

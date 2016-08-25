@@ -367,7 +367,7 @@ public class DLCopy {
                         destinationSystemDevice.substring(5));
 
         // copy operating system files
-        copyExchangeBootAndSystem(source, fileCopier, storageDevice,
+        copyExchangeEfiAndSystem(source, fileCopier, storageDevice,
                 destinationExchangePartition, destinationBootPartition,
                 destinationSystemPartition, installerOrUpgrader, dlCopyGUI);
 
@@ -592,7 +592,7 @@ public class DLCopy {
      *
      * @param source the system source
      * @param storageDevice the destination StorageDevice
-     * @param destinationBootPartition the destination boot partition
+     * @param destinationEfiPartition the destination boot partition
      * @param destinationExchangePartition the destination exchange partition
      * @param destinationSystemPartition the destination system partition
      * @param destinationExchangePartitionFileSystem the file system of the
@@ -600,24 +600,24 @@ public class DLCopy {
      * @return the CopyJobsInfo for the given source / destination combination
      * @throws DBusException
      */
-    public static CopyJobsInfo prepareBootAndSystemCopyJobs(SystemSource source,
-            StorageDevice storageDevice, Partition destinationBootPartition,
+    public static CopyJobsInfo prepareEfiAndSystemCopyJobs(SystemSource source,
+            StorageDevice storageDevice, Partition destinationEfiPartition,
             Partition destinationExchangePartition,
             Partition destinationSystemPartition,
             String destinationExchangePartitionFileSystem)
             throws DBusException {
 
-        String destinationBootPath
-                = destinationBootPartition.mount().getMountPath();
+        String destinationEfiPath
+                = destinationEfiPartition.mount().getMountPath();
         String destinationSystemPath
                 = destinationSystemPartition.mount().getMountPath();
 
         Source efiCopyJobSource = source.getEfiCopySource();
         Source systemCopyJobSource = source.getSystemCopySourceFull();
 
-        CopyJob bootCopyJob = new CopyJob(
+        CopyJob efiCopyJob = new CopyJob(
                 new Source[]{efiCopyJobSource},
-                new String[]{destinationBootPath});
+                new String[]{destinationEfiPath});
 
         // Only if we have a FAT32 exchange partition on a removable media we
         // have to copy the boot files also to the exchange partition.
@@ -629,7 +629,7 @@ public class DLCopy {
                 String destinationExchangePath
                         = destinationExchangePartition.mount().getMountPath();
                 bootFilesCopyJob = new CopyJob(
-                        new Source[]{source.getEfiCopySource()},
+                        new Source[]{efiCopyJobSource},
                         new String[]{destinationExchangePath});
             }
         }
@@ -638,8 +638,8 @@ public class DLCopy {
                 new Source[]{systemCopyJobSource},
                 new String[]{destinationSystemPath});
 
-        return new CopyJobsInfo(destinationBootPath, destinationSystemPath,
-                bootCopyJob, bootFilesCopyJob, systemCopyJob);
+        return new CopyJobsInfo(destinationEfiPath, destinationSystemPath,
+                efiCopyJob, bootFilesCopyJob, systemCopyJob);
     }
 
     /**
@@ -1348,7 +1348,7 @@ public class DLCopy {
         }
     }
 
-    private static void copyExchangeBootAndSystem(SystemSource source,
+    private static void copyExchangeEfiAndSystem(SystemSource source,
             FileCopier fileCopier, StorageDevice storageDevice,
             Partition destinationExchangePartition,
             Partition destinationEfiPartition,
@@ -1371,7 +1371,7 @@ public class DLCopy {
         }
 
         // define CopyJobs for efi and system parititions
-        CopyJobsInfo copyJobsInfo = prepareBootAndSystemCopyJobs(source,
+        CopyJobsInfo copyJobsInfo = prepareEfiAndSystemCopyJobs(source,
                 storageDevice, destinationEfiPartition,
                 destinationExchangePartition, destinationSystemPartition,
                 installerOrUpgrader.getExhangePartitionFileSystem());

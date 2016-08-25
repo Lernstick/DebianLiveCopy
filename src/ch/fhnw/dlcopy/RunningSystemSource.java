@@ -145,14 +145,7 @@ public final class RunningSystemSource extends SystemSource {
 
     @Override
     public Source getEfiCopySource() throws DBusException {
-        String basePath;
-        if (hasEfiPartition()) {
-            mountEfiIfNeeded();
-            basePath = efiPath;
-        } else {
-            basePath = getSystemPath();
-        }
-        return new Source(basePath, hasLegacyGrub
+        return new Source(getBasePath(), hasLegacyGrub
                 ? SystemSource.LEGACY_EFI_COPY_PATTERN
                 : SystemSource.EFI_COPY_PATTERN);
     }
@@ -243,7 +236,7 @@ public final class RunningSystemSource extends SystemSource {
         if (efiPath == null) {
             MountInfo efiMountInfo = efiPartition.mount();
             efiPath = efiMountInfo.getMountPath();
-            isEfiTmpMounted = efiMountInfo.alreadyMounted();
+            isEfiTmpMounted = !efiMountInfo.alreadyMounted();
         }
     }
 
@@ -251,23 +244,29 @@ public final class RunningSystemSource extends SystemSource {
         if (exchangePath == null) {
             MountInfo bootMountInfo = exchangePartition.mount();
             exchangePath = bootMountInfo.getMountPath();
-            isExchangeTmpMounted = bootMountInfo.alreadyMounted();
+            isExchangeTmpMounted = !bootMountInfo.alreadyMounted();
         }
     }
 
     private boolean hasLegacyGrub() throws IOException, DBusException {
         try {
-            String basePath;
-            if (hasEfiPartition()) {
-                mountEfiIfNeeded();
-                basePath = efiPath;
-            } else {
-                basePath = getSystemPath();
-            }
             return GRUB_LEGACY_MD5.equals(
-                    DLCopy.getMd5String(basePath + GRUB_EFI_PATH));
+                    DLCopy.getMd5String(getBasePath() + GRUB_EFI_PATH));
         } catch (NoSuchAlgorithmException ex) {
             throw new IOException(ex);
+        } finally {
+            unmountTmpPartitions();
         }
+    }
+
+    private String getBasePath() throws DBusException {
+        String basePath;
+        if (hasEfiPartition()) {
+            mountEfiIfNeeded();
+            basePath = efiPath;
+        } else {
+            basePath = getSystemPath();
+        }
+        return basePath;
     }
 }

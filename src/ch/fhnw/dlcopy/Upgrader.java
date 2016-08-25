@@ -770,7 +770,7 @@ public class Upgrader extends InstallerOrUpgrader {
         }
         // TODO: mapping of other file systems
 
-        CopyJobsInfo copyJobsInfo = DLCopy.prepareBootAndSystemCopyJobs(source,
+        CopyJobsInfo copyJobsInfo = DLCopy.prepareEfiAndSystemCopyJobs(source,
                 storageDevice, efiPartition, exchangePartition,
                 systemPartition, exchangePartitionFS);
         File bootMountPointFile = new File(
