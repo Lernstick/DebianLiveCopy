@@ -283,9 +283,7 @@ public class DLCopySwingGUI extends JFrame
                 : runningSystemSource;
 
         installStorageDeviceList.setModel(installStorageDeviceListModel);
-        installStorageDeviceRenderer = new InstallStorageDeviceRenderer(
-                this, DLCopy.getEnlargedSystemSize(
-                        systemSource.getSystemSize()));
+        installStorageDeviceRenderer = new InstallStorageDeviceRenderer(this);
         installStorageDeviceList.setCellRenderer(installStorageDeviceRenderer);
 
         upgradeStorageDeviceList.setModel(upgradeStorageDeviceListModel);
@@ -3839,8 +3837,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             return;
         }
 
-        // update source itself
-        systemSource = systemSource;
+        // update system source itself
+        this.systemSource = systemSource;
 
         // update source dependend strings and states
         long enlargedSystemSize

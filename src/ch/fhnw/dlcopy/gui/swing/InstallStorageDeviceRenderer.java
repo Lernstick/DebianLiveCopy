@@ -47,12 +47,9 @@ public class InstallStorageDeviceRenderer extends JPanel
      * Creates new form UsbRenderer
      *
      * @param dlCopy the main program
-     * @param systemSize the size of the system partition
      */
-    public InstallStorageDeviceRenderer(
-            DLCopySwingGUI dlCopy, long systemSize) {
+    public InstallStorageDeviceRenderer(DLCopySwingGUI dlCopy) {
         this.dlCopy = dlCopy;
-        this.systemSize = systemSize;
         initComponents();
         GridBagLayout layout = (GridBagLayout) getLayout();
         Insets insets = layout.getConstraints(iconLabel).insets;
@@ -199,7 +196,7 @@ public class InstallStorageDeviceRenderer extends JPanel
                 int systemWidth = (int) ((usbStorageWidth * systemSize)
                         / storageSize);
                 int persistentWidth = usbStorageWidth - efiWidth - systemWidth;
-                
+
                 // make sure that our tiny EFI partition is still visible
                 if (efiWidth < MIN_WIDTH) {
                     int diff = MIN_WIDTH - efiWidth;
