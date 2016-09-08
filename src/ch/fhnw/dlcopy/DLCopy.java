@@ -927,14 +927,24 @@ public class DLCopy {
      * @throws IOException if an I/O exception occurs
      */
     public static void removeSshConfig(String root) throws IOException {
+
         // remove ssh host keys
         Path sshPath = Paths.get(root, "/etc/ssh");
-        try (DirectoryStream<Path> stream
-                = Files.newDirectoryStream(sshPath, "ssh_host_*")) {
-            for (Path path : stream) {
-                Files.deleteIfExists(path);
+        // There are installations without the openssh-server package. In this
+        // case the SSH host keys are not generated and there is no /etc/ssh
+        // directory in the persistence partition. Therefore the following check
+        // for the existence of sshPath is necessary.
+        if (Files.exists(sshPath)) {
+            try (DirectoryStream<Path> stream
+                    = Files.newDirectoryStream(sshPath, "ssh_host_*")) {
+                for (Path path : stream) {
+                    Files.deleteIfExists(path);
+                }
             }
+        } else {
+            LOGGER.fine("no SSH keys found to remove");
         }
+
         // remove state file of /lib/live/config/1160-openssh-server so that new
         // keys are generated for this new image
         Files.deleteIfExists(Paths.get(root,
