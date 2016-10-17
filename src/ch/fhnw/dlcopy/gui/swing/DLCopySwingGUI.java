@@ -85,7 +85,7 @@ public class DLCopySwingGUI extends JFrame
     private final DefaultListModel<StorageDevice> upgradeStorageDeviceListModel
             = new DefaultListModel<>();
     private final DefaultListModel<StorageDevice> repairStorageDeviceListModel
-            = new DefaultListModel();
+            = new DefaultListModel<>();
     private final InstallStorageDeviceRenderer installStorageDeviceRenderer;
     private final UpgradeStorageDeviceRenderer upgradeStorageDeviceRenderer;
     private final RepairStorageDeviceRenderer repairStorageDeviceRenderer;
@@ -1087,8 +1087,7 @@ public class DLCopySwingGUI extends JFrame
         } else {
             for (int i = 0; i < selectionCount; i++) {
                 StorageDevice device
-                        = (StorageDevice) installStorageDeviceListModel.get(
-                                selectedIndices[i]);
+                        = installStorageDeviceListModel.get(selectedIndices[i]);
                 long enlargedSystemSize = DLCopy.getEnlargedSystemSize(
                         systemSource.getSystemSize());
                 long overhead = device.getSize()
@@ -1166,8 +1165,7 @@ public class DLCopySwingGUI extends JFrame
         boolean canUpgrade = true;
         int[] selectedIndices = upgradeStorageDeviceList.getSelectedIndices();
         for (int i : selectedIndices) {
-            StorageDevice storageDevice
-                    = (StorageDevice) upgradeStorageDeviceListModel.get(i);
+            StorageDevice storageDevice = upgradeStorageDeviceListModel.get(i);
             try {
                 StorageDevice.UpgradeVariant upgradeVariant
                         = storageDevice.getUpgradeVariant(
@@ -1224,8 +1222,7 @@ public class DLCopySwingGUI extends JFrame
         boolean canRepair = true;
         int[] selectedIndices = repairStorageDeviceList.getSelectedIndices();
         for (int i : selectedIndices) {
-            StorageDevice storageDevice
-                    = (StorageDevice) repairStorageDeviceListModel.get(i);
+            StorageDevice storageDevice = repairStorageDeviceListModel.get(i);
             Partition dataPartition = storageDevice.getDataPartition();
             try {
                 if ((dataPartition == null)
@@ -4110,7 +4107,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }
 
-    private void addPathToList(int selectionMode, DefaultListModel listModel) {
+    private void addPathToList(int selectionMode,
+            DefaultListModel<String> listModel) {
         if (addFileChooser == null) {
             addFileChooser = new JFileChooser("/");
             addFileChooser.setFileSelectionMode(selectionMode);
@@ -4293,7 +4291,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         StringBuilder stringBuilder = new StringBuilder();
         for (int i = 0, size = upgradeOverwriteListModel.size();
                 i < size; i++) {
-            String entry = (String) upgradeOverwriteListModel.get(i);
+            String entry = upgradeOverwriteListModel.get(i);
             stringBuilder.append(entry);
             if (i != (size - 1)) {
                 stringBuilder.append('\n');
@@ -4415,8 +4413,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         long enlargedSystemSize
                 = DLCopy.getEnlargedSystemSize(systemSource.getSystemSize());
         for (int i : selectedIndices) {
-            StorageDevice device
-                    = (StorageDevice) installStorageDeviceListModel.get(i);
+            StorageDevice device = installStorageDeviceListModel.get(i);
             PartitionState partitionState = DLCopy.getPartitionState(
                     device.getSize(), enlargedSystemSize);
             if (partitionState == PartitionState.TOO_SMALL) {
@@ -4569,7 +4566,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         boolean harddiskSelected = false;
         for (int i : selectedIndices) {
             StorageDevice storageDevice
-                    = (StorageDevice) installStorageDeviceListModel.getElementAt(i);
+                    = installStorageDeviceListModel.getElementAt(i);
             if (storageDevice.getType() == StorageDevice.Type.HardDrive) {
                 harddiskSelected = true;
             }
@@ -5076,7 +5073,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         public void run() {
             String binaryName;
             String parameter;
-            if (DbusTools.DBUS_VERSION == DbusTools.DBUS_VERSION.V1) {
+            if (DbusTools.DBUS_VERSION == DbusTools.DbusVersion.V1) {
                 binaryName = "udisks";
                 parameter = "--monitor";
             } else {
