@@ -1,3 +1,13 @@
+dlcopy (201703031653-1) lernstick-8; urgency=medium
+
+  * [cbb800] updated todo
+  * [ab85a7] code cleanup
+  * [23bccb] update to NetBeans 8.2
+  * [8ada91] use java.time.* API for durations
+  * [583fd6] use interpreted-only mode switch to prevent JVM crashes
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 03 Mar 2017 16:53:20 +0100
+
 dlcopy (201609081758-1) lernstick-8; urgency=medium
 
   * [4bd6c2] don't crash if there are no SSH keys to remove
