@@ -4,11 +4,12 @@ import ch.fhnw.dlcopy.StorageDeviceResult;
 import ch.fhnw.util.PreferredSizesTableModel;
 import ch.fhnw.util.StorageDevice;
 import java.awt.Dimension;
-import java.text.DateFormat;
-import java.util.Date;
+import java.time.Duration;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.ResourceBundle;
-import java.util.TimeZone;
 import javax.swing.JTable;
 
 /**
@@ -25,7 +26,8 @@ public class ResultsTableModel extends PreferredSizesTableModel {
     private static final ResourceBundle STRINGS
             = ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings");
     private List<StorageDeviceResult> resultList;
-    private final DateFormat dateFormat;
+    private final DateTimeFormatter dateTimeFormatter
+            = DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM);
 
     /**
      * creates a new ResultsTableModel
@@ -34,8 +36,6 @@ public class ResultsTableModel extends PreferredSizesTableModel {
      */
     public ResultsTableModel(JTable table) {
         super(table, new Dimension(Integer.MAX_VALUE, Integer.MAX_VALUE));
-        dateFormat = DateFormat.getTimeInstance(DateFormat.MEDIUM);
-        dateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
         initSizes();
     }
 
@@ -112,12 +112,14 @@ public class ResultsTableModel extends PreferredSizesTableModel {
 
             case 6:
                 // duration
-                long duration = result.getDuration();
-                if (duration == -1) {
+                long durationMillis = result.getDuration();
+                if (durationMillis == -1) {
                     // in progress
                     return "";
                 }
-                return dateFormat.format(new Date(duration));
+                Duration duration = Duration.ofMillis(durationMillis);
+                return LocalTime.MIDNIGHT.plus(duration).
+                        format(dateTimeFormatter);
 
             case 7:
                 // status
