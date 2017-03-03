@@ -7,7 +7,6 @@ import java.awt.Dimension;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.time.format.FormatStyle;
 import java.util.List;
 import java.util.ResourceBundle;
 import javax.swing.JTable;
@@ -27,7 +26,7 @@ public class ResultsTableModel extends PreferredSizesTableModel {
             = ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings");
     private List<StorageDeviceResult> resultList;
     private final DateTimeFormatter dateTimeFormatter
-            = DateTimeFormatter.ofLocalizedTime(FormatStyle.MEDIUM);
+            = DateTimeFormatter.ofPattern("HH:mm:ss");
 
     /**
      * creates a new ResultsTableModel
