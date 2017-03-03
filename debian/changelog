@@ -1,3 +1,10 @@
+dlcopy (201703031748-1) lernstick-8; urgency=medium
+
+  * [058ce3] enforce "HH:mm:ss" pattern for duration strings
+    (localized pattern results in "12:xx:xx AM/PM" for English)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 03 Mar 2017 17:48:34 +0100
+
 dlcopy (201703031653-1) lernstick-8; urgency=medium
 
   * [cbb800] updated todo
