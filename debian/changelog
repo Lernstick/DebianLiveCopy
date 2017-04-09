@@ -1,3 +1,11 @@
+dlcopy (201704091243-1) lernstick-8; urgency=medium
+
+  * [5b32d7] save preferences already when starting installation, so that
+    customized preferences are persistent even in the rare case of a crash
+    during installation
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 09 Apr 2017 12:43:28 +0200
+
 dlcopy (201703031748-1) lernstick-8; urgency=medium
 
   * [058ce3] enforce "HH:mm:ss" pattern for duration strings
