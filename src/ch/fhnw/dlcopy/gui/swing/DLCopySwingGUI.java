@@ -49,6 +49,7 @@ import java.util.*;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.*;
+import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -4233,8 +4234,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }
 
-    private void exitProgram() {
-        // save preferences
+    private void savePreferences() {
         preferences.putBoolean(ISO_SOURCE_SELECTED,
                 isoSourceRadioButton.isSelected());
         preferences.put(ISO_SOURCE, isoSourceTextField.getText());
@@ -4249,7 +4249,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 ((Number) autoNumberIncrementSpinner.getValue()).intValue());
         preferences.put(EXCHANGE_PARTITION_FILESYSTEM,
                 exchangePartitionFileSystemComboBox.getSelectedItem().
-                toString());
+                        toString());
         preferences.putBoolean(COPY_EXCHANGE_PARTITION,
                 copyExchangeCheckBox.isSelected());
         preferences.put(DATA_PARTITION_FILESYSTEM,
@@ -4274,6 +4274,15 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 automaticBackupRemoveCheckBox.isSelected());
         preferences.put(UPGRADE_OVERWRITE_LIST,
                 getUpgradeOverwriteListString());
+        try {
+            preferences.flush();
+        } catch (BackingStoreException ex) {
+            LOGGER.warning("failed flushing preferences");
+        }
+    }
+
+    private void exitProgram() {
+        savePreferences();
 
         runningSystemSource.unmountTmpPartitions();
         if (isoSystemSource != null) {
@@ -4613,6 +4622,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
         }
 
+        savePreferences();
+        
         setLabelHighlighted(selectionLabel, false);
         setLabelHighlighted(executionLabel, true);
         previousButton.setEnabled(false);
