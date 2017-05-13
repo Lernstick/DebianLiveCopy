@@ -748,7 +748,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
         if (!efiPartition.getIdLabel().equals(Partition.EFI_LABEL)) {
             // The EFI partition is a pre 2016-02 boot partition with the label
-            // "boot" a boot flag and the system partition has no boot flag.
+            // "boot", a boot flag and the system partition has no boot flag.
             // We need to upgrade that to the current partitioning schema where
             // the EFI partition has the label "EFI" and has no boot flag but
             // the system partition has one.
@@ -778,10 +778,16 @@ public class Upgrader extends InstallerOrUpgrader {
         LOGGER.log(Level.INFO, "recursively deleting {0}",
                 bootMountPointFile);
         LernstickFileTools.recursiveDelete(bootMountPointFile, false);
-        File systemMountPointFile = new File(
-                copyJobsInfo.getDestinationSystemPath());
+        String destinationSystemPath = copyJobsInfo.getDestinationSystemPath();
+        File systemMountPointFile = new File(destinationSystemPath);
         LOGGER.log(Level.INFO, "recursively deleting {0}",
                 systemMountPointFile);
+        // The file syslinux/ldlinux.sys has the immutable flag set. To be able
+        // to remove this file, we first have to remove the immutable flag.
+        String ldLinuxPath = destinationSystemPath + "/syslinux/ldlinux.sys";
+        if (new File(ldLinuxPath).exists()) {
+            processExecutor.executeProcess("chattr", "-i", ldLinuxPath);
+        }
         LernstickFileTools.recursiveDelete(systemMountPointFile, false);
 
         LOGGER.info("starting copy job");
