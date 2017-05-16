@@ -36,7 +36,7 @@ public interface DLCopyGUI {
      * installation
      */
     public void showInstallFileCopy(FileCopier fileCopier);
-    
+
     /**
      * shows the user interface for copying the persistency partition during
      * installation
@@ -224,33 +224,39 @@ public interface DLCopyGUI {
     public void isoCreationFinished(String path, boolean success);
 
     /**
-     * shows the user interface for visualization of the repair progress
+     * shows the user interface for visualization of the reset progress
      */
-    public void showRepairProgress();
+    public void showResetProgress();
 
     /**
-     * sets the info about the currently repaired device
+     * sets the info about the currently reset device
      *
-     * @param storageDevice the StorageDevice to be repaired
+     * @param storageDevice the StorageDevice to be reset
      */
-    public void repairingDeviceStarted(StorageDevice storageDevice);
+    public void resettingDeviceStarted(StorageDevice storageDevice);
 
     /**
-     * shows the user interface for formatting the data partition during repair
+     * shows the user interface for formatting the exchange partition during
+     * reset
      */
-    public void showRepairFormattingDataPartition();
+    public void showResetFormattingExchangePartition();
 
     /**
-     * shows the user interface for removing files during repair
+     * shows the user interface for formatting the data partition during reset
      */
-    public void showRepairRemovingFiles();
+    public void showResetFormattingDataPartition();
 
     /**
-     * called when repairing all selected StorageDevices finished
+     * shows the user interface for removing files during reset
+     */
+    public void showResetRemovingFiles();
+
+    /**
+     * called when resetting all selected StorageDevices finished
      *
-     * @param success if repairing all storage devices was successful
+     * @param success if resetting all storage devices was successful
      */
-    public void repairingFinished(boolean success);
+    public void resettingFinished(boolean success);
 
     /**
      * shows an error message
@@ -258,9 +264,10 @@ public interface DLCopyGUI {
      * @param errorMessage the error message
      */
     public void showErrorMessage(String errorMessage);
-    
+
     /**
      * shows a confirm dialog
+     *
      * @param title the dialog title
      * @param message the message to display
      * @return true, if the user confirmed, false otherwise

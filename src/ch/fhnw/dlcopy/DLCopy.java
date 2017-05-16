@@ -1513,7 +1513,14 @@ public class DLCopy {
         commandList.add(value);
     }
 
-    private static void formatExchangePartition(String device,
+    /**
+     * formats the exchange partition
+     * @param device the given device (e.g. "/dev/sdb1")
+     * @param label
+     * @param fileSystem the file system to use
+     * @throws IOException
+     */
+    public static void formatExchangePartition(String device,
             String label, String fileSystem) throws IOException {
 
         // create file system for exchange partition

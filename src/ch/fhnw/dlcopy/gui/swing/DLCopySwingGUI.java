@@ -16,7 +16,7 @@ import ch.fhnw.dlcopy.Installer;
 import ch.fhnw.dlcopy.IsoCreator;
 import ch.fhnw.dlcopy.IsoSystemSource;
 import ch.fhnw.dlcopy.PartitionSizes;
-import ch.fhnw.dlcopy.Repairer;
+import ch.fhnw.dlcopy.Resetter;
 import ch.fhnw.dlcopy.RepartitionStrategy;
 import ch.fhnw.dlcopy.SquashFSCreator;
 import ch.fhnw.dlcopy.StorageDeviceResult;
@@ -85,18 +85,18 @@ public class DLCopySwingGUI extends JFrame
             = new DefaultListModel<>();
     private final DefaultListModel<StorageDevice> upgradeStorageDeviceListModel
             = new DefaultListModel<>();
-    private final DefaultListModel<StorageDevice> repairStorageDeviceListModel
+    private final DefaultListModel<StorageDevice> resetStorageDeviceListModel
             = new DefaultListModel<>();
     private final InstallStorageDeviceRenderer installStorageDeviceRenderer;
     private final UpgradeStorageDeviceRenderer upgradeStorageDeviceRenderer;
-    private final RepairStorageDeviceRenderer repairStorageDeviceRenderer;
+    private final ResetStorageDeviceRenderer resetStorageDeviceRenderer;
     private final DateFormat timeFormat;
 
     private enum State {
 
         INSTALL_INFORMATION, INSTALL_SELECTION, INSTALLATION,
         UPGRADE_INFORMATION, UPGRADE_SELECTION, UPGRADE,
-        REPAIR_INFORMATION, REPAIR_SELECTION, REPAIR,
+        RESET_INFORMATION, RESET_SELECTION, RESET,
         ISO_INFORMATION, ISO_SELECTION, ISO_INSTALLATION
     }
     private State state = State.INSTALL_INFORMATION;
@@ -256,7 +256,7 @@ public class DLCopySwingGUI extends JFrame
         countString = MessageFormat.format(countString, 0, 0);
         installSelectionCountLabel.setText(countString);
         upgradeSelectionCountLabel.setText(countString);
-        repairSelectionCountLabel.setText(countString);
+        resetSelectionCountLabel.setText(countString);
 
         tmpDirTextField.getDocument().addDocumentListener(this);
         getRootPane().setDefaultButton(installButton);
@@ -292,9 +292,9 @@ public class DLCopySwingGUI extends JFrame
                 = new UpgradeStorageDeviceRenderer(runningSystemSource);
         upgradeStorageDeviceList.setCellRenderer(upgradeStorageDeviceRenderer);
 
-        repairStorageDeviceList.setModel(repairStorageDeviceListModel);
-        repairStorageDeviceRenderer = new RepairStorageDeviceRenderer();
-        repairStorageDeviceList.setCellRenderer(repairStorageDeviceRenderer);
+        resetStorageDeviceList.setModel(resetStorageDeviceListModel);
+        resetStorageDeviceRenderer = new ResetStorageDeviceRenderer();
+        resetStorageDeviceList.setCellRenderer(resetStorageDeviceRenderer);
 
         // the following block must be called after creating
         // installStorageDeviceRenderer! (otherwise we get an NPE)
@@ -336,8 +336,13 @@ public class DLCopySwingGUI extends JFrame
                     = new String[]{"exFAT", "FAT32", "NTFS"};
         }
 
+        ComboBoxModel exchangePartitionFileSystemsModel
+                = new DefaultComboBoxModel(exchangePartitionFileSystemItems);
         exchangePartitionFileSystemComboBox.setModel(
-                new DefaultComboBoxModel(exchangePartitionFileSystemItems));
+                exchangePartitionFileSystemsModel);
+        resetFormatExchangePartitionFileSystemComboBox.setModel(
+                exchangePartitionFileSystemsModel);
+
         if (commandLineExchangePartitionFileSystem == null) {
             exchangePartitionFileSystemComboBox.setSelectedItem(
                     preferences.get(EXCHANGE_PARTITION_FILESYSTEM,
@@ -515,12 +520,12 @@ public class DLCopySwingGUI extends JFrame
                             upgradeStorageDeviceList, this).execute();
                     break;
 
-                case REPAIR_SELECTION:
-                    new RepairStorageDeviceAdder(addedPath,
-                            repairShowHarddisksCheckBox.isSelected(),
+                case RESET_SELECTION:
+                    new ResetStorageDeviceAdder(addedPath,
+                            resetShowHarddisksCheckBox.isSelected(),
                             storageDeviceListUpdateDialogHandler,
-                            repairStorageDeviceListModel,
-                            repairStorageDeviceList, this).execute();
+                            resetStorageDeviceListModel,
+                            resetStorageDeviceList, this).execute();
                     break;
 
                 default:
@@ -881,22 +886,22 @@ public class DLCopySwingGUI extends JFrame
     }
 
     @Override
-    public void showRepairProgress() {
+    public void showResetProgress() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
             public void run() {
-                showCard(cardPanel, "repairPanel");
+                showCard(cardPanel, "resetPanel");
             }
         });
     }
 
     @Override
-    public void repairingDeviceStarted(StorageDevice storageDevice) {
+    public void resettingDeviceStarted(StorageDevice storageDevice) {
         deviceStarted(storageDevice);
 
-        String pattern = STRINGS.getString("Repair_Device_Info");
+        String pattern = STRINGS.getString("Reset_Device_Info");
         String message = MessageFormat.format(pattern, batchCounter,
-                repairStorageDeviceList.getSelectedIndices().length,
+                resetStorageDeviceList.getSelectedIndices().length,
                 storageDevice.getVendor() + " " + storageDevice.getModel(),
                 " (" + STRINGS.getString("Size") + ": "
                 + LernstickFileTools.getDataVolumeString(
@@ -906,30 +911,36 @@ public class DLCopySwingGUI extends JFrame
                 + STRINGS.getString("Serial") + ": "
                 + storageDevice.getSerial() + ", " + "&#47;dev&#47;"
                 + storageDevice.getDevice() + ")");
-        setLabelTextonEDT(currentlyRepairedDeviceLabel, message);
+        setLabelTextonEDT(currentlyResettingDeviceLabel, message);
     }
 
     @Override
-    public void showRepairFormattingDataPartition() {
-        setProgressBarStringOnEDT(repairProgressBar,
+    public void showResetFormattingExchangePartition() {
+        setProgressBarStringOnEDT(resetProgressBar,
+                STRINGS.getString("Formatting_Exchange_Partition"));
+    }
+
+    @Override
+    public void showResetFormattingDataPartition() {
+        setProgressBarStringOnEDT(resetProgressBar,
                 STRINGS.getString("Formatting_Data_Partition"));
     }
 
     @Override
-    public void showRepairRemovingFiles() {
-        setProgressBarStringOnEDT(repairProgressBar,
+    public void showResetRemovingFiles() {
+        setProgressBarStringOnEDT(resetProgressBar,
                 STRINGS.getString("Removing_Selected_Files"));
     }
 
     @Override
-    public void repairingFinished(boolean success) {
+    public void resettingFinished(boolean success) {
         setTitle(STRINGS.getString("DLCopySwingGUI.title"));
         if (success) {
-            doneLabel.setText(STRINGS.getString("Repair_Done"));
+            doneLabel.setText(STRINGS.getString("Reset_Done"));
             showCard(cardPanel, "donePanel");
             processDone();
         } else {
-            switchToRepairSelection();
+            switchToResetSelection();
         }
     }
 
@@ -1055,14 +1066,14 @@ public class DLCopySwingGUI extends JFrame
     }
 
     /**
-     * must be called whenever the repair storage device list changes to execute
+     * must be called whenever the reset storage device list changes to execute
      * some updates
      */
-    public void repairStorageDeviceListChanged() {
+    public void resetStorageDeviceListChanged() {
         storageDeviceListChanged(
-                repairStorageDeviceListModel, repairSelectionCardPanel,
-                "repairNoMediaPanel", "repairSelectionDeviceListPanel",
-                repairStorageDeviceRenderer, repairStorageDeviceList);
+                resetStorageDeviceListModel, resetSelectionCardPanel,
+                "resetNoMediaPanel", "resetSelectionDeviceListPanel",
+                resetStorageDeviceRenderer, resetStorageDeviceList);
 
     }
 
@@ -1210,30 +1221,30 @@ public class DLCopySwingGUI extends JFrame
 
     /**
      * must be called whenever the selection count and next button for the
-     * repairer needs an update
+     * resetter needs an update
      */
-    public void updateRepairSelectionCountAndNextButton() {
+    public void updateResetSelectionCountAndNextButton() {
 
         // early return
-        if (state != State.REPAIR_SELECTION) {
+        if (state != State.RESET_SELECTION) {
             return;
         }
 
         // check all selected storage devices
-        boolean canRepair = true;
-        int[] selectedIndices = repairStorageDeviceList.getSelectedIndices();
+        boolean canReset = true;
+        int[] selectedIndices = resetStorageDeviceList.getSelectedIndices();
         for (int i : selectedIndices) {
-            StorageDevice storageDevice = repairStorageDeviceListModel.get(i);
+            StorageDevice storageDevice = resetStorageDeviceListModel.get(i);
             Partition dataPartition = storageDevice.getDataPartition();
             try {
                 if ((dataPartition == null)
                         || dataPartition.isActivePersistencePartition()) {
-                    canRepair = false;
+                    canReset = false;
                     break;
                 }
             } catch (DBusException ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
-                canRepair = false;
+                canReset = false;
                 break;
             }
         }
@@ -1241,11 +1252,11 @@ public class DLCopySwingGUI extends JFrame
         int selectionCount = selectedIndices.length;
         String countString = STRINGS.getString("Selection_Count");
         countString = MessageFormat.format(countString,
-                selectionCount, repairStorageDeviceListModel.size());
-        repairSelectionCountLabel.setText(countString);
+                selectionCount, resetStorageDeviceListModel.size());
+        resetSelectionCountLabel.setText(countString);
 
         // update nextButton state
-        if ((selectionCount > 0) && canRepair) {
+        if ((selectionCount > 0) && canReset) {
             enableNextButton();
         } else {
             disableNextButton();
@@ -1261,7 +1272,8 @@ public class DLCopySwingGUI extends JFrame
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        repairButtonGroup = new javax.swing.ButtonGroup();
+        resetExchangePartitionButtonGroup = new javax.swing.ButtonGroup();
+        resetDataPartitionButtonGroup = new javax.swing.ButtonGroup();
         isoButtonGroup = new javax.swing.ButtonGroup();
         exchangeButtonGroup = new javax.swing.ButtonGroup();
         installSourceButtonGroup = new javax.swing.ButtonGroup();
@@ -1275,7 +1287,7 @@ public class DLCopySwingGUI extends JFrame
         upgradeButton = new javax.swing.JButton();
         upgradeLabel = new javax.swing.JLabel();
         toISOButton = new javax.swing.JButton();
-        repairButton = new javax.swing.JButton();
+        resetButton = new javax.swing.JButton();
         executionPanel = new javax.swing.JPanel();
         stepsPanel = new javax.swing.JPanel();
         stepsLabel = new javax.swing.JLabel();
@@ -1425,29 +1437,37 @@ public class DLCopySwingGUI extends JFrame
         upgradeReportPanel = new javax.swing.JPanel();
         upgradeResultsScrollPane = new javax.swing.JScrollPane();
         upgradeResultsTable = new javax.swing.JTable();
-        repairInfoPanel = new javax.swing.JPanel();
-        repairInfoLabel = new javax.swing.JLabel();
-        repairSelectionPanel = new javax.swing.JPanel();
-        repairSelectionHeaderLabel = new javax.swing.JLabel();
-        repairShowHarddisksCheckBox = new javax.swing.JCheckBox();
-        repairSelectionCardPanel = new javax.swing.JPanel();
-        repairNoMediaPanel = new javax.swing.JPanel();
-        repairNoMediaLabel = new javax.swing.JLabel();
-        repairSelectionDeviceListPanel = new javax.swing.JPanel();
-        repairSelectionCountLabel = new javax.swing.JLabel();
-        repairStorageDeviceListScrollPane = new javax.swing.JScrollPane();
-        repairStorageDeviceList = new javax.swing.JList();
-        repairExchangeDefinitionLabel = new javax.swing.JLabel();
-        repairDataDefinitionLabel = new javax.swing.JLabel();
-        repairOsDefinitionLabel = new javax.swing.JLabel();
+        resetInfoPanel = new javax.swing.JPanel();
+        resetInfoLabel = new javax.swing.JLabel();
+        resetSelectionPanel = new javax.swing.JPanel();
+        resetSelectionHeaderLabel = new javax.swing.JLabel();
+        resetShowHarddisksCheckBox = new javax.swing.JCheckBox();
+        resetSelectionCardPanel = new javax.swing.JPanel();
+        resetNoMediaPanel = new javax.swing.JPanel();
+        resetNoMediaLabel = new javax.swing.JLabel();
+        resetSelectionDeviceListPanel = new javax.swing.JPanel();
+        resetSelectionCountLabel = new javax.swing.JLabel();
+        resetStorageDeviceListScrollPane = new javax.swing.JScrollPane();
+        resetStorageDeviceList = new javax.swing.JList();
+        resetExchangeDefinitionLabel = new javax.swing.JLabel();
+        resetDataDefinitionLabel = new javax.swing.JLabel();
+        resetOsDefinitionLabel = new javax.swing.JLabel();
+        resetExchangePartitionPanel = new javax.swing.JPanel();
+        resetFormatExchangePartitionCheckBox = new javax.swing.JCheckBox();
+        resetFormatExchangePartitionFileSystemLabel = new javax.swing.JLabel();
+        resetFormatExchangePartitionFileSystemComboBox = new javax.swing.JComboBox<>();
+        resetFormatExchangePartitionKeepLabelRadioButton = new javax.swing.JRadioButton();
+        resetFormatExchangePartitionNewLabelRadioButton = new javax.swing.JRadioButton();
+        resetFormatExchangePartitionNewLabelTextField = new javax.swing.JTextField();
+        resetDataPartitionPanel = new javax.swing.JPanel();
         formatDataPartitionRadioButton = new javax.swing.JRadioButton();
         removeFilesRadioButton = new javax.swing.JRadioButton();
         systemFilesCheckBox = new javax.swing.JCheckBox();
         homeDirectoryCheckBox = new javax.swing.JCheckBox();
-        repairPanel = new javax.swing.JPanel();
-        currentlyRepairedDeviceLabel = new javax.swing.JLabel();
+        resetPanel = new javax.swing.JPanel();
+        currentlyResettingDeviceLabel = new javax.swing.JLabel();
         jSeparator5 = new javax.swing.JSeparator();
-        repairProgressBar = new javax.swing.JProgressBar();
+        resetProgressBar = new javax.swing.JProgressBar();
         toISOInfoPanel = new javax.swing.JPanel();
         toISOInfoLabel = new javax.swing.JLabel();
         toISOSelectionPanel = new javax.swing.JPanel();
@@ -1618,29 +1638,29 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 5);
         buttonGridPanel.add(toISOButton, gridBagConstraints);
 
-        repairButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/lernstick_repair.png"))); // NOI18N
-        repairButton.setText(bundle.getString("DLCopySwingGUI.repairButton.text")); // NOI18N
-        repairButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        repairButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        repairButton.addActionListener(new java.awt.event.ActionListener() {
+        resetButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/lernstick_reset.png"))); // NOI18N
+        resetButton.setText(bundle.getString("DLCopySwingGUI.resetButton.text")); // NOI18N
+        resetButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        resetButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        resetButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                repairButtonActionPerformed(evt);
+                resetButtonActionPerformed(evt);
             }
         });
-        repairButton.addFocusListener(new java.awt.event.FocusAdapter() {
+        resetButton.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
-                repairButtonFocusGained(evt);
+                resetButtonFocusGained(evt);
             }
         });
-        repairButton.addKeyListener(new java.awt.event.KeyAdapter() {
+        resetButton.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyPressed(java.awt.event.KeyEvent evt) {
-                repairButtonKeyPressed(evt);
+                resetButtonKeyPressed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(15, 5, 0, 0);
-        buttonGridPanel.add(repairButton, gridBagConstraints);
+        buttonGridPanel.add(resetButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.insets = new java.awt.Insets(20, 0, 0, 0);
@@ -1817,7 +1837,7 @@ public class DLCopySwingGUI extends JFrame
 
         exchangeDefinitionLabel.setFont(exchangeDefinitionLabel.getFont().deriveFont(exchangeDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, exchangeDefinitionLabel.getFont().getSize()-1));
         exchangeDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/yellow_box.png"))); // NOI18N
-        exchangeDefinitionLabel.setText(bundle.getString("DLCopySwingGUI.exchangeDefinitionLabel.text")); // NOI18N
+        exchangeDefinitionLabel.setText(bundle.getString("ExchangePartitionDefinition")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
@@ -1826,7 +1846,7 @@ public class DLCopySwingGUI extends JFrame
 
         dataDefinitionLabel.setFont(dataDefinitionLabel.getFont().deriveFont(dataDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, dataDefinitionLabel.getFont().getSize()-1));
         dataDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/green_box.png"))); // NOI18N
-        dataDefinitionLabel.setText(bundle.getString("DLCopySwingGUI.dataDefinitionLabel.text")); // NOI18N
+        dataDefinitionLabel.setText(bundle.getString("DataPartitionDefinition")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
@@ -1986,7 +2006,7 @@ public class DLCopySwingGUI extends JFrame
         exchangePartitionFileSystemPanel.add(exchangePartitionFileSystemLabel, gridBagConstraints);
 
         exchangePartitionFileSystemComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "exFAT", "FAT32", "NTFS" }));
-        exchangePartitionFileSystemComboBox.setToolTipText(bundle.getString("DLCopySwingGUI.exchangePartitionFileSystemComboBox.toolTipText")); // NOI18N
+        exchangePartitionFileSystemComboBox.setToolTipText(bundle.getString("ExchangePartitionFileSystemComboBoxToolTipText")); // NOI18N
         exchangePartitionFileSystemComboBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
@@ -2299,7 +2319,7 @@ public class DLCopySwingGUI extends JFrame
 
         upgradeExchangeDefinitionLabel.setFont(upgradeExchangeDefinitionLabel.getFont().deriveFont(upgradeExchangeDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, upgradeExchangeDefinitionLabel.getFont().getSize()-1));
         upgradeExchangeDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/yellow_box.png"))); // NOI18N
-        upgradeExchangeDefinitionLabel.setText(bundle.getString("DLCopySwingGUI.upgradeExchangeDefinitionLabel.text")); // NOI18N
+        upgradeExchangeDefinitionLabel.setText(bundle.getString("ExchangePartitionDefinition")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -2308,7 +2328,7 @@ public class DLCopySwingGUI extends JFrame
 
         upgradeDataDefinitionLabel.setFont(upgradeDataDefinitionLabel.getFont().deriveFont(upgradeDataDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, upgradeDataDefinitionLabel.getFont().getSize()-1));
         upgradeDataDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/green_box.png"))); // NOI18N
-        upgradeDataDefinitionLabel.setText(bundle.getString("DLCopySwingGUI.upgradeDataDefinitionLabel.text")); // NOI18N
+        upgradeDataDefinitionLabel.setText(bundle.getString("DataPartitionDefinition")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -2744,73 +2764,73 @@ public class DLCopySwingGUI extends JFrame
 
         cardPanel.add(upgradeTabbedPane, "upgradeTabbedPane");
 
-        repairInfoPanel.setLayout(new java.awt.GridBagLayout());
+        resetInfoPanel.setLayout(new java.awt.GridBagLayout());
 
-        repairInfoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/lernstick_repair.png"))); // NOI18N
-        repairInfoLabel.setText(bundle.getString("DLCopySwingGUI.repairInfoLabel.text")); // NOI18N
-        repairInfoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        repairInfoLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        resetInfoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/lernstick_reset.png"))); // NOI18N
+        resetInfoLabel.setText(bundle.getString("DLCopySwingGUI.resetInfoLabel.text")); // NOI18N
+        resetInfoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        resetInfoLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        repairInfoPanel.add(repairInfoLabel, gridBagConstraints);
+        resetInfoPanel.add(resetInfoLabel, gridBagConstraints);
 
-        cardPanel.add(repairInfoPanel, "repairInfoPanel");
+        cardPanel.add(resetInfoPanel, "resetInfoPanel");
 
-        repairSelectionPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
+        resetSelectionPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentShown(java.awt.event.ComponentEvent evt) {
-                repairSelectionPanelComponentShown(evt);
+                resetSelectionPanelComponentShown(evt);
             }
         });
-        repairSelectionPanel.setLayout(new java.awt.GridBagLayout());
+        resetSelectionPanel.setLayout(new java.awt.GridBagLayout());
 
-        repairSelectionHeaderLabel.setFont(repairSelectionHeaderLabel.getFont().deriveFont(repairSelectionHeaderLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-        repairSelectionHeaderLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        repairSelectionHeaderLabel.setText(bundle.getString("DLCopySwingGUI.repairSelectionHeaderLabel.text")); // NOI18N
+        resetSelectionHeaderLabel.setFont(resetSelectionHeaderLabel.getFont().deriveFont(resetSelectionHeaderLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+        resetSelectionHeaderLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        resetSelectionHeaderLabel.setText(bundle.getString("DLCopySwingGUI.resetSelectionHeaderLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        repairSelectionPanel.add(repairSelectionHeaderLabel, gridBagConstraints);
+        resetSelectionPanel.add(resetSelectionHeaderLabel, gridBagConstraints);
 
-        repairShowHarddisksCheckBox.setFont(repairShowHarddisksCheckBox.getFont().deriveFont(repairShowHarddisksCheckBox.getFont().getStyle() & ~java.awt.Font.BOLD, repairShowHarddisksCheckBox.getFont().getSize()-1));
-        repairShowHarddisksCheckBox.setText(bundle.getString("DLCopySwingGUI.repairShowHarddisksCheckBox.text")); // NOI18N
-        repairShowHarddisksCheckBox.addItemListener(new java.awt.event.ItemListener() {
+        resetShowHarddisksCheckBox.setFont(resetShowHarddisksCheckBox.getFont().deriveFont(resetShowHarddisksCheckBox.getFont().getStyle() & ~java.awt.Font.BOLD, resetShowHarddisksCheckBox.getFont().getSize()-1));
+        resetShowHarddisksCheckBox.setText(bundle.getString("DLCopySwingGUI.resetShowHarddisksCheckBox.text")); // NOI18N
+        resetShowHarddisksCheckBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                repairShowHarddisksCheckBoxItemStateChanged(evt);
+                resetShowHarddisksCheckBoxItemStateChanged(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        repairSelectionPanel.add(repairShowHarddisksCheckBox, gridBagConstraints);
+        resetSelectionPanel.add(resetShowHarddisksCheckBox, gridBagConstraints);
 
-        repairSelectionCardPanel.setLayout(new java.awt.CardLayout());
+        resetSelectionCardPanel.setLayout(new java.awt.CardLayout());
 
-        repairNoMediaPanel.setLayout(new java.awt.GridBagLayout());
+        resetNoMediaPanel.setLayout(new java.awt.GridBagLayout());
 
-        repairNoMediaLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/messagebox_info.png"))); // NOI18N
-        repairNoMediaLabel.setText(bundle.getString("DLCopySwingGUI.repairNoMediaLabel.text")); // NOI18N
-        repairNoMediaLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        repairNoMediaLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        repairNoMediaPanel.add(repairNoMediaLabel, new java.awt.GridBagConstraints());
+        resetNoMediaLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/messagebox_info.png"))); // NOI18N
+        resetNoMediaLabel.setText(bundle.getString("DLCopySwingGUI.resetNoMediaLabel.text")); // NOI18N
+        resetNoMediaLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
+        resetNoMediaLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
+        resetNoMediaPanel.add(resetNoMediaLabel, new java.awt.GridBagConstraints());
 
-        repairSelectionCardPanel.add(repairNoMediaPanel, "repairNoMediaPanel");
+        resetSelectionCardPanel.add(resetNoMediaPanel, "resetNoMediaPanel");
 
-        repairSelectionDeviceListPanel.setLayout(new java.awt.GridBagLayout());
+        resetSelectionDeviceListPanel.setLayout(new java.awt.GridBagLayout());
 
-        repairSelectionCountLabel.setText(bundle.getString("DLCopySwingGUI.repairSelectionCountLabel.text")); // NOI18N
+        resetSelectionCountLabel.setText(bundle.getString("DLCopySwingGUI.resetSelectionCountLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
-        repairSelectionDeviceListPanel.add(repairSelectionCountLabel, gridBagConstraints);
+        resetSelectionDeviceListPanel.add(resetSelectionCountLabel, gridBagConstraints);
 
-        repairStorageDeviceList.setName("storageDeviceList"); // NOI18N
-        repairStorageDeviceList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+        resetStorageDeviceList.setName("storageDeviceList"); // NOI18N
+        resetStorageDeviceList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                repairStorageDeviceListValueChanged(evt);
+                resetStorageDeviceListValueChanged(evt);
             }
         });
-        repairStorageDeviceListScrollPane.setViewportView(repairStorageDeviceList);
+        resetStorageDeviceListScrollPane.setViewportView(resetStorageDeviceList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -2819,36 +2839,102 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
-        repairSelectionDeviceListPanel.add(repairStorageDeviceListScrollPane, gridBagConstraints);
+        resetSelectionDeviceListPanel.add(resetStorageDeviceListScrollPane, gridBagConstraints);
 
-        repairExchangeDefinitionLabel.setFont(repairExchangeDefinitionLabel.getFont().deriveFont(repairExchangeDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, repairExchangeDefinitionLabel.getFont().getSize()-1));
-        repairExchangeDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/yellow_box.png"))); // NOI18N
-        repairExchangeDefinitionLabel.setText(bundle.getString("DLCopySwingGUI.repairExchangeDefinitionLabel.text")); // NOI18N
+        resetExchangeDefinitionLabel.setFont(resetExchangeDefinitionLabel.getFont().deriveFont(resetExchangeDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, resetExchangeDefinitionLabel.getFont().getSize()-1));
+        resetExchangeDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/yellow_box.png"))); // NOI18N
+        resetExchangeDefinitionLabel.setText(bundle.getString("ExchangePartitionDefinition")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
-        repairSelectionDeviceListPanel.add(repairExchangeDefinitionLabel, gridBagConstraints);
+        resetSelectionDeviceListPanel.add(resetExchangeDefinitionLabel, gridBagConstraints);
 
-        repairDataDefinitionLabel.setFont(repairDataDefinitionLabel.getFont().deriveFont(repairDataDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, repairDataDefinitionLabel.getFont().getSize()-1));
-        repairDataDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/green_box.png"))); // NOI18N
-        repairDataDefinitionLabel.setText(bundle.getString("DLCopySwingGUI.repairDataDefinitionLabel.text")); // NOI18N
+        resetDataDefinitionLabel.setFont(resetDataDefinitionLabel.getFont().deriveFont(resetDataDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, resetDataDefinitionLabel.getFont().getSize()-1));
+        resetDataDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/green_box.png"))); // NOI18N
+        resetDataDefinitionLabel.setText(bundle.getString("DataPartitionDefinition")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
-        repairSelectionDeviceListPanel.add(repairDataDefinitionLabel, gridBagConstraints);
+        resetSelectionDeviceListPanel.add(resetDataDefinitionLabel, gridBagConstraints);
 
-        repairOsDefinitionLabel.setFont(repairOsDefinitionLabel.getFont().deriveFont(repairOsDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, repairOsDefinitionLabel.getFont().getSize()-1));
-        repairOsDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/blue_box.png"))); // NOI18N
-        repairOsDefinitionLabel.setText(bundle.getString("DLCopySwingGUI.repairOsDefinitionLabel.text")); // NOI18N
+        resetOsDefinitionLabel.setFont(resetOsDefinitionLabel.getFont().deriveFont(resetOsDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, resetOsDefinitionLabel.getFont().getSize()-1));
+        resetOsDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/blue_box.png"))); // NOI18N
+        resetOsDefinitionLabel.setText(bundle.getString("DLCopySwingGUI.resetOsDefinitionLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
-        repairSelectionDeviceListPanel.add(repairOsDefinitionLabel, gridBagConstraints);
+        resetSelectionDeviceListPanel.add(resetOsDefinitionLabel, gridBagConstraints);
 
-        repairButtonGroup.add(formatDataPartitionRadioButton);
+        resetExchangePartitionPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.resetExchangePartitionPanel.border.title"))); // NOI18N
+        resetExchangePartitionPanel.setLayout(new java.awt.GridBagLayout());
+
+        resetFormatExchangePartitionCheckBox.setText(bundle.getString("DLCopySwingGUI.resetFormatExchangePartitionCheckBox.text")); // NOI18N
+        resetFormatExchangePartitionCheckBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                resetFormatExchangePartitionCheckBoxItemStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 0);
+        resetExchangePartitionPanel.add(resetFormatExchangePartitionCheckBox, gridBagConstraints);
+
+        resetFormatExchangePartitionFileSystemLabel.setText(bundle.getString("DLCopySwingGUI.resetFormatExchangePartitionFileSystemLabel.text")); // NOI18N
+        resetFormatExchangePartitionFileSystemLabel.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 30, 10, 0);
+        resetExchangePartitionPanel.add(resetFormatExchangePartitionFileSystemLabel, gridBagConstraints);
+
+        resetFormatExchangePartitionFileSystemComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        resetFormatExchangePartitionFileSystemComboBox.setToolTipText(bundle.getString("ExchangePartitionFileSystemComboBoxToolTipText")); // NOI18N
+        resetFormatExchangePartitionFileSystemComboBox.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 10);
+        resetExchangePartitionPanel.add(resetFormatExchangePartitionFileSystemComboBox, gridBagConstraints);
+
+        resetExchangePartitionButtonGroup.add(resetFormatExchangePartitionKeepLabelRadioButton);
+        resetFormatExchangePartitionKeepLabelRadioButton.setSelected(true);
+        resetFormatExchangePartitionKeepLabelRadioButton.setText(bundle.getString("DLCopySwingGUI.resetFormatExchangePartitionKeepLabelRadioButton.text")); // NOI18N
+        resetFormatExchangePartitionKeepLabelRadioButton.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 27, 0, 0);
+        resetExchangePartitionPanel.add(resetFormatExchangePartitionKeepLabelRadioButton, gridBagConstraints);
+
+        resetExchangePartitionButtonGroup.add(resetFormatExchangePartitionNewLabelRadioButton);
+        resetFormatExchangePartitionNewLabelRadioButton.setText(bundle.getString("DLCopySwingGUI.resetFormatExchangePartitionNewLabelRadioButton.text")); // NOI18N
+        resetFormatExchangePartitionNewLabelRadioButton.setEnabled(false);
+        resetFormatExchangePartitionNewLabelRadioButton.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                resetFormatExchangePartitionNewLabelRadioButtonItemStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(0, 27, 5, 0);
+        resetExchangePartitionPanel.add(resetFormatExchangePartitionNewLabelRadioButton, gridBagConstraints);
+
+        resetFormatExchangePartitionNewLabelTextField.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
+        resetExchangePartitionPanel.add(resetFormatExchangePartitionNewLabelTextField, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
+        resetSelectionDeviceListPanel.add(resetExchangePartitionPanel, gridBagConstraints);
+
+        resetDataPartitionPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.resetDataPartitionPanel.border.title"))); // NOI18N
+        resetDataPartitionPanel.setLayout(new java.awt.GridBagLayout());
+
+        resetDataPartitionButtonGroup.add(formatDataPartitionRadioButton);
         formatDataPartitionRadioButton.setText(bundle.getString("DLCopySwingGUI.formatDataPartitionRadioButton.text")); // NOI18N
         formatDataPartitionRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -2858,10 +2944,10 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
-        repairSelectionDeviceListPanel.add(formatDataPartitionRadioButton, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
+        resetDataPartitionPanel.add(formatDataPartitionRadioButton, gridBagConstraints);
 
-        repairButtonGroup.add(removeFilesRadioButton);
+        resetDataPartitionButtonGroup.add(removeFilesRadioButton);
         removeFilesRadioButton.setSelected(true);
         removeFilesRadioButton.setText(bundle.getString("DLCopySwingGUI.removeFilesRadioButton.text")); // NOI18N
         removeFilesRadioButton.addActionListener(new java.awt.event.ActionListener() {
@@ -2873,23 +2959,27 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
-        repairSelectionDeviceListPanel.add(removeFilesRadioButton, gridBagConstraints);
+        resetDataPartitionPanel.add(removeFilesRadioButton, gridBagConstraints);
 
-        systemFilesCheckBox.setSelected(true);
         systemFilesCheckBox.setText(bundle.getString("DLCopySwingGUI.systemFilesCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 30, 10, 0);
-        repairSelectionDeviceListPanel.add(systemFilesCheckBox, gridBagConstraints);
+        resetDataPartitionPanel.add(systemFilesCheckBox, gridBagConstraints);
 
         homeDirectoryCheckBox.setText(bundle.getString("DLCopySwingGUI.homeDirectoryCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 10);
-        repairSelectionDeviceListPanel.add(homeDirectoryCheckBox, gridBagConstraints);
+        resetDataPartitionPanel.add(homeDirectoryCheckBox, gridBagConstraints);
 
-        repairSelectionCardPanel.add(repairSelectionDeviceListPanel, "repairSelectionDeviceListPanel");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 10, 10);
+        resetSelectionDeviceListPanel.add(resetDataPartitionPanel, gridBagConstraints);
+
+        resetSelectionCardPanel.add(resetSelectionDeviceListPanel, "resetSelectionDeviceListPanel");
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -2897,33 +2987,33 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        repairSelectionPanel.add(repairSelectionCardPanel, gridBagConstraints);
+        resetSelectionPanel.add(resetSelectionCardPanel, gridBagConstraints);
 
-        cardPanel.add(repairSelectionPanel, "repairSelectionPanel");
+        cardPanel.add(resetSelectionPanel, "resetSelectionPanel");
 
-        repairPanel.setLayout(new java.awt.GridBagLayout());
+        resetPanel.setLayout(new java.awt.GridBagLayout());
 
-        currentlyRepairedDeviceLabel.setFont(currentlyRepairedDeviceLabel.getFont().deriveFont(currentlyRepairedDeviceLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-        currentlyRepairedDeviceLabel.setText(bundle.getString("Repair_Device_Info")); // NOI18N
+        currentlyResettingDeviceLabel.setFont(currentlyResettingDeviceLabel.getFont().deriveFont(currentlyResettingDeviceLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+        currentlyResettingDeviceLabel.setText(bundle.getString("Reset_Device_Info")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        repairPanel.add(currentlyRepairedDeviceLabel, gridBagConstraints);
+        resetPanel.add(currentlyResettingDeviceLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-        repairPanel.add(jSeparator5, gridBagConstraints);
+        resetPanel.add(jSeparator5, gridBagConstraints);
 
-        repairProgressBar.setIndeterminate(true);
-        repairProgressBar.setPreferredSize(new java.awt.Dimension(250, 25));
-        repairProgressBar.setStringPainted(true);
+        resetProgressBar.setIndeterminate(true);
+        resetProgressBar.setPreferredSize(new java.awt.Dimension(250, 25));
+        resetProgressBar.setStringPainted(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.weighty = 1.0;
-        repairPanel.add(repairProgressBar, gridBagConstraints);
+        resetPanel.add(resetProgressBar, gridBagConstraints);
 
-        cardPanel.add(repairPanel, "repairPanel");
+        cardPanel.add(resetPanel, "resetPanel");
 
         toISOInfoPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -3276,8 +3366,8 @@ public class DLCopySwingGUI extends JFrame
                 switchToUpgradeSelection();
                 break;
 
-            case REPAIR_INFORMATION:
-                switchToRepairSelection();
+            case RESET_INFORMATION:
+                switchToResetSelection();
                 break;
 
             case INSTALL_SELECTION:
@@ -3328,14 +3418,14 @@ public class DLCopySwingGUI extends JFrame
                 upgrade();
                 break;
 
-            case REPAIR_SELECTION:
-                repair();
+            case RESET_SELECTION:
+                reset();
                 break;
 
             case INSTALLATION:
             case UPGRADE:
             case ISO_INSTALLATION:
-            case REPAIR:
+            case RESET:
                 exitProgram();
                 break;
 
@@ -3349,7 +3439,7 @@ public class DLCopySwingGUI extends JFrame
 
             case INSTALL_INFORMATION:
             case UPGRADE_INFORMATION:
-            case REPAIR_INFORMATION:
+            case RESET_INFORMATION:
             case ISO_INFORMATION:
                 getRootPane().setDefaultButton(installButton);
                 installButton.requestFocusInWindow();
@@ -3368,8 +3458,8 @@ public class DLCopySwingGUI extends JFrame
                 switchToISOInformation();
                 break;
 
-            case REPAIR_SELECTION:
-                switchToRepairInformation();
+            case RESET_SELECTION:
+                switchToResetInformation();
                 break;
 
             case ISO_INSTALLATION:
@@ -3389,8 +3479,8 @@ public class DLCopySwingGUI extends JFrame
                 resetNextButton();
                 break;
 
-            case REPAIR:
-                switchToRepairInformation();
+            case RESET:
+                switchToResetInformation();
                 resetNextButton();
                 break;
 
@@ -3488,7 +3578,7 @@ public class DLCopySwingGUI extends JFrame
                 installButton.requestFocusInWindow();
                 break;
             case KeyEvent.VK_DOWN:
-                repairButton.requestFocusInWindow();
+                resetButton.requestFocusInWindow();
         }
     }//GEN-LAST:event_upgradeButtonKeyPressed
 
@@ -3502,7 +3592,7 @@ public class DLCopySwingGUI extends JFrame
                 installButton.requestFocusInWindow();
                 break;
             case KeyEvent.VK_RIGHT:
-                repairButton.requestFocusInWindow();
+                resetButton.requestFocusInWindow();
         }
     }//GEN-LAST:event_toISOButtonKeyPressed
 
@@ -3598,16 +3688,16 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }//GEN-LAST:event_automaticBackupButtonActionPerformed
 
-    private void repairButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_repairButtonActionPerformed
+    private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
         globalShow("executionPanel");
-        switchToRepairInformation();
-    }//GEN-LAST:event_repairButtonActionPerformed
+        switchToResetInformation();
+    }//GEN-LAST:event_resetButtonActionPerformed
 
-    private void repairButtonFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_repairButtonFocusGained
-        getRootPane().setDefaultButton(repairButton);
-    }//GEN-LAST:event_repairButtonFocusGained
+    private void resetButtonFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_resetButtonFocusGained
+        getRootPane().setDefaultButton(resetButton);
+    }//GEN-LAST:event_resetButtonFocusGained
 
-    private void repairButtonKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_repairButtonKeyPressed
+    private void resetButtonKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_resetButtonKeyPressed
         switch (evt.getKeyCode()) {
             case KeyEvent.VK_UP:
                 upgradeButton.requestFocusInWindow();
@@ -3615,25 +3705,25 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             case KeyEvent.VK_LEFT:
                 toISOButton.requestFocusInWindow();
         }
-    }//GEN-LAST:event_repairButtonKeyPressed
+    }//GEN-LAST:event_resetButtonKeyPressed
 
-    private void repairStorageDeviceListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_repairStorageDeviceListValueChanged
-        updateRepairSelectionCountAndNextButton();
-    }//GEN-LAST:event_repairStorageDeviceListValueChanged
+    private void resetStorageDeviceListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_resetStorageDeviceListValueChanged
+        updateResetSelectionCountAndNextButton();
+    }//GEN-LAST:event_resetStorageDeviceListValueChanged
 
-    private void repairSelectionPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_repairSelectionPanelComponentShown
-        new RepairStorageDeviceListUpdater(this, repairStorageDeviceList,
-                repairStorageDeviceListModel,
-                repairShowHarddisksCheckBox.isSelected(),
+    private void resetSelectionPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_resetSelectionPanelComponentShown
+        new ResetStorageDeviceListUpdater(this, resetStorageDeviceList,
+                resetStorageDeviceListModel,
+                resetShowHarddisksCheckBox.isSelected(),
                 runningSystemSource.getDeviceName()).execute();
-    }//GEN-LAST:event_repairSelectionPanelComponentShown
+    }//GEN-LAST:event_resetSelectionPanelComponentShown
 
     private void formatDataPartitionRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_formatDataPartitionRadioButtonActionPerformed
-        updateRepairButtonState();
+        updateResetDataPartitionButtonState();
     }//GEN-LAST:event_formatDataPartitionRadioButtonActionPerformed
 
     private void removeFilesRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeFilesRadioButtonActionPerformed
-        updateRepairButtonState();
+        updateResetDataPartitionButtonState();
     }//GEN-LAST:event_removeFilesRadioButtonActionPerformed
 
     private void upgradeMoveUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeMoveUpButtonActionPerformed
@@ -3674,12 +3764,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         sortList(false);
     }//GEN-LAST:event_sortDescendingButtonActionPerformed
 
-    private void repairShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_repairShowHarddisksCheckBoxItemStateChanged
-        new RepairStorageDeviceListUpdater(this, repairStorageDeviceList,
-                repairStorageDeviceListModel,
-                repairShowHarddisksCheckBox.isSelected(),
+    private void resetShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_resetShowHarddisksCheckBoxItemStateChanged
+        new ResetStorageDeviceListUpdater(this, resetStorageDeviceList,
+                resetStorageDeviceListModel,
+                resetShowHarddisksCheckBox.isSelected(),
                 runningSystemSource.getDeviceName()).execute();
-    }//GEN-LAST:event_repairShowHarddisksCheckBoxItemStateChanged
+    }//GEN-LAST:event_resetShowHarddisksCheckBoxItemStateChanged
 
     private void upgradeOverwriteExportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeOverwriteExportButtonActionPerformed
         JFileChooser fileChooser = new JFileChooser();
@@ -3750,6 +3840,22 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         updateMediumPanel();
         setISOElementsEnabled(false);
     }//GEN-LAST:event_dataPartitionRadioButtonActionPerformed
+
+    private void resetFormatExchangePartitionCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_resetFormatExchangePartitionCheckBoxItemStateChanged
+        boolean enabled = resetFormatExchangePartitionCheckBox.isSelected();
+        resetFormatExchangePartitionFileSystemLabel.setEnabled(enabled);
+        resetFormatExchangePartitionFileSystemComboBox.setEnabled(enabled);
+        resetFormatExchangePartitionKeepLabelRadioButton.setEnabled(enabled);
+        resetFormatExchangePartitionNewLabelRadioButton.setEnabled(enabled);
+        resetFormatExchangePartitionNewLabelTextField.setEnabled(enabled
+                && resetFormatExchangePartitionNewLabelRadioButton.isSelected());
+    }//GEN-LAST:event_resetFormatExchangePartitionCheckBoxItemStateChanged
+
+    private void resetFormatExchangePartitionNewLabelRadioButtonItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_resetFormatExchangePartitionNewLabelRadioButtonItemStateChanged
+        resetFormatExchangePartitionNewLabelTextField.setEnabled(
+                resetFormatExchangePartitionCheckBox.isSelected()
+                && resetFormatExchangePartitionNewLabelRadioButton.isSelected());
+    }//GEN-LAST:event_resetFormatExchangePartitionNewLabelRadioButtonItemStateChanged
 
     private void parseCommandLineArguments(String[] arguments) {
         for (int i = 0, length = arguments.length; i < length; i++) {
@@ -4014,17 +4120,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 STRINGS.getString("DLCopySwingGUI.nextButton.text"));
     }
 
-    private void repair() {
-        // some sanity checks
-        if (removeFilesRadioButton.isSelected()
-                && !systemFilesCheckBox.isSelected()
-                && !homeDirectoryCheckBox.isSelected()) {
-            showErrorMessage(STRINGS.getString("Select_Files_To_Remove"));
-            return;
-        }
+    private void reset() {
         // final warning
         int result = JOptionPane.showConfirmDialog(this,
-                STRINGS.getString("Final_Repair_Warning"),
+                STRINGS.getString("Final_Reset_Warning"),
                 STRINGS.getString("Warning"),
                 JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
         if (result != JOptionPane.YES_OPTION) {
@@ -4035,21 +4134,27 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         setLabelHighlighted(executionLabel, true);
         previousButton.setEnabled(false);
         nextButton.setEnabled(false);
-        state = State.REPAIR;
+        state = State.RESET;
 
         batchCounter = 0;
         resultsList = new ArrayList<>();
-        int[] selectedIndices = repairStorageDeviceList.getSelectedIndices();
+        int[] selectedIndices = resetStorageDeviceList.getSelectedIndices();
         List<StorageDevice> deviceList = new ArrayList<>();
         for (int i : selectedIndices) {
-            deviceList.add(repairStorageDeviceListModel.get(i));
+            deviceList.add(resetStorageDeviceListModel.get(i));
         }
+        String exchangePartitionFileSystem
+                = resetFormatExchangePartitionFileSystemComboBox.getSelectedItem().toString();
         // TODO: using dataPartitionFileSystemComboBox.getSelectedItem() here is
         // ugly because the input field it is not visible when upgrading
         String dataPartitionFileSystem
                 = dataPartitionFileSystemComboBox.getSelectedItem().toString();
 
-        new Repairer(this, deviceList,
+        new Resetter(this, deviceList,
+                resetFormatExchangePartitionCheckBox.isSelected(),
+                exchangePartitionFileSystem,
+                resetFormatExchangePartitionKeepLabelRadioButton.isSelected(),
+                resetFormatExchangePartitionNewLabelTextField.getText(),
                 formatDataPartitionRadioButton.isSelected(),
                 dataPartitionFileSystem, homeDirectoryCheckBox.isSelected(),
                 systemFilesCheckBox.isSelected()).execute();
@@ -4094,7 +4199,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }
 
-    private void updateRepairButtonState() {
+    private void updateResetDataPartitionButtonState() {
         boolean selected = removeFilesRadioButton.isSelected();
         systemFilesCheckBox.setEnabled(selected);
         homeDirectoryCheckBox.setEnabled(selected);
@@ -4159,8 +4264,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     case UPGRADE_SELECTION:
                         listModel = upgradeStorageDeviceListModel;
                         break;
-                    case REPAIR_SELECTION:
-                        listModel = repairStorageDeviceListModel;
+                    case RESET_SELECTION:
+                        listModel = resetStorageDeviceListModel;
                         break;
                     default:
                         LOGGER.log(Level.WARNING,
@@ -4182,6 +4287,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                                 break;
                             case UPGRADE_SELECTION:
                                 upgradeStorageDeviceListChanged();
+                                break;
+                            case RESET_SELECTION:
+                                resetStorageDeviceListChanged();
                         }
                         break; // for
                     }
@@ -4530,6 +4638,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }
 
     private static void showCard(Container container, String cardName) {
+        LOGGER.finest(container + ": " + cardName);
         CardLayout cardLayout = (CardLayout) container.getLayout();
         cardLayout.show(container, cardName);
     }
@@ -4623,7 +4732,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         savePreferences();
-        
+
         setLabelHighlighted(selectionLabel, false);
         setLabelHighlighted(executionLabel, true);
         previousButton.setEnabled(false);
@@ -4986,23 +5095,23 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         state = State.UPGRADE_INFORMATION;
     }
 
-    private void switchToRepairInformation() {
+    private void switchToResetInformation() {
         setLabelHighlighted(infoStepLabel, true);
         setLabelHighlighted(selectionLabel, false);
         setLabelHighlighted(executionLabel, false);
-        executionLabel.setText(STRINGS.getString("Repair_Label"));
-        showCard(cardPanel, "repairInfoPanel");
+        executionLabel.setText(STRINGS.getString("Reset_Label"));
+        showCard(cardPanel, "resetInfoPanel");
         enableNextButton();
         nextButton.requestFocusInWindow();
-        state = State.REPAIR_INFORMATION;
+        state = State.RESET_INFORMATION;
     }
 
-    private void switchToRepairSelection() {
+    private void switchToResetSelection() {
         setLabelHighlighted(infoStepLabel, false);
         setLabelHighlighted(selectionLabel, true);
         setLabelHighlighted(executionLabel, false);
-        state = State.REPAIR_SELECTION;
-        showCard(cardPanel, "repairSelectionPanel");
+        state = State.RESET_SELECTION;
+        showCard(cardPanel, "resetSelectionPanel");
         enableNextButton();
     }
 
@@ -5128,7 +5237,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JProgressBar cpPogressBar;
     private javax.swing.JLabel cpTimeLabel;
     private javax.swing.JLabel currentlyInstalledDeviceLabel;
-    private javax.swing.JLabel currentlyRepairedDeviceLabel;
+    private javax.swing.JLabel currentlyResettingDeviceLabel;
     private javax.swing.JLabel currentlyUpgradedDeviceLabel;
     private javax.swing.JLabel dataDefinitionLabel;
     private javax.swing.JComboBox dataPartitionFileSystemComboBox;
@@ -5223,26 +5332,35 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JRadioButton removeExchangeRadioButton;
     private javax.swing.JRadioButton removeFilesRadioButton;
     private javax.swing.JCheckBox removeHiddenFilesCheckBox;
-    private javax.swing.JButton repairButton;
-    private javax.swing.ButtonGroup repairButtonGroup;
-    private javax.swing.JLabel repairDataDefinitionLabel;
-    private javax.swing.JLabel repairExchangeDefinitionLabel;
-    private javax.swing.JLabel repairInfoLabel;
-    private javax.swing.JPanel repairInfoPanel;
-    private javax.swing.JLabel repairNoMediaLabel;
-    private javax.swing.JPanel repairNoMediaPanel;
-    private javax.swing.JLabel repairOsDefinitionLabel;
-    private javax.swing.JPanel repairPanel;
-    private javax.swing.JProgressBar repairProgressBar;
-    private javax.swing.JPanel repairSelectionCardPanel;
-    private javax.swing.JLabel repairSelectionCountLabel;
-    private javax.swing.JPanel repairSelectionDeviceListPanel;
-    private javax.swing.JLabel repairSelectionHeaderLabel;
-    private javax.swing.JPanel repairSelectionPanel;
-    private javax.swing.JCheckBox repairShowHarddisksCheckBox;
-    private javax.swing.JList repairStorageDeviceList;
-    private javax.swing.JScrollPane repairStorageDeviceListScrollPane;
     private javax.swing.JPanel repartitionExchangeOptionsPanel;
+    private javax.swing.JButton resetButton;
+    private javax.swing.JLabel resetDataDefinitionLabel;
+    private javax.swing.ButtonGroup resetDataPartitionButtonGroup;
+    private javax.swing.JPanel resetDataPartitionPanel;
+    private javax.swing.JLabel resetExchangeDefinitionLabel;
+    private javax.swing.ButtonGroup resetExchangePartitionButtonGroup;
+    private javax.swing.JPanel resetExchangePartitionPanel;
+    private javax.swing.JCheckBox resetFormatExchangePartitionCheckBox;
+    private javax.swing.JComboBox<String> resetFormatExchangePartitionFileSystemComboBox;
+    private javax.swing.JLabel resetFormatExchangePartitionFileSystemLabel;
+    private javax.swing.JRadioButton resetFormatExchangePartitionKeepLabelRadioButton;
+    private javax.swing.JRadioButton resetFormatExchangePartitionNewLabelRadioButton;
+    private javax.swing.JTextField resetFormatExchangePartitionNewLabelTextField;
+    private javax.swing.JLabel resetInfoLabel;
+    private javax.swing.JPanel resetInfoPanel;
+    private javax.swing.JLabel resetNoMediaLabel;
+    private javax.swing.JPanel resetNoMediaPanel;
+    private javax.swing.JLabel resetOsDefinitionLabel;
+    private javax.swing.JPanel resetPanel;
+    private javax.swing.JProgressBar resetProgressBar;
+    private javax.swing.JPanel resetSelectionCardPanel;
+    private javax.swing.JLabel resetSelectionCountLabel;
+    private javax.swing.JPanel resetSelectionDeviceListPanel;
+    private javax.swing.JLabel resetSelectionHeaderLabel;
+    private javax.swing.JPanel resetSelectionPanel;
+    private javax.swing.JCheckBox resetShowHarddisksCheckBox;
+    private javax.swing.JList resetStorageDeviceList;
+    private javax.swing.JScrollPane resetStorageDeviceListScrollPane;
     private javax.swing.JLabel resizeExchangeLabel;
     private javax.swing.JRadioButton resizeExchangeRadioButton;
     private javax.swing.JTextField resizeExchangeTextField;

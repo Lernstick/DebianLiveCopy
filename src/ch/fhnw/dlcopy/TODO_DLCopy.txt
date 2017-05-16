@@ -2,8 +2,6 @@
 kdesudo "java -Djava.library.path=/usr/lib/jni -jar dist/DLCopy_orig.jar --variant lernstick"
 ********************************************************************************
 
-- Repair: cleanup of exchange partition
-
 - Zustand [steckt / steckt nicht] in Resultatenliste anzeigen, damit fehlerhaft installierte Sticks schnell identifiziert werden können
 
 - ISO source for upgrades

@@ -1,5 +1,5 @@
 /*
- * RepairStorageDeviceRenderer.java
+ * ResetStorageDeviceRenderer.java
  *
  * Created on 16. April 2008, 13:23
  */
@@ -18,35 +18,35 @@ import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 
 /**
- * A renderer for storage devices to be repaired
+ * A renderer for storage devices to be reset
  *
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
-public class RepairStorageDeviceRenderer extends JPanel
+public class ResetStorageDeviceRenderer extends JPanel
         implements ListCellRenderer, StorageDeviceRenderer {
 
     private final static Logger LOGGER
             = Logger.getLogger(DLCopySwingGUI.class.getName());
     private final static Icon BLUE_BOX = new ImageIcon(
-            RepairStorageDeviceRenderer.class.getResource(
+            ResetStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/blue_box.png"));
     private final static Icon GREEN_BOX = new ImageIcon(
-            RepairStorageDeviceRenderer.class.getResource(
+            ResetStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/green_box.png"));
     private final static Icon YELLOW_BOX = new ImageIcon(
-            RepairStorageDeviceRenderer.class.getResource(
+            ResetStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/yellow_box.png"));
     private final static Icon GRAY_BOX = new ImageIcon(
-            RepairStorageDeviceRenderer.class.getResource(
+            ResetStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/gray_box.png"));
     private final static Icon DARK_GRAY_BOX = new ImageIcon(
-            RepairStorageDeviceRenderer.class.getResource(
+            ResetStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/dark_gray_box.png"));
     private final static Icon OK_ICON = new ImageIcon(
-            RepairStorageDeviceRenderer.class.getResource(
+            ResetStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/16x16/dialog-ok-apply.png"));
     private final static Icon CANCEL_ICON = new ImageIcon(
-            RepairStorageDeviceRenderer.class.getResource(
+            ResetStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/16x16/dialog-cancel.png"));
     private final Color LIGHT_BLUE = new Color(170, 170, 255);
     private long maxStorageDeviceSize;
@@ -55,7 +55,7 @@ public class RepairStorageDeviceRenderer extends JPanel
     /**
      * Creates new form UsbRenderer
      */
-    public RepairStorageDeviceRenderer() {
+    public ResetStorageDeviceRenderer() {
         initComponents();
     }
 
@@ -169,20 +169,16 @@ public class RepairStorageDeviceRenderer extends JPanel
 
             // upgrade info text
             Partition dataPartition = storageDevice.getDataPartition();
-            if (dataPartition == null) {
-                upgradeInfoLabel.setIcon(CANCEL_ICON);
-                upgradeInfoLabel.setText(STRINGS.getString(
-                        "Repairing_Impossible_No_Data_Partition"));
-            } else {
+            if (dataPartition != null) {
                 try {
                     if (dataPartition.isActivePersistencePartition()) {
                         upgradeInfoLabel.setIcon(CANCEL_ICON);
                         upgradeInfoLabel.setText(STRINGS.getString(
-                                "Repairing_Impossible_Active_Data_Partition"));
+                                "Resetting_Impossible_Active_Data_Partition"));
                     } else {
                         upgradeInfoLabel.setIcon(OK_ICON);
                         upgradeInfoLabel.setText(
-                                STRINGS.getString("Repairing_Possible"));
+                                STRINGS.getString("Resetting_Possible"));
                     }
                 } catch (DBusException ex) {
                     LOGGER.log(Level.SEVERE, "", ex);
@@ -330,14 +326,14 @@ public class RepairStorageDeviceRenderer extends JPanel
 
         descriptionLabel.setFont(descriptionLabel.getFont().deriveFont(descriptionLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings"); // NOI18N
-        descriptionLabel.setText(bundle.getString("RepairStorageDeviceRenderer.descriptionLabel.text")); // NOI18N
+        descriptionLabel.setText(bundle.getString("ResetStorageDeviceRenderer.descriptionLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         rightPanel.add(descriptionLabel, gridBagConstraints);
 
-        partitionPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true), bundle.getString("RepairStorageDeviceRenderer.partitionPanel.border.title"), javax.swing.border.TitledBorder.DEFAULT_JUSTIFICATION, javax.swing.border.TitledBorder.DEFAULT_POSITION, new java.awt.Font("Dialog", 0, 12))); // NOI18N
+        partitionPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.LineBorder(new java.awt.Color(0, 0, 0), 1, true), bundle.getString("ResetStorageDeviceRenderer.partitionPanel.border.title"))); // NOI18N
         partitionPanel.setOpaque(false);
         partitionPanel.setLayout(new java.awt.GridBagLayout());
 

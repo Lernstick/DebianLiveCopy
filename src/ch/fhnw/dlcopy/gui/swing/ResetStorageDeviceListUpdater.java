@@ -6,14 +6,14 @@ import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
 /**
- * updates the list of available storage devices for the repairer
+ * updates the list of available storage devices for the Resetter
  *
  * @author Ronny Standtke <ronny.standtke@gmx.net>
  */
-public class RepairStorageDeviceListUpdater extends StorageDeviceListUpdater {
+public class ResetStorageDeviceListUpdater extends StorageDeviceListUpdater {
 
     /**
-     * creates a new RepairStorageDeviceListUpdater
+     * creates a new ResetStorageDeviceListUpdater
      *
      * @param swingGUI the DLCopy Swing GUI
      * @param list the list to fill
@@ -21,7 +21,7 @@ public class RepairStorageDeviceListUpdater extends StorageDeviceListUpdater {
      * @param showHardDisks if true, hard disks are added, otherwise ignored
      * @param bootDeviceName the name of the boot device
      */
-    public RepairStorageDeviceListUpdater(DLCopySwingGUI swingGUI,
+    public ResetStorageDeviceListUpdater(DLCopySwingGUI swingGUI,
             JList list, DefaultListModel<StorageDevice> listModel,
             boolean showHardDisks, String bootDeviceName) {
         super(swingGUI, list, listModel, showHardDisks, true, bootDeviceName);
@@ -41,7 +41,7 @@ public class RepairStorageDeviceListUpdater extends StorageDeviceListUpdater {
 
     @Override
     public void updateGUI() {
-        swingGUI.repairStorageDeviceListChanged();
-        swingGUI.updateRepairSelectionCountAndNextButton();
+        swingGUI.resetStorageDeviceListChanged();
+        swingGUI.updateResetSelectionCountAndNextButton();
     }
 }

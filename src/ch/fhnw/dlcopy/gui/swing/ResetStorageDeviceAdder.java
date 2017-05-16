@@ -10,17 +10,17 @@ import javax.swing.JList;
 
 /**
  * parses udisks output paths and adds the corresponding storage devices to the
- * repair list
+ * reset list
  *
  * @author Ronny Standtke <ronny.standtke@gmx.net>
  */
-public class RepairStorageDeviceAdder extends StorageDeviceAdder {
+public class ResetStorageDeviceAdder extends StorageDeviceAdder {
 
     private static final Logger LOGGER
-            = Logger.getLogger(RepairStorageDeviceAdder.class.getName());
+            = Logger.getLogger(ResetStorageDeviceAdder.class.getName());
 
     /**
-     * creates a new RepairStorageDeviceAdder
+     * creates a new ResetStorageDeviceAdder
      *
      * @param addedPath the added udisks path
      * @param showHarddisks if true, paths to hard disks are processed,
@@ -30,7 +30,7 @@ public class RepairStorageDeviceAdder extends StorageDeviceAdder {
      * @param list the storage devices JList
      * @param swingGUI the DLCopySwingGUI
      */
-    public RepairStorageDeviceAdder(String addedPath, boolean showHarddisks,
+    public ResetStorageDeviceAdder(String addedPath, boolean showHarddisks,
             StorageDeviceListUpdateDialogHandler dialogHandler,
             DefaultListModel<StorageDevice> listModel, JList list,
             DLCopySwingGUI swingGUI) {
@@ -55,7 +55,7 @@ public class RepairStorageDeviceAdder extends StorageDeviceAdder {
 
     @Override
     public void processAddedDevice() {
-        swingGUI.repairStorageDeviceListChanged();
-        swingGUI.updateRepairSelectionCountAndNextButton();
+        swingGUI.resetStorageDeviceListChanged();
+        swingGUI.updateResetSelectionCountAndNextButton();
     }
 }
