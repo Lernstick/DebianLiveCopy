@@ -1,3 +1,10 @@
+dlcopy (201705162349-1) lernstick-8; urgency=medium
+
+  * [c2b13d] changed "repairing" to "resetting" added option to format exchange
+    partition when resetting
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Tue, 16 May 2017 23:49:04 +0200
+
 dlcopy (201705131747-1) lernstick-8; urgency=medium
 
   * [6132ea] remove the immutable flag of syslinux/ldlinux.sys before cleaning
