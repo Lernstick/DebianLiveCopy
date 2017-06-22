@@ -1,3 +1,9 @@
+dlcopy (201706221352-1) lernstick-8; urgency=medium
+
+  * [e8ec89] fixed checking of exchange partition size
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 22 Jun 2017 13:52:51 +0200
+
 dlcopy (201705162349-1) lernstick-8; urgency=medium
 
   * [c2b13d] changed "repairing" to "resetting" added option to format exchange
