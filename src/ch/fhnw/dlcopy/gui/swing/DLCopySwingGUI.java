@@ -4932,7 +4932,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             throws IOException {
 
         // early return
-        if (!copyExchangeCheckBox.isSelected()) {
+        if (!copyExchangeCheckBox.isEnabled()
+                || !copyExchangeCheckBox.isSelected()) {
             return true;
         }
 
@@ -4946,16 +4947,18 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         // check that target partition is large enough
-        long sourceExchangeSize
-                = systemSource.getExchangePartition().getUsedSpace(false);
-        long targetExchangeSize
-                = (long) partitionSizes.getExchangeMB() * (long) DLCopy.MEGA;
-        if (sourceExchangeSize > targetExchangeSize) {
-            JOptionPane.showMessageDialog(this,
-                    STRINGS.getString("Error_Target_Exchange_Too_Small"),
-                    STRINGS.getString("Error"),
-                    JOptionPane.ERROR_MESSAGE);
-            return false;
+        Partition exchangePartition = systemSource.getExchangePartition();
+        if (exchangePartition != null) {
+            long sourceExchangeSize = exchangePartition.getUsedSpace(false);
+            long targetExchangeSize = (long) partitionSizes.getExchangeMB()
+                    * (long) DLCopy.MEGA;
+            if (sourceExchangeSize > targetExchangeSize) {
+                JOptionPane.showMessageDialog(this,
+                        STRINGS.getString("Error_Target_Exchange_Too_Small"),
+                        STRINGS.getString("Error"),
+                        JOptionPane.ERROR_MESSAGE);
+                return false;
+            }
         }
 
         return true;
