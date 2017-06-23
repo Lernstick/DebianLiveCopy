@@ -1232,13 +1232,13 @@ public class DLCopySwingGUI extends JFrame
 
         // check all selected storage devices
         boolean canReset = true;
-        int[] selectedIndices = resetStorageDeviceList.getSelectedIndices();
-        for (int i : selectedIndices) {
-            StorageDevice storageDevice = resetStorageDeviceListModel.get(i);
+        List<StorageDevice> selectedStorageDevices = 
+                resetStorageDeviceList.getSelectedValuesList();
+        for (StorageDevice storageDevice : selectedStorageDevices) {
             Partition dataPartition = storageDevice.getDataPartition();
             try {
-                if ((dataPartition == null)
-                        || dataPartition.isActivePersistencePartition()) {
+                if ((dataPartition != null)
+                        && dataPartition.isActivePersistencePartition()) {
                     canReset = false;
                     break;
                 }
@@ -1249,7 +1249,7 @@ public class DLCopySwingGUI extends JFrame
             }
         }
 
-        int selectionCount = selectedIndices.length;
+        int selectionCount = selectedStorageDevices.size();
         String countString = STRINGS.getString("Selection_Count");
         countString = MessageFormat.format(countString,
                 selectionCount, resetStorageDeviceListModel.size());
@@ -1448,7 +1448,7 @@ public class DLCopySwingGUI extends JFrame
         resetSelectionDeviceListPanel = new javax.swing.JPanel();
         resetSelectionCountLabel = new javax.swing.JLabel();
         resetStorageDeviceListScrollPane = new javax.swing.JScrollPane();
-        resetStorageDeviceList = new javax.swing.JList();
+        resetStorageDeviceList = new javax.swing.JList<>();
         resetExchangeDefinitionLabel = new javax.swing.JLabel();
         resetDataDefinitionLabel = new javax.swing.JLabel();
         resetOsDefinitionLabel = new javax.swing.JLabel();
@@ -3315,14 +3315,14 @@ public class DLCopySwingGUI extends JFrame
         nextButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/next.png"))); // NOI18N
         nextButton.setText(bundle.getString("DLCopySwingGUI.nextButton.text")); // NOI18N
         nextButton.setName("nextButton"); // NOI18N
-        nextButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                nextButtonActionPerformed(evt);
-            }
-        });
         nextButton.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 nextButtonFocusGained(evt);
+            }
+        });
+        nextButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                nextButtonActionPerformed(evt);
             }
         });
         nextButton.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -5362,7 +5362,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel resetSelectionHeaderLabel;
     private javax.swing.JPanel resetSelectionPanel;
     private javax.swing.JCheckBox resetShowHarddisksCheckBox;
-    private javax.swing.JList resetStorageDeviceList;
+    private javax.swing.JList<StorageDevice> resetStorageDeviceList;
     private javax.swing.JScrollPane resetStorageDeviceListScrollPane;
     private javax.swing.JLabel resizeExchangeLabel;
     private javax.swing.JRadioButton resizeExchangeRadioButton;
