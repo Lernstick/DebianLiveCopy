@@ -169,20 +169,19 @@ public class ResetStorageDeviceRenderer extends JPanel
 
             // upgrade info text
             Partition dataPartition = storageDevice.getDataPartition();
-            if (dataPartition != null) {
-                try {
-                    if (dataPartition.isActivePersistencePartition()) {
-                        upgradeInfoLabel.setIcon(CANCEL_ICON);
-                        upgradeInfoLabel.setText(STRINGS.getString(
-                                "Resetting_Impossible_Active_Data_Partition"));
-                    } else {
-                        upgradeInfoLabel.setIcon(OK_ICON);
-                        upgradeInfoLabel.setText(
-                                STRINGS.getString("Resetting_Possible"));
-                    }
-                } catch (DBusException ex) {
-                    LOGGER.log(Level.SEVERE, "", ex);
+            try {
+                if ((dataPartition != null) && 
+                        dataPartition.isActivePersistencePartition()) {
+                    upgradeInfoLabel.setIcon(CANCEL_ICON);
+                    upgradeInfoLabel.setText(STRINGS.getString(
+                            "Resetting_Impossible_Active_Data_Partition"));
+                } else {
+                    upgradeInfoLabel.setIcon(OK_ICON);
+                    upgradeInfoLabel.setText(
+                            STRINGS.getString("Resetting_Possible"));
                 }
+            } catch (DBusException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
             }
 
             if (isSelected) {
@@ -190,6 +189,9 @@ public class ResetStorageDeviceRenderer extends JPanel
             } else {
                 setBackground(list.getBackground());
             }
+
+        } else {
+            LOGGER.log(Level.WARNING, "{0} is no StorageDevice", value);
         }
 
         return this;

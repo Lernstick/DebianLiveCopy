@@ -93,18 +93,20 @@ public class Resetter extends SwingWorker<Boolean, Void> {
 
             // reset exchange partition
             if (formatExchangePartition) {
-                dlCopyGUI.showResetFormattingExchangePartition();
                 Partition exchangePartition
                         = storageDevice.getExchangePartition();
-                String label;
-                if (keepExchangePartitionLabel) {
-                    label = exchangePartition.getIdLabel();
-                } else {
-                    label = newExchangePartitionLabel;
+                if (exchangePartition != null) {
+                    dlCopyGUI.showResetFormattingExchangePartition();
+                    String label;
+                    if (keepExchangePartitionLabel) {
+                        label = exchangePartition.getIdLabel();
+                    } else {
+                        label = newExchangePartitionLabel;
+                    }
+                    DLCopy.formatExchangePartition(
+                            "/dev/" + exchangePartition.getDeviceAndNumber(),
+                            label, exchangePartitionFileSystem);
                 }
-                DLCopy.formatExchangePartition(
-                        "/dev/" + exchangePartition.getDeviceAndNumber(),
-                        label, exchangePartitionFileSystem);
             }
 
             // reset data partition
@@ -157,9 +159,6 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                         processExecutor.executeProcess("chown", "-R",
                                 "user.user", mountPoint + "/home/user/");
                     }
-                    if (!mountInfo.alreadyMounted()) {
-                        DLCopy.umount(dataPartition, dlCopyGUI);
-                    }
                 }
             }
 
@@ -167,6 +166,12 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                     + "{0} of {1} ({2})", new Object[]{
                         batchCounter, deviceListSize, storageDevice
                     });
+            
+            // Unmount *all* partitions so that the user doesn't have to
+            // manually umount all storage devices after resetting is done.
+            for (Partition partition : storageDevice.getPartitions()) {
+                DLCopy.umount(partition, dlCopyGUI);
+            }
         }
 
         return true;
