@@ -1,3 +1,9 @@
+dlcopy (201706231011-1) lernstick-8; urgency=medium
+
+  * [fa6c7f] allow resetting storage devices without persistence partitions
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 23 Jun 2017 10:11:37 +0200
+
 dlcopy (201706221352-1) lernstick-8; urgency=medium
 
   * [e8ec89] fixed checking of exchange partition size
