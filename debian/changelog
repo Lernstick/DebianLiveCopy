@@ -1,6 +1,7 @@
-dlcopy (201706231011-1) lernstick-8; urgency=medium
+dlcopy (201706231041-1) lernstick-8; urgency=medium
 
   * [fa6c7f] allow resetting storage devices without persistence partitions
+  * [8c0904] fixed NPE in Resetter, unmount all partitions after reset
 
  -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 23 Jun 2017 10:11:37 +0200
 
