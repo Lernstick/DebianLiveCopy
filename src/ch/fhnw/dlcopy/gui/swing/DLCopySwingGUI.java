@@ -178,10 +178,10 @@ public class DLCopySwingGUI extends JFrame
         consoleHandler.setFormatter(new SimpleFormatter());
         consoleHandler.setLevel(Level.ALL);
         globalLogger.addHandler(consoleHandler);
-        // also log into a rotating temporaty file of max 5 MB
+        // also log into a rotating temporaty file of max 50 MB
         try {
-            FileHandler fileHandler
-                    = new FileHandler("%t/DebianLiveCopy", 5000000, 2, true);
+            FileHandler fileHandler = new FileHandler(""
+                    + "%t/DebianLiveCopy", 50 * DLCopy.MEGA, 2, true);
             fileHandler.setFormatter(new SimpleFormatter());
             fileHandler.setLevel(Level.ALL);
             globalLogger.addHandler(fileHandler);
