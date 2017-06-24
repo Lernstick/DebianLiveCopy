@@ -1232,8 +1232,8 @@ public class DLCopySwingGUI extends JFrame
 
         // check all selected storage devices
         boolean canReset = true;
-        List<StorageDevice> selectedStorageDevices = 
-                resetStorageDeviceList.getSelectedValuesList();
+        List<StorageDevice> selectedStorageDevices
+                = resetStorageDeviceList.getSelectedValuesList();
         for (StorageDevice storageDevice : selectedStorageDevices) {
             Partition dataPartition = storageDevice.getDataPartition();
             try {
