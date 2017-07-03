@@ -1,8 +1,8 @@
 [Desktop Entry]
 Categories=X-lernstick;
-Comment=Install system to USB flash drives or to a DVD image
-Comment[de]=Das System auf USB-Sticks oder in ein DVD-Abbild installieren
-Exec=pkexec /usr/bin/dlcopy
+Comment=Manage Lernstick storage media
+Comment[de]=Lernstick-Speichermedien verwalten
+Exec=sh -c "pkexec /usr/bin/dlcopy && true"
 Icon=/usr/share/icons/dlcopy.png
 Name=Storage media management
 Name[de]=Speichermedienverwaltung
