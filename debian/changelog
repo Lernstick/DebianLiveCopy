@@ -1,3 +1,10 @@
+dlcopy (201707071111-1) lernstick-8; urgency=medium
+
+  * [bf2518] don't umount the partitions of the running system source in the
+    resetter
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 07 Jul 2017 11:11:16 +0200
+
 dlcopy (201707031302-1) lernstick-8; urgency=medium
 
   * increased log file size
