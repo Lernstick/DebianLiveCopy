@@ -4151,7 +4151,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         String dataPartitionFileSystem
                 = dataPartitionFileSystemComboBox.getSelectedItem().toString();
 
-        new Resetter(this, deviceList,
+        new Resetter(this, deviceList, runningSystemSource.getDeviceName(),
                 resetFormatExchangePartitionCheckBox.isSelected(),
                 exchangePartitionFileSystem,
                 resetFormatExchangePartitionKeepLabelRadioButton.isSelected(),

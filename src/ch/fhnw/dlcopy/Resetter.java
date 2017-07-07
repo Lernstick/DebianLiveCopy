@@ -23,6 +23,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
 
     private final DLCopyGUI dlCopyGUI;
     private final List<StorageDevice> deviceList;
+    private final String bootDeviceName;
 
     private final boolean formatExchangePartition;
     private final String exchangePartitionFileSystem;
@@ -41,6 +42,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
      *
      * @param dlCopyGUI the graphical user interface
      * @param deviceList the list of StorageDevices to reset
+     * @param bootDeviceName the name of the boot device
      * @param formatExchangePartition if the exchange partition should be
      * formatted
      * @param exchangePartitionFileSystem the file system of the exchange
@@ -57,12 +59,15 @@ public class Resetter extends SwingWorker<Boolean, Void> {
      * @param resetSystem if the system (without /home) should be reset
      */
     public Resetter(DLCopyGUI dlCopyGUI, List<StorageDevice> deviceList,
-            boolean formatExchangePartition, String exchangePartitionFileSystem,
-            boolean keepExchangePartitionLabel, String newExchangePartitionLabel,
-            boolean formatDataPartition, String dataPartitionFileSystem,
-            boolean resetHome, boolean resetSystem) {
+            String bootDeviceName, boolean formatExchangePartition,
+            String exchangePartitionFileSystem,
+            boolean keepExchangePartitionLabel,
+            String newExchangePartitionLabel, boolean formatDataPartition,
+            String dataPartitionFileSystem, boolean resetHome,
+            boolean resetSystem) {
         this.dlCopyGUI = dlCopyGUI;
         this.deviceList = deviceList;
+        this.bootDeviceName = bootDeviceName;
         this.formatExchangePartition = formatExchangePartition;
         this.exchangePartitionFileSystem = exchangePartitionFileSystem;
         this.keepExchangePartitionLabel = keepExchangePartitionLabel;
@@ -166,11 +171,13 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                     + "{0} of {1} ({2})", new Object[]{
                         batchCounter, deviceListSize, storageDevice
                     });
-            
-            // Unmount *all* partitions so that the user doesn't have to
-            // manually umount all storage devices after resetting is done.
-            for (Partition partition : storageDevice.getPartitions()) {
-                DLCopy.umount(partition, dlCopyGUI);
+
+            if (!storageDevice.getDevice().equals(bootDeviceName)) {
+                // Unmount *all* partitions so that the user doesn't have to
+                // manually umount all storage devices after resetting is done.
+                for (Partition partition : storageDevice.getPartitions()) {
+                    DLCopy.umount(partition, dlCopyGUI);
+                }
             }
         }
 
