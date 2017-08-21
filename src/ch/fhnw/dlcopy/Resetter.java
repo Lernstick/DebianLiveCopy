@@ -100,6 +100,8 @@ public class Resetter extends SwingWorker<Boolean, Void> {
             if (formatExchangePartition) {
                 Partition exchangePartition
                         = storageDevice.getExchangePartition();
+                LOGGER.log(Level.INFO, "formatting exchange partition: {0}",
+                        exchangePartition);
                 if (exchangePartition != null) {
                     dlCopyGUI.showResetFormattingExchangePartition();
                     String label;

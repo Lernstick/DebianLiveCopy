@@ -14,6 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
+import org.freedesktop.DBus;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 
@@ -170,8 +171,8 @@ public class ResetStorageDeviceRenderer extends JPanel
             // upgrade info text
             Partition dataPartition = storageDevice.getDataPartition();
             try {
-                if ((dataPartition != null) && 
-                        dataPartition.isActivePersistencePartition()) {
+                if ((dataPartition != null)
+                        && dataPartition.isActivePersistencePartition()) {
                     upgradeInfoLabel.setIcon(CANCEL_ICON);
                     upgradeInfoLabel.setText(STRINGS.getString(
                             "Resetting_Impossible_Active_Data_Partition"));
@@ -180,7 +181,7 @@ public class ResetStorageDeviceRenderer extends JPanel
                     upgradeInfoLabel.setText(
                             STRINGS.getString("Resetting_Possible"));
                 }
-            } catch (DBusException ex) {
+            } catch (DBusException | DBusExecutionException ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
             }
 

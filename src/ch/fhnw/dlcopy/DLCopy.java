@@ -30,6 +30,7 @@ import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.ParserConfigurationException;
@@ -1340,7 +1341,7 @@ public class DLCopy {
                     // create file system for exchange partition
                     formatExchangePartition(exchangeDevice,
                             exchangePartitionLabel, installerOrUpgrader.
-                            getExhangePartitionFileSystem());
+                                    getExhangePartitionFileSystem());
                 }
                 if (persistenceDevice != null) {
                     formatPersistencePartition(persistenceDevice,
@@ -1515,6 +1516,7 @@ public class DLCopy {
 
     /**
      * formats the exchange partition
+     *
      * @param device the given device (e.g. "/dev/sdb1")
      * @param label
      * @param fileSystem the file system to use
@@ -1524,19 +1526,38 @@ public class DLCopy {
             String label, String fileSystem) throws IOException {
 
         // create file system for exchange partition
+        String exchangePartitionID;
         String mkfsBuilder;
         String mkfsLabelSwitch;
         String quickSwitch = null;
         if (fileSystem.equalsIgnoreCase("fat32")) {
+            exchangePartitionID = "c";
             mkfsBuilder = "vfat";
             mkfsLabelSwitch = "-n";
         } else if (fileSystem.equalsIgnoreCase("exfat")) {
+            exchangePartitionID = "7";
             mkfsBuilder = "exfat";
             mkfsLabelSwitch = "-n";
         } else {
+            exchangePartitionID = "7";
             mkfsBuilder = "ntfs";
             quickSwitch = "-f";
             mkfsLabelSwitch = "-L";
+        }
+
+        // So that we continue to reliably detect exchange partitions even after
+        // reformatting them with a different file system we have to adopt the
+        // partition type according to the file system we use.
+        Pattern pattern = Pattern.compile("(.*)(\\p{Digit}+)");
+        Matcher matcher = pattern.matcher(device);
+        if (matcher.matches()) {
+            PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk", "--id",
+                    matcher.group(1), matcher.group(2), exchangePartitionID);
+            try {
+                TimeUnit.SECONDS.sleep(7);
+            } catch (InterruptedException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
+            }
         }
 
         int exitValue;
@@ -1698,8 +1719,8 @@ public class DLCopy {
                 List<String> interfaceNames = DbusTools.getInterfaceNames(path);
                 isDrive = !interfaceNames.contains(prefix + "Partition");
                 isLoop = interfaceNames.contains(prefix + "Loop");
-            } catch (IOException | SAXException |
-                    ParserConfigurationException ex) {
+            } catch (IOException | SAXException
+                    | ParserConfigurationException ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
             }
             size = DbusTools.getLongProperty(path, prefix + "Block", "Size");
