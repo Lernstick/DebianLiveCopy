@@ -1,3 +1,10 @@
+dlcopy (201708212346-1) lernstick-8; urgency=medium
+
+  * [66abae] more reliable exchange partition reformatting
+  * [0ec09d] use NIO classes for moving files (better debugging)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Mon, 21 Aug 2017 23:46:11 +0200
+
 dlcopy (201707071111-1) lernstick-8; urgency=medium
 
   * [bf2518] don't umount the partitions of the running system source in the
