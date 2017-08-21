@@ -137,18 +137,20 @@ public class DLCopy {
      */
     public static void moveFile(String source, String destination)
             throws IOException {
-        File sourceFile = new File(source);
-        if (!sourceFile.exists()) {
+        Path sourcePath = Paths.get(source);
+        if (Files.notExists(sourcePath)) {
             String errorMessage
                     = STRINGS.getString("Error_File_Does_Not_Exist");
             errorMessage = MessageFormat.format(errorMessage, source);
             throw new IOException(errorMessage);
         }
-        if (!sourceFile.renameTo(new File(destination))) {
+        try {
+            Files.move(sourcePath, Paths.get(destination));
+        } catch (IOException exception) {
             String errorMessage = STRINGS.getString("Error_File_Move");
             errorMessage = MessageFormat.format(
                     errorMessage, source, destination);
-            throw new IOException(errorMessage);
+            throw new IOException(errorMessage, exception);
         }
     }
 
