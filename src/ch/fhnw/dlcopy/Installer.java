@@ -57,9 +57,11 @@ public class Installer extends InstallerOrUpgrader
             int autoNumberStart, int autoNumberIncrement,
             String autoNumberPattern, boolean copyDataPartition,
             DataPartitionMode dataPartitionMode) {
+
         super(source, deviceList, exchangePartitionLabel,
                 exchangePartitionFileSystem, dataPartitionFileSystem,
                 dlCopyGUI);
+
         this.exchangePartitionSize = exchangePartitionSize;
         this.copyExchangePartition = copyExchangePartition;
         this.autoNumberIncrement = autoNumberIncrement;
@@ -92,8 +94,8 @@ public class Installer extends InstallerOrUpgrader
             try {
                 DLCopy.copyToStorageDevice(source, fileCopier, storageDevice,
                         currentExchangePartitionLabel, this, dlCopyGUI);
-            } catch (InterruptedException | IOException |
-                    DBusException exception) {
+            } catch (InterruptedException | IOException
+                    | DBusException exception) {
                 LOGGER.log(Level.WARNING, "", exception);
                 errorMessage = exception.getMessage();
             }
