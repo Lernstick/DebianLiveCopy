@@ -1343,7 +1343,7 @@ public class DLCopy {
                     // create file system for exchange partition
                     formatExchangePartition(exchangeDevice,
                             exchangePartitionLabel, installerOrUpgrader.
-                                    getExhangePartitionFileSystem());
+                                    getExhangePartitionFileSystem(), dlCopyGUI);
                 }
                 if (persistenceDevice != null) {
                     formatPersistencePartition(persistenceDevice,
@@ -1522,10 +1522,12 @@ public class DLCopy {
      * @param device the given device (e.g. "/dev/sdb1")
      * @param label
      * @param fileSystem the file system to use
+     * @param dlCopyGUI the current DLCopy GUI in use
      * @throws IOException
      */
     public static void formatExchangePartition(String device,
-            String label, String fileSystem) throws IOException {
+            String label, String fileSystem, DLCopyGUI dlCopyGUI)
+            throws IOException {
 
         // create file system for exchange partition
         String exchangePartitionID;
@@ -1547,6 +1549,14 @@ public class DLCopy {
             mkfsLabelSwitch = "-L";
         }
 
+        // try unmounting the device before touching it
+        // (just in case it is mounted)
+        try {
+            umount(device, dlCopyGUI);
+        } catch (IOException ex) {
+            // ignored
+        }
+
         // So that we continue to reliably detect exchange partitions even after
         // reformatting them with a different file system we have to adopt the
         // partition type according to the file system we use.
@@ -1559,6 +1569,17 @@ public class DLCopy {
                 TimeUnit.SECONDS.sleep(7);
             } catch (InterruptedException ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
+            }
+            
+            // It happened that after the timeout above, the device was
+            // automatically mounted.
+            // This made the the mkfs call below fail with the error message:
+            // mkfs.vfat: /dev/sda2 contains a mounted filesystem
+            // Therefore we try here *again* to unmount the device...
+            try {
+                umount(device, dlCopyGUI);
+            } catch (IOException ex) {
+                // ignored
             }
         }
 

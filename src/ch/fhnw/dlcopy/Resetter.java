@@ -65,6 +65,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
             String newExchangePartitionLabel, boolean formatDataPartition,
             String dataPartitionFileSystem, boolean resetHome,
             boolean resetSystem) {
+
         this.dlCopyGUI = dlCopyGUI;
         this.deviceList = deviceList;
         this.bootDeviceName = bootDeviceName;
@@ -112,7 +113,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                     }
                     DLCopy.formatExchangePartition(
                             "/dev/" + exchangePartition.getDeviceAndNumber(),
-                            label, exchangePartitionFileSystem);
+                            label, exchangePartitionFileSystem, dlCopyGUI);
                 }
             }
 
@@ -192,6 +193,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
             dlCopyGUI.resettingFinished(get());
         } catch (InterruptedException | ExecutionException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
+            dlCopyGUI.resettingFinished(false);
         }
     }
 }
