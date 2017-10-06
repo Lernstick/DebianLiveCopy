@@ -1,3 +1,9 @@
+dlcopy (201710061707-1) lernstick-8; urgency=medium
+
+  * [276a5c] allow wildcars for squashfs exclude list
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 06 Oct 2017 17:07:32 +0200
+
 dlcopy (201710061646-1) lernstick-8; urgency=medium
 
   * [0e1f02] improved logging
