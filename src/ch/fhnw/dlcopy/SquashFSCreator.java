@@ -183,9 +183,13 @@ public class SquashFSCreator
         File defaultExcludes = new File(cowDir, "/etc/mksquashfs_exclude");
 
         if (defaultExcludes.exists()) {
+            LOGGER.log(Level.INFO,
+                    "using default exclude file \"{0}\"", defaultExcludes);
             excludeFile = defaultExcludes;
 
         } else {
+            LOGGER.log(Level.INFO, "default exclude file \"{0}\" doesn't exist",
+                    defaultExcludes);
             excludeFile = File.createTempFile("mksquashfs_exclude", null);
             try (FileWriter writer = new FileWriter(excludeFile)) {
                 writer.write("boot\n"
