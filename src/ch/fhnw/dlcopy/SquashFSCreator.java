@@ -210,7 +210,7 @@ public class SquashFSCreator
         String cowPath = cowDir.getPath();
         int exitValue = PROCESS_EXECUTOR.executeProcess("mksquashfs",
                 cowPath, squashFsPath,
-                "-comp", "xz",
+                "-comp", "xz", "-wildcards",
                 "-ef", excludeFile.getPath());
         if (exitValue != 0) {
             throw new IOException(
