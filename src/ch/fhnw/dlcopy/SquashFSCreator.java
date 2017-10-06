@@ -178,17 +178,24 @@ public class SquashFSCreator
             LOGGER.log(Level.WARNING, "", iOException);
         }
 
-        // write exclude file
-        String excludes = "boot\n"
-                + "tmp\n"
-                + "var/log\n"
-                + "var/cache\n"
-                + "var/tmp";
-        File excludeFile = File.createTempFile("mksquashfs_exclude", null);
-        try (FileWriter writer = new FileWriter(excludeFile)) {
-            writer.write(excludes);
-        } catch (IOException iOException) {
-            LOGGER.log(Level.WARNING, "", iOException);
+        // exclude file handling
+        File excludeFile;
+        File defaultExcludes = new File(cowDir, "/etc/mksquashfs_exclude");
+
+        if (defaultExcludes.exists()) {
+            excludeFile = defaultExcludes;
+
+        } else {
+            excludeFile = File.createTempFile("mksquashfs_exclude", null);
+            try (FileWriter writer = new FileWriter(excludeFile)) {
+                writer.write("boot\n"
+                        + "tmp\n"
+                        + "var/log\n"
+                        + "var/cache\n"
+                        + "var/tmp");
+            } catch (IOException iOException) {
+                LOGGER.log(Level.WARNING, "", iOException);
+            }
         }
 
         // create new squashfs image
