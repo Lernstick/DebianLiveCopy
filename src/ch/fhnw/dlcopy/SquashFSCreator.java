@@ -137,50 +137,37 @@ public class SquashFSCreator
         MountInfo dataMountInfo = systemSource.getDataPartition().mount();
         String dataPartitionPath = dataMountInfo.getMountPath();
 
-        // create aufs union of squashfs files with persistence
-        // ---------------------------------
-        // We need an rwDir so that we can change some settings in the
-        // lernstickWelcome properties below without affecting the current
-        // data partition.
-        // rwDir and cowDir are placed in /run/ because it is one of
-        // the few directories that are not aufs itself.
-        // Nested aufs is not (yet) supported...
-        File runDir = new File("/run/");
-        File rwDir = LernstickFileTools.createTempDirectory(runDir, "rw");
-        StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("br=");
-        stringBuilder.append(rwDir.getPath());
-        stringBuilder.append(':');
-        stringBuilder.append(dataPartitionPath);
-        // The additional option "=ro+wh" for the data partition is
-        // absolutely neccessary! Otherwise the whiteouts (info about
-        // deleted files) in the data partition are not applied!!!
-        stringBuilder.append("=ro+wh");
-        String branchDefinition = stringBuilder.toString();
-        File cowDir = LernstickFileTools.mountAufs(branchDefinition);
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // Using a layered file system here is not possible because we need to
+        // include the whiteout files of the data partition into our squashfs.
+        // Using the data partition as the lower layer would hide the whiteouts.
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-        // apply settings in cow directory
+        // temporarily apply our settings to the lernstickWelcome properties
+        // file (will be reset at the end)
         Properties lernstickWelcomeProperties = new Properties();
-        File propertiesFile = new File(cowDir, "/etc/lernstickWelcome");
+        File propertiesFile = new File(dataPartitionPath,
+                "/etc/lernstickWelcome");
         try (FileReader reader = new FileReader(propertiesFile)) {
             lernstickWelcomeProperties.load(reader);
         } catch (IOException iOException) {
             LOGGER.log(Level.WARNING, "", iOException);
         }
+
+        String originalShowNotUsed
+                = lernstickWelcomeProperties.getProperty("ShowNotUsedInfo");
+        String originalAutoStart
+                = lernstickWelcomeProperties.getProperty("AutoStartInstaller");
         lernstickWelcomeProperties.setProperty("ShowNotUsedInfo",
                 showNotUsedDialog ? "true" : "false");
         lernstickWelcomeProperties.setProperty("AutoStartInstaller",
                 autoStartInstaller ? "true" : "false");
-        try (FileWriter writer = new FileWriter(propertiesFile)) {
-            lernstickWelcomeProperties.store(
-                    writer, "lernstick Welcome properties");
-        } catch (IOException iOException) {
-            LOGGER.log(Level.WARNING, "", iOException);
-        }
+        writeProperties(lernstickWelcomeProperties, propertiesFile);
 
         // exclude file handling
         File excludeFile;
-        File defaultExcludes = new File(cowDir, "/etc/mksquashfs_exclude");
+        File defaultExcludes = new File(dataPartitionPath,
+                "/etc/mksquashfs_exclude");
 
         if (defaultExcludes.exists()) {
             LOGGER.log(Level.INFO,
@@ -207,9 +194,8 @@ public class SquashFSCreator
         dlCopyGUI.showIsoProgressMessage(
                 STRINGS.getString("Compressing_Filesystem"));
         PROCESS_EXECUTOR.addPropertyChangeListener(this);
-        String cowPath = cowDir.getPath();
         int exitValue = PROCESS_EXECUTOR.executeProcess("mksquashfs",
-                cowPath, squashFsPath,
+                dataPartitionPath, squashFsPath,
                 "-comp", "xz", "-wildcards",
                 "-ef", excludeFile.getPath());
         if (exitValue != 0) {
@@ -219,9 +205,21 @@ public class SquashFSCreator
         PROCESS_EXECUTOR.removePropertyChangeListener(this);
 
         // cleanup
-        DLCopy.umount(cowPath, dlCopyGUI);
+        lernstickWelcomeProperties.setProperty(
+                "ShowNotUsedInfo", originalShowNotUsed);
+        lernstickWelcomeProperties.setProperty(
+                "AutoStartInstaller", originalAutoStart);
+        writeProperties(lernstickWelcomeProperties, propertiesFile);
         if (!dataMountInfo.alreadyMounted()) {
             systemSource.getDataPartition().umount();
+        }
+    }
+
+    private void writeProperties(Properties properties, File file) {
+        try (FileWriter writer = new FileWriter(file)) {
+            properties.store(writer, "lernstick Welcome properties");
+        } catch (IOException iOException) {
+            LOGGER.log(Level.WARNING, "", iOException);
         }
     }
 }
