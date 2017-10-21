@@ -336,8 +336,15 @@ public class Upgrader extends InstallerOrUpgrader {
 
         dlCopyGUI.showUpgradeRestoreRunning();
 
+        File restoreDestinationDir;
+        if (DLCopy.getMajorDebianVersion() > 8) {
+            restoreDestinationDir = new File(mountPath, "rw");
+        } else {
+            restoreDestinationDir = new File(mountPath);
+        }
+
         rdiffBackupRestore.restore("now", rdiffRoot,
-                restoreSourceDir, new File(mountPath), null, false);
+                restoreSourceDir, restoreDestinationDir, null, false);
 
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // !!! This must happen *after* restoring the files above.       !!!
@@ -394,9 +401,34 @@ public class Upgrader extends InstallerOrUpgrader {
                 = storageDevice.getSystemPartition().mount();
         List<String> readOnlyMountPoints = LernstickFileTools.mountAllSquashFS(
                 systemMountInfo.getMountPath());
-        String branchDefinition = LernstickFileTools.getBranchDefinition(
-                dataMountPoint, readOnlyMountPoints);
-        File cowDir = LernstickFileTools.mountAufs(branchDefinition);
+
+        File cowDir;
+        boolean upgradeFromAufsToOverlay = false;
+        int majorDebianVersion = DLCopy.getMajorDebianVersion();
+        if (majorDebianVersion > 8) {
+            // Until Debian 8 we used aufs for the data partition and the base
+            // directory was just "/".
+            // Starting with Debian 9 we use overlay for the data partition and
+            // the base directory is "/rw/".
+            // Therefore, when upgrading from Debian 8 to later versions we have
+            // to move the directories "/home/" and "/etc/" to the new base.
+
+            if (new File(dataMountPoint, "home").exists()) {
+                // Debian 8 to Debian 9 or newer
+                upgradeFromAufsToOverlay = true;
+                cowDir = LernstickFileTools.mountAufs(
+                        dataMountPoint, readOnlyMountPoints);
+            } else {
+                // Debian 9 to Debian 9 or newer
+                cowDir = new File(LernstickFileTools.mountOverlay(
+                        dataMountPoint + "/rw", readOnlyMountPoints), "cow");
+            }
+        } else {
+            // Debian 8 to Debian 8
+            cowDir = LernstickFileTools.mountAufs(
+                    dataMountPoint, readOnlyMountPoints);
+        }
+
         String cowPath = cowDir.getPath();
 
         // backup
@@ -405,39 +437,124 @@ public class Upgrader extends InstallerOrUpgrader {
         }
 
         // reset data partition
-        // first umount the aufs
-        // (otherwise we would wreak havoc on the aufs metadata)
+        // first umount the filesystem union (aufs or overlay)
+        // (otherwise we would wreak havoc on the filesystem metadata)
+        try {
+            // Because we just mounted the cowPath, we have to wait here a
+            // little bit. Otherwise umounting fails with error messages similar
+            // to this one:
+            // umount: /run/rw1/cow: target is busy
+            TimeUnit.SECONDS.sleep(7);
+        } catch (InterruptedException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+        }
         DLCopy.umount(cowPath, dlCopyGUI);
+        String cleanupRoot = dataMountPoint;
+        if (majorDebianVersion > 8 && !upgradeFromAufsToOverlay) {
+            cleanupRoot = dataMountPoint + "/rw";
+        }
         ProcessExecutor processExecutor = new ProcessExecutor();
         if (keepPrinterSettings) {
-            processExecutor.executeProcess("find", dataMountPoint,
-                    "!", "-regex", dataMountPoint,
-                    "!", "-regex", dataMountPoint + "/lost\\+found",
-                    "!", "-regex", dataMountPoint + "/persistence.conf",
-                    "!", "-regex", dataMountPoint + "/home.*",
-                    "!", "-regex", dataMountPoint + "/etc.*",
+            processExecutor.executeProcess("find", cleanupRoot,
+                    "!", "-regex", cleanupRoot,
+                    "!", "-regex", cleanupRoot + "/lost\\+found",
+                    "!", "-regex", cleanupRoot + "/persistence.conf",
+                    "!", "-regex", cleanupRoot + "/home.*",
+                    "!", "-regex", cleanupRoot + "/etc.*",
                     "-exec", "rm", "-rf", "{}", ";");
-            String etcPath = dataMountPoint + "/etc";
+            String etcPath = cleanupRoot + "/etc";
             processExecutor.executeProcess("find", etcPath,
                     "!", "-regex", etcPath,
                     "!", "-regex", etcPath + "/cups.*",
                     "-exec", "rm", "-rf", "{}", ";");
         } else {
-            processExecutor.executeProcess("find", dataMountPoint,
-                    "!", "-regex", dataMountPoint,
-                    "!", "-regex", dataMountPoint + "/lost\\+found",
-                    "!", "-regex", dataMountPoint + "/persistence.conf",
-                    "!", "-regex", dataMountPoint + "/home.*",
+            processExecutor.executeProcess("find", cleanupRoot,
+                    "!", "-regex", cleanupRoot,
+                    "!", "-regex", cleanupRoot + "/lost\\+found",
+                    "!", "-regex", cleanupRoot + "/persistence.conf",
+                    "!", "-regex", cleanupRoot + "/home.*",
                     "-exec", "rm", "-rf", "{}", ";");
         }
-        // re-mount aufs
-        cowDir = LernstickFileTools.mountAufs(branchDefinition);
+
+        // rebuild union
+        if (majorDebianVersion > 8) {
+            if (new File(dataMountPoint, "home").exists()) {
+                cowDir = LernstickFileTools.mountAufs(
+                        dataMountPoint, readOnlyMountPoints);
+            } else {
+                File rwDir = LernstickFileTools.mountOverlay(
+                        dataMountPoint + "/rw", readOnlyMountPoints);
+                cowDir = new File(rwDir, "cow");
+            }
+        } else {
+            cowDir = LernstickFileTools.mountAufs(
+                    dataMountPoint, readOnlyMountPoints);
+        }
         cowPath = cowDir.getPath();
 
+        copyUp(cowPath);
+
+        // upgrading from aufs to overlay has to happen before calling
+        // finalizeDataPartition() below!
+        if (upgradeFromAufsToOverlay) {
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
+            }
+            DLCopy.umount(cowPath, dlCopyGUI);
+
+            // create new overlay directories "/work/" and "/rw/"
+            Files.createDirectory(Paths.get(dataMountPoint, "work"));
+            Path rwdir = Files.createDirectory(Paths.get(dataMountPoint, "rw"));
+
+            // move "/home/" to "/rw/home/" and
+            // move "/etc/" to "/rw/etc/"
+            Path homeDir = Paths.get(dataMountPoint, "home");
+            Path etcDir = Paths.get(dataMountPoint, "etc");
+            Files.move(homeDir, rwdir.resolve(homeDir.getFileName()));
+            Files.move(etcDir, rwdir.resolve(etcDir.getFileName()));
+
+            cowDir = new File(LernstickFileTools.mountOverlay(
+                    dataMountPoint + "/rw", readOnlyMountPoints), "cow");
+            cowPath = cowDir.getPath();
+        }
+
+        finalizeDataPartition(cowPath);
+
+        // disassemble union
+        try {
+            TimeUnit.SECONDS.sleep(5);
+        } catch (InterruptedException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+        }
+        DLCopy.umount(cowPath, dlCopyGUI);
+        for (String readOnlyMountPoint : readOnlyMountPoints) {
+            DLCopy.umount(readOnlyMountPoint, dlCopyGUI);
+        }
+
+        // umount
+        if ((!dataMountInfo.alreadyMounted())
+                && (!DLCopy.umount(dataPartition, dlCopyGUI))) {
+            return false;
+        }
+
+        // upgrade label (if necessary)
+        if (!(dataPartition.getIdLabel().equals(
+                Partition.PERSISTENCE_LABEL))) {
+            processExecutor.executeProcess("e2label",
+                    "/dev/" + dataPartition.getDeviceAndNumber(),
+                    Partition.PERSISTENCE_LABEL);
+        }
+
+        return true;
+    }
+
+    private void copyUp(String cowPath) throws IOException {
         // Copy-up all personal data from old squashfs to data partition.
-        // For aufs it is enough to change the access file stamp of files and
-        // directories to trigger a copy-up action. Symbolic links have to be
-        // recreated to be "copied up" to the data partition.
+        // For aufs and overlayfs it is enough to change the access file stamp
+        // of files and directories to trigger a copy-up action. Symbolic links
+        // have to be recreated to be "copied up" to the data partition.
         final FileTime fileTime = FileTime.fromMillis(
                 System.currentTimeMillis());
         FileVisitor copyUpFileVisitor = new SimpleFileVisitor<Path>() {
@@ -454,7 +571,7 @@ public class Upgrader extends InstallerOrUpgrader {
                     Files.createSymbolicLink(file, target);
                 } else if (attributes.isOther()) {
                     LOGGER.log(Level.WARNING, "skipping {0} (probably a "
-                            + "named pipe or unix domain socket, bot are "
+                            + "named pipe or unix domain socket, both are "
                             + "not supported!)", file);
                 } else {
                     changeAccessTime(file);
@@ -483,39 +600,20 @@ public class Upgrader extends InstallerOrUpgrader {
             Files.walkFileTree(Paths.get(
                     cowPath, "etc/cups"), copyUpFileVisitor);
         }
-
-        finalizeDataPartition(cowPath);
-
-        // disassemble union
-        DLCopy.umount(cowPath, dlCopyGUI);
-        for (String readOnlyMountPoint : readOnlyMountPoints) {
-            DLCopy.umount(readOnlyMountPoint, dlCopyGUI);
-        }
-
-        // umount
-        if ((!dataMountInfo.alreadyMounted())
-                && (!DLCopy.umount(dataPartition, dlCopyGUI))) {
-            return false;
-        }
-
-        // upgrade label (if necessary)
-        if (!(dataPartition.getIdLabel().equals(
-                Partition.PERSISTENCE_LABEL))) {
-            processExecutor.executeProcess("e2label",
-                    "/dev/" + dataPartition.getDeviceAndNumber(),
-                    Partition.PERSISTENCE_LABEL);
-        }
-
-        return true;
     }
 
     private void finalizeDataPartition(String dataMountPoint)
             throws IOException {
 
+        String readWriteDirectory = dataMountPoint;
+        if (DLCopy.getMajorDebianVersion() > 8) {
+            readWriteDirectory += "/rw/";
+        }
+
         // welcome application reactivation
         if (reactivateWelcome) {
             File propertiesFile = new File(
-                    dataMountPoint + "/etc/lernstickWelcome");
+                    readWriteDirectory + "/etc/lernstickWelcome");
             Properties lernstickWelcomeProperties = new Properties();
             if (propertiesFile.exists()) {
                 try (FileReader reader = new FileReader(propertiesFile)) {
@@ -538,7 +636,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
         // remove hidden files from user directory
         if (removeHiddenFiles) {
-            File userDir = new File(dataMountPoint + "/home/user/");
+            File userDir = new File(readWriteDirectory + "/home/user/");
             File[] files = userDir.listFiles();
             if (files != null) {
                 for (File file : files) {
@@ -552,12 +650,12 @@ public class Upgrader extends InstallerOrUpgrader {
         // process list of files (or directories) to overwrite
         ProcessExecutor processExecutor = new ProcessExecutor();
         for (String file : filesToOverwrite) {
-            File destinationFile = new File(dataMountPoint, file);
+            File destinationFile = new File(readWriteDirectory, file);
             LernstickFileTools.recursiveDelete(destinationFile, true);
 
             // recursive copy
             processExecutor.executeProcess(true, true,
-                    "cp", "-a", "--parents", file, dataMountPoint);
+                    "cp", "-a", "--parents", file, readWriteDirectory);
         }
 
         // when upgrading from very old versions, the persistence.conf file
