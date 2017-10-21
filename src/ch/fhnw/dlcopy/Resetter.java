@@ -5,6 +5,8 @@ import ch.fhnw.util.MountInfo;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
@@ -132,6 +134,11 @@ public class Resetter extends SwingWorker<Boolean, Void> {
 
                     MountInfo mountInfo = dataPartition.mount();
                     String mountPoint = mountInfo.getMountPath();
+                    String cleanupRoot = mountPoint;
+                    if (!Files.exists(Paths.get(mountPoint, "home"))) {
+                        // Debian 9 and newer
+                        cleanupRoot = mountPoint + "/rw";
+                    }
                     ProcessExecutor processExecutor = new ProcessExecutor();
                     if (resetSystem && resetHome) {
                         // remove all files
@@ -147,25 +154,30 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                             // "/lost+found/", "persistence.conf" and "/home/"
                             processExecutor.executeProcess("find", mountPoint,
                                     "!", "-regex", mountPoint,
+                                    "!", "-regex", cleanupRoot,
                                     "!", "-regex", mountPoint + "/lost\\+found",
                                     "!", "-regex", mountPoint + "/persistence.conf",
-                                    "!", "-regex", mountPoint + "/home.*",
+                                    "!", "-regex", cleanupRoot + "/home.*",
                                     "-exec", "rm", "-rf", "{}", ";");
                         }
                         if (resetHome) {
                             // only remove "/home/user/"
                             processExecutor.executeProcess(
-                                    "rm", "-rf", mountPoint + "/home/user/");
+                                    "rm", "-rf", cleanupRoot + "/home/user/");
                         }
                     }
                     if (resetHome) {
                         // restore "/home/user/" from "/etc/skel/"
-                        processExecutor.executeProcess("mkdir",
-                                mountPoint + "/home/");
+                        processExecutor.executeProcess("mkdir", "-p",
+                                cleanupRoot + "/home/");
                         processExecutor.executeProcess("cp", "-a",
-                                "/etc/skel/", mountPoint + "/home/user/");
+                                "/etc/skel/", cleanupRoot + "/home/user/");
                         processExecutor.executeProcess("chown", "-R",
-                                "user.user", mountPoint + "/home/user/");
+                                "user.user", cleanupRoot + "/home/user/");
+                    }
+
+                    if (!mountInfo.alreadyMounted()) {
+                        dataPartition.umount();
                     }
                 }
             }
