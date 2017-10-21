@@ -1,3 +1,9 @@
+dlcopy (201710220018-1) lernstick-8; urgency=medium
+
+  * [462c0e] support squashfs creation in read-only mode
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 22 Oct 2017 00:18:52 +0200
+
 dlcopy (201710212252-1) lernstick-8; urgency=medium
 
   * [1e5ed4] use new lernstickTools API in IsoCreator
