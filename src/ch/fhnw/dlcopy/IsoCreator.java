@@ -307,60 +307,33 @@ public class IsoCreator
         MountInfo dataMountInfo = systemSource.getDataPartition().mount();
         String dataPartitionPath = dataMountInfo.getMountPath();
 
+        // Create union of all squashfs files with persistence partition
+        //
         // We need an rwDir so that we can change some settings in the
         // lernstickWelcome properties below without affecting the current
         // data partition.
-        // rwDir and cowDir are placed in /run/ because it is one of
-        // the few directories that are not aufs itself.
-        // Nested aufs is not (yet) supported...
-        File runDir = new File("/run/");
-        File rwDir = LernstickFileTools.createTempDirectory(runDir, "rw");
+        File rwDir;
         File cowDir;
-
-        StringBuilder stringBuilder = new StringBuilder();
         int majorDebianVersion = DLCopy.getMajorDebianVersion();
         if (majorDebianVersion > 8) {
             // use overlay to create union
-            stringBuilder.append(dataPartitionPath);
-            stringBuilder.append("/rw");
-            for (String readOnlyMountPoint : readOnlyMountPoints) {
-                stringBuilder.append(':');
-                stringBuilder.append(readOnlyMountPoint);
-            }
-            String lower = stringBuilder.toString();
-
-            File upper = new File(rwDir, "upper");
-            upper.mkdirs();
-            File work = new File(rwDir, "work");
-            work.mkdirs();
+            rwDir = LernstickFileTools.mountOverlay(
+                    dataPartitionPath + "/rw", readOnlyMountPoints);
             cowDir = new File(rwDir, "cow");
-            cowDir.mkdirs();
-
-            ProcessExecutor processExecutor = new ProcessExecutor();
-            processExecutor.executeProcess(true, true,
-                    "mount", "-t", "overlay", "overlay",
-                    "-olowerdir=" + lower
-                    + ",upperdir=" + upper
-                    + ",workdir=" + work,
-                    cowDir.getPath());
 
         } else {
-            // create aufs union of squashfs files with persistence
-            // ---------------------------------
-            stringBuilder.append("br=");
-            stringBuilder.append(rwDir.getPath());
-            stringBuilder.append(':');
-            stringBuilder.append(dataPartitionPath);
+            // use aufs to create union
+            // rwDir and cowDir are placed in /run/ because it is one of
+            // the few directories that are not aufs itself.
+            // Nested aufs is not (yet) supported...
+            File runDir = new File("/run/");
+            rwDir = LernstickFileTools.createTempDirectory(runDir, "rw");
             // The additional option "=ro+wh" for the data partition is
             // absolutely neccessary! Otherwise the whiteouts (info about
             // deleted files) in the data partition are not applied!!!
-            stringBuilder.append("=ro+wh");
-            for (String readOnlyMountPoint : readOnlyMountPoints) {
-                stringBuilder.append(':');
-                stringBuilder.append(readOnlyMountPoint);
-            }
-            String branchDefinition = stringBuilder.toString();
-            cowDir = LernstickFileTools.mountAufs(branchDefinition);
+            cowDir = LernstickFileTools.mountAufs(
+                    rwDir.getPath() + ':' + dataPartitionPath + "=ro+wh",
+                    readOnlyMountPoints);
         }
 
         // apply settings in cow directory
