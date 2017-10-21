@@ -1,4 +1,13 @@
-dlcopy (201710211511-1) lernstick-8; urgency=medium
+dlcopy (201710212252-1) lernstick-8; urgency=medium
+
+  * [1e5ed4] use new lernstickTools API in IsoCreator
+  * [862aab] added support for Upgrading from Debian 8 to Debian 9
+  * [dbe927] added support for resetting Debian 9
+  * [8e9088] added support for creating Debian 9 squashfs
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 21 Oct 2017 22:52:48 +0200
+
+dlcopy (201710211744-1) lernstick-8; urgency=medium
 
   * [d956d2] fixed ISO creation on Debian 9
 
