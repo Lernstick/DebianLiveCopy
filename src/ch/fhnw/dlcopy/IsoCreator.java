@@ -97,6 +97,13 @@ public class IsoCreator
         this.isoLabel = isoLabel;
     }
 
+    /**
+     * creates the ISO in a background thread
+     *
+     * @return <tt>true</tt>, if the ISO was successfully created,
+     * <tt>false</tt> otherwise
+     * @throws Exception
+     */
     @Override
     protected Boolean doInBackground() throws Exception {
         inhibit = new LogindInhibit("Creating ISO");
@@ -215,7 +222,7 @@ public class IsoCreator
             }
 
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, "", ex);
         }
         return true;
     }
@@ -300,8 +307,6 @@ public class IsoCreator
         MountInfo dataMountInfo = systemSource.getDataPartition().mount();
         String dataPartitionPath = dataMountInfo.getMountPath();
 
-        // create aufs union of squashfs files with persistence
-        // ---------------------------------
         // We need an rwDir so that we can change some settings in the
         // lernstickWelcome properties below without affecting the current
         // data partition.
@@ -310,21 +315,53 @@ public class IsoCreator
         // Nested aufs is not (yet) supported...
         File runDir = new File("/run/");
         File rwDir = LernstickFileTools.createTempDirectory(runDir, "rw");
+        File cowDir;
+
         StringBuilder stringBuilder = new StringBuilder();
-        stringBuilder.append("br=");
-        stringBuilder.append(rwDir.getPath());
-        stringBuilder.append(':');
-        stringBuilder.append(dataPartitionPath);
-        // The additional option "=ro+wh" for the data partition is
-        // absolutely neccessary! Otherwise the whiteouts (info about
-        // deleted files) in the data partition are not applied!!!
-        stringBuilder.append("=ro+wh");
-        for (String readOnlyMountPoint : readOnlyMountPoints) {
+        int majorDebianVersion = DLCopy.getMajorDebianVersion();
+        if (majorDebianVersion > 8) {
+            // use overlay to create union
+            stringBuilder.append(dataPartitionPath);
+            stringBuilder.append("/rw");
+            for (String readOnlyMountPoint : readOnlyMountPoints) {
+                stringBuilder.append(':');
+                stringBuilder.append(readOnlyMountPoint);
+            }
+            String lower = stringBuilder.toString();
+
+            File upper = new File(rwDir, "upper");
+            upper.mkdirs();
+            File work = new File(rwDir, "work");
+            work.mkdirs();
+            cowDir = new File(rwDir, "cow");
+            cowDir.mkdirs();
+
+            ProcessExecutor processExecutor = new ProcessExecutor();
+            processExecutor.executeProcess(true, true,
+                    "mount", "-t", "overlay", "overlay",
+                    "-olowerdir=" + lower
+                    + ",upperdir=" + upper
+                    + ",workdir=" + work,
+                    cowDir.getPath());
+
+        } else {
+            // create aufs union of squashfs files with persistence
+            // ---------------------------------
+            stringBuilder.append("br=");
+            stringBuilder.append(rwDir.getPath());
             stringBuilder.append(':');
-            stringBuilder.append(readOnlyMountPoint);
+            stringBuilder.append(dataPartitionPath);
+            // The additional option "=ro+wh" for the data partition is
+            // absolutely neccessary! Otherwise the whiteouts (info about
+            // deleted files) in the data partition are not applied!!!
+            stringBuilder.append("=ro+wh");
+            for (String readOnlyMountPoint : readOnlyMountPoints) {
+                stringBuilder.append(':');
+                stringBuilder.append(readOnlyMountPoint);
+            }
+            String branchDefinition = stringBuilder.toString();
+            cowDir = LernstickFileTools.mountAufs(branchDefinition);
         }
-        String branchDefinition = stringBuilder.toString();
-        File cowDir = LernstickFileTools.mountAufs(branchDefinition);
 
         // apply settings in cow directory
         Properties lernstickWelcomeProperties = new Properties();
@@ -372,7 +409,7 @@ public class IsoCreator
         for (String readOnlyMountPoint : readOnlyMountPoints) {
             DLCopy.umount(readOnlyMountPoint, dlCopyGUI);
         }
-        
+
         // remove all temporary directories
         cowDir.delete();
         LernstickFileTools.recursiveDelete(rwDir, true);

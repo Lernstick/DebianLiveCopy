@@ -1570,7 +1570,7 @@ public class DLCopy {
             } catch (InterruptedException ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
             }
-            
+
             // It happened that after the timeout above, the device was
             // automatically mounted.
             // This made the the mkfs call below fail with the error message:
@@ -1601,6 +1601,27 @@ public class DLCopy {
             LOGGER.severe(errorMessage);
             throw new IOException(errorMessage);
         }
+    }
+
+    /**
+     * returns the major Debian version
+     * @return the major Debian version
+     * @throws IOException if reading or parsing /etc/debian_version fails
+     */
+    public static int getMajorDebianVersion() throws IOException {
+        String debianVersionPath = "/etc/debian_version";
+        List<String> debianVersionFile = LernstickFileTools.readFile(
+                new File(debianVersionPath));
+        String versionString = debianVersionFile.get(0);
+        Pattern versionPattern = Pattern.compile("(\\p{Digit}).*");
+        Matcher matcher = versionPattern.matcher(versionString);
+        if (matcher.matches()) {
+            int majorDebianVersion = Integer.parseInt(matcher.group(1));
+            LOGGER.log(Level.INFO, "majorDebianVersion: {0}",
+                    majorDebianVersion);
+            return majorDebianVersion;
+        }
+        throw new IOException("could not parse " + debianVersionPath);
     }
 
     private static void copyPersistenceCp(Installer installer,
