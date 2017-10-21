@@ -4,6 +4,7 @@ import static ch.fhnw.dlcopy.DLCopy.STRINGS;
 import ch.fhnw.dlcopy.gui.DLCopyGUI;
 import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.MountInfo;
+import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
@@ -136,11 +137,24 @@ public class SquashFSCreator
         dlCopyGUI.showIsoProgressMessage(
                 STRINGS.getString("Mounting_Partitions"));
         // mount persistence (data partition)
-        MountInfo dataMountInfo = systemSource.getDataPartition().mount();
+        Partition dataPartition = systemSource.getDataPartition();
+        MountInfo dataMountInfo = dataPartition.mount();
         String dataPartitionPath = dataMountInfo.getMountPath();
         if (!Files.exists(Paths.get(dataPartitionPath, "home"))) {
             // Debian 9 and newer
             dataPartitionPath += "/rw";
+        }
+
+        // check if the data partition is mounted in read-write mode
+        boolean remountedReadWrite = false;
+        try {
+            Files.createTempFile(Paths.get(dataPartitionPath), null, null);
+        } catch (IOException ex) {
+            // temporarily remount the data partition in read-write mode
+            ProcessExecutor processExecutor = new ProcessExecutor();
+            processExecutor.executeProcess(true, true, "mount", "-o",
+                    "remount,rw", "/dev/" + dataPartition.getDeviceAndNumber());
+            remountedReadWrite = true;
         }
 
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -187,6 +201,7 @@ public class SquashFSCreator
             try (FileWriter writer = new FileWriter(excludeFile)) {
                 writer.write("boot\n"
                         + "tmp\n"
+                        + "var/lib/apt/lists\n"
                         + "var/lib/clamav\n"
                         + "var/log\n"
                         + "var/cache\n"
@@ -219,6 +234,10 @@ public class SquashFSCreator
         writeProperties(lernstickWelcomeProperties, propertiesFile);
         if (!dataMountInfo.alreadyMounted()) {
             systemSource.getDataPartition().umount();
+        } else if (remountedReadWrite) {
+            ProcessExecutor processExecutor = new ProcessExecutor();
+            processExecutor.executeProcess(true, true, "mount", "-o",
+                    "remount,ro", "/dev/" + dataPartition.getDeviceAndNumber());
         }
     }
 
