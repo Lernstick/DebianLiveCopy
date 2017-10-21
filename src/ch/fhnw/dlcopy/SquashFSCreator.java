@@ -11,6 +11,8 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
@@ -136,13 +138,17 @@ public class SquashFSCreator
         // mount persistence (data partition)
         MountInfo dataMountInfo = systemSource.getDataPartition().mount();
         String dataPartitionPath = dataMountInfo.getMountPath();
+        if (!Files.exists(Paths.get(dataPartitionPath, "home"))) {
+            // Debian 9 and newer
+            dataPartitionPath += "/rw";
+        }
 
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // Using a layered file system here is not possible because we need to
         // include the whiteout files of the data partition into our squashfs.
         // Using the data partition as the lower layer would hide the whiteouts.
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
+        //
         // temporarily apply our settings to the lernstickWelcome properties
         // file (will be reset at the end)
         Properties lernstickWelcomeProperties = new Properties();
@@ -181,6 +187,7 @@ public class SquashFSCreator
             try (FileWriter writer = new FileWriter(excludeFile)) {
                 writer.write("boot\n"
                         + "tmp\n"
+                        + "var/lib/clamav\n"
                         + "var/log\n"
                         + "var/cache\n"
                         + "var/tmp");
