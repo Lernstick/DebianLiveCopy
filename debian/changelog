@@ -1,3 +1,9 @@
+dlcopy (201710211511-1) lernstick-8; urgency=medium
+
+  * [d956d2] fixed ISO creation on Debian 9
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 21 Oct 2017 15:11:43 +0200
+
 dlcopy (201710061807-1) lernstick-8; urgency=medium
 
   * [2c0c1a] fixed whiteout handling when creating squashfs
