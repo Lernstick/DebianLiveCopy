@@ -2,7 +2,7 @@
 Categories=X-lernstick;
 Comment=Manage Lernstick storage media
 Comment[de]=Lernstick-Speichermedien verwalten
-Exec=sh -c "pkexec /usr/bin/dlcopy && true"
+Exec=dlcopy.user
 Icon=/usr/share/icons/dlcopy.png
 Name=Storage media management
 Name[de]=Speichermedienverwaltung

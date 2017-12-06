@@ -1,0 +1,13 @@
+#!/bin/sh
+
+# remember original state of GNOME automount
+CURRENT_AUTOMOUNT=$(gsettings get org.gnome.desktop.media-handling automount)
+
+# disable GNOME automount
+gsettings set org.gnome.desktop.media-handling automount false
+
+# run dlcopy with root rights
+pkexec /usr/bin/dlcopy
+
+# restore original automount state
+gsettings set org.gnome.desktop.media-handling automount ${CURRENT_AUTOMOUNT}
