@@ -55,6 +55,7 @@ install: build
 	cp usr/share/applications/ch-fhnw-dlcopy-dlcopy.desktop $(APPDIR)
 	mkdir -p $(BINDIR)
 	cp usr/bin/dlcopy $(BINDIR)
+	cp usr/bin/dlcopy.user $(BINDIR)
 	mkdir -p $(ACTIONSDIR)
 	cp usr/share/polkit-1/actions/ch.lernstick.dlcopy.policy $(ACTIONSDIR)
 
@@ -63,6 +64,7 @@ install: build
 	cp usr/share/applications/ch-fhnw-dlcopy-dlcopy.desktop $(APPDIR_EXAM)
 	mkdir -p $(BINDIR_EXAM)
 	cp usr/bin/dlcopy_pu $(BINDIR_EXAM)/dlcopy
+	cp usr/bin/dlcopy.user $(BINDIR_EXAM)
 	mkdir -p $(ACTIONSDIR_EXAM)
 	cp usr/share/polkit-1/actions/ch.lernstick.dlcopy.policy $(ACTIONSDIR_EXAM)
 
