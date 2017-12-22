@@ -1,3 +1,10 @@
+dlcopy (201712221034-1) lernstick-8; urgency=medium
+
+  * [dc8caf] added support for Debian9 as ISO source
+  * [083f73] improved ISO source error handling
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 22 Dec 2017 10:34:34 +0100
+
 dlcopy (201712061651-1) lernstick-8; urgency=medium
 
   * [052de3] fixed Debian rules file (also install the new dlcopy.user binary)
