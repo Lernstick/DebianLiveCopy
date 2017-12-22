@@ -22,6 +22,8 @@ import ch.fhnw.dlcopy.SquashFSCreator;
 import ch.fhnw.dlcopy.StorageDeviceResult;
 import ch.fhnw.dlcopy.RunningSystemSource;
 import ch.fhnw.dlcopy.Upgrader;
+import ch.fhnw.dlcopy.exceptions.NoExecutableExtLinuxException;
+import ch.fhnw.dlcopy.exceptions.NoExtLinuxException;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.filecopier.FileCopierPanel;
 import ch.fhnw.jbackpack.JSqueezedLabel;
@@ -3915,12 +3917,18 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             setSystemSource(isoSystemSource);
             isoSourceTextField.setText(path);
             updateInstallationSource();
-        } catch (IllegalStateException ex) {
+        } catch (IllegalStateException | IOException ex) {
             LOGGER.log(Level.INFO, "", ex);
             String errorMessage = STRINGS.getString("Error_Invalid_ISO");
             errorMessage = MessageFormat.format(errorMessage, path);
             showErrorMessage(errorMessage);
-        } catch (IOException ex) {
+        } catch (NoExecutableExtLinuxException ex) {
+            LOGGER.log(Level.INFO, "", ex);
+            String errorMessage
+                    = STRINGS.getString("Error_No_Executable_Extlinux");
+            errorMessage = MessageFormat.format(errorMessage, path);
+            showErrorMessage(errorMessage);
+        } catch (NoExtLinuxException ex) {
             LOGGER.log(Level.INFO, "", ex);
             String errorMessage = STRINGS.getString("Error_Deprecyted_ISO");
             errorMessage = MessageFormat.format(errorMessage, path);

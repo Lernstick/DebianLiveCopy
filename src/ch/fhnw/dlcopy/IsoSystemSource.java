@@ -1,5 +1,7 @@
 package ch.fhnw.dlcopy;
 
+import ch.fhnw.dlcopy.exceptions.NoExecutableExtLinuxException;
+import ch.fhnw.dlcopy.exceptions.NoExtLinuxException;
 import ch.fhnw.filecopier.Source;
 import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.Partition;
@@ -33,10 +35,16 @@ public class IsoSystemSource extends SystemSource {
      *
      * @param imagePath the path to the ISO image
      * @param processExecutor the ProcessExecutor to use
-     * @throws java.io.IOException if the ISO has no extlinux installed
+     * @throws java.io.IOException if an error with extlinux or grub on the ISO
+     * occured
+     * @throws ch.fhnw.dlcopy.exceptions.NoExtLinuxException if extlinux
+     * couldn't be found on the ISO
+     * @throws ch.fhnw.dlcopy.exceptions.NoExecutableExtLinuxException if
+     * executing extlinux of the ISO in a chroot failed
      */
-    public IsoSystemSource(String imagePath,
-            ProcessExecutor processExecutor) throws IOException {
+    public IsoSystemSource(String imagePath, ProcessExecutor processExecutor)
+            throws IOException, NoExtLinuxException,
+            NoExecutableExtLinuxException {
 
         this.imagePath = imagePath;
         this.processExecutor = processExecutor;
@@ -282,14 +290,23 @@ public class IsoSystemSource extends SystemSource {
         }
     }
 
-    private void checkForExtlinux() throws IOException {
+    private void checkForExtlinux() throws NoExtLinuxException,
+            NoExecutableExtLinuxException, IOException {
+
         // check that extlinux is available
         mountSystemImageIfNeeded();
         int returnValue = processExecutor.executeProcess(true, true,
                 "chroot", rootFsPath, "extlinux", "--version");
         if (returnValue != 0) {
             unmountTmpPartitions();
-            throw new IOException("The ISO image has no extlinux");
+            switch (returnValue) {
+                case 127:
+                    throw new NoExtLinuxException();
+                case 126:
+                    throw new NoExecutableExtLinuxException();
+                default:
+                    throw new IOException("Can't execute extlinux on ISO");
+            }
         }
     }
 }
