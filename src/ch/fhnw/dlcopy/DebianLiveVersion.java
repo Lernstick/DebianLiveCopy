@@ -15,9 +15,9 @@ public enum DebianLiveVersion {
      */
     DEBIAN_7("/lib/live/mount/medium", "/usr/lib/syslinux/mbr.bin"),
     /**
-     * Debian 8 (jessie)
+     * Debian 8 (jessie) to Debian 9 (stretch)
      */
-    DEBIAN_8("/lib/live/mount/medium", "/usr/lib/syslinux/mbr/mbr.bin");
+    DEBIAN_8_to_9("/lib/live/mount/medium", "/usr/lib/syslinux/mbr/mbr.bin");
 
     private final String liveSystemPath;
     private final String mbrFilePath;
@@ -29,6 +29,7 @@ public enum DebianLiveVersion {
 
     /**
      * returns the path where the live medium is mounted
+     *
      * @return the path where the live medium is mounted
      */
     public String getLiveSystemPath() {
@@ -37,6 +38,7 @@ public enum DebianLiveVersion {
 
     /**
      * returns the path to the MBR file
+     *
      * @return the path to the MBR file
      */
     public String getMbrFilePath() {
@@ -45,6 +47,7 @@ public enum DebianLiveVersion {
 
     /**
      * tries to detect the running Debian Live version
+     *
      * @return the detected Debian Live version
      */
     public static DebianLiveVersion getRunningVersion() {

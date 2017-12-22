@@ -37,7 +37,7 @@ public class IsoSystemSource extends SystemSource {
      */
     public IsoSystemSource(String imagePath,
             ProcessExecutor processExecutor) throws IOException {
-        
+
         this.imagePath = imagePath;
         this.processExecutor = processExecutor;
         this.version = getDebianLiveVersion();
@@ -208,8 +208,8 @@ public class IsoSystemSource extends SystemSource {
         try {
             mediaPath = LernstickFileTools.createTempDirectory(
                     new File("/tmp/"), "DLCopy").getCanonicalPath();
-            processExecutor.executeScript(String.format("mount -o loop %s %s\n",
-                    imagePath, mediaPath));
+            processExecutor.executeScript(
+                    String.format("mount -o ro %s %s\n", imagePath, mediaPath));
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
             mediaPath = null;
@@ -257,8 +257,9 @@ public class IsoSystemSource extends SystemSource {
             String signature = LernstickFileTools.readFile(infoFile).get(0);
             if (signature.contains("Wheezy")) {
                 return DebianLiveVersion.DEBIAN_7;
-            } else if (signature.contains("Jessie")) {
-                return DebianLiveVersion.DEBIAN_8;
+            } else if (signature.contains("Jessie")
+                    || signature.contains("Stretch")) {
+                return DebianLiveVersion.DEBIAN_8_to_9;
             }
             LOGGER.log(Level.SEVERE, "Invalid version signature:  {0}",
                     signature);
