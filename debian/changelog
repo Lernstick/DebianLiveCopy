@@ -1,3 +1,10 @@
+dlcopy (201712251550-1) lernstick-8; urgency=medium
+
+  * [0e3a62] create empty directories "rw" and "work" for overlayfs so that
+    read-only mode works out-of-the-box
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Mon, 25 Dec 2017 15:50:32 +0100
+
 dlcopy (201712221034-1) lernstick-8; urgency=medium
 
   * [dc8caf] added support for Debian9 as ISO source
