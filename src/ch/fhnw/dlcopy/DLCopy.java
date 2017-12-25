@@ -587,6 +587,15 @@ public class DLCopy {
             throw new IOException("could not mount persistence partition");
         }
         writePersistenceConf(mountPath);
+
+        if (DebianLiveVersion.getRunningVersion().ordinal()
+                >= DebianLiveVersion.DEBIAN_8_to_9.ordinal()) {
+            // create empty directories "rw" and "work" for overlayfs
+            // so that read-only mode works out-of-the-box
+            Files.createDirectory(Paths.get(mountPath, "rw"));
+            Files.createDirectory(Paths.get(mountPath, "work"));
+        }
+
         persistencePartition.umount();
     }
 
@@ -1605,6 +1614,7 @@ public class DLCopy {
 
     /**
      * returns the major Debian version
+     *
      * @return the major Debian version
      * @throws IOException if reading or parsing /etc/debian_version fails
      */
