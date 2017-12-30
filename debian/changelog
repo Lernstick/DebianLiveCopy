@@ -1,3 +1,9 @@
+dlcopy (201712301408-1) lernstick-8; urgency=medium
+
+  * [0d8686] added option to keep firewall settings when upgrading system
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 30 Dec 2017 14:08:47 +0100
+
 dlcopy (201712301138-1) lernstick-8; urgency=medium
 
   * [fc59ea] added option to keep network settings when upgrading system
