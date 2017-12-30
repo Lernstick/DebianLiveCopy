@@ -31,6 +31,7 @@ import java.nio.file.attribute.FileTime;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -56,6 +57,7 @@ public class Upgrader extends InstallerOrUpgrader {
     private final boolean removeBackup;
     private final boolean upgradeSystemPartition;
     private final boolean keepPrinterSettings;
+    private final boolean keepNetworkSettings;
     private final boolean reactivateWelcome;
     private final boolean removeHiddenFiles;
     private final List<String> filesToOverwrite;
@@ -83,6 +85,8 @@ public class Upgrader extends InstallerOrUpgrader {
      * @param upgradeSystemPartition if the system partition should be upgraded
      * @param keepPrinterSettings if the printer settings should be kept when
      * upgrading
+     * @param keepNetworkSettings if the network settings should be kept when
+     * upgrading
      * @param reactivateWelcome if the welcome program should be reactivated
      * @param removeHiddenFiles if hidden files in the user's home of the
      * storage device should be removed
@@ -98,11 +102,14 @@ public class Upgrader extends InstallerOrUpgrader {
             int resizedExchangePartitionSize, boolean automaticBackup,
             String automaticBackupDestination, boolean removeBackup,
             boolean upgradeSystemPartition, boolean keepPrinterSettings,
-            boolean reactivateWelcome, boolean removeHiddenFiles,
-            List<String> filesToOverwrite, long systemSizeEnlarged) {
+            boolean keepNetworkSettings, boolean reactivateWelcome,
+            boolean removeHiddenFiles, List<String> filesToOverwrite,
+            long systemSizeEnlarged) {
+
         super(source, deviceList, exchangePartitionLabel,
                 exchangePartitionFileSystem, dataPartitionFileSystem,
                 dlCopyGUI);
+
         this.repartitionStrategy = repartitionStrategy;
         this.resizedExchangePartitionSize = resizedExchangePartitionSize;
         this.automaticBackup = automaticBackup;
@@ -110,6 +117,7 @@ public class Upgrader extends InstallerOrUpgrader {
         this.removeBackup = removeBackup;
         this.upgradeSystemPartition = upgradeSystemPartition;
         this.keepPrinterSettings = keepPrinterSettings;
+        this.keepNetworkSettings = keepNetworkSettings;
         this.reactivateWelcome = reactivateWelcome;
         this.removeHiddenFiles = removeHiddenFiles;
         this.filesToOverwrite = filesToOverwrite;
@@ -268,6 +276,9 @@ public class Upgrader extends InstallerOrUpgrader {
         String includes = mountPoint + "/home/user/";
         if (keepPrinterSettings) {
             includes += '\n' + mountPoint + "/etc/cups/";
+        }
+        if (keepNetworkSettings) {
+            includes += '\n' + mountPoint + "/etc/NetworkManager/";
         }
 
         // run the actual backup process
@@ -449,31 +460,30 @@ public class Upgrader extends InstallerOrUpgrader {
             LOGGER.log(Level.SEVERE, "", ex);
         }
         DLCopy.umount(cowPath, dlCopyGUI);
+
+        List<String> excludes = new ArrayList<>();
+        excludes.add("/home.*");
         String cleanupRoot = dataMountPoint;
         if (majorDebianVersion > 8 && !upgradeFromAufsToOverlay) {
             cleanupRoot = dataMountPoint + "/rw";
-        }
-        ProcessExecutor processExecutor = new ProcessExecutor();
-        if (keepPrinterSettings) {
-            processExecutor.executeProcess("find", cleanupRoot,
-                    "!", "-regex", cleanupRoot,
-                    "!", "-regex", cleanupRoot + "/lost\\+found",
-                    "!", "-regex", cleanupRoot + "/persistence.conf",
-                    "!", "-regex", cleanupRoot + "/home.*",
-                    "!", "-regex", cleanupRoot + "/etc.*",
-                    "-exec", "rm", "-rf", "{}", ";");
-            String etcPath = cleanupRoot + "/etc";
-            processExecutor.executeProcess("find", etcPath,
-                    "!", "-regex", etcPath,
-                    "!", "-regex", etcPath + "/cups.*",
-                    "-exec", "rm", "-rf", "{}", ";");
         } else {
-            processExecutor.executeProcess("find", cleanupRoot,
-                    "!", "-regex", cleanupRoot,
-                    "!", "-regex", cleanupRoot + "/lost\\+found",
-                    "!", "-regex", cleanupRoot + "/persistence.conf",
-                    "!", "-regex", cleanupRoot + "/home.*",
-                    "-exec", "rm", "-rf", "{}", ";");
+            excludes.addAll(Arrays.asList(
+                    "/lost\\+found", "/persistence.conf"));
+        }
+        if (keepPrinterSettings || keepNetworkSettings) {
+            excludes.add("/etc.*");
+        }
+        cleanup(cleanupRoot, excludes);
+        if (keepPrinterSettings || keepNetworkSettings) {
+            cleanupRoot += "/etc";
+            excludes.clear();
+            if (keepPrinterSettings) {
+                excludes.add("/cups.*");
+            }
+            if (keepNetworkSettings) {
+                excludes.add("/NetworkManager.*");
+            }
+            cleanup(cleanupRoot, excludes);
         }
 
         // rebuild union
@@ -540,14 +550,32 @@ public class Upgrader extends InstallerOrUpgrader {
         }
 
         // upgrade label (if necessary)
-        if (!(dataPartition.getIdLabel().equals(
-                Partition.PERSISTENCE_LABEL))) {
+        if (!(dataPartition.getIdLabel().equals(Partition.PERSISTENCE_LABEL))) {
+            ProcessExecutor processExecutor = new ProcessExecutor();
             processExecutor.executeProcess("e2label",
                     "/dev/" + dataPartition.getDeviceAndNumber(),
                     Partition.PERSISTENCE_LABEL);
         }
 
         return true;
+    }
+
+    private int cleanup(String root, List<String> excludes) {
+        List<String> commandList = new ArrayList<>();
+        commandList.add("find");
+        commandList.add(root);
+        addExclude(commandList, root);
+        for (String exclude : excludes) {
+            addExclude(commandList, root + exclude);
+        }
+        commandList.addAll(Arrays.asList("-exec", "rm", "-rf", "{}", ";"));
+        String[] command = commandList.toArray(new String[commandList.size()]);
+        ProcessExecutor processExecutor = new ProcessExecutor();
+        return processExecutor.executeProcess(true, true, command);
+    }
+
+    private void addExclude(List<String> commandList, String exclude) {
+        commandList.addAll(Arrays.asList("!", "-regex", exclude));
     }
 
     private void copyUp(String cowPath) throws IOException {

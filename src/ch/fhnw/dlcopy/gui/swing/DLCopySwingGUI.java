@@ -134,6 +134,7 @@ public class DLCopySwingGUI extends JFrame
     private final static String UPGRADE_SYSTEM_PARTITION = "upgradeSystemPartition";
     private final static String REACTIVATE_WELCOME = "reactivateWelcome";
     private final static String KEEP_PRINTER_SETTINGS = "keepPrinterSettings";
+    private final static String KEEP_NETWORK_SETTINGS = "keepNetworkSettings";
     private final static String REMOVE_HIDDEN_FILES = "removeHiddenFiles";
     private final static String AUTOMATIC_BACKUP = "automaticBackup";
     private final static String BACKUP_DESTINATION = "backupDestination";
@@ -384,6 +385,8 @@ public class DLCopySwingGUI extends JFrame
                 preferences.getBoolean(REACTIVATE_WELCOME, true));
         keepPrinterSettingsCheckBox.setSelected(
                 preferences.getBoolean(KEEP_PRINTER_SETTINGS, true));
+        keepNetworkSettingsCheckBox.setSelected(
+                preferences.getBoolean(KEEP_NETWORK_SETTINGS, true));
         automaticBackupCheckBox.setSelected(
                 preferences.getBoolean(AUTOMATIC_BACKUP, false));
         automaticBackupTextField.setText(
@@ -1396,6 +1399,7 @@ public class DLCopySwingGUI extends JFrame
         upgradeSystemPartitionCheckBox = new javax.swing.JCheckBox();
         reactivateWelcomeCheckBox = new javax.swing.JCheckBox();
         keepPrinterSettingsCheckBox = new javax.swing.JCheckBox();
+        keepNetworkSettingsCheckBox = new javax.swing.JCheckBox();
         removeHiddenFilesCheckBox = new javax.swing.JCheckBox();
         automaticBackupCheckBox = new javax.swing.JCheckBox();
         automaticBackupLabel = new javax.swing.JLabel();
@@ -2391,6 +2395,14 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
         upgradeOptionsPanel.add(keepPrinterSettingsCheckBox, gridBagConstraints);
+
+        keepNetworkSettingsCheckBox.setSelected(true);
+        keepNetworkSettingsCheckBox.setText(bundle.getString("DLCopySwingGUI.keepNetworkSettingsCheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
+        upgradeOptionsPanel.add(keepNetworkSettingsCheckBox, gridBagConstraints);
 
         removeHiddenFilesCheckBox.setText(bundle.getString("DLCopySwingGUI.removeHiddenFilesCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -4381,6 +4393,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 reactivateWelcomeCheckBox.isSelected());
         preferences.putBoolean(KEEP_PRINTER_SETTINGS,
                 keepPrinterSettingsCheckBox.isSelected());
+        preferences.putBoolean(KEEP_NETWORK_SETTINGS,
+                keepNetworkSettingsCheckBox.isSelected());
         preferences.putBoolean(AUTOMATIC_BACKUP,
                 automaticBackupCheckBox.isSelected());
         preferences.put(BACKUP_DESTINATION,
@@ -4930,6 +4944,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 automaticBackupTextField.getText(), removeBackup,
                 upgradeSystemPartitionCheckBox.isSelected(),
                 keepPrinterSettingsCheckBox.isSelected(),
+                keepNetworkSettingsCheckBox.isSelected(),
                 reactivateWelcomeCheckBox.isSelected(),
                 removeHiddenFilesCheckBox.isSelected(), overWriteList,
                 DLCopy.getEnlargedSystemSize(
@@ -5332,6 +5347,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JCheckBox keepNetworkSettingsCheckBox;
     private javax.swing.JCheckBox keepPrinterSettingsCheckBox;
     private javax.swing.JButton nextButton;
     private javax.swing.JPanel northEastPanel;
