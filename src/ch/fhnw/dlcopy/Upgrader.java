@@ -58,6 +58,7 @@ public class Upgrader extends InstallerOrUpgrader {
     private final boolean upgradeSystemPartition;
     private final boolean keepPrinterSettings;
     private final boolean keepNetworkSettings;
+    private final boolean keepFirewallSettings;
     private final boolean reactivateWelcome;
     private final boolean removeHiddenFiles;
     private final List<String> filesToOverwrite;
@@ -87,6 +88,8 @@ public class Upgrader extends InstallerOrUpgrader {
      * upgrading
      * @param keepNetworkSettings if the network settings should be kept when
      * upgrading
+     * @param keepFirewallSettings if the firewall settings should be kept when
+     * upgrading
      * @param reactivateWelcome if the welcome program should be reactivated
      * @param removeHiddenFiles if hidden files in the user's home of the
      * storage device should be removed
@@ -102,9 +105,9 @@ public class Upgrader extends InstallerOrUpgrader {
             int resizedExchangePartitionSize, boolean automaticBackup,
             String automaticBackupDestination, boolean removeBackup,
             boolean upgradeSystemPartition, boolean keepPrinterSettings,
-            boolean keepNetworkSettings, boolean reactivateWelcome,
-            boolean removeHiddenFiles, List<String> filesToOverwrite,
-            long systemSizeEnlarged) {
+            boolean keepNetworkSettings, boolean keepFirewallSettings,
+            boolean reactivateWelcome, boolean removeHiddenFiles,
+            List<String> filesToOverwrite, long systemSizeEnlarged) {
 
         super(source, deviceList, exchangePartitionLabel,
                 exchangePartitionFileSystem, dataPartitionFileSystem,
@@ -118,6 +121,7 @@ public class Upgrader extends InstallerOrUpgrader {
         this.upgradeSystemPartition = upgradeSystemPartition;
         this.keepPrinterSettings = keepPrinterSettings;
         this.keepNetworkSettings = keepNetworkSettings;
+        this.keepFirewallSettings = keepFirewallSettings;
         this.reactivateWelcome = reactivateWelcome;
         this.removeHiddenFiles = removeHiddenFiles;
         this.filesToOverwrite = filesToOverwrite;
@@ -279,6 +283,9 @@ public class Upgrader extends InstallerOrUpgrader {
         }
         if (keepNetworkSettings) {
             includes += '\n' + mountPoint + "/etc/NetworkManager/";
+        }
+        if (keepFirewallSettings) {
+            includes += '\n' + mountPoint + "/etc/lernstick-firewall/";
         }
 
         // run the actual backup process
@@ -470,11 +477,14 @@ public class Upgrader extends InstallerOrUpgrader {
             excludes.addAll(Arrays.asList(
                     "/lost\\+found", "/persistence.conf"));
         }
-        if (keepPrinterSettings || keepNetworkSettings) {
+        if (keepPrinterSettings || keepNetworkSettings
+                || keepFirewallSettings) {
             excludes.add("/etc.*");
         }
         cleanup(cleanupRoot, excludes);
-        if (keepPrinterSettings || keepNetworkSettings) {
+
+        if (keepPrinterSettings || keepNetworkSettings
+                || keepFirewallSettings) {
             cleanupRoot += "/etc";
             excludes.clear();
             if (keepPrinterSettings) {
@@ -482,6 +492,9 @@ public class Upgrader extends InstallerOrUpgrader {
             }
             if (keepNetworkSettings) {
                 excludes.add("/NetworkManager.*");
+            }
+            if (keepFirewallSettings) {
+                excludes.add("/lernstick-firewall.*");
             }
             cleanup(cleanupRoot, excludes);
         }

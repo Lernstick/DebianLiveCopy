@@ -135,6 +135,7 @@ public class DLCopySwingGUI extends JFrame
     private final static String REACTIVATE_WELCOME = "reactivateWelcome";
     private final static String KEEP_PRINTER_SETTINGS = "keepPrinterSettings";
     private final static String KEEP_NETWORK_SETTINGS = "keepNetworkSettings";
+    private final static String KEEP_FIREWALL_SETTINGS = "keepFirewallSettings";
     private final static String REMOVE_HIDDEN_FILES = "removeHiddenFiles";
     private final static String AUTOMATIC_BACKUP = "automaticBackup";
     private final static String BACKUP_DESTINATION = "backupDestination";
@@ -387,6 +388,8 @@ public class DLCopySwingGUI extends JFrame
                 preferences.getBoolean(KEEP_PRINTER_SETTINGS, true));
         keepNetworkSettingsCheckBox.setSelected(
                 preferences.getBoolean(KEEP_NETWORK_SETTINGS, true));
+        keepFirewallSettingsCheckBox.setSelected(
+                preferences.getBoolean(KEEP_FIREWALL_SETTINGS, true));
         automaticBackupCheckBox.setSelected(
                 preferences.getBoolean(AUTOMATIC_BACKUP, false));
         automaticBackupTextField.setText(
@@ -1397,11 +1400,13 @@ public class DLCopySwingGUI extends JFrame
         upgradeDetailsTabbedPane = new javax.swing.JTabbedPane();
         upgradeOptionsPanel = new javax.swing.JPanel();
         upgradeSystemPartitionCheckBox = new javax.swing.JCheckBox();
-        reactivateWelcomeCheckBox = new javax.swing.JCheckBox();
         keepPrinterSettingsCheckBox = new javax.swing.JCheckBox();
+        reactivateWelcomeCheckBox = new javax.swing.JCheckBox();
         keepNetworkSettingsCheckBox = new javax.swing.JCheckBox();
+        keepFirewallSettingsCheckBox = new javax.swing.JCheckBox();
         removeHiddenFilesCheckBox = new javax.swing.JCheckBox();
         automaticBackupCheckBox = new javax.swing.JCheckBox();
+        backupDestinationPanel = new javax.swing.JPanel();
         automaticBackupLabel = new javax.swing.JLabel();
         automaticBackupTextField = new javax.swing.JTextField();
         automaticBackupButton = new javax.swing.JButton();
@@ -2375,40 +2380,47 @@ public class DLCopySwingGUI extends JFrame
         upgradeSystemPartitionCheckBox.setSelected(true);
         upgradeSystemPartitionCheckBox.setText(bundle.getString("DLCopySwingGUI.upgradeSystemPartitionCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
         upgradeOptionsPanel.add(upgradeSystemPartitionCheckBox, gridBagConstraints);
-
-        reactivateWelcomeCheckBox.setSelected(true);
-        reactivateWelcomeCheckBox.setText(bundle.getString("DLCopySwingGUI.reactivateWelcomeCheckBox.text")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
-        upgradeOptionsPanel.add(reactivateWelcomeCheckBox, gridBagConstraints);
 
         keepPrinterSettingsCheckBox.setSelected(true);
         keepPrinterSettingsCheckBox.setText(bundle.getString("DLCopySwingGUI.keepPrinterSettingsCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
+        gridBagConstraints.insets = new java.awt.Insets(10, 30, 0, 10);
         upgradeOptionsPanel.add(keepPrinterSettingsCheckBox, gridBagConstraints);
+
+        reactivateWelcomeCheckBox.setSelected(true);
+        reactivateWelcomeCheckBox.setText(bundle.getString("DLCopySwingGUI.reactivateWelcomeCheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
+        upgradeOptionsPanel.add(reactivateWelcomeCheckBox, gridBagConstraints);
 
         keepNetworkSettingsCheckBox.setSelected(true);
         keepNetworkSettingsCheckBox.setText(bundle.getString("DLCopySwingGUI.keepNetworkSettingsCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 30, 0, 10);
         upgradeOptionsPanel.add(keepNetworkSettingsCheckBox, gridBagConstraints);
+
+        keepFirewallSettingsCheckBox.setSelected(true);
+        keepFirewallSettingsCheckBox.setText(bundle.getString("DLCopySwingGUI.keepFirewallSettingsCheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(0, 30, 0, 10);
+        upgradeOptionsPanel.add(keepFirewallSettingsCheckBox, gridBagConstraints);
 
         removeHiddenFilesCheckBox.setText(bundle.getString("DLCopySwingGUI.removeHiddenFilesCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
         upgradeOptionsPanel.add(removeHiddenFilesCheckBox, gridBagConstraints);
 
         automaticBackupCheckBox.setText(bundle.getString("DLCopySwingGUI.automaticBackupCheckBox.text")); // NOI18N
@@ -2420,21 +2432,24 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
         upgradeOptionsPanel.add(automaticBackupCheckBox, gridBagConstraints);
+
+        backupDestinationPanel.setLayout(new java.awt.GridBagLayout());
 
         automaticBackupLabel.setText(bundle.getString("DLCopySwingGUI.automaticBackupLabel.text")); // NOI18N
         automaticBackupLabel.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 30, 0, 0);
-        upgradeOptionsPanel.add(automaticBackupLabel, gridBagConstraints);
+        backupDestinationPanel.add(automaticBackupLabel, gridBagConstraints);
 
         automaticBackupTextField.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-        upgradeOptionsPanel.add(automaticBackupTextField, gridBagConstraints);
+        backupDestinationPanel.add(automaticBackupTextField, gridBagConstraints);
 
         automaticBackupButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/document-open-folder.png"))); // NOI18N
         automaticBackupButton.setEnabled(false);
@@ -2447,7 +2462,12 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 10);
-        upgradeOptionsPanel.add(automaticBackupButton, gridBagConstraints);
+        backupDestinationPanel.add(automaticBackupButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        upgradeOptionsPanel.add(backupDestinationPanel, gridBagConstraints);
 
         automaticBackupRemoveCheckBox.setText(bundle.getString("DLCopySwingGUI.automaticBackupRemoveCheckBox.text")); // NOI18N
         automaticBackupRemoveCheckBox.setEnabled(false);
@@ -4395,6 +4415,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 keepPrinterSettingsCheckBox.isSelected());
         preferences.putBoolean(KEEP_NETWORK_SETTINGS,
                 keepNetworkSettingsCheckBox.isSelected());
+        preferences.putBoolean(KEEP_FIREWALL_SETTINGS,
+                keepFirewallSettingsCheckBox.isSelected());
         preferences.putBoolean(AUTOMATIC_BACKUP,
                 automaticBackupCheckBox.isSelected());
         preferences.put(BACKUP_DESTINATION,
@@ -4945,6 +4967,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 upgradeSystemPartitionCheckBox.isSelected(),
                 keepPrinterSettingsCheckBox.isSelected(),
                 keepNetworkSettingsCheckBox.isSelected(),
+                keepFirewallSettingsCheckBox.isSelected(),
                 reactivateWelcomeCheckBox.isSelected(),
                 removeHiddenFilesCheckBox.isSelected(), overWriteList,
                 DLCopy.getEnlargedSystemSize(
@@ -5250,6 +5273,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel automaticBackupLabel;
     private javax.swing.JCheckBox automaticBackupRemoveCheckBox;
     private javax.swing.JTextField automaticBackupTextField;
+    private javax.swing.JPanel backupDestinationPanel;
     private javax.swing.JLabel bootDefinitionLabel;
     private javax.swing.JPanel bootMediumPanel;
     private javax.swing.JRadioButton bootMediumRadioButton;
@@ -5347,6 +5371,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JCheckBox keepFirewallSettingsCheckBox;
     private javax.swing.JCheckBox keepNetworkSettingsCheckBox;
     private javax.swing.JCheckBox keepPrinterSettingsCheckBox;
     private javax.swing.JButton nextButton;
