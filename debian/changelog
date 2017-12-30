@@ -1,3 +1,9 @@
+dlcopy (201712301138-1) lernstick-8; urgency=medium
+
+  * [fc59ea] added option to keep network settings when upgrading system
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 30 Dec 2017 11:38:58 +0100
+
 dlcopy (201712251550-1) lernstick-8; urgency=medium
 
   * [0e3a62] create empty directories "rw" and "work" for overlayfs so that
