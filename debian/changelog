@@ -1,3 +1,10 @@
+dlcopy (201801031041-1) lernstick-8; urgency=medium
+
+  * rebuild agains updated lernstickTools (now shows size of personal data if
+    data partition is too small for upgrades)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Wed, 03 Jan 2018 10:41:25 +0100
+
 dlcopy (201712301408-1) lernstick-8; urgency=medium
 
   * [0d8686] added option to keep firewall settings when upgrading system
