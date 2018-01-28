@@ -2,6 +2,8 @@
 kdesudo "java -Djava.library.path=/usr/lib/jni -jar dist/DLCopy_orig.jar --variant lernstick"
 ********************************************************************************
 
+- installing on a disk that was previously used as a member of a RAID failed in parted step
+
 - Zustand [steckt / steckt nicht] in Resultatenliste anzeigen, damit fehlerhaft installierte Sticks schnell identifiziert werden können
 
 - ISO source for upgrades
