@@ -1,3 +1,10 @@
+dlcopy (201802021918-1) lernstick-8; urgency=medium
+
+  * [9a1f07] updated todo
+  * [48923b] added necessary options to run on Java 9
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 02 Feb 2018 19:18:34 +0100
+
 dlcopy (201801031041-1) lernstick-8; urgency=medium
 
   * rebuild agains updated lernstickTools (now shows size of personal data if
