@@ -1,3 +1,10 @@
+dlcopy (201804301100-1) lernstick-9; urgency=medium
+
+  * [99310c] updated TODO
+  * [7fae4f] changed default directory in ISO file selector to "/"
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Mon, 30 Apr 2018 11:00:30 +0200
+
 dlcopy (201802021918-1) lernstick-8; urgency=medium
 
   * [9a1f07] updated todo
