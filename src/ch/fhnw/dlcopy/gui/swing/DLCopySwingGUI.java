@@ -3852,8 +3852,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         JFileChooser fileChooser = new JFileChooser();
         String isoSource = isoSourceTextField.getText();
         if ((isoSource == null) || isoSource.isEmpty()) {
-            fileChooser.setCurrentDirectory(new File(
-                    System.getProperty("user.home")));
+            fileChooser.setCurrentDirectory(new File("/"));
         } else {
             fileChooser.setSelectedFile(new File(isoSource));
         }
