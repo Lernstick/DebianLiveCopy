@@ -164,7 +164,6 @@ public class DLCopySwingGUI extends JFrame
     private String commandLineExchangePartitionFileSystem;
     private Boolean commandLineCopyDataPartition;
     private boolean instantInstallation;
-    private boolean instantInstallationDone;
     private boolean instantUpgrade;
 
     /**
@@ -689,7 +688,7 @@ public class DLCopySwingGUI extends JFrame
                 "Installation_Done_Message_From_Removable_Boot_Device",
                 "Installation_Report");
         if (instantInstallation) {
-            instantInstallationDone = true;
+            instantInstallation = false;
         }
     }
 
@@ -1055,7 +1054,7 @@ public class DLCopySwingGUI extends JFrame
         updateInstallSelectionCountAndExchangeInfo();
 
         // run instant installation if needed
-        if (instantInstallation && !instantInstallationDone) {
+        if (instantInstallation) {
             installStorageDeviceList.setSelectionInterval(
                     0, installStorageDeviceListModel.size() - 1);
             try {
