@@ -10,8 +10,8 @@ import javax.swing.JList;
 import javax.swing.SwingWorker;
 
 /**
- * parses udisks output paths and adds the corresponding storage devices to the
- * installation list
+ * parses udisks output paths and adds the storage devices to the corresponding
+ * list
  *
  * @author Ronny Standtke <ronny.standtke@gmx.net>
  */
@@ -34,7 +34,7 @@ public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
     private final JList list;
 
     /**
-     * creates a new InstallStorageDeviceAdder
+     * creates a new StorageDeviceAdder
      *
      * @param addedPath the added udisks path
      * @param showHarddisks if true, paths to hard disks are processed,

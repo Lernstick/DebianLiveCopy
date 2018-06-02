@@ -291,6 +291,7 @@ public class DLCopySwingGUI extends JFrame
         installStorageDeviceRenderer = new InstallStorageDeviceRenderer(this);
         installStorageDeviceList.setCellRenderer(installStorageDeviceRenderer);
 
+        upgradeStorageDeviceListModel.addListDataListener(this);
         upgradeStorageDeviceList.setModel(upgradeStorageDeviceListModel);
         upgradeStorageDeviceRenderer
                 = new UpgradeStorageDeviceRenderer(runningSystemSource);
@@ -696,10 +697,14 @@ public class DLCopySwingGUI extends JFrame
     public void upgradingDeviceStarted(StorageDevice storageDevice) {
         deviceStarted(storageDevice);
 
+        int selectionCount = upgradeListModeRadioButton.isSelected()
+                ? upgradeStorageDeviceList.getSelectedIndices().length
+                : 1;
+
         // update label
         String pattern = STRINGS.getString("Upgrade_Device_Info");
         String deviceInfo = MessageFormat.format(pattern, batchCounter,
-                upgradeStorageDeviceList.getSelectedIndices().length,
+                selectionCount,
                 storageDevice.getVendor() + " " + storageDevice.getModel(), " ("
                 + STRINGS.getString("Size") + ": "
                 + LernstickFileTools.getDataVolumeString(
@@ -853,12 +858,22 @@ public class DLCopySwingGUI extends JFrame
 
     @Override
     public void upgradingListFinished() {
-        batchFinished(
-                "Upgrade_Done_From_Non_Removable_Device",
-                "Upgrade_Done_From_Removable_Device",
-                "Upgrade_Report");
         if (instantUpgrade) {
             instantUpgrade = false;
+        }
+        if (upgradeListModeRadioButton.isSelected()) {
+            batchFinished(
+                    "Upgrade_Done_From_Non_Removable_Device",
+                    "Upgrade_Done_From_Removable_Device",
+                    "Upgrade_Report");
+        } else {
+            showCard(cardPanel, "upgradeSelectionPanel");
+            previousButton.setEnabled(true);
+            previousButton.requestFocusInWindow();
+            getRootPane().setDefaultButton(previousButton);
+            toFront();
+            playNotifySound();
+            state = State.UPGRADE_SELECTION;
         }
     }
 
@@ -1072,17 +1087,19 @@ public class DLCopySwingGUI extends JFrame
      * checks
      */
     public void upgradeStorageDeviceListChanged() {
-        storageDeviceListChanged(
-                upgradeStorageDeviceListModel, upgradeSelectionCardPanel,
-                "upgradeNoMediaPanel", "upgradeSelectionDeviceListPanel",
-                upgradeStorageDeviceRenderer, upgradeStorageDeviceList);
+        if (upgradeListModeRadioButton.isSelected()) {
+            storageDeviceListChanged(
+                    upgradeStorageDeviceListModel, upgradeSelectionCardPanel,
+                    "upgradeNoMediaPanel", "upgradeSelectionDeviceListPanel",
+                    upgradeStorageDeviceRenderer, upgradeStorageDeviceList);
+        }
         updateUpgradeSelectionCountAndNextButton();
 
         // run instant upgrade if needed
         if (instantUpgrade) {
             upgradeStorageDeviceList.setSelectionInterval(
                     0, upgradeStorageDeviceListModel.size() - 1);
-            upgrade();
+            upgradeSelectedStorageDevices();
         }
     }
 
@@ -1233,7 +1250,8 @@ public class DLCopySwingGUI extends JFrame
         upgradeSelectionCountLabel.setText(countString);
 
         // update nextButton state
-        if ((selectionCount > 0) && canUpgrade) {
+        if ((selectionCount > 0) && canUpgrade
+                && upgradeListModeRadioButton.isSelected()) {
             enableNextButton();
         } else {
             disableNextButton();
@@ -1298,6 +1316,7 @@ public class DLCopySwingGUI extends JFrame
         isoButtonGroup = new javax.swing.ButtonGroup();
         exchangeButtonGroup = new javax.swing.ButtonGroup();
         installSourceButtonGroup = new javax.swing.ButtonGroup();
+        selectionModeButtonGroup = new javax.swing.ButtonGroup();
         choicePanel = new javax.swing.JPanel();
         choiceLabel = new javax.swing.JLabel();
         buttonGridPanel = new javax.swing.JPanel();
@@ -1399,6 +1418,9 @@ public class DLCopySwingGUI extends JFrame
         upgradeSelectionHeaderLabel = new javax.swing.JLabel();
         upgradeShowHarddisksCheckBox = new javax.swing.JCheckBox();
         upgradeSelectionTabbedPane = new javax.swing.JTabbedPane();
+        upgradeSelectionModePanel = new javax.swing.JPanel();
+        upgradeListModeRadioButton = new javax.swing.JRadioButton();
+        upgradeAutomaticRadioButton = new javax.swing.JRadioButton();
         upgradeSelectionCardPanel = new javax.swing.JPanel();
         upgradeSelectionDeviceListPanel = new javax.swing.JPanel();
         upgradeSelectionCountLabel = new javax.swing.JLabel();
@@ -2315,6 +2337,35 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         upgradeSelectionPanel.add(upgradeShowHarddisksCheckBox, gridBagConstraints);
 
+        upgradeSelectionModePanel.setLayout(new java.awt.GridBagLayout());
+
+        selectionModeButtonGroup.add(upgradeListModeRadioButton);
+        upgradeListModeRadioButton.setSelected(true);
+        upgradeListModeRadioButton.setText(bundle.getString("DLCopySwingGUI.upgradeListModeRadioButton.text")); // NOI18N
+        upgradeListModeRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                upgradeListModeRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
+        upgradeSelectionModePanel.add(upgradeListModeRadioButton, gridBagConstraints);
+
+        selectionModeButtonGroup.add(upgradeAutomaticRadioButton);
+        upgradeAutomaticRadioButton.setText(bundle.getString("DLCopySwingGUI.upgradeAutomaticRadioButton.text")); // NOI18N
+        upgradeAutomaticRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                upgradeAutomaticRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        upgradeSelectionModePanel.add(upgradeAutomaticRadioButton, gridBagConstraints);
+
         upgradeSelectionCardPanel.setLayout(new java.awt.CardLayout());
 
         upgradeSelectionDeviceListPanel.setLayout(new java.awt.GridBagLayout());
@@ -2386,7 +2437,13 @@ public class DLCopySwingGUI extends JFrame
 
         upgradeSelectionCardPanel.add(upgradeNoMediaPanel, "upgradeNoMediaPanel");
 
-        upgradeSelectionTabbedPane.addTab(bundle.getString("DLCopySwingGUI.upgradeSelectionCardPanel.TabConstraints.tabTitle"), upgradeSelectionCardPanel); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        upgradeSelectionModePanel.add(upgradeSelectionCardPanel, gridBagConstraints);
+
+        upgradeSelectionTabbedPane.addTab(bundle.getString("DLCopySwingGUI.upgradeSelectionModePanel.TabConstraints.tabTitle"), upgradeSelectionModePanel); // NOI18N
 
         upgradeOptionsPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -3463,7 +3520,7 @@ public class DLCopySwingGUI extends JFrame
                 break;
 
             case UPGRADE_SELECTION:
-                upgrade();
+                upgradeSelectedStorageDevices();
                 break;
 
             case RESET_SELECTION:
@@ -3666,9 +3723,11 @@ public class DLCopySwingGUI extends JFrame
     }//GEN-LAST:event_upgradeStorageDeviceListValueChanged
 
     private void upgradeSelectionPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_upgradeSelectionPanelComponentShown
-        new UpgradeStorageDeviceListUpdater(runningSystemSource, this,
-                upgradeStorageDeviceList, upgradeStorageDeviceListModel,
-                upgradeShowHarddisksCheckBox.isSelected()).execute();
+        if (upgradeListModeRadioButton.isSelected()) {
+            new UpgradeStorageDeviceListUpdater(runningSystemSource, this,
+                    upgradeStorageDeviceList, upgradeStorageDeviceListModel,
+                    upgradeShowHarddisksCheckBox.isSelected()).execute();
+        }
     }//GEN-LAST:event_upgradeSelectionPanelComponentShown
 
 private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_upgradeShowHarddisksCheckBoxItemStateChanged
@@ -3903,6 +3962,18 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 resetFormatExchangePartitionCheckBox.isSelected()
                 && resetFormatExchangePartitionNewLabelRadioButton.isSelected());
     }//GEN-LAST:event_resetFormatExchangePartitionNewLabelRadioButtonItemStateChanged
+
+    private void upgradeListModeRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeListModeRadioButtonActionPerformed
+        showCard(upgradeSelectionCardPanel, "upgradeSelectionDeviceListPanel");
+        new UpgradeStorageDeviceListUpdater(runningSystemSource, this,
+                upgradeStorageDeviceList, upgradeStorageDeviceListModel,
+                upgradeShowHarddisksCheckBox.isSelected()).execute();
+    }//GEN-LAST:event_upgradeListModeRadioButtonActionPerformed
+
+    private void upgradeAutomaticRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeAutomaticRadioButtonActionPerformed
+        showCard(upgradeSelectionCardPanel, "upgradeNoMediaPanel");
+        nextButton.setEnabled(false);
+    }//GEN-LAST:event_upgradeAutomaticRadioButtonActionPerformed
 
     private void parseCommandLineArguments(String[] arguments) {
         for (int i = 0, length = arguments.length; i < length; i++) {
@@ -4248,10 +4319,27 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }
 
     private void handleListDataEvent(ListDataEvent e) {
-        if (e.getSource() == upgradeOverwriteListModel) {
+        LOGGER.info(e.toString());
+        Object source = e.getSource();
+
+        if (source == upgradeOverwriteListModel) {
             boolean sortable = upgradeOverwriteListModel.getSize() > 1;
             sortAscendingButton.setEnabled(sortable);
             sortDescendingButton.setEnabled(sortable);
+
+        } else if (source == upgradeStorageDeviceListModel) {
+            if ((e.getType() == ListDataEvent.INTERVAL_ADDED)
+                    && upgradeAutomaticRadioButton.isSelected()) {
+
+                List<StorageDevice> deviceList = new ArrayList<>();
+                for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
+                    LOGGER.log(Level.INFO,
+                            "adding index {0} to device list", i);
+                    deviceList.add(upgradeStorageDeviceListModel.get(i));
+                }
+
+                upgradeStorageDevices(deviceList);
+            }
         }
     }
 
@@ -4831,8 +4919,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 copyData, dataPartitionMode).execute();
     }
 
-    private void upgrade() {
-        // some backup related sanity checks
+    private boolean upgradeSanityChecks() {
         if (automaticBackupCheckBox.isSelected()) {
             String destinationPath = automaticBackupTextField.getText();
             File destinationDirectory = null;
@@ -4875,10 +4962,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 textField.requestFocusInWindow();
                 textField.selectAll();
                 showErrorMessage(errorMessage);
-                return;
+                return false;
             }
         }
-        int exchangeMB = 0;
         if (resizeExchangeRadioButton.isSelected()) {
             String newSizeText = resizeExchangeTextField.getText();
             String errorMessage = null;
@@ -4887,7 +4973,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         "Error_No_Exchange_Resize_Size");
             } else {
                 try {
-                    exchangeMB = Integer.parseInt(newSizeText);
+                    Integer.parseInt(newSizeText);
                 } catch (NumberFormatException ex) {
                     LOGGER.log(Level.WARNING, "", ex);
                     errorMessage = STRINGS.getString(
@@ -4902,8 +4988,73 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 showErrorMessage(errorMessage);
                 resizeExchangeTextField.requestFocusInWindow();
                 resizeExchangeTextField.selectAll();
-                return;
+                return false;
             }
+        }
+        return true;
+    }
+
+    private void upgradeStorageDevices(List<StorageDevice> deviceList) {
+        setLabelHighlighted(selectionLabel, false);
+        setLabelHighlighted(executionLabel, true);
+        previousButton.setEnabled(false);
+        nextButton.setEnabled(false);
+
+        // let's start...
+        state = State.UPGRADE;
+        showCard(cardPanel, "upgradeTabbedPane");
+        resultsList = new ArrayList<>();
+        batchCounter = 0;
+        boolean removeBackup = automaticBackupCheckBox.isSelected()
+                && automaticBackupRemoveCheckBox.isSelected();
+        List<String> overWriteList = new ArrayList<>();
+        for (int i = 0, size = upgradeOverwriteListModel.size(); i < size; i++) {
+            overWriteList.add(upgradeOverwriteListModel.get(i));
+        }
+        RepartitionStrategy repartitionStrategy;
+        if (originalExchangeRadioButton.isSelected()) {
+            repartitionStrategy = RepartitionStrategy.KEEP;
+        } else if (resizeExchangeRadioButton.isSelected()) {
+            repartitionStrategy = RepartitionStrategy.RESIZE;
+        } else {
+            repartitionStrategy = RepartitionStrategy.REMOVE;
+        }
+        int exchangeMB = 0;
+        if (resizeExchangeRadioButton.isSelected()) {
+            exchangeMB = Integer.parseInt(resizeExchangeTextField.getText());
+        }
+
+        Object selectedItem
+                = exchangePartitionFileSystemComboBox.getSelectedItem();
+        String exchangePartitionFileSystem = selectedItem.toString();
+        // TODO: using dataPartitionFileSystemComboBox.getSelectedItem() here is
+        // ugly because the input field it is not visible when upgrading
+        String dataPartitionFileSystem
+                = dataPartitionFileSystemComboBox.getSelectedItem().toString();
+
+        // TODO: using exchangePartitionTextField.getText() here is ugly
+        // because the input field it is not visible when upgrading
+        new Upgrader(runningSystemSource, deviceList,
+                exchangePartitionTextField.getText(),
+                exchangePartitionFileSystem, dataPartitionFileSystem, this,
+                this, repartitionStrategy, exchangeMB,
+                automaticBackupCheckBox.isSelected(),
+                automaticBackupTextField.getText(), removeBackup,
+                upgradeSystemPartitionCheckBox.isSelected(),
+                keepPrinterSettingsCheckBox.isSelected(),
+                keepNetworkSettingsCheckBox.isSelected(),
+                keepFirewallSettingsCheckBox.isSelected(),
+                reactivateWelcomeCheckBox.isSelected(),
+                removeHiddenFilesCheckBox.isSelected(), overWriteList,
+                DLCopy.getEnlargedSystemSize(
+                        runningSystemSource.getSystemSize()))
+                .execute();
+    }
+
+    private void upgradeSelectedStorageDevices() {
+        // some backup related sanity checks
+        if (!upgradeSanityChecks()) {
+            return;
         }
 
         List selectedDevices = upgradeStorageDeviceList.getSelectedValuesList();
@@ -4935,61 +5086,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
         }
 
-        setLabelHighlighted(selectionLabel, false);
-        setLabelHighlighted(executionLabel, true);
-        previousButton.setEnabled(false);
-        nextButton.setEnabled(false);
-
-        // let's start...
-        state = State.UPGRADE;
-        showCard(cardPanel, "upgradeTabbedPane");
-        resultsList = new ArrayList<>();
-        batchCounter = 0;
-        boolean removeBackup = automaticBackupCheckBox.isSelected()
-                && automaticBackupRemoveCheckBox.isSelected();
         List<StorageDevice> deviceList = new ArrayList<>();
-        int[] selectedIndices = upgradeStorageDeviceList.getSelectedIndices();
-        for (int i : selectedIndices) {
+        for (int i : upgradeStorageDeviceList.getSelectedIndices()) {
             deviceList.add(upgradeStorageDeviceListModel.get(i));
         }
-        List<String> overWriteList = new ArrayList<>();
-        for (int i = 0, size = upgradeOverwriteListModel.size(); i < size; i++) {
-            overWriteList.add(upgradeOverwriteListModel.get(i));
-        }
-        RepartitionStrategy repartitionStrategy;
-        if (originalExchangeRadioButton.isSelected()) {
-            repartitionStrategy = RepartitionStrategy.KEEP;
-        } else if (resizeExchangeRadioButton.isSelected()) {
-            repartitionStrategy = RepartitionStrategy.RESIZE;
-        } else {
-            repartitionStrategy = RepartitionStrategy.REMOVE;
-        }
-
-        Object selectedItem
-                = exchangePartitionFileSystemComboBox.getSelectedItem();
-        String exchangePartitionFileSystem = selectedItem.toString();
-        // TODO: using dataPartitionFileSystemComboBox.getSelectedItem() here is
-        // ugly because the input field it is not visible when upgrading
-        String dataPartitionFileSystem
-                = dataPartitionFileSystemComboBox.getSelectedItem().toString();
-
-        // TODO: using exchangePartitionTextField.getText() here is ugly
-        // because the input field it is not visible when upgrading
-        new Upgrader(runningSystemSource, deviceList,
-                exchangePartitionTextField.getText(),
-                exchangePartitionFileSystem, dataPartitionFileSystem, this,
-                this, repartitionStrategy, exchangeMB,
-                automaticBackupCheckBox.isSelected(),
-                automaticBackupTextField.getText(), removeBackup,
-                upgradeSystemPartitionCheckBox.isSelected(),
-                keepPrinterSettingsCheckBox.isSelected(),
-                keepNetworkSettingsCheckBox.isSelected(),
-                keepFirewallSettingsCheckBox.isSelected(),
-                reactivateWelcomeCheckBox.isSelected(),
-                removeHiddenFilesCheckBox.isSelected(), overWriteList,
-                DLCopy.getEnlargedSystemSize(
-                        runningSystemSource.getSystemSize()))
-                .execute();
+        upgradeStorageDevices(deviceList);
     }
 
     private boolean checkExchange(PartitionSizes partitionSizes)
@@ -5444,6 +5545,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel rsyncTimeLabel;
     private javax.swing.JRadioButton runningSystemSourceRadioButton;
     private javax.swing.JLabel selectionLabel;
+    private javax.swing.ButtonGroup selectionModeButtonGroup;
     private javax.swing.JCheckBox showNotUsedDialogCheckBox;
     private javax.swing.JButton sortAscendingButton;
     private javax.swing.JButton sortDescendingButton;
@@ -5465,6 +5567,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JPanel toISOProgressPanel;
     private javax.swing.JPanel toISOSelectionPanel;
     private javax.swing.JPanel toIsoGridBagPanel;
+    private javax.swing.JRadioButton upgradeAutomaticRadioButton;
     private javax.swing.JLabel upgradeBackupDurationLabel;
     private javax.swing.JLabel upgradeBackupFilenameLabel;
     private javax.swing.JLabel upgradeBackupLabel;
@@ -5485,6 +5588,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel upgradeInfoLabel;
     private javax.swing.JPanel upgradeInfoPanel;
     private javax.swing.JLabel upgradeLabel;
+    private javax.swing.JRadioButton upgradeListModeRadioButton;
     private javax.swing.JButton upgradeMoveDownButton;
     private javax.swing.JButton upgradeMoveUpButton;
     private javax.swing.JLabel upgradeNoMediaLabel;
@@ -5507,6 +5611,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel upgradeSelectionCountLabel;
     private javax.swing.JPanel upgradeSelectionDeviceListPanel;
     private javax.swing.JLabel upgradeSelectionHeaderLabel;
+    private javax.swing.JPanel upgradeSelectionModePanel;
     private javax.swing.JPanel upgradeSelectionPanel;
     private javax.swing.JTabbedPane upgradeSelectionTabbedPane;
     private javax.swing.JCheckBox upgradeShowHarddisksCheckBox;

@@ -29,7 +29,7 @@ public class UpgradeStorageDeviceRenderer extends JPanel
         implements ListCellRenderer, StorageDeviceRenderer {
 
     private final static Logger LOGGER
-            = Logger.getLogger(DLCopySwingGUI.class.getName());
+            = Logger.getLogger(UpgradeStorageDeviceRenderer.class.getName());
     private final static Icon BLUE_BOX = new ImageIcon(
             UpgradeStorageDeviceRenderer.class.getResource(
                     "/ch/fhnw/dlcopy/icons/blue_box.png"));

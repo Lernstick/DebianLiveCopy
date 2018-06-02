@@ -23,7 +23,7 @@ public class UpgradeStorageDeviceListUpdater extends StorageDeviceListUpdater {
     private final SystemSource source;
 
     /**
-     * creates a new InstallStorageDeviceListUpdater
+     * creates a new UpgradeStorageDeviceListUpdater
      *
      * @param source the source for upgrades
      * @param swingGUI the DLCopy Swing GUI
@@ -67,6 +67,5 @@ public class UpgradeStorageDeviceListUpdater extends StorageDeviceListUpdater {
     @Override
     public void updateGUI() {
         swingGUI.upgradeStorageDeviceListChanged();
-        swingGUI.updateUpgradeSelectionCountAndNextButton();
     }
 }
