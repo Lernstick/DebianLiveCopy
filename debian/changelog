@@ -1,3 +1,12 @@
+dlcopy (201806022355-1) lernstick-9; urgency=medium
+
+  * [702cee] added --instantUpgrade command line switch
+  * [0d4196] simplified code for instantInstallation
+  * [90fdcb] added automatic upgrade mode
+  * [ed7a81] added --autoUpgrade command line switch
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 02 Jun 2018 23:55:04 +0200
+
 dlcopy (201806020940-1) lernstick-9; urgency=medium
 
   * [66b049] pass command line arguments from dlcopy.user to dlcopy
