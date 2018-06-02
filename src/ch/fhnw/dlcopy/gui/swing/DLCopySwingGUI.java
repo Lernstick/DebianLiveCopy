@@ -165,6 +165,7 @@ public class DLCopySwingGUI extends JFrame
     private Boolean commandLineCopyDataPartition;
     private boolean instantInstallation;
     private boolean instantUpgrade;
+    private boolean autoUpgrade;
 
     /**
      * Creates new form DLCopy
@@ -460,6 +461,12 @@ public class DLCopySwingGUI extends JFrame
         // center on screen
         setLocationRelativeTo(null);
 
+        if (autoUpgrade) {
+            globalShow("executionPanel");
+            switchToUpgradeSelection();
+            upgradeAutomaticRadioButton.doClick();
+        }
+        
         if (instantInstallation) {
             globalShow("executionPanel");
             switchToInstallSelection();
@@ -4015,6 +4022,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 }
             }
 
+            if (arguments[i].equals("--autoUpgrade")) {
+                autoUpgrade = true;
+            }
+            
             // only allow one instant* command
             if (arguments[i].equals("--instantInstallation")) {
                 instantInstallation = true;
