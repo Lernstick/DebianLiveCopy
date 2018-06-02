@@ -165,6 +165,7 @@ public class DLCopySwingGUI extends JFrame
     private Boolean commandLineCopyDataPartition;
     private boolean instantInstallation;
     private boolean instantInstallationDone;
+    private boolean instantUpgrade;
 
     /**
      * Creates new form DLCopy
@@ -462,6 +463,9 @@ public class DLCopySwingGUI extends JFrame
         if (instantInstallation) {
             globalShow("executionPanel");
             switchToInstallSelection();
+        } else if (instantUpgrade) {
+            globalShow("executionPanel");
+            switchToUpgradeSelection();
         }
     }
 
@@ -854,6 +858,9 @@ public class DLCopySwingGUI extends JFrame
                 "Upgrade_Done_From_Non_Removable_Device",
                 "Upgrade_Done_From_Removable_Device",
                 "Upgrade_Report");
+        if (instantUpgrade) {
+            instantUpgrade = false;
+        }
     }
 
     @Override
@@ -1071,6 +1078,13 @@ public class DLCopySwingGUI extends JFrame
                 "upgradeNoMediaPanel", "upgradeSelectionDeviceListPanel",
                 upgradeStorageDeviceRenderer, upgradeStorageDeviceList);
         updateUpgradeSelectionCountAndNextButton();
+
+        // run instant upgrade if needed
+        if (instantUpgrade) {
+            upgradeStorageDeviceList.setSelectionInterval(
+                    0, upgradeStorageDeviceListModel.size() - 1);
+            upgrade();
+        }
     }
 
     /**
@@ -3931,8 +3945,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 }
             }
 
+            // only allow one instant* command
             if (arguments[i].equals("--instantInstallation")) {
                 instantInstallation = true;
+            } else if (arguments[i].equals("--instantUpgrade")) {
+                instantUpgrade = true;
             }
         }
     }
@@ -4909,12 +4926,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
         }
 
-        int result = JOptionPane.showConfirmDialog(this,
-                STRINGS.getString("Final_Upgrade_Warning"),
-                STRINGS.getString("Warning"),
-                JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
-        if (result != JOptionPane.YES_OPTION) {
-            return;
+        if (!instantUpgrade) {
+            int result = JOptionPane.showConfirmDialog(this,
+                    STRINGS.getString("Final_Upgrade_Warning"),
+                    STRINGS.getString("Warning"),
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE);
+            if (result != JOptionPane.YES_OPTION) {
+                return;
+            }
         }
 
         setLabelHighlighted(selectionLabel, false);
