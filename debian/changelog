@@ -1,3 +1,9 @@
+dlcopy (201806020940-1) lernstick-9; urgency=medium
+
+  * [66b049] pass command line arguments from dlcopy.user to dlcopy
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 02 Jun 2018 09:40:01 +0200
+
 dlcopy (201804301100-1) lernstick-9; urgency=medium
 
   * [99310c] updated TODO
