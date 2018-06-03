@@ -431,15 +431,16 @@ public class Upgrader extends InstallerOrUpgrader {
             // Therefore, when upgrading from Debian 8 to later versions we have
             // to move the directories "/home/" and "/etc/" to the new base.
 
-            if (new File(dataMountPoint, "home").exists()) {
+            if (Files.exists(Paths.get(dataMountPoint, "rw"))
+                    && Files.exists(Paths.get(dataMountPoint, "work"))) {
+                // Debian 9 to Debian 9 or newer
+                cowDir = new File(LernstickFileTools.mountOverlay(
+                        dataMountPoint + "/rw", readOnlyMountPoints), "cow");
+            } else {
                 // Debian 8 to Debian 9 or newer
                 upgradeFromAufsToOverlay = true;
                 cowDir = LernstickFileTools.mountAufs(
                         dataMountPoint, readOnlyMountPoints);
-            } else {
-                // Debian 9 to Debian 9 or newer
-                cowDir = new File(LernstickFileTools.mountOverlay(
-                        dataMountPoint + "/rw", readOnlyMountPoints), "cow");
             }
         } else {
             // Debian 8 to Debian 8
@@ -501,13 +502,14 @@ public class Upgrader extends InstallerOrUpgrader {
 
         // rebuild union
         if (majorDebianVersion > 8) {
-            if (new File(dataMountPoint, "home").exists()) {
-                cowDir = LernstickFileTools.mountAufs(
-                        dataMountPoint, readOnlyMountPoints);
-            } else {
+            if (Files.exists(Paths.get(dataMountPoint, "rw"))
+                    && Files.exists(Paths.get(dataMountPoint, "work"))) {
                 File rwDir = LernstickFileTools.mountOverlay(
                         dataMountPoint + "/rw", readOnlyMountPoints);
                 cowDir = new File(rwDir, "cow");
+            } else {
+                cowDir = LernstickFileTools.mountAufs(
+                        dataMountPoint, readOnlyMountPoints);
             }
         } else {
             cowDir = LernstickFileTools.mountAufs(
@@ -636,10 +638,26 @@ public class Upgrader extends InstallerOrUpgrader {
                 attributeView.setTimes(null, fileTime, null);
             }
         };
-        Files.walkFileTree(Paths.get(cowPath, "home"), copyUpFileVisitor);
+
+        copyUp(cowPath, "home", copyUpFileVisitor);
+
         if (keepPrinterSettings) {
-            Files.walkFileTree(Paths.get(
-                    cowPath, "etc/cups"), copyUpFileVisitor);
+            copyUp(cowPath, "etc/cups", copyUpFileVisitor);
+        }
+        if (keepNetworkSettings) {
+            copyUp(cowPath, "etc/NetworkManager", copyUpFileVisitor);
+        }
+        if (keepFirewallSettings) {
+            copyUp(cowPath, "etc/lernstick-firewall", copyUpFileVisitor);
+        }
+    }
+
+    private void copyUp(String cowPath, String directory,
+            FileVisitor fileVisitor) throws IOException {
+
+        Path path = Paths.get(cowPath, directory);
+        if (Files.exists(path)) {
+            Files.walkFileTree(path, fileVisitor);
         }
     }
 
