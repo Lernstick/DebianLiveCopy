@@ -1,3 +1,9 @@
+dlcopy (201806031350-1) lernstick-9; urgency=medium
+
+  * rebuild with upgraded lernstickTools library
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 03 Jun 2018 13:50:39 +0200
+
 dlcopy (201806022355-1) lernstick-9; urgency=medium
 
   * [702cee] added --instantUpgrade command line switch
