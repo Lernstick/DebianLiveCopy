@@ -1,3 +1,9 @@
+dlcopy (201806031451-1) lernstick-9; urgency=medium
+
+  * [dfaa74] fixed aufs/overlay heuristic in Upgrader
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 03 Jun 2018 14:51:17 +0200
+
 dlcopy (201806031350-1) lernstick-9; urgency=medium
 
   * rebuild with upgraded lernstickTools library
