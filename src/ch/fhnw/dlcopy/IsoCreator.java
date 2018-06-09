@@ -318,8 +318,8 @@ public class IsoCreator
         if (majorDebianVersion > 8) {
             // use overlay to create union
             rwDir = LernstickFileTools.mountOverlay(
-                    dataPartitionPath + "/rw", readOnlyMountPoints);
-            cowDir = new File(rwDir, "cow");
+                    dataPartitionPath, readOnlyMountPoints, true);
+            cowDir = new File(rwDir, "merged");
 
         } else {
             // use aufs to create union

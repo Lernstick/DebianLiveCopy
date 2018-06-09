@@ -435,7 +435,7 @@ public class Upgrader extends InstallerOrUpgrader {
                     && Files.exists(Paths.get(dataMountPoint, "work"))) {
                 // Debian 9 to Debian 9 or newer
                 cowDir = new File(LernstickFileTools.mountOverlay(
-                        dataMountPoint + "/rw", readOnlyMountPoints), "cow");
+                        dataMountPoint, readOnlyMountPoints, true), "merged");
             } else {
                 // Debian 8 to Debian 9 or newer
                 upgradeFromAufsToOverlay = true;
@@ -504,9 +504,12 @@ public class Upgrader extends InstallerOrUpgrader {
         if (majorDebianVersion > 8) {
             if (Files.exists(Paths.get(dataMountPoint, "rw"))
                     && Files.exists(Paths.get(dataMountPoint, "work"))) {
+                // !!! DON'T use a temporary upper dir here !!!
+                // Otherwise we will most probably run out of memory during the
+                // copyup operation below.
                 File rwDir = LernstickFileTools.mountOverlay(
-                        dataMountPoint + "/rw", readOnlyMountPoints);
-                cowDir = new File(rwDir, "cow");
+                        dataMountPoint, readOnlyMountPoints, false);
+                cowDir = new File(rwDir, "merged");
             } else {
                 cowDir = LernstickFileTools.mountAufs(
                         dataMountPoint, readOnlyMountPoints);
@@ -541,7 +544,7 @@ public class Upgrader extends InstallerOrUpgrader {
             Files.move(etcDir, rwdir.resolve(etcDir.getFileName()));
 
             cowDir = new File(LernstickFileTools.mountOverlay(
-                    dataMountPoint + "/rw", readOnlyMountPoints), "cow");
+                    dataMountPoint, readOnlyMountPoints, false), "merged");
             cowPath = cowDir.getPath();
         }
 
