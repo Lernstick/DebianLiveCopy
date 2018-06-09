@@ -1,3 +1,10 @@
+dlcopy (201806091217-1) lernstick-9; urgency=medium
+
+  * [72de85] compiled against latest version of lernstickTools library and don't
+             use temporary upper layer during upgrade
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 09 Jun 2018 12:17:57 +0200
+
 dlcopy (201806031451-1) lernstick-9; urgency=medium
 
   * [dfaa74] fixed aufs/overlay heuristic in Upgrader
