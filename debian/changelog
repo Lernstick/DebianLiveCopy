@@ -1,3 +1,10 @@
+dlcopy (201806122042-1) lernstick-9; urgency=medium
+
+  * [8b934b] use internally updated Java file copy library
+  * [246ea3] added support for isolated auto upgrades
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Tue, 12 Jun 2018 20:42:21 +0200
+
 dlcopy (201806091217-1) lernstick-9; urgency=medium
 
   * [72de85] compiled against latest version of lernstickTools library and don't
