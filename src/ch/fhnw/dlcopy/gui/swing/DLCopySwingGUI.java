@@ -154,6 +154,7 @@ public class DLCopySwingGUI extends JFrame
 
     private final StorageDeviceListUpdateDialogHandler storageDeviceListUpdateDialogHandler
             = new StorageDeviceListUpdateDialogHandler(this);
+    private final Color DARK_GREEN = new Color(0, 190, 0);
 
     private int batchCounter;
     private long deviceStartTime;
@@ -166,6 +167,7 @@ public class DLCopySwingGUI extends JFrame
     private boolean instantInstallation;
     private boolean instantUpgrade;
     private boolean autoUpgrade;
+    private boolean isolatedAutoUpgrade;
 
     /**
      * Creates new form DLCopy
@@ -466,7 +468,36 @@ public class DLCopySwingGUI extends JFrame
             switchToUpgradeSelection();
             upgradeAutomaticRadioButton.doClick();
         }
-        
+
+        if (isolatedAutoUpgrade) {
+            // maximize frame
+            setExtendedState(Frame.MAXIMIZED_BOTH);
+
+            // only leave the upgrade parts visible
+            stepsPanel.setVisible(false);
+            executionPanelSeparator.setVisible(false);
+            prevNextButtonPanel.setVisible(false);
+
+            // reduce the upgrade parts
+            upgradeSelectionHeaderLabel.setVisible(false);
+            upgradeShowHarddisksCheckBox.setVisible(false);
+            upgradeListModeRadioButton.setVisible(false);
+            upgradeAutomaticRadioButton.setVisible(false);
+            upgradeSelectionTabbedPane.remove(upgradeDetailsTabbedPane);
+            upgradeTabbedPane.remove(upgradeReportPanel);
+
+            // change colors
+            upgradeNoMediaPanel.setBackground(DARK_GREEN);
+            upgradePanel.setBackground(Color.RED);
+            upgradeIndeterminateProgressPanel.setBackground(Color.RED);
+            upgradeFileCopierPanel.setBackground(Color.RED);
+            upgradeCopyPanel.setBackground(Color.RED);
+
+            // change texts
+            upgradeNoMediaLabel.setText(
+                    STRINGS.getString("Insert_Media_Isolated"));
+        }
+
         if (instantInstallation) {
             globalShow("executionPanel");
             switchToInstallSelection();
@@ -874,6 +905,11 @@ public class DLCopySwingGUI extends JFrame
                     "Upgrade_Done_From_Removable_Device",
                     "Upgrade_Report");
         } else {
+            if (isolatedAutoUpgrade) {
+                upgradeNoMediaPanel.setBackground(Color.YELLOW);
+                upgradeNoMediaLabel.setText(
+                        STRINGS.getString("Upgrade_Done_Isolated"));
+            }
             showCard(cardPanel, "upgradeSelectionPanel");
             previousButton.setEnabled(true);
             previousButton.requestFocusInWindow();
@@ -1557,7 +1593,7 @@ public class DLCopySwingGUI extends JFrame
         resultsTitledPanel = new javax.swing.JPanel();
         resultsScrollPane = new javax.swing.JScrollPane();
         resultsTable = new javax.swing.JTable();
-        jSeparator2 = new javax.swing.JSeparator();
+        executionPanelSeparator = new javax.swing.JSeparator();
         prevNextButtonPanel = new javax.swing.JPanel();
         previousButton = new javax.swing.JButton();
         nextButton = new javax.swing.JButton();
@@ -3397,7 +3433,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-        executionPanel.add(jSeparator2, gridBagConstraints);
+        executionPanel.add(executionPanelSeparator, gridBagConstraints);
 
         prevNextButtonPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -4025,7 +4061,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             if (arguments[i].equals("--autoUpgrade")) {
                 autoUpgrade = true;
             }
-            
+
+            if (arguments[i].equals("--isolatedAutoUpgrade")) {
+                isolatedAutoUpgrade = true;
+            }
+
             // only allow one instant* command
             if (arguments[i].equals("--instantInstallation")) {
                 instantInstallation = true;
@@ -4417,6 +4457,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         listModel = installStorageDeviceListModel;
                         break;
                     case UPGRADE_SELECTION:
+                        if (isolatedAutoUpgrade) {
+                            upgradeNoMediaPanel.setBackground(DARK_GREEN);
+                            upgradeNoMediaLabel.setText(
+                                    STRINGS.getString("Insert_Media_Isolated"));
+                        }
                         listModel = upgradeStorageDeviceListModel;
                         break;
                     case RESET_SELECTION:
@@ -5444,6 +5489,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JTextField exchangePartitionTextField;
     private javax.swing.JLabel executionLabel;
     private javax.swing.JPanel executionPanel;
+    private javax.swing.JSeparator executionPanelSeparator;
     private javax.swing.JRadioButton formatDataPartitionRadioButton;
     private javax.swing.JLabel freeSpaceLabel;
     private javax.swing.JTextField freeSpaceTextField;
@@ -5496,7 +5542,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
