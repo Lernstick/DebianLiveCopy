@@ -1,3 +1,11 @@
+dlcopy (201806172055-1) lernstick-9; urgency=medium
+
+  * [d901b5] fixed mounting data partition after upgrade from aufs to overlay
+  * [d2c082] added command line option for reactivating the welcome application
+             fixed insets when doing an isolated upgrade
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 17 Jun 2018 20:55:56 +0200
+
 dlcopy (201806171848-1) lernstick-9; urgency=medium
 
   * [6497f7] fixed finalization and writing of persistence.conf
