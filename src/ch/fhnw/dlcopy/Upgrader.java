@@ -550,8 +550,15 @@ public class Upgrader extends InstallerOrUpgrader {
             Files.move(homeDir, rwPath.resolve(homeDir.getFileName()));
             Files.move(etcDir, rwPath.resolve(etcDir.getFileName()));
 
-            cowPath = mountDataPartition(dataMountPoint,
-                readOnlyMountPoints, mountAufs, false);
+            // The "upgrade" to overlayfs is done now. In the next step we want
+            // to mount our data partition as an overlayfs, therefore we set
+            // mountAufs to false.
+            mountAufs = false;
+            // We also set temporaryUpperDir to false because we want to
+            // finalize the data partition in the next step and therefore want
+            // all write operations to be persistent.
+            cowPath = mountDataPartition(dataMountPoint, readOnlyMountPoints,
+                    mountAufs, false/*temporaryUpperDir*/);
         }
 
         finalizeDataPartition(cowPath);
@@ -691,18 +698,27 @@ public class Upgrader extends InstallerOrUpgrader {
     private void finalizeDataPartition(String persistenceRoot)
             throws IOException {
 
+        LOGGER.log(Level.INFO,
+                "finalizing data partition, persistenceRoot: {0}",
+                persistenceRoot);
+
         // welcome application reactivation
         if (reactivateWelcome) {
             File propertiesFile = new File(
                     persistenceRoot + "/etc/lernstickWelcome");
+            LOGGER.log(Level.INFO,
+                    "reactivating Welcome application, propertiesFile: {0}",
+                    propertiesFile);
             Properties lernstickWelcomeProperties = new Properties();
             if (propertiesFile.exists()) {
+                LOGGER.info("properties file already exists");
                 try (FileReader reader = new FileReader(propertiesFile)) {
                     lernstickWelcomeProperties.load(reader);
                 } catch (IOException iOException) {
                     LOGGER.log(Level.WARNING, "", iOException);
                 }
             } else {
+                LOGGER.info("creating new properties file");
                 propertiesFile.getParentFile().mkdirs();
                 propertiesFile.createNewFile();
             }
@@ -717,6 +733,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
         // remove hidden files from user directory
         if (removeHiddenFiles) {
+            LOGGER.info("removing hidden files");
             File userDir = new File(persistenceRoot + "/home/user/");
             File[] files = userDir.listFiles();
             if (files != null) {
