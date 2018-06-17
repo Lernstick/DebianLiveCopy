@@ -1,3 +1,12 @@
+dlcopy (201806171640-1) lernstick-9; urgency=medium
+
+  * [705686] updated isolated upgrade strings
+  * [6ce855] don't create rw and work directories for overlay in Debian 8
+  * [d49c1b] added workaround for older DLCopy bug in Upgrader
+  * [eb52ac] switched green and yellow colors in isolated upgrade
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 17 Jun 2018 16:40:25 +0200
+
 dlcopy (201806122042-1) lernstick-9; urgency=medium
 
   * [8b934b] use internally updated Java file copy library
