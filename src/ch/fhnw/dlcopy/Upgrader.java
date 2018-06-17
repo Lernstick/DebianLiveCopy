@@ -370,7 +370,8 @@ public class Upgrader extends InstallerOrUpgrader {
         // !!! process (rdiff-backup)!                                   !!!
         // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
         // reactivate welcome, overwrite files...
-        finalizeDataPartition(mountPath);
+        finalizeDataPartition(restoreDestinationDir.getPath());
+        DLCopy.writePersistenceConf(mountPath);
 
         // cleanup
         dataPartition.umount();
@@ -420,7 +421,7 @@ public class Upgrader extends InstallerOrUpgrader {
         List<String> readOnlyMountPoints = LernstickFileTools.mountAllSquashFS(
                 systemMountInfo.getMountPath());
 
-        File cowDir = null;
+        String cowPath;
         boolean mountAufs = false;
         boolean upgradeFromAufsToOverlay = false;
         int majorDebianVersion = DLCopy.getMajorDebianVersion();
@@ -459,15 +460,9 @@ public class Upgrader extends InstallerOrUpgrader {
             // Debian 8 to Debian 8
             mountAufs = true;
         }
-        if (mountAufs) {
-            cowDir = LernstickFileTools.mountAufs(
-                    dataMountPoint, readOnlyMountPoints);
-        } else {
-            cowDir = new File(LernstickFileTools.mountOverlay(
-                    dataMountPoint, readOnlyMountPoints, true), "merged");
-        }
 
-        String cowPath = cowDir.getPath();
+        cowPath = mountDataPartition(dataMountPoint,
+                readOnlyMountPoints, mountAufs, true);
 
         // backup
         if (automaticBackup) {
@@ -520,17 +515,11 @@ public class Upgrader extends InstallerOrUpgrader {
         }
 
         // rebuild union
-        if (mountAufs) {
-            cowDir = LernstickFileTools.mountAufs(
-                    dataMountPoint, readOnlyMountPoints);
-        } else {
-            // !!! DON'T use a temporary upper dir here !!!
-            // Otherwise we will most probably run out of memory during
-            // the copyup operation below.
-            cowDir = new File(LernstickFileTools.mountOverlay(
-                    dataMountPoint, readOnlyMountPoints, false), "merged");
-        }
-        cowPath = cowDir.getPath();
+        // !!! DON'T use a temporary upper dir here !!!
+        // Otherwise we will most probably run out of memory during
+        // the copyup operation below.
+        cowPath = mountDataPartition(dataMountPoint,
+                readOnlyMountPoints, mountAufs, false);
 
         copyUp(cowPath);
 
@@ -561,12 +550,12 @@ public class Upgrader extends InstallerOrUpgrader {
             Files.move(homeDir, rwPath.resolve(homeDir.getFileName()));
             Files.move(etcDir, rwPath.resolve(etcDir.getFileName()));
 
-            cowDir = new File(LernstickFileTools.mountOverlay(
-                    dataMountPoint, readOnlyMountPoints, false), "merged");
-            cowPath = cowDir.getPath();
+            cowPath = mountDataPartition(dataMountPoint,
+                readOnlyMountPoints, mountAufs, false);
         }
 
         finalizeDataPartition(cowPath);
+        DLCopy.writePersistenceConf(dataMountPoint);
 
         // disassemble union
         try {
@@ -594,6 +583,23 @@ public class Upgrader extends InstallerOrUpgrader {
         }
 
         return true;
+    }
+
+    private String mountDataPartition(String dataMountPoint,
+            List<String> readOnlyMountPoints, boolean mountAufs,
+            boolean temporaryUpperDir) throws IOException {
+
+        if (mountAufs) {
+            return LernstickFileTools.mountAufs(
+                    dataMountPoint, readOnlyMountPoints).getPath();
+        } else {
+            // !!! DON'T use a temporary upper dir here !!!
+            // Otherwise we will most probably run out of memory during
+            // the copyup operation below.
+            File overlayDir = LernstickFileTools.mountOverlay(
+                    dataMountPoint, readOnlyMountPoints, temporaryUpperDir);
+            return new File(overlayDir, "merged").getPath();
+        }
     }
 
     private int cleanup(String root, List<String> excludes) {
@@ -682,18 +688,13 @@ public class Upgrader extends InstallerOrUpgrader {
         }
     }
 
-    private void finalizeDataPartition(String dataMountPoint)
+    private void finalizeDataPartition(String persistenceRoot)
             throws IOException {
-
-        String readWriteDirectory = dataMountPoint;
-        if (DLCopy.getMajorDebianVersion() > 8) {
-            readWriteDirectory += "/rw/";
-        }
 
         // welcome application reactivation
         if (reactivateWelcome) {
             File propertiesFile = new File(
-                    readWriteDirectory + "/etc/lernstickWelcome");
+                    persistenceRoot + "/etc/lernstickWelcome");
             Properties lernstickWelcomeProperties = new Properties();
             if (propertiesFile.exists()) {
                 try (FileReader reader = new FileReader(propertiesFile)) {
@@ -716,7 +717,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
         // remove hidden files from user directory
         if (removeHiddenFiles) {
-            File userDir = new File(readWriteDirectory + "/home/user/");
+            File userDir = new File(persistenceRoot + "/home/user/");
             File[] files = userDir.listFiles();
             if (files != null) {
                 for (File file : files) {
@@ -730,19 +731,12 @@ public class Upgrader extends InstallerOrUpgrader {
         // process list of files (or directories) to overwrite
         ProcessExecutor processExecutor = new ProcessExecutor();
         for (String file : filesToOverwrite) {
-            File destinationFile = new File(readWriteDirectory, file);
+            File destinationFile = new File(persistenceRoot, file);
             LernstickFileTools.recursiveDelete(destinationFile, true);
 
             // recursive copy
             processExecutor.executeProcess(true, true,
-                    "cp", "-a", "--parents", file, readWriteDirectory);
-        }
-
-        // when upgrading from very old versions, the persistence.conf file
-        // is still missing and we have to add it now
-        File persistenceConf = new File(dataMountPoint, "persistence.conf");
-        if (!persistenceConf.exists()) {
-            DLCopy.writePersistenceConf(dataMountPoint);
+                    "cp", "-a", "--parents", file, persistenceRoot);
         }
     }
 

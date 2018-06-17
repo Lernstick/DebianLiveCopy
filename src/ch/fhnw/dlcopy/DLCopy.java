@@ -12,6 +12,7 @@ import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
@@ -508,10 +509,14 @@ public class DLCopy {
      */
     public static void writePersistenceConf(String mountPath)
             throws IOException {
-        try (FileWriter writer = new FileWriter(
-                mountPath + "/persistence.conf")) {
-            writer.write("/ union,source=.\n");
-            writer.flush();
+
+        Path configFilePath = Paths.get(mountPath, "persistence.conf");
+        if (!Files.exists(configFilePath)) {
+            try (BufferedWriter writer
+                    = Files.newBufferedWriter(configFilePath)) {
+                writer.write("/ union,source=.\n");
+                writer.flush();
+            }
         }
     }
 
