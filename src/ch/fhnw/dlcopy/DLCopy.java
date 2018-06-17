@@ -588,10 +588,12 @@ public class DLCopy {
         }
         writePersistenceConf(mountPath);
 
-        if (DebianLiveVersion.getRunningVersion().ordinal()
-                >= DebianLiveVersion.DEBIAN_8_to_9.ordinal()) {
-            // create empty directories "rw" and "work" for overlayfs
-            // so that read-only mode works out-of-the-box
+        if (getMajorDebianVersion() >= 9) {
+            // Starting with Debian 9 we use overlayfs for the data partition.
+            // Therefore we create here the empty directories "rw" and "work"
+            // for overlayfs so that read-only mode works out-of-the-box.
+            // Otherwise the system would just crash when using read-only mode
+            // at the first system startup.
             Files.createDirectory(Paths.get(mountPath, "rw"));
             Files.createDirectory(Paths.get(mountPath, "work"));
         }
