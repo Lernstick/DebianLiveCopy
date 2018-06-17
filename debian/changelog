@@ -1,3 +1,9 @@
+dlcopy (201806171728-1) lernstick-9; urgency=medium
+
+  * [6996ed] simplified and fixed path handling in Upgrader
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 17 Jun 2018 17:28:10 +0200
+
 dlcopy (201806171640-1) lernstick-9; urgency=medium
 
   * [705686] updated isolated upgrade strings
