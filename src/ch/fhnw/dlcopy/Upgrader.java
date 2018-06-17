@@ -420,7 +420,8 @@ public class Upgrader extends InstallerOrUpgrader {
         List<String> readOnlyMountPoints = LernstickFileTools.mountAllSquashFS(
                 systemMountInfo.getMountPath());
 
-        File cowDir;
+        File cowDir = null;
+        boolean mountAufs = false;
         boolean upgradeFromAufsToOverlay = false;
         int majorDebianVersion = DLCopy.getMajorDebianVersion();
         if (majorDebianVersion > 8) {
@@ -434,18 +435,36 @@ public class Upgrader extends InstallerOrUpgrader {
             if (Files.exists(Paths.get(dataMountPoint, "rw"))
                     && Files.exists(Paths.get(dataMountPoint, "work"))) {
                 // Debian 9 to Debian 9 or newer
-                cowDir = new File(LernstickFileTools.mountOverlay(
-                        dataMountPoint, readOnlyMountPoints, true), "merged");
+
+                // There was a bug in DLCopy.formatPersistencePartition()
+                // (introduced in git commit
+                // 0e3a6249cd5177fe0f1f0fb1de7ce826f51629e3 and fixed in git
+                // commit 6ce8559d864d79f1bee10669897a3c7aab90083e) where we
+                // created the rw and work directories also in Debian 8.
+                // Therefore we have to doublecheck here with some heuristic
+                // if the medium is still a Debian 8 system.
+                if (!Files.exists(Paths.get(dataMountPoint, "rw", "home"))
+                        && Files.exists(Paths.get(dataMountPoint, "home"))) {
+                    // OK, this is a Debian 8 system with our spurious and empty
+                    // home and rw directories...
+                    upgradeFromAufsToOverlay = true;
+                    mountAufs = true;
+                }
             } else {
                 // Debian 8 to Debian 9 or newer
                 upgradeFromAufsToOverlay = true;
-                cowDir = LernstickFileTools.mountAufs(
-                        dataMountPoint, readOnlyMountPoints);
+                mountAufs = true;
             }
         } else {
             // Debian 8 to Debian 8
+            mountAufs = true;
+        }
+        if (mountAufs) {
             cowDir = LernstickFileTools.mountAufs(
                     dataMountPoint, readOnlyMountPoints);
+        } else {
+            cowDir = new File(LernstickFileTools.mountOverlay(
+                    dataMountPoint, readOnlyMountPoints, true), "merged");
         }
 
         String cowPath = cowDir.getPath();
@@ -501,40 +520,15 @@ public class Upgrader extends InstallerOrUpgrader {
         }
 
         // rebuild union
-        boolean mountAufs = false;
-        if (majorDebianVersion > 8) {
-            if (Files.exists(Paths.get(dataMountPoint, "rw"))
-                    && Files.exists(Paths.get(dataMountPoint, "work"))) {
-
-                // There was a bug in DLCopy.formatPersistencePartition()
-                // (introduced in git commit
-                // 0e3a6249cd5177fe0f1f0fb1de7ce826f51629e3 and fixed in git
-                // commit 6ce8559d864d79f1bee10669897a3c7aab90083e) where we
-                // created the rw and work directories also in Debian 8.
-                // Therefore we have to doublecheck here with some heuristic
-                // if the medium is still a Debian 8 system.
-                if (!Files.exists(Paths.get(dataMountPoint, "rw", "home"))
-                        && Files.exists(Paths.get(dataMountPoint, "home"))) {
-                    // OK, this is a Debian 8 system with our spurious and empty
-                    // home and rw directories...
-                    mountAufs = true;
-                } else {
-                    // !!! DON'T use a temporary upper dir here !!!
-                    // Otherwise we will most probably run out of memory during
-                    // the copyup operation below.
-                    File rwDir = LernstickFileTools.mountOverlay(
-                            dataMountPoint, readOnlyMountPoints, false);
-                    cowDir = new File(rwDir, "merged");
-                }
-            } else {
-                mountAufs = true;
-            }
-        } else {
-            mountAufs = true;
-        }
         if (mountAufs) {
             cowDir = LernstickFileTools.mountAufs(
                     dataMountPoint, readOnlyMountPoints);
+        } else {
+            // !!! DON'T use a temporary upper dir here !!!
+            // Otherwise we will most probably run out of memory during
+            // the copyup operation below.
+            cowDir = new File(LernstickFileTools.mountOverlay(
+                    dataMountPoint, readOnlyMountPoints, false), "merged");
         }
         cowPath = cowDir.getPath();
 
@@ -551,15 +545,21 @@ public class Upgrader extends InstallerOrUpgrader {
             DLCopy.umount(cowPath, dlCopyGUI);
 
             // create new overlay directories "/work/" and "/rw/"
-            Files.createDirectory(Paths.get(dataMountPoint, "work"));
-            Path rwdir = Files.createDirectory(Paths.get(dataMountPoint, "rw"));
+            Path workPath = Paths.get(dataMountPoint, "work");
+            if (!Files.exists(workPath)) {
+                Files.createDirectory(workPath);
+            }
+            Path rwPath = Paths.get(dataMountPoint, "rw");
+            if (!Files.exists(rwPath)) {
+                Files.createDirectory(rwPath);
+            }
 
             // move "/home/" to "/rw/home/" and
             // move "/etc/" to "/rw/etc/"
             Path homeDir = Paths.get(dataMountPoint, "home");
             Path etcDir = Paths.get(dataMountPoint, "etc");
-            Files.move(homeDir, rwdir.resolve(homeDir.getFileName()));
-            Files.move(etcDir, rwdir.resolve(etcDir.getFileName()));
+            Files.move(homeDir, rwPath.resolve(homeDir.getFileName()));
+            Files.move(etcDir, rwPath.resolve(etcDir.getFileName()));
 
             cowDir = new File(LernstickFileTools.mountOverlay(
                     dataMountPoint, readOnlyMountPoints, false), "merged");
