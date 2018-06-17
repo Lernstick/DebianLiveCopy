@@ -164,6 +164,7 @@ public class DLCopySwingGUI extends JFrame
     private Integer commandLineExchangePartitionSize;
     private String commandLineExchangePartitionFileSystem;
     private Boolean commandLineCopyDataPartition;
+    private Boolean commandLineReactivateWelcome;
     private boolean instantInstallation;
     private boolean instantUpgrade;
     private boolean autoUpgrade;
@@ -386,8 +387,12 @@ public class DLCopySwingGUI extends JFrame
         }
         upgradeSystemPartitionCheckBox.setSelected(
                 preferences.getBoolean(UPGRADE_SYSTEM_PARTITION, true));
-        reactivateWelcomeCheckBox.setSelected(
-                preferences.getBoolean(REACTIVATE_WELCOME, true));
+        if (commandLineReactivateWelcome == null) {
+            reactivateWelcomeCheckBox.setSelected(
+                    preferences.getBoolean(REACTIVATE_WELCOME, true));
+        } else {
+            reactivateWelcomeCheckBox.setSelected(commandLineReactivateWelcome);
+        }
         keepPrinterSettingsCheckBox.setSelected(
                 preferences.getBoolean(KEEP_PRINTER_SETTINGS, true));
         keepNetworkSettingsCheckBox.setSelected(
@@ -496,6 +501,12 @@ public class DLCopySwingGUI extends JFrame
             // change texts
             upgradeNoMediaLabel.setText(
                     STRINGS.getString("Insert_Media_Isolated"));
+
+            // change insets
+            GridBagLayout layout = (GridBagLayout) executionPanel.getLayout();
+            GridBagConstraints constraints = layout.getConstraints(cardPanel);
+            constraints.insets = new Insets(0, 0, 0, 0);
+            layout.setConstraints(cardPanel, constraints);
         }
 
         if (instantInstallation) {
@@ -4053,9 +4064,15 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             // if the data partition should be copied
             if (arguments[i].equals("--copyDataPartition")
                     && (i != length - 1)) {
-                if ("true".equalsIgnoreCase(arguments[i + 1])) {
-                    commandLineCopyDataPartition = true;
-                }
+                commandLineCopyDataPartition
+                        = "true".equalsIgnoreCase(arguments[i + 1]);
+            }
+
+            // if the welcome application should be reactivated during upgrade
+            if (arguments[i].equals("--reactivateWelcome")
+                    && (i != length - 1)) {
+                commandLineReactivateWelcome
+                        = "true".equalsIgnoreCase(arguments[i + 1]);
             }
 
             if (arguments[i].equals("--autoUpgrade")) {
