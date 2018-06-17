@@ -487,7 +487,7 @@ public class DLCopySwingGUI extends JFrame
             upgradeTabbedPane.remove(upgradeReportPanel);
 
             // change colors
-            upgradeNoMediaPanel.setBackground(DARK_GREEN);
+            upgradeNoMediaPanel.setBackground(Color.YELLOW);
             upgradePanel.setBackground(Color.RED);
             upgradeIndeterminateProgressPanel.setBackground(Color.RED);
             upgradeFileCopierPanel.setBackground(Color.RED);
@@ -906,7 +906,7 @@ public class DLCopySwingGUI extends JFrame
                     "Upgrade_Report");
         } else {
             if (isolatedAutoUpgrade) {
-                upgradeNoMediaPanel.setBackground(Color.YELLOW);
+                upgradeNoMediaPanel.setBackground(DARK_GREEN);
                 upgradeNoMediaLabel.setText(
                         STRINGS.getString("Upgrade_Done_Isolated"));
             }
@@ -4458,7 +4458,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         break;
                     case UPGRADE_SELECTION:
                         if (isolatedAutoUpgrade) {
-                            upgradeNoMediaPanel.setBackground(DARK_GREEN);
+                            upgradeNoMediaPanel.setBackground(Color.YELLOW);
                             upgradeNoMediaLabel.setText(
                                     STRINGS.getString("Insert_Media_Isolated"));
                         }
