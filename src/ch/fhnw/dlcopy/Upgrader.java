@@ -501,20 +501,38 @@ public class Upgrader extends InstallerOrUpgrader {
         }
 
         // rebuild union
+        boolean mountAufs = false;
         if (majorDebianVersion > 8) {
             if (Files.exists(Paths.get(dataMountPoint, "rw"))
                     && Files.exists(Paths.get(dataMountPoint, "work"))) {
-                // !!! DON'T use a temporary upper dir here !!!
-                // Otherwise we will most probably run out of memory during the
-                // copyup operation below.
-                File rwDir = LernstickFileTools.mountOverlay(
-                        dataMountPoint, readOnlyMountPoints, false);
-                cowDir = new File(rwDir, "merged");
+
+                // There was a bug in DLCopy.formatPersistencePartition()
+                // (introduced in git commit
+                // 0e3a6249cd5177fe0f1f0fb1de7ce826f51629e3 and fixed in git
+                // commit 6ce8559d864d79f1bee10669897a3c7aab90083e) where we
+                // created the rw and work directories also in Debian 8.
+                // Therefore we have to doublecheck here with some heuristic
+                // if the medium is still a Debian 8 system.
+                if (!Files.exists(Paths.get(dataMountPoint, "rw", "home"))
+                        && Files.exists(Paths.get(dataMountPoint, "home"))) {
+                    // OK, this is a Debian 8 system with our spurious and empty
+                    // home and rw directories...
+                    mountAufs = true;
+                } else {
+                    // !!! DON'T use a temporary upper dir here !!!
+                    // Otherwise we will most probably run out of memory during
+                    // the copyup operation below.
+                    File rwDir = LernstickFileTools.mountOverlay(
+                            dataMountPoint, readOnlyMountPoints, false);
+                    cowDir = new File(rwDir, "merged");
+                }
             } else {
-                cowDir = LernstickFileTools.mountAufs(
-                        dataMountPoint, readOnlyMountPoints);
+                mountAufs = true;
             }
         } else {
+            mountAufs = true;
+        }
+        if (mountAufs) {
             cowDir = LernstickFileTools.mountAufs(
                     dataMountPoint, readOnlyMountPoints);
         }
