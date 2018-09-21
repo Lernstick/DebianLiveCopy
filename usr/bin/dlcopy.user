@@ -1,13 +1,19 @@
 #!/bin/sh
 
-# remember original state of GNOME automount
+# remember original states
 CURRENT_AUTOMOUNT=$(gsettings get org.gnome.desktop.media-handling automount)
+CURRENT_IDLE_DIM=$(gsettings get org.gnome.settings-daemon.plugins.power idle-dim)
+CURRENT_IDLE_DELAY=$(gsettings get org.gnome.desktop.session idle-delay)
 
-# disable GNOME automount
-gsettings set org.gnome.desktop.media-handling automount false
+# change states for DLCopy
+gsettings set org.gnome.desktop.media-handling automount "false"
+gsettings set org.gnome.settings-daemon.plugins.power idle-dim "false"
+gsettings set org.gnome.desktop.session idle-delay "uint32 0"
 
 # run dlcopy with root rights
 pkexec /usr/bin/dlcopy $@
 
-# restore original automount state
-gsettings set org.gnome.desktop.media-handling automount ${CURRENT_AUTOMOUNT}
+# restore original states
+gsettings set org.gnome.desktop.media-handling automount "${CURRENT_AUTOMOUNT}"
+gsettings set org.gnome.settings-daemon.plugins.power idle-dim "${CURRENT_IDLE_DIM}"
+gsettings set org.gnome.desktop.session idle-delay "${CURRENT_IDLE_DELAY}"
