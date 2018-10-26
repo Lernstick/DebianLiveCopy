@@ -126,6 +126,7 @@ public class DLCopySwingGUI extends JFrame
     private final static String AUTO_NUMBER_PATTERN = "autoNumberPattern";
     private final static String AUTO_NUMBER_START = "autoNumberStart";
     private final static String AUTO_NUMBER_INCREMENT = "autoNumberIncrement";
+    private final static String AUTO_NUMBER_MIN_DIGITS = "autoNumberMinDigits";
     private final static String EXCHANGE_PARTITION_FILESYSTEM = "exchangePartitionFileSystem";
     private final static String COPY_EXCHANGE_PARTITION = "copyExchangePartition";
     private final static String DATA_PARTITION_FILESYSTEM = "dataPartitionFileSystem";
@@ -330,6 +331,8 @@ public class DLCopySwingGUI extends JFrame
         setSpinnerColums(autoNumberIncrementSpinner, 2);
         autoNumberIncrementSpinner.setValue(
                 preferences.getInt(AUTO_NUMBER_INCREMENT, 1));
+        autoNumberMinDigitsSpinner.setValue(
+                preferences.getInt(AUTO_NUMBER_MIN_DIGITS, 1));
 
         isoLabelTextField.setText("lernstick");
 
@@ -1244,6 +1247,8 @@ public class DLCopySwingGUI extends JFrame
         autoNumberStartSpinner.setEnabled(exchange);
         autoNumberIncrementLabel.setEnabled(exchange);
         autoNumberIncrementSpinner.setEnabled(exchange);
+        autoNumberMinDigitsLabel.setEnabled(exchange);
+        autoNumberMinDigitsSpinner.setEnabled(exchange);
         exchangePartitionFileSystemLabel.setEnabled(exchange);
         exchangePartitionFileSystemComboBox.setEnabled(exchange);
         copyExchangePartitionCheckBox.setEnabled(exchange && (systemSource != null)
@@ -1437,6 +1442,8 @@ public class DLCopySwingGUI extends JFrame
         autoNumberStartSpinner = new javax.swing.JSpinner();
         autoNumberIncrementLabel = new javax.swing.JLabel();
         autoNumberIncrementSpinner = new javax.swing.JSpinner();
+        autoNumberMinDigitsLabel = new javax.swing.JLabel();
+        autoNumberMinDigitsSpinner = new javax.swing.JSpinner();
         dataPartitionDetailsPanel = new javax.swing.JPanel();
         dataPartitionFileSystemLabel = new javax.swing.JLabel();
         dataPartitionFileSystemComboBox = new javax.swing.JComboBox();
@@ -2120,7 +2127,7 @@ public class DLCopySwingGUI extends JFrame
         autoNumberPatternLabel.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 2, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         autoNumberPanel.add(autoNumberPatternLabel, gridBagConstraints);
 
         autoNumberPatternTextField.setColumns(11);
@@ -2128,7 +2135,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 0);
         autoNumberPanel.add(autoNumberPatternTextField, gridBagConstraints);
 
         autoNumberStartLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -2136,7 +2143,7 @@ public class DLCopySwingGUI extends JFrame
         autoNumberStartLabel.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 2, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
         autoNumberPanel.add(autoNumberStartLabel, gridBagConstraints);
 
         autoNumberStartSpinner.setModel(new javax.swing.SpinnerNumberModel(1, null, null, 1));
@@ -2144,7 +2151,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 5);
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
         autoNumberPanel.add(autoNumberStartSpinner, gridBagConstraints);
 
         autoNumberIncrementLabel.setHorizontalAlignment(javax.swing.SwingConstants.LEFT);
@@ -2153,7 +2160,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 2, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
         autoNumberPanel.add(autoNumberIncrementLabel, gridBagConstraints);
 
         autoNumberIncrementSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, null, 1));
@@ -2161,8 +2168,23 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(0, 2, 2, 5);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
         autoNumberPanel.add(autoNumberIncrementSpinner, gridBagConstraints);
+
+        autoNumberMinDigitsLabel.setText(bundle.getString("DLCopySwingGUI.autoNumberMinDigitsLabel.text")); // NOI18N
+        autoNumberMinDigitsLabel.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 2;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 0);
+        autoNumberPanel.add(autoNumberMinDigitsLabel, gridBagConstraints);
+
+        autoNumberMinDigitsSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, null, 1));
+        autoNumberMinDigitsSpinner.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        autoNumberPanel.add(autoNumberMinDigitsSpinner, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -4601,6 +4623,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 ((Number) autoNumberStartSpinner.getValue()).intValue());
         preferences.putInt(AUTO_NUMBER_INCREMENT,
                 ((Number) autoNumberIncrementSpinner.getValue()).intValue());
+        preferences.putInt(AUTO_NUMBER_MIN_DIGITS,
+                ((Number) autoNumberMinDigitsSpinner.getValue()).intValue());
         preferences.put(EXCHANGE_PARTITION_FILESYSTEM,
                 exchangePartitionFileSystemComboBox.getSelectedItem().
                         toString());
@@ -4993,8 +5017,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         Number autoNumberStart = (Number) autoNumberStartSpinner.getValue();
         Number autoIncrementNumber
                 = (Number) autoNumberIncrementSpinner.getValue();
+        Number autoMinDigitsNumber
+                = (Number) autoNumberMinDigitsSpinner.getValue();
         int autoNumber = autoNumberStart.intValue();
         int autoIncrement = autoIncrementNumber.intValue();
+        int autoMinDigits = autoMinDigitsNumber.intValue();
         List<StorageDevice> deviceList = new ArrayList<>();
         for (int i : selectedIndices) {
             deviceList.add(installStorageDeviceListModel.get(i));
@@ -5017,8 +5044,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 exchangePartitionTextField.getText(),
                 exchangePartitionFileSystem, dataPartitionFileSystem, this,
                 exchangePartitionSizeSlider.getValue(), copyExchange,
-                autoNumber, autoIncrement, autoNumberPatternTextField.getText(),
-                copyData, dataPartitionMode).execute();
+                autoNumberPatternTextField.getText(), autoNumber, autoIncrement,
+                autoMinDigits, copyData, dataPartitionMode).execute();
     }
 
     private boolean upgradeSanityChecks() {
@@ -5482,6 +5509,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel autoNumberIncrementLabel;
     private javax.swing.JSpinner autoNumberIncrementSpinner;
+    private javax.swing.JLabel autoNumberMinDigitsLabel;
+    private javax.swing.JSpinner autoNumberMinDigitsSpinner;
     private javax.swing.JPanel autoNumberPanel;
     private javax.swing.JLabel autoNumberPatternLabel;
     private javax.swing.JTextField autoNumberPatternTextField;

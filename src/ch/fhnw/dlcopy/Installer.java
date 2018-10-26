@@ -25,27 +25,30 @@ public class Installer extends InstallerOrUpgrader
 
     private final int exchangePartitionSize;
     private final boolean copyExchangePartition;
-    private final int autoNumberIncrement;
     private final String autoNumberPattern;
     private int autoNumber;
+    private final int autoNumberIncrement;
+    private final int autoNumberMinDigits;
     private final boolean copyDataPartition;
     private final DataPartitionMode dataPartitionMode;
 
     /**
      * creates a new Installer
      *
-     * @param dlCopyGUI the DLCopy GUI
+     * @param source the system source
      * @param deviceList the list of StorageDevices to install
      * @param exchangePartitionLabel the label of the exchange partition
-     * @param source the system source
-     * @param exchangePartitionSize the size of the exchange partition
      * @param exchangePartitionFileSystem the file system of the exchange
      * partition
+     * @param dataPartitionFileSystem the file system of the data partition
+     * @param dlCopyGUI the DLCopy GUI
+     * @param exchangePartitionSize the size of the exchange partition
      * @param copyExchangePartition if the exchange partition should be copied
+     * @param autoNumberPattern the auto numbering pattern
      * @param autoNumberStart the auto numbering start value
      * @param autoNumberIncrement the auto numbering increment
-     * @param autoNumberPattern the auto numbering pattern
-     * @param dataPartitionFileSystem the file system of the data partition
+     * @param autoNumberMinDigits the minimal number of digits to use for auto
+     * numbering
      * @param copyDataPartition if the data partition should be copied
      * @param dataPartitionMode the mode of the data partition to set in the
      * bootloaders config
@@ -54,8 +57,9 @@ public class Installer extends InstallerOrUpgrader
             String exchangePartitionLabel, String exchangePartitionFileSystem,
             String dataPartitionFileSystem, DLCopyGUI dlCopyGUI,
             int exchangePartitionSize, boolean copyExchangePartition,
-            int autoNumberStart, int autoNumberIncrement,
-            String autoNumberPattern, boolean copyDataPartition,
+            String autoNumberPattern, int autoNumberStart,
+            int autoNumberIncrement, int autoNumberMinDigits,
+            boolean copyDataPartition,
             DataPartitionMode dataPartitionMode) {
 
         super(source, deviceList, exchangePartitionLabel,
@@ -64,9 +68,10 @@ public class Installer extends InstallerOrUpgrader
 
         this.exchangePartitionSize = exchangePartitionSize;
         this.copyExchangePartition = copyExchangePartition;
-        this.autoNumberIncrement = autoNumberIncrement;
         this.autoNumberPattern = autoNumberPattern;
         this.autoNumber = autoNumberStart;
+        this.autoNumberIncrement = autoNumberIncrement;
+        this.autoNumberMinDigits = autoNumberMinDigits;
         this.copyDataPartition = copyDataPartition;
         this.dataPartitionMode = dataPartitionMode;
     }
@@ -85,8 +90,14 @@ public class Installer extends InstallerOrUpgrader
 
             // auto numbering
             if (!autoNumberPattern.isEmpty()) {
+                String autoNumberString = String.valueOf(autoNumber);
+                int nrOfPrefixZeros
+                        = autoNumberMinDigits - autoNumberString.length();
+                for (int i = 0; i < nrOfPrefixZeros; i++) {
+                    autoNumberString = "0" + autoNumberString;
+                }
                 currentExchangePartitionLabel = exchangePartitionLabel.replace(
-                        autoNumberPattern, String.valueOf(autoNumber));
+                        autoNumberPattern, autoNumberString);
                 autoNumber += autoNumberIncrement;
             }
 
