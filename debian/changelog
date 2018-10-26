@@ -1,3 +1,10 @@
+dlcopy (201810262332-1) lernstick-9; urgency=medium
+
+  * [bc16c3] moved details of install selection into its own tab
+  * [57370a] added support for minimal number of digits in auto numbering
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 26 Oct 2018 23:32:19 +0200
+
 dlcopy (201809211530-1) lernstick-9; urgency=medium
 
   * [6217ec] set idle-dim and idle-delay in dlcopy.user wrapper script
