@@ -216,8 +216,8 @@ public class IsoSystemSource extends SystemSource {
         try {
             mediaPath = LernstickFileTools.createTempDirectory(
                     new File("/tmp/"), "DLCopy").getCanonicalPath();
-            processExecutor.executeScript(
-                    String.format("mount -o ro %s %s\n", imagePath, mediaPath));
+            processExecutor.executeScript(String.format(
+                    "mount -o ro \"%s\" \"%s\"\n", imagePath, mediaPath));
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
             mediaPath = null;
