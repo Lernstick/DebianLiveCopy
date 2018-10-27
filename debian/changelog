@@ -1,3 +1,9 @@
+dlcopy (201810271740-1) lernstick-9; urgency=medium
+
+  * [32e5f9] fixed resourcebundle key
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 27 Oct 2018 17:40:37 +0200
+
 dlcopy (201810262332-1) lernstick-9; urgency=medium
 
   * [bc16c3] moved details of install selection into its own tab
