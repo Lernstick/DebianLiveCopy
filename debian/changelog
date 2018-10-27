@@ -1,3 +1,9 @@
+dlcopy (201810271915-1) lernstick-9; urgency=medium
+
+  * [8e5189] support ISO system source with whitespace image path
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 27 Oct 2018 19:15:19 +0200
+
 dlcopy (201810271740-1) lernstick-9; urgency=medium
 
   * [32e5f9] fixed resourcebundle key
