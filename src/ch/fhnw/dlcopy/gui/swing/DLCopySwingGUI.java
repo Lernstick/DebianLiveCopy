@@ -4221,9 +4221,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     = systemSource.getExchangePartition().getUsedSpace(false);
             String dataVolumeString
                     = LernstickFileTools.getDataVolumeString(exchangeSize, 1);
-            copyExchangePartitionCheckBox.setText(STRINGS.getString(
-                    "DLCopySwingGUI.copyExchangeCheckBox.text")
-                    + " (" + dataVolumeString + ')');
+            copyExchangePartitionCheckBox.setText(
+                    STRINGS.getString("Copy") + " (" + dataVolumeString + ')');
             copyExchangePartitionCheckBox.setToolTipText(null);
         } else {
             copyExchangePartitionCheckBox.setToolTipText(
