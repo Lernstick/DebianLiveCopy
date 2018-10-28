@@ -1419,12 +1419,14 @@ public class DLCopySwingGUI extends JFrame
         systemDefinitionLabel = new javax.swing.JLabel();
         basicExchangePartitionPanel = new javax.swing.JPanel();
         copyExchangePartitionCheckBox = new javax.swing.JCheckBox();
+        exchangePartitionSeparator = new javax.swing.JSeparator();
         exchangePartitionSizeLabel = new javax.swing.JLabel();
         exchangePartitionSizeSlider = new javax.swing.JSlider();
         exchangePartitionSizeTextField = new javax.swing.JTextField();
         exchangePartitionSizeUnitLabel = new javax.swing.JLabel();
         basicDataPartitionPanel = new javax.swing.JPanel();
         copyDataPartitionCheckBox = new javax.swing.JCheckBox();
+        dataPartitionSeparator = new javax.swing.JSeparator();
         dataPartitionModeLabel = new javax.swing.JLabel();
         dataPartitionModeComboBox = new javax.swing.JComboBox();
         installDetailsPanel = new javax.swing.JPanel();
@@ -1986,14 +1988,21 @@ public class DLCopySwingGUI extends JFrame
         copyExchangePartitionCheckBox.setText(bundle.getString("Copy")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
         basicExchangePartitionPanel.add(copyExchangePartitionCheckBox, gridBagConstraints);
+
+        exchangePartitionSeparator.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
+        basicExchangePartitionPanel.add(exchangePartitionSeparator, gridBagConstraints);
 
         exchangePartitionSizeLabel.setText(bundle.getString("Size")); // NOI18N
         exchangePartitionSizeLabel.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
         basicExchangePartitionPanel.add(exchangePartitionSizeLabel, gridBagConstraints);
 
         exchangePartitionSizeSlider.setMaximum(0);
@@ -2043,13 +2052,20 @@ public class DLCopySwingGUI extends JFrame
         copyDataPartitionCheckBox.setText(bundle.getString("Copy")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
         basicDataPartitionPanel.add(copyDataPartitionCheckBox, gridBagConstraints);
+
+        dataPartitionSeparator.setOrientation(javax.swing.SwingConstants.VERTICAL);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
+        basicDataPartitionPanel.add(dataPartitionSeparator, gridBagConstraints);
 
         dataPartitionModeLabel.setText(bundle.getString("DLCopySwingGUI.dataPartitionModeLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 5, 0);
         basicDataPartitionPanel.add(dataPartitionModeLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -5547,6 +5563,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JComboBox dataPartitionModeComboBox;
     private javax.swing.JLabel dataPartitionModeLabel;
     private javax.swing.JRadioButton dataPartitionRadioButton;
+    private javax.swing.JSeparator dataPartitionSeparator;
     private javax.swing.JLabel doneLabel;
     private javax.swing.JPanel donePanel;
     private javax.swing.ButtonGroup exchangeButtonGroup;
@@ -5557,6 +5574,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JPanel exchangePartitionFileSystemPanel;
     private javax.swing.JLabel exchangePartitionLabel;
     private javax.swing.JPanel exchangePartitionLabelPanel;
+    private javax.swing.JSeparator exchangePartitionSeparator;
     private javax.swing.JLabel exchangePartitionSizeLabel;
     private javax.swing.JSlider exchangePartitionSizeSlider;
     private javax.swing.JTextField exchangePartitionSizeTextField;
