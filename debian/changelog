@@ -1,3 +1,9 @@
+dlcopy (201810282057-1) lernstick-9; urgency=medium
+
+  * [2405f9] added separators after copy checkboxes in partition detail controls
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 28 Oct 2018 20:57:13 +0100
+
 dlcopy (201810271915-1) lernstick-9; urgency=medium
 
   * [8e5189] support ISO system source with whitespace image path
