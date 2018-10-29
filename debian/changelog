@@ -1,3 +1,9 @@
+dlcopy (201810291622-1) lernstick-9; urgency=medium
+
+  * [ad4533] sync width of installation destination checkboxes
+
+ -- Ronny <ronny.standtke@gmx.net>  Mon, 29 Oct 2018 16:22:44 +0100
+
 dlcopy (201810282057-1) lernstick-9; urgency=medium
 
   * [2405f9] added separators after copy checkboxes in partition detail controls
