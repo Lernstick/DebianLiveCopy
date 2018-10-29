@@ -1995,7 +1995,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 3, 0);
         basicExchangePartitionPanel.add(exchangePartitionSeparator, gridBagConstraints);
 
         exchangePartitionSizeLabel.setText(bundle.getString("Size")); // NOI18N
@@ -2059,7 +2059,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.VERTICAL;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 3, 0);
         basicDataPartitionPanel.add(dataPartitionSeparator, gridBagConstraints);
 
         dataPartitionModeLabel.setText(bundle.getString("DLCopySwingGUI.dataPartitionModeLabel.text")); // NOI18N
@@ -4275,6 +4275,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                             dataPartition.getUsedSpace(false), 1) + ')';
             copyDataPartitionCheckBox.setText(checkBoxText);
         }
+        syncWidth(copyExchangePartitionCheckBox, copyDataPartitionCheckBox);
 
         DataPartitionMode sourceDataPartitionMode
                 = systemSource.getDataPartitionMode();
@@ -4304,6 +4305,20 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     "/ch/fhnw/dlcopy/icons/usb2usb.png"));
             infoLabel.setIcon(usb2usbIcon);
             installButton.setIcon(usb2usbIcon);
+        }
+    }
+
+    private void syncWidth(JComponent component1, JComponent component2) {
+        int preferredWidth = Math.max(component1.getPreferredSize().width,
+                component2.getPreferredSize().width);
+        setPreferredWidth(preferredWidth, component1, component2);
+    }
+
+    private void setPreferredWidth(int preferredWidth, JComponent... components) {
+        for (JComponent component : components) {
+            Dimension preferredSize = component.getPreferredSize();
+            preferredSize.width = preferredWidth;
+            component.setPreferredSize(preferredSize);
         }
     }
 
