@@ -14,6 +14,12 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.attribute.UserPrincipal;
+import java.nio.file.attribute.UserPrincipalLookupService;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Properties;
@@ -359,12 +365,25 @@ public class IsoCreator
         // system
         DLCopy.removeSshConfig(cowDir.getPath());
 
+        // Unfortunately, squashfs doesn't support ACLs (see section 4.1 in
+        // https://www.kernel.org/doc/Documentation/filesystems/squashfs.txt).
+        // According to this Launchpad bug entry:
+        // https://bugs.launchpad.net/ubuntu/+source/udisks2/+bug/1048059
+        // ...we should fall back to chowning the directory to the target user.
+        String cowPath = cowDir.getPath();
+        Path userMediaPath = Paths.get(cowPath, "media/user");
+        if (Files.exists(userMediaPath)) {
+            UserPrincipalLookupService lookupService
+                    = FileSystems.getDefault().getUserPrincipalLookupService();
+            UserPrincipal user = lookupService.lookupPrincipalByName("user");
+            Files.setOwner(userMediaPath, user);
+        }
+
         // create new squashfs image
         step = Step.MKSQUASHFS;
         dlCopyGUI.showIsoProgressMessage(
                 STRINGS.getString("Compressing_Filesystem"));
         PROCESS_EXECUTOR.addPropertyChangeListener(this);
-        String cowPath = cowDir.getPath();
         int exitValue = PROCESS_EXECUTOR.executeProcess("mksquashfs",
                 cowPath, targetDirectory + "/live/filesystem.squashfs",
                 "-comp", "xz");
