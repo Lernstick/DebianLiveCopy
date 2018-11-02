@@ -1,3 +1,9 @@
+dlcopy (201811021931-1) lernstick-9; urgency=medium
+
+  * [267493] added workaround for missing ACL support in squashfs
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 02 Nov 2018 19:31:24 +0100
+
 dlcopy (201810291622-1) lernstick-9; urgency=medium
 
   * [ad4533] sync width of installation destination checkboxes
