@@ -3,6 +3,8 @@ package ch.fhnw.dlcopy.gui;
 import ch.fhnw.dlcopy.Installer;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.StorageDevice;
+import java.nio.file.Path;
+import java.util.List;
 
 /**
  * The interface a GUI for DLCopy has to implement
@@ -234,6 +236,19 @@ public interface DLCopyGUI {
      * @param storageDevice the StorageDevice to be reset
      */
     public void resettingDeviceStarted(StorageDevice storageDevice);
+
+    /**
+     * shows the user interface for printing documents during reset
+     */
+    public void showPrintingDocuments();
+
+    /**
+     * shows the user a list of documents that can be selected to print
+     * @param type the type of documents to select
+     * @param documents the list of documents to print
+     * @return the list of documents selected for printing
+     */
+    public List<Path> selectDocumentsToPrint(String type, List<Path> documents);
 
     /**
      * shows the user interface for formatting the exchange partition during
