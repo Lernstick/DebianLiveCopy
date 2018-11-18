@@ -924,7 +924,7 @@ public class DLCopySwingGUI extends JFrame
                 upgradeNoMediaLabel.setText(
                         STRINGS.getString("Upgrade_Done_Isolated"));
             }
-            showCard(cardPanel, "upgradeSelectionPanel");
+            showCard(cardPanel, "upgradeSelectionTabbedPane");
             previousButton.setEnabled(true);
             previousButton.requestFocusInWindow();
             getRootPane().setDefaultButton(previousButton);
@@ -1479,7 +1479,6 @@ public class DLCopySwingGUI extends JFrame
         doneLabel = new javax.swing.JLabel();
         upgradeInfoPanel = new javax.swing.JPanel();
         upgradeInfoLabel = new javax.swing.JLabel();
-        upgradeSelectionPanel = new javax.swing.JPanel();
         upgradeSelectionTabbedPane = new javax.swing.JTabbedPane();
         upgradeSelectionModePanel = new javax.swing.JPanel();
         upgradeListModeRadioButton = new javax.swing.JRadioButton();
@@ -2432,12 +2431,11 @@ public class DLCopySwingGUI extends JFrame
 
         cardPanel.add(upgradeInfoPanel, "upgradeInfoPanel");
 
-        upgradeSelectionPanel.addComponentListener(new java.awt.event.ComponentAdapter() {
+        upgradeSelectionTabbedPane.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentShown(java.awt.event.ComponentEvent evt) {
-                upgradeSelectionPanelComponentShown(evt);
+                upgradeSelectionTabbedPaneComponentShown(evt);
             }
         });
-        upgradeSelectionPanel.setLayout(new java.awt.GridBagLayout());
 
         upgradeSelectionModePanel.setLayout(new java.awt.GridBagLayout());
 
@@ -2884,14 +2882,7 @@ public class DLCopySwingGUI extends JFrame
 
         upgradeSelectionTabbedPane.addTab(bundle.getString("Details"), upgradeDetailsTabbedPane); // NOI18N
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        upgradeSelectionPanel.add(upgradeSelectionTabbedPane, gridBagConstraints);
-
-        cardPanel.add(upgradeSelectionPanel, "upgradeSelectionPanel");
+        cardPanel.add(upgradeSelectionTabbedPane, "upgradeSelectionTabbedPane");
 
         upgradePanel.setLayout(new java.awt.GridBagLayout());
 
@@ -3856,14 +3847,6 @@ public class DLCopySwingGUI extends JFrame
         updateUpgradeSelectionCountAndNextButton();
     }//GEN-LAST:event_upgradeStorageDeviceListValueChanged
 
-    private void upgradeSelectionPanelComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_upgradeSelectionPanelComponentShown
-        if (upgradeListModeRadioButton.isSelected()) {
-            new UpgradeStorageDeviceListUpdater(runningSystemSource, this,
-                    upgradeStorageDeviceList, upgradeStorageDeviceListModel,
-                    upgradeShowHarddisksCheckBox.isSelected()).execute();
-        }
-    }//GEN-LAST:event_upgradeSelectionPanelComponentShown
-
 private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_upgradeShowHarddisksCheckBoxItemStateChanged
     new UpgradeStorageDeviceListUpdater(runningSystemSource, this,
             upgradeStorageDeviceList, upgradeStorageDeviceListModel,
@@ -4108,6 +4091,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         showCard(upgradeSelectionCardPanel, "upgradeNoMediaPanel");
         nextButton.setEnabled(false);
     }//GEN-LAST:event_upgradeAutomaticRadioButtonActionPerformed
+
+    private void upgradeSelectionTabbedPaneComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_upgradeSelectionTabbedPaneComponentShown
+        if (upgradeListModeRadioButton.isSelected()) {
+            new UpgradeStorageDeviceListUpdater(runningSystemSource, this,
+                    upgradeStorageDeviceList, upgradeStorageDeviceListModel,
+                    upgradeShowHarddisksCheckBox.isSelected()).execute();
+        }
+    }//GEN-LAST:event_upgradeSelectionTabbedPaneComponentShown
 
     private void parseCommandLineArguments(String[] arguments) {
         for (int i = 0, length = arguments.length; i < length; i++) {
@@ -4373,7 +4364,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         setLabelHighlighted(selectionLabel, true);
         setLabelHighlighted(executionLabel, false);
         state = State.UPGRADE_SELECTION;
-        showCard(cardPanel, "upgradeSelectionPanel");
+        showCard(cardPanel, "upgradeSelectionTabbedPane");
         enableNextButton();
     }
 
@@ -5791,7 +5782,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel upgradeSelectionHeaderLabel;
     private javax.swing.JPanel upgradeSelectionInfoPanel;
     private javax.swing.JPanel upgradeSelectionModePanel;
-    private javax.swing.JPanel upgradeSelectionPanel;
     private javax.swing.JSeparator upgradeSelectionSeparator;
     private javax.swing.JTabbedPane upgradeSelectionTabbedPane;
     private javax.swing.JCheckBox upgradeShowHarddisksCheckBox;
