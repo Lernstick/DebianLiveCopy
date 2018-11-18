@@ -1480,14 +1480,16 @@ public class DLCopySwingGUI extends JFrame
         upgradeInfoPanel = new javax.swing.JPanel();
         upgradeInfoLabel = new javax.swing.JLabel();
         upgradeSelectionPanel = new javax.swing.JPanel();
-        upgradeSelectionHeaderLabel = new javax.swing.JLabel();
-        upgradeShowHarddisksCheckBox = new javax.swing.JCheckBox();
         upgradeSelectionTabbedPane = new javax.swing.JTabbedPane();
         upgradeSelectionModePanel = new javax.swing.JPanel();
         upgradeListModeRadioButton = new javax.swing.JRadioButton();
         upgradeAutomaticRadioButton = new javax.swing.JRadioButton();
+        upgradeSelectionSeparator = new javax.swing.JSeparator();
         upgradeSelectionCardPanel = new javax.swing.JPanel();
         upgradeSelectionDeviceListPanel = new javax.swing.JPanel();
+        upgradeSelectionInfoPanel = new javax.swing.JPanel();
+        upgradeSelectionHeaderLabel = new javax.swing.JLabel();
+        upgradeShowHarddisksCheckBox = new javax.swing.JCheckBox();
         upgradeSelectionCountLabel = new javax.swing.JLabel();
         upgradeStorageDeviceListScrollPane = new javax.swing.JScrollPane();
         upgradeStorageDeviceList = new javax.swing.JList();
@@ -2437,25 +2439,6 @@ public class DLCopySwingGUI extends JFrame
         });
         upgradeSelectionPanel.setLayout(new java.awt.GridBagLayout());
 
-        upgradeSelectionHeaderLabel.setFont(upgradeSelectionHeaderLabel.getFont().deriveFont(upgradeSelectionHeaderLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-        upgradeSelectionHeaderLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        upgradeSelectionHeaderLabel.setText(bundle.getString("Select_Upgrade_Target_Storage_Media")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        upgradeSelectionPanel.add(upgradeSelectionHeaderLabel, gridBagConstraints);
-
-        upgradeShowHarddisksCheckBox.setFont(upgradeShowHarddisksCheckBox.getFont().deriveFont(upgradeShowHarddisksCheckBox.getFont().getStyle() & ~java.awt.Font.BOLD, upgradeShowHarddisksCheckBox.getFont().getSize()-1));
-        upgradeShowHarddisksCheckBox.setText(bundle.getString("DLCopySwingGUI.upgradeShowHarddisksCheckBox.text")); // NOI18N
-        upgradeShowHarddisksCheckBox.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                upgradeShowHarddisksCheckBoxItemStateChanged(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        upgradeSelectionPanel.add(upgradeShowHarddisksCheckBox, gridBagConstraints);
-
         upgradeSelectionModePanel.setLayout(new java.awt.GridBagLayout());
 
         selectionModeButtonGroup.add(upgradeListModeRadioButton);
@@ -2484,16 +2467,46 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         upgradeSelectionModePanel.add(upgradeAutomaticRadioButton, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        upgradeSelectionModePanel.add(upgradeSelectionSeparator, gridBagConstraints);
 
         upgradeSelectionCardPanel.setLayout(new java.awt.CardLayout());
 
         upgradeSelectionDeviceListPanel.setLayout(new java.awt.GridBagLayout());
 
-        upgradeSelectionCountLabel.setText(bundle.getString("Selection_Count")); // NOI18N
+        upgradeSelectionInfoPanel.setLayout(new java.awt.GridBagLayout());
+
+        upgradeSelectionHeaderLabel.setFont(upgradeSelectionHeaderLabel.getFont().deriveFont(upgradeSelectionHeaderLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+        upgradeSelectionHeaderLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        upgradeSelectionHeaderLabel.setText(bundle.getString("Select_Upgrade_Target_Storage_Media")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        upgradeSelectionInfoPanel.add(upgradeSelectionHeaderLabel, gridBagConstraints);
+
+        upgradeShowHarddisksCheckBox.setFont(upgradeShowHarddisksCheckBox.getFont().deriveFont(upgradeShowHarddisksCheckBox.getFont().getStyle() & ~java.awt.Font.BOLD, upgradeShowHarddisksCheckBox.getFont().getSize()-1));
+        upgradeShowHarddisksCheckBox.setText(bundle.getString("DLCopySwingGUI.upgradeShowHarddisksCheckBox.text")); // NOI18N
+        upgradeShowHarddisksCheckBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                upgradeShowHarddisksCheckBoxItemStateChanged(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
-        upgradeSelectionDeviceListPanel.add(upgradeSelectionCountLabel, gridBagConstraints);
+        upgradeSelectionInfoPanel.add(upgradeShowHarddisksCheckBox, gridBagConstraints);
+
+        upgradeSelectionCountLabel.setText(bundle.getString("Selection_Count")); // NOI18N
+        upgradeSelectionInfoPanel.add(upgradeSelectionCountLabel, new java.awt.GridBagConstraints());
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
+        upgradeSelectionDeviceListPanel.add(upgradeSelectionInfoPanel, gridBagConstraints);
 
         upgradeStorageDeviceList.setName("storageDeviceList"); // NOI18N
         upgradeStorageDeviceList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -5776,8 +5789,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel upgradeSelectionCountLabel;
     private javax.swing.JPanel upgradeSelectionDeviceListPanel;
     private javax.swing.JLabel upgradeSelectionHeaderLabel;
+    private javax.swing.JPanel upgradeSelectionInfoPanel;
     private javax.swing.JPanel upgradeSelectionModePanel;
     private javax.swing.JPanel upgradeSelectionPanel;
+    private javax.swing.JSeparator upgradeSelectionSeparator;
     private javax.swing.JTabbedPane upgradeSelectionTabbedPane;
     private javax.swing.JCheckBox upgradeShowHarddisksCheckBox;
     private javax.swing.JList upgradeStorageDeviceList;
