@@ -13,7 +13,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingWorker;
@@ -40,6 +39,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
     private final boolean printDOC;
     private final boolean printDOCX;
     private final int printCopies;
+    private final boolean printDuplex;
     private final boolean formatExchangePartition;
     private final String exchangePartitionFileSystem;
     private final boolean keepExchangePartitionLabel;
@@ -67,6 +67,8 @@ public class Resetter extends SwingWorker<Boolean, Void> {
      * @param printDOC if older MS Word documents should be printed
      * @param printDOCX if newer MS Word documents should be printed
      * @param printCopies the number of copies to print
+     * @param printDuplex if the document should be printed on both sides of
+     * the paper
      * @param formatExchangePartition if the exchange partition should be
      * formatted
      * @param exchangePartitionFileSystem the file system of the exchange
@@ -86,7 +88,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
             String bootDeviceName, boolean printDocuments,
             String printDirectory, boolean printODT, boolean printPDF,
             boolean printDOC, boolean printDOCX, int printCopies,
-            boolean formatExchangePartition,
+            boolean printDuplex, boolean formatExchangePartition,
             String exchangePartitionFileSystem,
             boolean keepExchangePartitionLabel,
             String newExchangePartitionLabel, boolean formatDataPartition,
@@ -103,6 +105,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         this.printDOC = printDOC;
         this.printDOCX = printDOCX;
         this.printCopies = printCopies;
+        this.printDuplex = printDuplex;
         this.formatExchangePartition = formatExchangePartition;
         this.exchangePartitionFileSystem = exchangePartitionFileSystem;
         this.keepExchangePartitionLabel = keepExchangePartitionLabel;
@@ -216,14 +219,16 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                 LOGGER.log(Level.WARNING, "found no {0} file to print", suffix);
                 break;
             case 1:
-                PrintingHelper.print(documents.get(0), printCopies);
+                PrintingHelper.print(
+                        documents.get(0), printCopies, printDuplex);
                 break;
             default:
                 List<Path> selectedDocuments
                         = dlCopyGUI.selectDocumentsToPrint(type, documents);
                 if (selectedDocuments != null) {
                     for (Path selectedDocument : selectedDocuments) {
-                        PrintingHelper.print(selectedDocument, printCopies);
+                        PrintingHelper.print(
+                                selectedDocument, printCopies, printDuplex);
                     }
                 }
         }

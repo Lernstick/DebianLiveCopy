@@ -150,6 +150,7 @@ public class DLCopySwingGUI extends JFrame
     private final static String PRINT_DOC = "printDOC";
     private final static String PRINT_DOCX = "printDOCX";
     private final static String PRINT_COPIES = "printCopies";
+    private final static String PRINT_DUPLEX = "printDuplex";
     private final static String RESET_FORMAT_EXCHANGE_PARTITION = "resetformatExchangePartition";
     private final static String RESET_FORMAT_EXCHANGE_PARTITION_FILE_SYSTEM = "resetFormatExchangePartitionFileSystem";
     private final static String RESET_FORMAT_EXCHANGE_PARTITION_KEEP_LABEL = "resetFormatExchangePartitionKeepLabel";
@@ -364,6 +365,8 @@ public class DLCopySwingGUI extends JFrame
         printDocxCheckBox.setSelected(
                 preferences.getBoolean(PRINT_DOCX, false));
         printCopiesSpinner.setValue(preferences.getInt(PRINT_COPIES, 1));
+        printDuplexCheckBox.setSelected(
+                preferences.getBoolean(PRINT_DUPLEX, true));
 
         String[] exchangePartitionFileSystemItems;
         if (debianLiveDistribution == DebianLiveDistribution.LERNSTICK_EXAM) {
@@ -1651,6 +1654,7 @@ public class DLCopySwingGUI extends JFrame
         printCopiesPanel = new javax.swing.JPanel();
         printCopiesLabel = new javax.swing.JLabel();
         printCopiesSpinner = new javax.swing.JSpinner();
+        printDuplexCheckBox = new javax.swing.JCheckBox();
         printingSpacer = new javax.swing.JPanel();
         backupPanel = new javax.swing.JPanel();
         resetExchangePartitionPanel = new javax.swing.JPanel();
@@ -3287,6 +3291,15 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 35, 0, 5);
         printingPanel.add(printCopiesPanel, gridBagConstraints);
+
+        printDuplexCheckBox.setSelected(true);
+        printDuplexCheckBox.setText(bundle.getString("DLCopySwingGUI.printDuplexCheckBox.text")); // NOI18N
+        printDuplexCheckBox.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 35, 0, 0);
+        printingPanel.add(printDuplexCheckBox, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
@@ -4332,6 +4345,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         printDocxCheckBox.setEnabled(enabled);
         printCopiesLabel.setEnabled(enabled);
         printCopiesSpinner.setEnabled(enabled);
+        printDuplexCheckBox.setEnabled(enabled);
     }//GEN-LAST:event_printDocumentsCheckBoxItemStateChanged
 
     private void parseCommandLineArguments(String[] arguments) {
@@ -4670,6 +4684,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 printOdtCheckBox.isSelected(), printPdfCheckBox.isSelected(),
                 printDocCheckBox.isSelected(), printDocxCheckBox.isSelected(),
                 ((Number) printCopiesSpinner.getValue()).intValue(),
+                printDuplexCheckBox.isSelected(),
                 resetFormatExchangePartitionCheckBox.isSelected(),
                 exchangePartitionFileSystem,
                 resetFormatExchangePartitionKeepLabelRadioButton.isSelected(),
@@ -4940,6 +4955,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         preferences.putBoolean(PRINT_DOCX, printDocxCheckBox.isSelected());
         preferences.putInt(PRINT_COPIES,
                 ((Number) printCopiesSpinner.getValue()).intValue());
+        preferences.putBoolean(PRINT_DUPLEX, printDuplexCheckBox.isSelected());
         preferences.putBoolean(RESET_FORMAT_EXCHANGE_PARTITION,
                 resetFormatExchangePartitionCheckBox.isSelected());
         preferences.put(RESET_FORMAT_EXCHANGE_PARTITION_FILE_SYSTEM,
@@ -5940,6 +5956,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JCheckBox printDocCheckBox;
     private javax.swing.JCheckBox printDocumentsCheckBox;
     private javax.swing.JCheckBox printDocxCheckBox;
+    private javax.swing.JCheckBox printDuplexCheckBox;
     private javax.swing.JCheckBox printOdtCheckBox;
     private javax.swing.JCheckBox printPdfCheckBox;
     private javax.swing.JLabel printingDirectoryLabel;
