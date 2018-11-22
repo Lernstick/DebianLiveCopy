@@ -1,3 +1,17 @@
+dlcopy (201811221753-1) lernstick-9; urgency=medium
+
+  * [cfa3ce] reordered controls in the upgrade selection GUI to save screenspace
+  * [88bdc3] moved upgradeSelectionTabbedPane in place of (now empty and
+             removed) upgradeSelectionPanel
+  * [38381c] added support for printing in Resetter
+  * [4a4194] added support for duplex printing
+  * [f4c564] fixed insets
+  * [869b99] visual grouping of print file formats
+  * [fb4ca0] added support for automatic reset (triggered by inserting storage
+             media)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 22 Nov 2018 17:53:17 +0100
+
 dlcopy (201811021931-1) lernstick-9; urgency=medium
 
   * [267493] added workaround for missing ACL support in squashfs
