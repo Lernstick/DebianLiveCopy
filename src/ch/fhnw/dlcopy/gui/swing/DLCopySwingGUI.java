@@ -1647,6 +1647,7 @@ public class DLCopySwingGUI extends JFrame
         printingDirectoryPanel = new javax.swing.JPanel();
         printingDirectoryLabel = new javax.swing.JLabel();
         printingDirectoryTextField = new javax.swing.JTextField();
+        printFileFormatsPanel = new javax.swing.JPanel();
         printOdtCheckBox = new javax.swing.JCheckBox();
         printPdfCheckBox = new javax.swing.JCheckBox();
         printDocCheckBox = new javax.swing.JCheckBox();
@@ -3240,37 +3241,42 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(0, 30, 0, 10);
         printingPanel.add(printingDirectoryPanel, gridBagConstraints);
 
+        printFileFormatsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.printFileFormatsPanel.border.title"))); // NOI18N
+        printFileFormatsPanel.setLayout(new java.awt.GridBagLayout());
+
         printOdtCheckBox.setText(bundle.getString("DLCopySwingGUI.printOdtCheckBox.text")); // NOI18N
         printOdtCheckBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 30, 0, 0);
-        printingPanel.add(printOdtCheckBox, gridBagConstraints);
+        printFileFormatsPanel.add(printOdtCheckBox, gridBagConstraints);
 
         printPdfCheckBox.setText(bundle.getString("DLCopySwingGUI.printPdfCheckBox.text")); // NOI18N
         printPdfCheckBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 30, 0, 0);
-        printingPanel.add(printPdfCheckBox, gridBagConstraints);
+        printFileFormatsPanel.add(printPdfCheckBox, gridBagConstraints);
 
         printDocCheckBox.setText(bundle.getString("DLCopySwingGUI.printDocCheckBox.text")); // NOI18N
         printDocCheckBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 30, 0, 0);
-        printingPanel.add(printDocCheckBox, gridBagConstraints);
+        printFileFormatsPanel.add(printDocCheckBox, gridBagConstraints);
 
         printDocxCheckBox.setText(bundle.getString("DLCopySwingGUI.printDocxCheckBox.text")); // NOI18N
         printDocxCheckBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 30, 0, 0);
-        printingPanel.add(printDocxCheckBox, gridBagConstraints);
+        printFileFormatsPanel.add(printDocxCheckBox, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 30, 0, 0);
+        printingPanel.add(printFileFormatsPanel, gridBagConstraints);
 
         printCopiesPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -5957,6 +5963,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JCheckBox printDocumentsCheckBox;
     private javax.swing.JCheckBox printDocxCheckBox;
     private javax.swing.JCheckBox printDuplexCheckBox;
+    private javax.swing.JPanel printFileFormatsPanel;
     private javax.swing.JCheckBox printOdtCheckBox;
     private javax.swing.JCheckBox printPdfCheckBox;
     private javax.swing.JLabel printingDirectoryLabel;
