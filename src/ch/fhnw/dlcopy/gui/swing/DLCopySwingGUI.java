@@ -318,6 +318,7 @@ public class DLCopySwingGUI extends JFrame
                 = new UpgradeStorageDeviceRenderer(runningSystemSource);
         upgradeStorageDeviceList.setCellRenderer(upgradeStorageDeviceRenderer);
 
+        resetStorageDeviceListModel.addListDataListener(this);
         resetStorageDeviceList.setModel(resetStorageDeviceListModel);
         resetStorageDeviceRenderer = new ResetStorageDeviceRenderer();
         resetStorageDeviceList.setCellRenderer(resetStorageDeviceRenderer);
@@ -645,7 +646,8 @@ public class DLCopySwingGUI extends JFrame
                             resetShowHarddisksCheckBox.isSelected(),
                             storageDeviceListUpdateDialogHandler,
                             resetStorageDeviceListModel,
-                            resetStorageDeviceList, this).execute();
+                            resetStorageDeviceList, this,
+                            resetListModeRadioButton.isSelected()).execute();
                     break;
 
                 default:
@@ -1097,12 +1099,23 @@ public class DLCopySwingGUI extends JFrame
     @Override
     public void resettingFinished(boolean success) {
         setTitle(STRINGS.getString("DLCopySwingGUI.title"));
-        if (success) {
-            doneLabel.setText(STRINGS.getString("Reset_Done"));
-            showCard(cardPanel, "donePanel");
-            processDone();
+        if (resetListModeRadioButton.isSelected()) {
+            if (success) {
+                doneLabel.setText(STRINGS.getString("Reset_Done"));
+                showCard(cardPanel, "donePanel");
+                processDone();
+            } else {
+                switchToResetSelection();
+            }
         } else {
-            switchToResetSelection();
+            showCard(resetSelectionCardPanel, "resetNoMediaPanel");
+            showCard(cardPanel, "resetSelectionTabbedPane");
+            previousButton.setEnabled(true);
+            previousButton.requestFocusInWindow();
+            getRootPane().setDefaultButton(previousButton);
+            toFront();
+            playNotifySound();
+            state = State.RESET_SELECTION;
         }
     }
 
@@ -1451,7 +1464,8 @@ public class DLCopySwingGUI extends JFrame
         isoButtonGroup = new javax.swing.ButtonGroup();
         exchangeButtonGroup = new javax.swing.ButtonGroup();
         installSourceButtonGroup = new javax.swing.ButtonGroup();
-        selectionModeButtonGroup = new javax.swing.ButtonGroup();
+        upgradeSelectionModeButtonGroup = new javax.swing.ButtonGroup();
+        resetSelectionModeButtonGroup = new javax.swing.ButtonGroup();
         choicePanel = new javax.swing.JPanel();
         choiceLabel = new javax.swing.JLabel();
         buttonGridPanel = new javax.swing.JPanel();
@@ -1629,12 +1643,16 @@ public class DLCopySwingGUI extends JFrame
         resetInfoLabel = new javax.swing.JLabel();
         resetSelectionTabbedPane = new javax.swing.JTabbedPane();
         resetSelectionPanel = new javax.swing.JPanel();
-        resetSelectionHeaderLabel = new javax.swing.JLabel();
-        resetShowHarddisksCheckBox = new javax.swing.JCheckBox();
+        resetListModeRadioButton = new javax.swing.JRadioButton();
+        resetAutomaticRadioButton = new javax.swing.JRadioButton();
+        jSeparator2 = new javax.swing.JSeparator();
         resetSelectionCardPanel = new javax.swing.JPanel();
         resetNoMediaPanel = new javax.swing.JPanel();
         resetNoMediaLabel = new javax.swing.JLabel();
         resetSelectionDeviceListPanel = new javax.swing.JPanel();
+        resetSelectionInfoPanel = new javax.swing.JPanel();
+        resetSelectionHeaderLabel = new javax.swing.JLabel();
+        resetShowHarddisksCheckBox = new javax.swing.JCheckBox();
         resetSelectionCountLabel = new javax.swing.JLabel();
         resetStorageDeviceListScrollPane = new javax.swing.JScrollPane();
         resetStorageDeviceList = new javax.swing.JList<>();
@@ -2534,9 +2552,9 @@ public class DLCopySwingGUI extends JFrame
 
         upgradeSelectionPanel.setLayout(new java.awt.GridBagLayout());
 
-        selectionModeButtonGroup.add(upgradeListModeRadioButton);
+        upgradeSelectionModeButtonGroup.add(upgradeListModeRadioButton);
         upgradeListModeRadioButton.setSelected(true);
-        upgradeListModeRadioButton.setText(bundle.getString("DLCopySwingGUI.upgradeListModeRadioButton.text")); // NOI18N
+        upgradeListModeRadioButton.setText(bundle.getString("Select_Storage_Media_From_List")); // NOI18N
         upgradeListModeRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 upgradeListModeRadioButtonActionPerformed(evt);
@@ -2548,7 +2566,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         upgradeSelectionPanel.add(upgradeListModeRadioButton, gridBagConstraints);
 
-        selectionModeButtonGroup.add(upgradeAutomaticRadioButton);
+        upgradeSelectionModeButtonGroup.add(upgradeAutomaticRadioButton);
         upgradeAutomaticRadioButton.setText(bundle.getString("DLCopySwingGUI.upgradeAutomaticRadioButton.text")); // NOI18N
         upgradeAutomaticRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -3107,24 +3125,37 @@ public class DLCopySwingGUI extends JFrame
 
         resetSelectionPanel.setLayout(new java.awt.GridBagLayout());
 
-        resetSelectionHeaderLabel.setFont(resetSelectionHeaderLabel.getFont().deriveFont(resetSelectionHeaderLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-        resetSelectionHeaderLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        resetSelectionHeaderLabel.setText(bundle.getString("DLCopySwingGUI.resetSelectionHeaderLabel.text")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        resetSelectionPanel.add(resetSelectionHeaderLabel, gridBagConstraints);
-
-        resetShowHarddisksCheckBox.setFont(resetShowHarddisksCheckBox.getFont().deriveFont(resetShowHarddisksCheckBox.getFont().getStyle() & ~java.awt.Font.BOLD, resetShowHarddisksCheckBox.getFont().getSize()-1));
-        resetShowHarddisksCheckBox.setText(bundle.getString("DLCopySwingGUI.resetShowHarddisksCheckBox.text")); // NOI18N
-        resetShowHarddisksCheckBox.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                resetShowHarddisksCheckBoxItemStateChanged(evt);
+        resetSelectionModeButtonGroup.add(resetListModeRadioButton);
+        resetListModeRadioButton.setSelected(true);
+        resetListModeRadioButton.setText(bundle.getString("Select_Storage_Media_From_List")); // NOI18N
+        resetListModeRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetListModeRadioButtonActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        resetSelectionPanel.add(resetShowHarddisksCheckBox, gridBagConstraints);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
+        resetSelectionPanel.add(resetListModeRadioButton, gridBagConstraints);
+
+        resetSelectionModeButtonGroup.add(resetAutomaticRadioButton);
+        resetAutomaticRadioButton.setText(bundle.getString("DLCopySwingGUI.resetAutomaticRadioButton.text")); // NOI18N
+        resetAutomaticRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetAutomaticRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
+        resetSelectionPanel.add(resetAutomaticRadioButton, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        resetSelectionPanel.add(jSeparator2, gridBagConstraints);
 
         resetSelectionCardPanel.setLayout(new java.awt.CardLayout());
 
@@ -3140,12 +3171,36 @@ public class DLCopySwingGUI extends JFrame
 
         resetSelectionDeviceListPanel.setLayout(new java.awt.GridBagLayout());
 
-        resetSelectionCountLabel.setText(bundle.getString("DLCopySwingGUI.resetSelectionCountLabel.text")); // NOI18N
+        resetSelectionInfoPanel.setLayout(new java.awt.GridBagLayout());
+
+        resetSelectionHeaderLabel.setFont(resetSelectionHeaderLabel.getFont().deriveFont(resetSelectionHeaderLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
+        resetSelectionHeaderLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        resetSelectionHeaderLabel.setText(bundle.getString("DLCopySwingGUI.resetSelectionHeaderLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        resetSelectionInfoPanel.add(resetSelectionHeaderLabel, gridBagConstraints);
+
+        resetShowHarddisksCheckBox.setFont(resetShowHarddisksCheckBox.getFont().deriveFont(resetShowHarddisksCheckBox.getFont().getStyle() & ~java.awt.Font.BOLD, resetShowHarddisksCheckBox.getFont().getSize()-1));
+        resetShowHarddisksCheckBox.setText(bundle.getString("DLCopySwingGUI.resetShowHarddisksCheckBox.text")); // NOI18N
+        resetShowHarddisksCheckBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                resetShowHarddisksCheckBoxItemStateChanged(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
-        resetSelectionDeviceListPanel.add(resetSelectionCountLabel, gridBagConstraints);
+        resetSelectionInfoPanel.add(resetShowHarddisksCheckBox, gridBagConstraints);
+
+        resetSelectionCountLabel.setText(bundle.getString("DLCopySwingGUI.resetSelectionCountLabel.text")); // NOI18N
+        resetSelectionInfoPanel.add(resetSelectionCountLabel, new java.awt.GridBagConstraints());
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
+        resetSelectionDeviceListPanel.add(resetSelectionInfoPanel, gridBagConstraints);
 
         resetStorageDeviceList.setName("storageDeviceList"); // NOI18N
         resetStorageDeviceList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
@@ -4335,10 +4390,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }//GEN-LAST:event_upgradeSelectionTabbedPaneComponentShown
 
     private void resetSelectionTabbedPaneComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_resetSelectionTabbedPaneComponentShown
-        new ResetStorageDeviceListUpdater(this, resetStorageDeviceList,
-                resetStorageDeviceListModel,
-                resetShowHarddisksCheckBox.isSelected(),
-                runningSystemSource.getDeviceName()).execute();
+        if (resetListModeRadioButton.isSelected()) {
+            new ResetStorageDeviceListUpdater(this, resetStorageDeviceList,
+                    resetStorageDeviceListModel,
+                    resetShowHarddisksCheckBox.isSelected(),
+                    runningSystemSource.getDeviceName()).execute();
+        }
     }//GEN-LAST:event_resetSelectionTabbedPaneComponentShown
 
     private void printDocumentsCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_printDocumentsCheckBoxItemStateChanged
@@ -4353,6 +4410,19 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         printCopiesSpinner.setEnabled(enabled);
         printDuplexCheckBox.setEnabled(enabled);
     }//GEN-LAST:event_printDocumentsCheckBoxItemStateChanged
+
+    private void resetAutomaticRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetAutomaticRadioButtonActionPerformed
+        showCard(resetSelectionCardPanel, "resetNoMediaPanel");
+        nextButton.setEnabled(false);
+    }//GEN-LAST:event_resetAutomaticRadioButtonActionPerformed
+
+    private void resetListModeRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetListModeRadioButtonActionPerformed
+        showCard(resetSelectionCardPanel, "resetSelectionDeviceListPanel");
+        new ResetStorageDeviceListUpdater(this, resetStorageDeviceList,
+                resetStorageDeviceListModel,
+                resetShowHarddisksCheckBox.isSelected(),
+                runningSystemSource.getDeviceName()).execute();
+    }//GEN-LAST:event_resetListModeRadioButtonActionPerformed
 
     private void parseCommandLineArguments(String[] arguments) {
         for (int i = 0, length = arguments.length; i < length; i++) {
@@ -4664,6 +4734,16 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             return;
         }
 
+        int[] selectedIndices = resetStorageDeviceList.getSelectedIndices();
+        List<StorageDevice> deviceList = new ArrayList<>();
+        for (int i : selectedIndices) {
+            deviceList.add(resetStorageDeviceListModel.get(i));
+        }
+
+        resetStorageDevices(deviceList);
+    }
+
+    private void resetStorageDevices(List<StorageDevice> deviceList) {
         setLabelHighlighted(selectionLabel, false);
         setLabelHighlighted(executionLabel, true);
         previousButton.setEnabled(false);
@@ -4672,11 +4752,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         batchCounter = 0;
         resultsList = new ArrayList<>();
-        int[] selectedIndices = resetStorageDeviceList.getSelectedIndices();
-        List<StorageDevice> deviceList = new ArrayList<>();
-        for (int i : selectedIndices) {
-            deviceList.add(resetStorageDeviceListModel.get(i));
-        }
+
         String exchangePartitionFileSystem
                 = resetFormatExchangePartitionFileSystemComboBox.getSelectedItem().toString();
         // TODO: using dataPartitionFileSystemComboBox.getSelectedItem() here is
@@ -4752,6 +4828,20 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 }
 
                 upgradeStorageDevices(deviceList);
+            }
+
+        } else if (source == resetStorageDeviceListModel) {
+            if ((e.getType() == ListDataEvent.INTERVAL_ADDED)
+                    && resetAutomaticRadioButton.isSelected()) {
+
+                List<StorageDevice> deviceList = new ArrayList<>();
+                for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
+                    LOGGER.log(Level.INFO,
+                            "adding index {0} to device list", i);
+                    deviceList.add(resetStorageDeviceListModel.get(i));
+                }
+
+                resetStorageDevices(deviceList);
             }
         }
     }
@@ -5944,6 +6034,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel jLabel4;
     private javax.swing.JLabel jLabel6;
     private javax.swing.JSeparator jSeparator1;
+    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
@@ -5977,6 +6068,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JRadioButton removeFilesRadioButton;
     private javax.swing.JCheckBox removeHiddenFilesCheckBox;
     private javax.swing.JPanel repartitionExchangeOptionsPanel;
+    private javax.swing.JRadioButton resetAutomaticRadioButton;
     private javax.swing.JButton resetButton;
     private javax.swing.JLabel resetDataDefinitionLabel;
     private javax.swing.ButtonGroup resetDataPartitionButtonGroup;
@@ -5994,6 +6086,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JTextField resetFormatExchangePartitionNewLabelTextField;
     private javax.swing.JLabel resetInfoLabel;
     private javax.swing.JPanel resetInfoPanel;
+    private javax.swing.JRadioButton resetListModeRadioButton;
     private javax.swing.JLabel resetNoMediaLabel;
     private javax.swing.JPanel resetNoMediaPanel;
     private javax.swing.JLabel resetOsDefinitionLabel;
@@ -6003,6 +6096,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel resetSelectionCountLabel;
     private javax.swing.JPanel resetSelectionDeviceListPanel;
     private javax.swing.JLabel resetSelectionHeaderLabel;
+    private javax.swing.JPanel resetSelectionInfoPanel;
+    private javax.swing.ButtonGroup resetSelectionModeButtonGroup;
     private javax.swing.JPanel resetSelectionPanel;
     private javax.swing.JTabbedPane resetSelectionTabbedPane;
     private javax.swing.JCheckBox resetShowHarddisksCheckBox;
@@ -6021,7 +6116,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel rsyncTimeLabel;
     private javax.swing.JRadioButton runningSystemSourceRadioButton;
     private javax.swing.JLabel selectionLabel;
-    private javax.swing.ButtonGroup selectionModeButtonGroup;
     private javax.swing.JCheckBox showNotUsedDialogCheckBox;
     private javax.swing.JButton sortAscendingButton;
     private javax.swing.JButton sortDescendingButton;
@@ -6088,6 +6182,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JPanel upgradeSelectionDeviceListPanel;
     private javax.swing.JLabel upgradeSelectionHeaderLabel;
     private javax.swing.JPanel upgradeSelectionInfoPanel;
+    private javax.swing.ButtonGroup upgradeSelectionModeButtonGroup;
     private javax.swing.JPanel upgradeSelectionPanel;
     private javax.swing.JSeparator upgradeSelectionSeparator;
     private javax.swing.JTabbedPane upgradeSelectionTabbedPane;
