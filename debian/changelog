@@ -1,3 +1,15 @@
+dlcopy (201811251854-1) lernstick-9; urgency=medium
+
+  * [3fec63] added support for printing spreadsheets
+  * [aeaabe] added support for backup in Resetter
+  * [a0ae60] made data partition reset in upgrader optional so that it can be
+             used for quick updates where only some files/directories are
+             updated
+  * [33b65a] sorted Strings
+  * [34d06b] updated size information in iso creator
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 25 Nov 2018 18:54:27 +0100
+
 dlcopy (201811221753-1) lernstick-9; urgency=medium
 
   * [cfa3ce] reordered controls in the upgrade selection GUI to save screenspace
