@@ -35,9 +35,12 @@ public class Resetter extends SwingWorker<Boolean, Void> {
     private final boolean printDocuments;
     private final String printDirectory;
     private final boolean printODT;
+    private final boolean printODS;
     private final boolean printPDF;
     private final boolean printDOC;
     private final boolean printDOCX;
+    private final boolean printXLS;
+    private final boolean printXLSX;
     private final int printCopies;
     private final boolean printDuplex;
     private final boolean formatExchangePartition;
@@ -63,12 +66,15 @@ public class Resetter extends SwingWorker<Boolean, Void> {
      * @param printDirectory the directory where documents to be printed should
      * be searched
      * @param printODT if OpenDocument Texts should be printed
+     * @param printODS if OpenDocument Texts should be printed
      * @param printPDF if Portable Document Formats should be printed
      * @param printDOC if older MS Word documents should be printed
      * @param printDOCX if newer MS Word documents should be printed
+     * @param printXLS if older MS Excel documents should be printed
+     * @param printXLSX if newer MS Excel documents should be printed
      * @param printCopies the number of copies to print
-     * @param printDuplex if the document should be printed on both sides of
-     * the paper
+     * @param printDuplex if the document should be printed on both sides of the
+     * paper
      * @param formatExchangePartition if the exchange partition should be
      * formatted
      * @param exchangePartitionFileSystem the file system of the exchange
@@ -86,8 +92,9 @@ public class Resetter extends SwingWorker<Boolean, Void> {
      */
     public Resetter(DLCopyGUI dlCopyGUI, List<StorageDevice> deviceList,
             String bootDeviceName, boolean printDocuments,
-            String printDirectory, boolean printODT, boolean printPDF,
-            boolean printDOC, boolean printDOCX, int printCopies,
+            String printDirectory, boolean printODT, boolean printODS,
+            boolean printPDF, boolean printDOC, boolean printDOCX,
+            boolean printXLS, boolean printXLSX, int printCopies,
             boolean printDuplex, boolean formatExchangePartition,
             String exchangePartitionFileSystem,
             boolean keepExchangePartitionLabel,
@@ -101,9 +108,12 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         this.printDocuments = printDocuments;
         this.printDirectory = printDirectory;
         this.printODT = printODT;
+        this.printODS = printODS;
         this.printPDF = printPDF;
         this.printDOC = printDOC;
         this.printDOCX = printDOCX;
+        this.printXLS = printXLS;
+        this.printXLSX = printXLSX;
         this.printCopies = printCopies;
         this.printDuplex = printDuplex;
         this.formatExchangePartition = formatExchangePartition;
@@ -183,6 +193,11 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                     DLCopy.STRINGS.getString("OpenDocument_Text"));
         }
 
+        if (printODS) {
+            printDocumentType(printDirPath, "ods",
+                    DLCopy.STRINGS.getString("OpenDocument_Spreadsheet"));
+        }
+
         if (printPDF) {
             printDocumentType(printDirPath, "pdf",
                     DLCopy.STRINGS.getString("Portable_Document_Format"));
@@ -196,6 +211,16 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         if (printDOCX) {
             printDocumentType(printDirPath, "docx",
                     DLCopy.STRINGS.getString("MS_Word"));
+        }
+
+        if (printXLS) {
+            printDocumentType(printDirPath, "xls",
+                    DLCopy.STRINGS.getString("MS_Excel"));
+        }
+
+        if (printXLSX) {
+            printDocumentType(printDirPath, "xlsx",
+                    DLCopy.STRINGS.getString("MS_Excel"));
         }
     }
 
@@ -329,7 +354,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
     // our own filter that is always case insensitive
     private class MyFilter implements DirectoryStream.Filter<Path> {
 
-        private String pattern;
+        private final String pattern;
 
         public MyFilter(String pattern) {
             this.pattern = pattern;

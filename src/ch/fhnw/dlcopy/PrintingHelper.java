@@ -32,11 +32,11 @@ public class PrintingHelper {
         if (lowerCaseFileName.endsWith("pdf")) {
             printWithLPR(document, copies, duplex);
         } else {
-            printWithLibreOfficeWriter(document, copies, duplex);
+            printWithLibreOffice(document, copies, duplex);
         }
     }
 
-    private static void printWithLibreOfficeWriter(
+    private static void printWithLibreOffice(
             Path document, int copies, boolean duplex) {
         /**
          * Unfortunately, command line printing via LibreOffice is very limited.
@@ -47,7 +47,7 @@ public class PrintingHelper {
         try {
             Path tempDir = Files.createTempDirectory("printingHelper");
             ProcessExecutor executor = new ProcessExecutor();
-            executor.executeProcess(true, true, "lowriter",
+            executor.executeProcess(true, true, "libreoffice",
                     "--convert-to", "pdf",
                     "--outdir", tempDir.toString(),
                     document.toString());

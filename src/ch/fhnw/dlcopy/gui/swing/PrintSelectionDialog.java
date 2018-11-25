@@ -202,7 +202,7 @@ public class PrintSelectionDialog extends javax.swing.JDialog {
                                     createScript(document, "evince"));
                         } else {
                             processExecutor.executeScript(true, true,
-                                    createScript(document, "lowriter"));
+                                    createScript(document, "libreoffice"));
                         }
                     } catch (IOException ex) {
                         LOGGER.log(Level.SEVERE, "", ex);
