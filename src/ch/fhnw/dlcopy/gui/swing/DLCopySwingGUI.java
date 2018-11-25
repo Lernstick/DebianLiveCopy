@@ -5,6 +5,7 @@
  */
 package ch.fhnw.dlcopy.gui.swing;
 
+import ch.fhnw.dlcopy.Subdirectory;
 import ch.fhnw.dlcopy.DLCopy;
 import ch.fhnw.dlcopy.DebianLiveDistribution;
 import ch.fhnw.dlcopy.PartitionState;
@@ -61,6 +62,8 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
 import javax.swing.table.TableColumn;
 import javax.swing.text.AbstractDocument;
@@ -74,7 +77,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
  */
 public class DLCopySwingGUI extends JFrame
         implements DLCopyGUI, DocumentListener, PropertyChangeListener,
-        ListDataListener {
+        ListDataListener, ListSelectionListener {
 
     private final static Logger LOGGER
             = Logger.getLogger(DLCopySwingGUI.class.getName());
@@ -154,6 +157,14 @@ public class DLCopySwingGUI extends JFrame
     private final static String PRINT_XLSX = "printXLSX";
     private final static String PRINT_COPIES = "printCopies";
     private final static String PRINT_DUPLEX = "printDuplex";
+    private final static String RESET_BACKUP = "resetBackup";
+    private final static String RESET_BACKUP_SOURCE = "resetBackupSource";
+    private final static String RESET_BACKUP_DESTINATION = "resetBackupDestination";
+    private final static String RESET_BACKUP_SUBDIR_EXCHANGE_PARTITION_LABEL = "resetBackupSubdirExchangePartitionLabel";
+    private final static String RESET_BACKUP_SUBDIR_STORAGE_MEDIA_SERIALNUMBER = "resetBackupSubdirStorageMediaSerialNumber";
+    private final static String RESET_BACKUP_SUBDIR_ORDER = "resetBackupSubdirOrder";
+    private final static String RESET_BACKUP_SUBDIR_ORDER_LABEL = "Label";
+    private final static String RESET_BACKUP_SUBDIR_ORDER_SERIAL = "Serial";
     private final static String RESET_FORMAT_EXCHANGE_PARTITION = "resetformatExchangePartition";
     private final static String RESET_FORMAT_EXCHANGE_PARTITION_FILE_SYSTEM = "resetFormatExchangePartitionFileSystem";
     private final static String RESET_FORMAT_EXCHANGE_PARTITION_KEEP_LABEL = "resetFormatExchangePartitionKeepLabel";
@@ -165,6 +176,10 @@ public class DLCopySwingGUI extends JFrame
     private final ResultsTableModel installationResultsTableModel;
     private final ResultsTableModel upgradeResultsTableModel;
     private final ResultsTableModel resultsTableModel;
+    private final SubdirectoryTableModel subdirectoryTableModel;
+    private final Subdirectory exchangePartitionLabelSubdirectory;
+    private final Subdirectory storageMediaSerialnumberSubdirectory;
+    private final List<Subdirectory> orderedSubdirectoriesEntries;
     private CpActionListener cpActionListener;
 
     private final static Pattern ADDED_PATTERN = Pattern.compile(
@@ -377,6 +392,57 @@ public class DLCopySwingGUI extends JFrame
         printCopiesSpinner.setValue(preferences.getInt(PRINT_COPIES, 1));
         printDuplexCheckBox.setSelected(
                 preferences.getBoolean(PRINT_DUPLEX, true));
+
+        resetBackupCheckBox.setSelected(
+                preferences.getBoolean(RESET_BACKUP, false));
+        resetBackupSourceTextField.setText(
+                preferences.get(RESET_BACKUP_SOURCE, null));
+        resetBackupDestinationTextField.setText(
+                preferences.get(RESET_BACKUP_DESTINATION, null));
+
+        List<Subdirectory> subdirectoriesEntries = new ArrayList<>();
+        exchangePartitionLabelSubdirectory = new Subdirectory(
+                preferences.getBoolean(
+                        RESET_BACKUP_SUBDIR_EXCHANGE_PARTITION_LABEL, true),
+                STRINGS.getString("Exchange_Partition_Label"));
+        subdirectoriesEntries.add(exchangePartitionLabelSubdirectory);
+        storageMediaSerialnumberSubdirectory = new Subdirectory(
+                preferences.getBoolean(
+                        RESET_BACKUP_SUBDIR_STORAGE_MEDIA_SERIALNUMBER, true),
+                STRINGS.getString("Storage_Media_Serial_Number"));
+        subdirectoriesEntries.add(storageMediaSerialnumberSubdirectory);
+
+        orderedSubdirectoriesEntries = new ArrayList<>();
+        String resetBackupSubdirOrder = preferences.get(
+                RESET_BACKUP_SUBDIR_ORDER,
+                RESET_BACKUP_SUBDIR_ORDER_LABEL + ','
+                + RESET_BACKUP_SUBDIR_ORDER_SERIAL);
+        String[] resetBackupSubdirOrderToken
+                = resetBackupSubdirOrder.split(",");
+        for (String token : resetBackupSubdirOrderToken) {
+            if (token.equals(RESET_BACKUP_SUBDIR_ORDER_LABEL)) {
+                subdirectoriesEntries.remove(
+                        exchangePartitionLabelSubdirectory);
+                orderedSubdirectoriesEntries.add(
+                        exchangePartitionLabelSubdirectory);
+            } else if (token.equals(RESET_BACKUP_SUBDIR_ORDER_SERIAL)) {
+                subdirectoriesEntries.remove(
+                        storageMediaSerialnumberSubdirectory);
+                orderedSubdirectoriesEntries.add(
+                        storageMediaSerialnumberSubdirectory);
+            }
+        }
+        // After introducing new subdir entries they are not yet in the
+        // preferences. Therefore we have to add all remaining entries here.
+        orderedSubdirectoriesEntries.addAll(subdirectoriesEntries);
+
+        subdirectoryTableModel = new SubdirectoryTableModel(
+                resetBackupSubdirectoryTable, orderedSubdirectoriesEntries);
+        resetBackupSubdirectoryTable.setModel(subdirectoryTableModel);
+        resetBackupSubdirectoryTable.setSelectionMode(
+                ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        resetBackupSubdirectoryTable.getSelectionModel().
+                addListSelectionListener(this);
 
         String[] exchangePartitionFileSystemItems;
         if (debianLiveDistribution == DebianLiveDistribution.LERNSTICK_EXAM) {
@@ -693,6 +759,22 @@ public class DLCopySwingGUI extends JFrame
     @Override
     public void changedUpdate(DocumentEvent e) {
         documentChanged(e);
+    }
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        if (e.getSource() == resetBackupSubdirectoryTable.getSelectionModel()) {
+            int[] selectedRows = resetBackupSubdirectoryTable.getSelectedRows();
+            if (selectedRows.length == 0) {
+                resetMoveUpButton.setEnabled(false);
+                resetMoveDownButton.setEnabled(false);
+            } else {
+                resetMoveUpButton.setEnabled(selectedRows[0] != 0);
+                resetMoveDownButton.setEnabled(
+                        selectedRows[selectedRows.length - 1]
+                        != subdirectoryTableModel.getRowCount() - 1);
+            }
+        }
     }
 
     @Override
@@ -1044,6 +1126,7 @@ public class DLCopySwingGUI extends JFrame
             @Override
             public void run() {
                 showCard(cardPanel, "resetPanel");
+                showCard(resetCardPanel, "resetProgressPanel");
             }
         });
     }
@@ -1088,19 +1171,48 @@ public class DLCopySwingGUI extends JFrame
     }
 
     @Override
+    public void showResetBackup(FileCopier fileCopier) {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                showCard(resetCardPanel, "resetBackupPanel");
+            }
+        });
+        resetBackupFileCopierPanel.setFileCopier(fileCopier);
+    }
+
+    @Override
     public void showResetFormattingExchangePartition() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                showCard(resetCardPanel, "resetProgressPanel");
+            }
+        });
         setProgressBarStringOnEDT(resetProgressBar,
                 STRINGS.getString("Formatting_Exchange_Partition"));
     }
 
     @Override
     public void showResetFormattingDataPartition() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                showCard(resetCardPanel, "resetProgressPanel");
+            }
+        });
         setProgressBarStringOnEDT(resetProgressBar,
                 STRINGS.getString("Formatting_Data_Partition"));
     }
 
     @Override
     public void showResetRemovingFiles() {
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                showCard(resetCardPanel, "resetProgressPanel");
+            }
+        });
         setProgressBarStringOnEDT(resetProgressBar,
                 STRINGS.getString("Removing_Selected_Files"));
     }
@@ -1669,7 +1781,7 @@ public class DLCopySwingGUI extends JFrame
         resetDataDefinitionLabel = new javax.swing.JLabel();
         resetOsDefinitionLabel = new javax.swing.JLabel();
         resetDetailsPanel = new javax.swing.JPanel();
-        resetPrintingPanel = new javax.swing.JPanel();
+        resetPrintingDetailsPanel = new javax.swing.JPanel();
         printDocumentsCheckBox = new javax.swing.JCheckBox();
         printingDirectoryPanel = new javax.swing.JPanel();
         printingDirectoryLabel = new javax.swing.JLabel();
@@ -1687,8 +1799,20 @@ public class DLCopySwingGUI extends JFrame
         printCopiesSpinner = new javax.swing.JSpinner();
         printDuplexCheckBox = new javax.swing.JCheckBox();
         printingSpacer = new javax.swing.JPanel();
-        resetBackupPanel = new javax.swing.JPanel();
-        resetExchangePartitionPanel = new javax.swing.JPanel();
+        resetBackupDetailsPanel = new javax.swing.JPanel();
+        resetBackupCheckBox = new javax.swing.JCheckBox();
+        resetBackupSourcePanel = new javax.swing.JPanel();
+        resetBackupSourceTextField = new javax.swing.JTextField();
+        resetBackupDestinationPanel = new javax.swing.JPanel();
+        resetBackupDestinationTextField = new javax.swing.JTextField();
+        resetBackupDestinationButton = new javax.swing.JButton();
+        resetBackupSubdirectoryPanel = new javax.swing.JPanel();
+        resetMoveUpButton = new javax.swing.JButton();
+        resetMoveDownButton = new javax.swing.JButton();
+        resetBackupSubdirectoryScrollPane = new javax.swing.JScrollPane();
+        resetBackupSubdirectoryTable = new javax.swing.JTable();
+        resetBackupSpacerPanel = new javax.swing.JPanel();
+        resetExchangePartitionDetailsPanel = new javax.swing.JPanel();
         resetFormatExchangePartitionCheckBox = new javax.swing.JCheckBox();
         resetFormatExchangePartitionFileSystemLabel = new javax.swing.JLabel();
         resetFormatExchangePartitionFileSystemComboBox = new javax.swing.JComboBox<>();
@@ -1696,7 +1820,7 @@ public class DLCopySwingGUI extends JFrame
         resetFormatExchangePartitionNewLabelRadioButton = new javax.swing.JRadioButton();
         resetFormatExchangePartitionNewLabelTextField = new javax.swing.JTextField();
         resetExchangespacer = new javax.swing.JPanel();
-        resetDataPartitionPanel = new javax.swing.JPanel();
+        resetDataPartitionDetailsPanel = new javax.swing.JPanel();
         formatDataPartitionRadioButton = new javax.swing.JRadioButton();
         removeFilesRadioButton = new javax.swing.JRadioButton();
         systemFilesCheckBox = new javax.swing.JCheckBox();
@@ -1704,7 +1828,12 @@ public class DLCopySwingGUI extends JFrame
         resetPanel = new javax.swing.JPanel();
         currentlyResettingDeviceLabel = new javax.swing.JLabel();
         jSeparator5 = new javax.swing.JSeparator();
+        resetCardPanel = new javax.swing.JPanel();
+        resetProgressPanel = new javax.swing.JPanel();
         resetProgressBar = new javax.swing.JProgressBar();
+        resetBackupPanel = new javax.swing.JPanel();
+        resetBackupCopyLabel = new javax.swing.JLabel();
+        resetBackupFileCopierPanel = new ch.fhnw.filecopier.FileCopierPanel();
         toISOInfoPanel = new javax.swing.JPanel();
         toISOInfoLabel = new javax.swing.JLabel();
         toISOSelectionPanel = new javax.swing.JPanel();
@@ -3272,8 +3401,8 @@ public class DLCopySwingGUI extends JFrame
 
         resetDetailsPanel.setLayout(new java.awt.GridBagLayout());
 
-        resetPrintingPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.resetPrintingPanel.border.title"))); // NOI18N
-        resetPrintingPanel.setLayout(new java.awt.GridBagLayout());
+        resetPrintingDetailsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED), bundle.getString("DLCopySwingGUI.resetPrintingDetailsPanel.border.title"))); // NOI18N
+        resetPrintingDetailsPanel.setLayout(new java.awt.GridBagLayout());
 
         printDocumentsCheckBox.setText(bundle.getString("DLCopySwingGUI.printDocumentsCheckBox.text")); // NOI18N
         printDocumentsCheckBox.addItemListener(new java.awt.event.ItemListener() {
@@ -3284,8 +3413,8 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 5);
-        resetPrintingPanel.add(printDocumentsCheckBox, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 10, 5);
+        resetPrintingDetailsPanel.add(printDocumentsCheckBox, gridBagConstraints);
 
         printingDirectoryPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -3305,8 +3434,8 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 30, 0, 10);
-        resetPrintingPanel.add(printingDirectoryPanel, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 10);
+        resetPrintingDetailsPanel.add(printingDirectoryPanel, gridBagConstraints);
 
         printFileFormatsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.printFileFormatsPanel.border.title"))); // NOI18N
         printFileFormatsPanel.setLayout(new java.awt.GridBagLayout());
@@ -3361,8 +3490,8 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(5, 30, 0, 0);
-        resetPrintingPanel.add(printFileFormatsPanel, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 25, 0, 0);
+        resetPrintingDetailsPanel.add(printFileFormatsPanel, gridBagConstraints);
 
         printCopiesPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -3381,8 +3510,8 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 35, 0, 5);
-        resetPrintingPanel.add(printCopiesPanel, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 30, 0, 5);
+        resetPrintingDetailsPanel.add(printCopiesPanel, gridBagConstraints);
 
         printDuplexCheckBox.setSelected(true);
         printDuplexCheckBox.setText(bundle.getString("DLCopySwingGUI.printDuplexCheckBox.text")); // NOI18N
@@ -3390,33 +3519,149 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 30, 5, 0);
-        resetPrintingPanel.add(printDuplexCheckBox, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 25, 5, 0);
+        resetPrintingDetailsPanel.add(printDuplexCheckBox, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        resetPrintingPanel.add(printingSpacer, gridBagConstraints);
+        resetPrintingDetailsPanel.add(printingSpacer, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
-        resetDetailsPanel.add(resetPrintingPanel, gridBagConstraints);
+        resetDetailsPanel.add(resetPrintingDetailsPanel, gridBagConstraints);
 
-        resetBackupPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.resetBackupPanel.border.title"))); // NOI18N
-        resetBackupPanel.setLayout(new java.awt.GridBagLayout());
+        resetBackupDetailsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), bundle.getString("DLCopySwingGUI.resetBackupDetailsPanel.border.title"))); // NOI18N
+        resetBackupDetailsPanel.setLayout(new java.awt.GridBagLayout());
+
+        resetBackupCheckBox.setText(bundle.getString("DLCopySwingGUI.resetBackupCheckBox.text")); // NOI18N
+        resetBackupCheckBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                resetBackupCheckBoxItemStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
+        resetBackupDetailsPanel.add(resetBackupCheckBox, gridBagConstraints);
+
+        resetBackupSourcePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.resetBackupSourcePanel.border.title"))); // NOI18N
+        resetBackupSourcePanel.setLayout(new java.awt.GridBagLayout());
+
+        resetBackupSourceTextField.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
+        resetBackupSourcePanel.add(resetBackupSourceTextField, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
+        resetBackupDetailsPanel.add(resetBackupSourcePanel, gridBagConstraints);
+
+        resetBackupDestinationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.resetBackupDestinationPanel.border.title"))); // NOI18N
+        resetBackupDestinationPanel.setLayout(new java.awt.GridBagLayout());
+
+        resetBackupDestinationTextField.setEditable(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
+        resetBackupDestinationPanel.add(resetBackupDestinationTextField, gridBagConstraints);
+
+        resetBackupDestinationButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/fileopen.png"))); // NOI18N
+        resetBackupDestinationButton.setEnabled(false);
+        resetBackupDestinationButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        resetBackupDestinationButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetBackupDestinationButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
+        resetBackupDestinationPanel.add(resetBackupDestinationButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
+        resetBackupDetailsPanel.add(resetBackupDestinationPanel, gridBagConstraints);
+
+        resetBackupSubdirectoryPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.resetBackupSubdirectoryPanel.border.title"))); // NOI18N
+        resetBackupSubdirectoryPanel.setLayout(new java.awt.GridBagLayout());
+
+        resetMoveUpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/arrow-up.png"))); // NOI18N
+        resetMoveUpButton.setToolTipText(bundle.getString("DLCopySwingGUI.resetMoveUpButton.toolTipText")); // NOI18N
+        resetMoveUpButton.setEnabled(false);
+        resetMoveUpButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        resetMoveUpButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetMoveUpButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
+        resetBackupSubdirectoryPanel.add(resetMoveUpButton, gridBagConstraints);
+
+        resetMoveDownButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/arrow-down.png"))); // NOI18N
+        resetMoveDownButton.setToolTipText(bundle.getString("DLCopySwingGUI.resetMoveDownButton.toolTipText")); // NOI18N
+        resetMoveDownButton.setEnabled(false);
+        resetMoveDownButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        resetMoveDownButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetMoveDownButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
+        gridBagConstraints.insets = new java.awt.Insets(3, 0, 5, 0);
+        resetBackupSubdirectoryPanel.add(resetMoveDownButton, gridBagConstraints);
+
+        resetBackupSubdirectoryScrollPane.setViewportView(resetBackupSubdirectoryTable);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridheight = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        resetBackupSubdirectoryPanel.add(resetBackupSubdirectoryScrollPane, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        resetBackupDetailsPanel.add(resetBackupSubdirectoryPanel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        resetBackupDetailsPanel.add(resetBackupSpacerPanel, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
-        resetDetailsPanel.add(resetBackupPanel, gridBagConstraints);
+        resetDetailsPanel.add(resetBackupDetailsPanel, gridBagConstraints);
 
-        resetExchangePartitionPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("Exchange_Partition"))); // NOI18N
-        resetExchangePartitionPanel.setLayout(new java.awt.GridBagLayout());
+        resetExchangePartitionDetailsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), bundle.getString("Exchange_Partition"))); // NOI18N
+        resetExchangePartitionDetailsPanel.setLayout(new java.awt.GridBagLayout());
 
         resetFormatExchangePartitionCheckBox.setText(bundle.getString("DLCopySwingGUI.resetFormatExchangePartitionCheckBox.text")); // NOI18N
         resetFormatExchangePartitionCheckBox.addItemListener(new java.awt.event.ItemListener() {
@@ -3427,15 +3672,15 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 0);
-        resetExchangePartitionPanel.add(resetFormatExchangePartitionCheckBox, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 10, 0);
+        resetExchangePartitionDetailsPanel.add(resetFormatExchangePartitionCheckBox, gridBagConstraints);
 
         resetFormatExchangePartitionFileSystemLabel.setText(bundle.getString("DLCopySwingGUI.resetFormatExchangePartitionFileSystemLabel.text")); // NOI18N
         resetFormatExchangePartitionFileSystemLabel.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 30, 10, 0);
-        resetExchangePartitionPanel.add(resetFormatExchangePartitionFileSystemLabel, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 25, 10, 0);
+        resetExchangePartitionDetailsPanel.add(resetFormatExchangePartitionFileSystemLabel, gridBagConstraints);
 
         resetFormatExchangePartitionFileSystemComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
         resetFormatExchangePartitionFileSystemComboBox.setToolTipText(bundle.getString("ExchangePartitionFileSystemComboBoxToolTipText")); // NOI18N
@@ -3443,8 +3688,8 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 10, 10);
-        resetExchangePartitionPanel.add(resetFormatExchangePartitionFileSystemComboBox, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 10, 10);
+        resetExchangePartitionDetailsPanel.add(resetFormatExchangePartitionFileSystemComboBox, gridBagConstraints);
 
         resetExchangePartitionButtonGroup.add(resetFormatExchangePartitionKeepLabelRadioButton);
         resetFormatExchangePartitionKeepLabelRadioButton.setSelected(true);
@@ -3453,8 +3698,8 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 27, 0, 0);
-        resetExchangePartitionPanel.add(resetFormatExchangePartitionKeepLabelRadioButton, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 22, 0, 0);
+        resetExchangePartitionDetailsPanel.add(resetFormatExchangePartitionKeepLabelRadioButton, gridBagConstraints);
 
         resetExchangePartitionButtonGroup.add(resetFormatExchangePartitionNewLabelRadioButton);
         resetFormatExchangePartitionNewLabelRadioButton.setText(bundle.getString("DLCopySwingGUI.resetFormatExchangePartitionNewLabelRadioButton.text")); // NOI18N
@@ -3465,22 +3710,22 @@ public class DLCopySwingGUI extends JFrame
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 27, 5, 0);
-        resetExchangePartitionPanel.add(resetFormatExchangePartitionNewLabelRadioButton, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 22, 5, 0);
+        resetExchangePartitionDetailsPanel.add(resetFormatExchangePartitionNewLabelRadioButton, gridBagConstraints);
 
         resetFormatExchangePartitionNewLabelTextField.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 10);
-        resetExchangePartitionPanel.add(resetFormatExchangePartitionNewLabelTextField, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 5, 10);
+        resetExchangePartitionDetailsPanel.add(resetFormatExchangePartitionNewLabelTextField, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        resetExchangePartitionPanel.add(resetExchangespacer, gridBagConstraints);
+        resetExchangePartitionDetailsPanel.add(resetExchangespacer, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -3488,10 +3733,10 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        resetDetailsPanel.add(resetExchangePartitionPanel, gridBagConstraints);
+        resetDetailsPanel.add(resetExchangePartitionDetailsPanel, gridBagConstraints);
 
-        resetDataPartitionPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("Data_Partition"))); // NOI18N
-        resetDataPartitionPanel.setLayout(new java.awt.GridBagLayout());
+        resetDataPartitionDetailsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), bundle.getString("Data_Partition"))); // NOI18N
+        resetDataPartitionDetailsPanel.setLayout(new java.awt.GridBagLayout());
 
         resetDataPartitionButtonGroup.add(formatDataPartitionRadioButton);
         formatDataPartitionRadioButton.setText(bundle.getString("DLCopySwingGUI.formatDataPartitionRadioButton.text")); // NOI18N
@@ -3504,8 +3749,8 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
-        resetDataPartitionPanel.add(formatDataPartitionRadioButton, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 10);
+        resetDataPartitionDetailsPanel.add(formatDataPartitionRadioButton, gridBagConstraints);
 
         resetDataPartitionButtonGroup.add(removeFilesRadioButton);
         removeFilesRadioButton.setSelected(true);
@@ -3518,23 +3763,23 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
-        resetDataPartitionPanel.add(removeFilesRadioButton, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 10);
+        resetDataPartitionDetailsPanel.add(removeFilesRadioButton, gridBagConstraints);
 
         systemFilesCheckBox.setText(bundle.getString("DLCopySwingGUI.systemFilesCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 30, 0, 0);
-        resetDataPartitionPanel.add(systemFilesCheckBox, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
+        resetDataPartitionDetailsPanel.add(systemFilesCheckBox, gridBagConstraints);
 
         homeDirectoryCheckBox.setText(bundle.getString("DLCopySwingGUI.homeDirectoryCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 30, 10, 10);
-        resetDataPartitionPanel.add(homeDirectoryCheckBox, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(0, 25, 10, 10);
+        resetDataPartitionDetailsPanel.add(homeDirectoryCheckBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -3542,7 +3787,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        resetDetailsPanel.add(resetDataPartitionPanel, gridBagConstraints);
+        resetDetailsPanel.add(resetDataPartitionDetailsPanel, gridBagConstraints);
 
         resetSelectionTabbedPane.addTab(bundle.getString("Details"), resetDetailsPanel); // NOI18N
 
@@ -3563,12 +3808,38 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         resetPanel.add(jSeparator5, gridBagConstraints);
 
+        resetCardPanel.setLayout(new java.awt.CardLayout());
+
+        resetProgressPanel.setLayout(new java.awt.GridBagLayout());
+
         resetProgressBar.setIndeterminate(true);
         resetProgressBar.setPreferredSize(new java.awt.Dimension(250, 25));
         resetProgressBar.setStringPainted(true);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.weighty = 1.0;
-        resetPanel.add(resetProgressBar, gridBagConstraints);
+        resetProgressPanel.add(resetProgressBar, gridBagConstraints);
+
+        resetCardPanel.add(resetProgressPanel, "resetProgressPanel");
+
+        resetBackupPanel.setLayout(new java.awt.GridBagLayout());
+
+        resetBackupCopyLabel.setText(bundle.getString("DLCopySwingGUI.resetBackupCopyLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        resetBackupPanel.add(resetBackupCopyLabel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
+        resetBackupPanel.add(resetBackupFileCopierPanel, gridBagConstraints);
+
+        resetCardPanel.add(resetBackupPanel, "resetBackupPanel");
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        resetPanel.add(resetCardPanel, gridBagConstraints);
 
         cardPanel.add(resetPanel, "resetPanel");
 
@@ -4231,12 +4502,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }//GEN-LAST:event_automaticBackupCheckBoxItemStateChanged
 
     private void automaticBackupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_automaticBackupButtonActionPerformed
-        String selectedPath = automaticBackupTextField.getText();
-        SelectBackupDirectoryDialog dialog = new SelectBackupDirectoryDialog(
-                this, null, selectedPath, false);
-        if (dialog.showDialog() == JOptionPane.OK_OPTION) {
-            automaticBackupTextField.setText(dialog.getSelectedPath());
-        }
+        selectBackupDestination(automaticBackupTextField);
     }//GEN-LAST:event_automaticBackupButtonActionPerformed
 
     private void resetButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetButtonActionPerformed
@@ -4457,6 +4723,47 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 resetShowHarddisksCheckBox.isSelected(),
                 runningSystemSource.getDeviceName()).execute();
     }//GEN-LAST:event_resetListModeRadioButtonActionPerformed
+
+    private void resetBackupCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_resetBackupCheckBoxItemStateChanged
+        boolean enabled = resetBackupCheckBox.isSelected();
+        resetBackupSourceTextField.setEnabled(enabled);
+        resetBackupDestinationButton.setEnabled(enabled);
+    }//GEN-LAST:event_resetBackupCheckBoxItemStateChanged
+
+    private void resetBackupDestinationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBackupDestinationButtonActionPerformed
+        selectBackupDestination(resetBackupDestinationTextField);
+    }//GEN-LAST:event_resetBackupDestinationButtonActionPerformed
+
+    private void resetMoveUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetMoveUpButtonActionPerformed
+        int selectedRows[] = resetBackupSubdirectoryTable.getSelectedRows();
+        subdirectoryTableModel.moveUp(selectedRows);
+        resetBackupSubdirectoryTable.clearSelection();
+        for (int selectedRow : selectedRows) {
+            int previousRow = selectedRow - 1;
+            resetBackupSubdirectoryTable.addRowSelectionInterval(
+                    previousRow, previousRow);
+        }
+    }//GEN-LAST:event_resetMoveUpButtonActionPerformed
+
+    private void resetMoveDownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetMoveDownButtonActionPerformed
+        int selectedRows[] = resetBackupSubdirectoryTable.getSelectedRows();
+        subdirectoryTableModel.moveDown(selectedRows);
+        resetBackupSubdirectoryTable.clearSelection();
+        for (int selectedRow : selectedRows) {
+            int nextRow = selectedRow + 1;
+            resetBackupSubdirectoryTable.addRowSelectionInterval(
+                    nextRow, nextRow);
+        }
+    }//GEN-LAST:event_resetMoveDownButtonActionPerformed
+
+    private void selectBackupDestination(JTextField textField) {
+        String selectedPath = textField.getText();
+        SelectBackupDirectoryDialog dialog = new SelectBackupDirectoryDialog(
+                this, null, selectedPath, false);
+        if (dialog.showDialog() == JOptionPane.OK_OPTION) {
+            textField.setText(dialog.getSelectedPath());
+        }
+    }
 
     private void parseCommandLineArguments(String[] arguments) {
         for (int i = 0, length = arguments.length; i < length; i++) {
@@ -4803,6 +5110,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 printXlsxCheckBox.isSelected(),
                 ((Number) printCopiesSpinner.getValue()).intValue(),
                 printDuplexCheckBox.isSelected(),
+                resetBackupCheckBox.isSelected(),
+                resetBackupSourceTextField.getText(),
+                resetBackupDestinationTextField.getText(),
+                orderedSubdirectoriesEntries,
                 resetFormatExchangePartitionCheckBox.isSelected(),
                 exchangePartitionFileSystem,
                 resetFormatExchangePartitionKeepLabelRadioButton.isSelected(),
@@ -5091,6 +5402,16 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         preferences.putInt(PRINT_COPIES,
                 ((Number) printCopiesSpinner.getValue()).intValue());
         preferences.putBoolean(PRINT_DUPLEX, printDuplexCheckBox.isSelected());
+        preferences.putBoolean(RESET_BACKUP, resetBackupCheckBox.isSelected());
+        preferences.put(RESET_BACKUP_SOURCE,
+                resetBackupSourceTextField.getText());
+        preferences.put(RESET_BACKUP_DESTINATION,
+                resetBackupDestinationTextField.getText());
+        preferences.putBoolean(RESET_BACKUP_SUBDIR_EXCHANGE_PARTITION_LABEL,
+                exchangePartitionLabelSubdirectory.isSelected());
+        preferences.putBoolean(RESET_BACKUP_SUBDIR_STORAGE_MEDIA_SERIALNUMBER,
+                storageMediaSerialnumberSubdirectory.isSelected());
+        preferences.put(RESET_BACKUP_SUBDIR_ORDER, getSubdirOrderString());
         preferences.putBoolean(RESET_FORMAT_EXCHANGE_PARTITION,
                 resetFormatExchangePartitionCheckBox.isSelected());
         preferences.put(RESET_FORMAT_EXCHANGE_PARTITION_FILE_SYSTEM,
@@ -5112,6 +5433,23 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         } catch (BackingStoreException ex) {
             LOGGER.warning("failed flushing preferences");
         }
+    }
+
+    private String getSubdirOrderString() {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < subdirectoryTableModel.getRowCount(); i++) {
+            if (builder.length() > 0) {
+                builder.append(',');
+            }
+            String string = (String) subdirectoryTableModel.getValueAt(i, 1);
+            if (string.equals(STRINGS.getString("Exchange_Partition_Label"))) {
+                builder.append(RESET_BACKUP_SUBDIR_ORDER_LABEL);
+            } else if (string.equals(
+                    STRINGS.getString("Storage_Media_Serial_Number"))) {
+                builder.append(RESET_BACKUP_SUBDIR_ORDER_SERIAL);
+            }
+        }
+        return builder.toString();
     }
 
     private void exitProgram() {
@@ -6109,15 +6447,29 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JCheckBox removeHiddenFilesCheckBox;
     private javax.swing.JPanel repartitionExchangeOptionsPanel;
     private javax.swing.JRadioButton resetAutomaticRadioButton;
+    private javax.swing.JCheckBox resetBackupCheckBox;
+    private javax.swing.JLabel resetBackupCopyLabel;
+    private javax.swing.JButton resetBackupDestinationButton;
+    private javax.swing.JPanel resetBackupDestinationPanel;
+    private javax.swing.JTextField resetBackupDestinationTextField;
+    private javax.swing.JPanel resetBackupDetailsPanel;
+    private ch.fhnw.filecopier.FileCopierPanel resetBackupFileCopierPanel;
     private javax.swing.JPanel resetBackupPanel;
+    private javax.swing.JPanel resetBackupSourcePanel;
+    private javax.swing.JTextField resetBackupSourceTextField;
+    private javax.swing.JPanel resetBackupSpacerPanel;
+    private javax.swing.JPanel resetBackupSubdirectoryPanel;
+    private javax.swing.JScrollPane resetBackupSubdirectoryScrollPane;
+    private javax.swing.JTable resetBackupSubdirectoryTable;
     private javax.swing.JButton resetButton;
+    private javax.swing.JPanel resetCardPanel;
     private javax.swing.JLabel resetDataDefinitionLabel;
     private javax.swing.ButtonGroup resetDataPartitionButtonGroup;
-    private javax.swing.JPanel resetDataPartitionPanel;
+    private javax.swing.JPanel resetDataPartitionDetailsPanel;
     private javax.swing.JPanel resetDetailsPanel;
     private javax.swing.JLabel resetExchangeDefinitionLabel;
     private javax.swing.ButtonGroup resetExchangePartitionButtonGroup;
-    private javax.swing.JPanel resetExchangePartitionPanel;
+    private javax.swing.JPanel resetExchangePartitionDetailsPanel;
     private javax.swing.JPanel resetExchangespacer;
     private javax.swing.JCheckBox resetFormatExchangePartitionCheckBox;
     private javax.swing.JComboBox<String> resetFormatExchangePartitionFileSystemComboBox;
@@ -6128,12 +6480,15 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel resetInfoLabel;
     private javax.swing.JPanel resetInfoPanel;
     private javax.swing.JRadioButton resetListModeRadioButton;
+    private javax.swing.JButton resetMoveDownButton;
+    private javax.swing.JButton resetMoveUpButton;
     private javax.swing.JLabel resetNoMediaLabel;
     private javax.swing.JPanel resetNoMediaPanel;
     private javax.swing.JLabel resetOsDefinitionLabel;
     private javax.swing.JPanel resetPanel;
-    private javax.swing.JPanel resetPrintingPanel;
+    private javax.swing.JPanel resetPrintingDetailsPanel;
     private javax.swing.JProgressBar resetProgressBar;
+    private javax.swing.JPanel resetProgressPanel;
     private javax.swing.JPanel resetSelectionCardPanel;
     private javax.swing.JLabel resetSelectionCountLabel;
     private javax.swing.JPanel resetSelectionDeviceListPanel;

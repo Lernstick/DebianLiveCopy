@@ -1,6 +1,9 @@
 package ch.fhnw.dlcopy;
 
 import ch.fhnw.dlcopy.gui.DLCopyGUI;
+import ch.fhnw.filecopier.CopyJob;
+import ch.fhnw.filecopier.FileCopier;
+import ch.fhnw.filecopier.Source;
 import ch.fhnw.util.MountInfo;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
@@ -43,6 +46,10 @@ public class Resetter extends SwingWorker<Boolean, Void> {
     private final boolean printXLSX;
     private final int printCopies;
     private final boolean printDuplex;
+    private final boolean backupData;
+    private final String backupSource;
+    private final String backupDestination;
+    private final List<Subdirectory> orderedSubdirectoriesEntries;
     private final boolean formatExchangePartition;
     private final String exchangePartitionFileSystem;
     private final boolean keepExchangePartitionLabel;
@@ -75,6 +82,11 @@ public class Resetter extends SwingWorker<Boolean, Void> {
      * @param printCopies the number of copies to print
      * @param printDuplex if the document should be printed on both sides of the
      * paper
+     * @param backupData if data should be backed up
+     * @param backupSource the backup source directory
+     * @param backupDestination the backup destination directory
+     * @param orderedSubdirectoriesEntries the ordered list of subdirectory
+     * entries
      * @param formatExchangePartition if the exchange partition should be
      * formatted
      * @param exchangePartitionFileSystem the file system of the exchange
@@ -95,7 +107,10 @@ public class Resetter extends SwingWorker<Boolean, Void> {
             String printDirectory, boolean printODT, boolean printODS,
             boolean printPDF, boolean printDOC, boolean printDOCX,
             boolean printXLS, boolean printXLSX, int printCopies,
-            boolean printDuplex, boolean formatExchangePartition,
+            boolean printDuplex, boolean backupData, String backupSource,
+            String backupDestination,
+            List<Subdirectory> orderedSubdirectoriesEntries,
+            boolean formatExchangePartition,
             String exchangePartitionFileSystem,
             boolean keepExchangePartitionLabel,
             String newExchangePartitionLabel, boolean formatDataPartition,
@@ -116,6 +131,10 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         this.printXLSX = printXLSX;
         this.printCopies = printCopies;
         this.printDuplex = printDuplex;
+        this.backupData = backupData;
+        this.backupSource = backupSource;
+        this.backupDestination = backupDestination;
+        this.orderedSubdirectoriesEntries = orderedSubdirectoriesEntries;
         this.formatExchangePartition = formatExchangePartition;
         this.exchangePartitionFileSystem = exchangePartitionFileSystem;
         this.keepExchangePartitionLabel = keepExchangePartitionLabel;
@@ -146,6 +165,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
 
             Partition exchangePartition = storageDevice.getExchangePartition();
             printDocuments(exchangePartition);
+            backup(storageDevice, exchangePartition);
             resetExchangePartition(exchangePartition);
             resetDataPartition(storageDevice);
 
@@ -257,6 +277,52 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                     }
                 }
         }
+    }
+
+    private void backup(StorageDevice storageDevice,
+            Partition exchangePartition) throws DBusException, IOException {
+
+        if (!backupData) {
+            return;
+        }
+
+        MountInfo mountInfo = exchangePartition.mount();
+        Path source = Paths.get(mountInfo.getMountPath(), backupSource);
+        Path destination = Paths.get(backupDestination);
+
+        // prepare destination directory
+        StringBuilder stringBuilder = new StringBuilder();
+        for (Subdirectory subdirectory : orderedSubdirectoriesEntries) {
+            if (!subdirectory.isSelected()) {
+                continue;
+            }
+            if (stringBuilder.length() > 0) {
+                stringBuilder.append(' ');
+            }
+            if (subdirectory.getDescription().equals(
+                    DLCopy.STRINGS.getString("Exchange_Partition_Label"))) {
+                stringBuilder.append(exchangePartition.getIdLabel());
+            }
+            if (subdirectory.getDescription().equals(
+                    DLCopy.STRINGS.getString("Storage_Media_Serial_Number"))) {
+                // replace all slashes because they are not allowed in directory
+                // names
+                stringBuilder.append(
+                        storageDevice.getSerial().replaceAll("/", "-"));
+            }
+        }
+        destination = destination.resolve(stringBuilder.toString());
+
+        // Unfortunately, rdiffbackup looses all metainformation when backing up
+        // a directory that was previously used as destination directory.
+        // Therefore we just make a simple copy.
+
+        FileCopier fileCopier = new FileCopier();
+        dlCopyGUI.showResetBackup(fileCopier);
+        
+        Source[] sources = new Source[]{new Source(source.toString(), ".*")};
+        String[] destinations = new String[]{destination.toString()};
+        fileCopier.copy(new CopyJob(sources, destinations));
     }
 
     private void resetExchangePartition(Partition exchangePartition)

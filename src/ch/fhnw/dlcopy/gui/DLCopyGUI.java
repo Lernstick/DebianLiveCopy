@@ -111,7 +111,7 @@ public interface DLCopyGUI {
     public void showUpgradeBackup();
 
     /**
-     * shows the user interface for backing the exchange partition up during a
+     * shows the user interface for backing up the exchange partition during a
      * running upgrade
      *
      * @param fileCopier the FileCopier used for backing up the exchange
@@ -132,7 +132,7 @@ public interface DLCopyGUI {
     public void showUpgradeRestoreRunning();
 
     /**
-     * shows the user interface for backing the exchange partition up during a
+     * shows the user interface for backing up the exchange partition during a
      * running upgrade
      *
      * @param fileCopier the FileCopier used for backing up the exchange
@@ -244,11 +244,21 @@ public interface DLCopyGUI {
 
     /**
      * shows the user a list of documents that can be selected to print
+     *
      * @param type the type of documents to select
      * @param documents the list of documents to print
      * @return the list of documents selected for printing
      */
     public List<Path> selectDocumentsToPrint(String type, List<Path> documents);
+
+    /**
+     * shows the user interface for backing up the exchange partition during a
+     * running reset
+     *
+     * @param fileCopier the FileCopier used for backing up the exchange
+     * partition
+     */
+    public void showResetBackup(FileCopier fileCopier);
 
     /**
      * shows the user interface for formatting the exchange partition during
