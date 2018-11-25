@@ -137,6 +137,7 @@ public class DLCopySwingGUI extends JFrame
     private final static String DATA_PARTITION_MODE = "dataPartitionMode";
     private final static String COPY_DATA_PARTITION = "copyDataPartition";
     private final static String UPGRADE_SYSTEM_PARTITION = "upgradeSystemPartition";
+    private final static String UPGRADE_RESET_DATA_PARTITION = "upgradeResetDataPartition";
     private final static String REACTIVATE_WELCOME = "reactivateWelcome";
     private final static String KEEP_PRINTER_SETTINGS = "keepPrinterSettings";
     private final static String KEEP_NETWORK_SETTINGS = "keepNetworkSettings";
@@ -522,6 +523,8 @@ public class DLCopySwingGUI extends JFrame
         }
         upgradeSystemPartitionCheckBox.setSelected(
                 preferences.getBoolean(UPGRADE_SYSTEM_PARTITION, true));
+        resetDataPartitionCheckBox.setSelected(
+                preferences.getBoolean(UPGRADE_RESET_DATA_PARTITION, true));
         if (commandLineReactivateWelcome == null) {
             reactivateWelcomeCheckBox.setSelected(
                     preferences.getBoolean(REACTIVATE_WELCOME, true));
@@ -1712,8 +1715,9 @@ public class DLCopySwingGUI extends JFrame
         upgradeDetailsTabbedPane = new javax.swing.JTabbedPane();
         upgradeOptionsPanel = new javax.swing.JPanel();
         upgradeSystemPartitionCheckBox = new javax.swing.JCheckBox();
-        keepPrinterSettingsCheckBox = new javax.swing.JCheckBox();
+        resetDataPartitionCheckBox = new javax.swing.JCheckBox();
         reactivateWelcomeCheckBox = new javax.swing.JCheckBox();
+        keepPrinterSettingsCheckBox = new javax.swing.JCheckBox();
         keepNetworkSettingsCheckBox = new javax.swing.JCheckBox();
         keepFirewallSettingsCheckBox = new javax.swing.JCheckBox();
         removeHiddenFilesCheckBox = new javax.swing.JCheckBox();
@@ -2833,45 +2837,62 @@ public class DLCopySwingGUI extends JFrame
 
         upgradeSystemPartitionCheckBox.setSelected(true);
         upgradeSystemPartitionCheckBox.setText(bundle.getString("DLCopySwingGUI.upgradeSystemPartitionCheckBox.text")); // NOI18N
+        upgradeSystemPartitionCheckBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                upgradeSystemPartitionCheckBoxItemStateChanged(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
         upgradeOptionsPanel.add(upgradeSystemPartitionCheckBox, gridBagConstraints);
 
-        keepPrinterSettingsCheckBox.setSelected(true);
-        keepPrinterSettingsCheckBox.setText(bundle.getString("DLCopySwingGUI.keepPrinterSettingsCheckBox.text")); // NOI18N
+        resetDataPartitionCheckBox.setSelected(true);
+        resetDataPartitionCheckBox.setText(bundle.getString("DLCopySwingGUI.resetDataPartitionCheckBox.text")); // NOI18N
+        resetDataPartitionCheckBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                resetDataPartitionCheckBoxItemStateChanged(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(10, 30, 0, 10);
-        upgradeOptionsPanel.add(keepPrinterSettingsCheckBox, gridBagConstraints);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        upgradeOptionsPanel.add(resetDataPartitionCheckBox, gridBagConstraints);
 
         reactivateWelcomeCheckBox.setSelected(true);
         reactivateWelcomeCheckBox.setText(bundle.getString("DLCopySwingGUI.reactivateWelcomeCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
         upgradeOptionsPanel.add(reactivateWelcomeCheckBox, gridBagConstraints);
+
+        keepPrinterSettingsCheckBox.setSelected(true);
+        keepPrinterSettingsCheckBox.setText(bundle.getString("DLCopySwingGUI.keepPrinterSettingsCheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
+        upgradeOptionsPanel.add(keepPrinterSettingsCheckBox, gridBagConstraints);
 
         keepNetworkSettingsCheckBox.setSelected(true);
         keepNetworkSettingsCheckBox.setText(bundle.getString("DLCopySwingGUI.keepNetworkSettingsCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 30, 0, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
         upgradeOptionsPanel.add(keepNetworkSettingsCheckBox, gridBagConstraints);
 
         keepFirewallSettingsCheckBox.setSelected(true);
         keepFirewallSettingsCheckBox.setText(bundle.getString("DLCopySwingGUI.keepFirewallSettingsCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(0, 30, 0, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 10);
         upgradeOptionsPanel.add(keepFirewallSettingsCheckBox, gridBagConstraints);
 
         removeHiddenFilesCheckBox.setText(bundle.getString("DLCopySwingGUI.removeHiddenFilesCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridy = 4;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
@@ -4756,6 +4777,25 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }//GEN-LAST:event_resetMoveDownButtonActionPerformed
 
+    private void resetDataPartitionCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_resetDataPartitionCheckBoxItemStateChanged
+        boolean selected = resetDataPartitionCheckBox.isSelected();
+        keepFirewallSettingsCheckBox.setEnabled(selected);
+        keepNetworkSettingsCheckBox.setEnabled(selected);
+        keepPrinterSettingsCheckBox.setEnabled(selected);
+
+        if (!selected && upgradeSystemPartitionCheckBox.isSelected()) {
+            JOptionPane.showMessageDialog(this,
+                    STRINGS.getString("Warning_Reset_Data_Partition_Enforced"),
+                    STRINGS.getString("Warning"),
+                    JOptionPane.WARNING_MESSAGE);
+            resetDataPartitionCheckBox.setSelected(true);
+        }
+    }//GEN-LAST:event_resetDataPartitionCheckBoxItemStateChanged
+
+    private void upgradeSystemPartitionCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_upgradeSystemPartitionCheckBoxItemStateChanged
+        resetDataPartitionCheckBox.setSelected(true);
+    }//GEN-LAST:event_upgradeSystemPartitionCheckBoxItemStateChanged
+
     private void selectBackupDestination(JTextField textField) {
         String selectedPath = textField.getText();
         SelectBackupDirectoryDialog dialog = new SelectBackupDirectoryDialog(
@@ -5369,6 +5409,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 copyDataPartitionCheckBox.isSelected());
         preferences.putBoolean(UPGRADE_SYSTEM_PARTITION,
                 upgradeSystemPartitionCheckBox.isSelected());
+        preferences.putBoolean(UPGRADE_RESET_DATA_PARTITION,
+                resetDataPartitionCheckBox.isSelected());
         preferences.putBoolean(REACTIVATE_WELCOME,
                 reactivateWelcomeCheckBox.isSelected());
         preferences.putBoolean(KEEP_PRINTER_SETTINGS,
@@ -5959,6 +6001,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 automaticBackupCheckBox.isSelected(),
                 automaticBackupTextField.getText(), removeBackup,
                 upgradeSystemPartitionCheckBox.isSelected(),
+                resetDataPartitionCheckBox.isSelected(),
                 keepPrinterSettingsCheckBox.isSelected(),
                 keepNetworkSettingsCheckBox.isSelected(),
                 keepFirewallSettingsCheckBox.isSelected(),
@@ -6465,6 +6508,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JPanel resetCardPanel;
     private javax.swing.JLabel resetDataDefinitionLabel;
     private javax.swing.ButtonGroup resetDataPartitionButtonGroup;
+    private javax.swing.JCheckBox resetDataPartitionCheckBox;
     private javax.swing.JPanel resetDataPartitionDetailsPanel;
     private javax.swing.JPanel resetDetailsPanel;
     private javax.swing.JLabel resetExchangeDefinitionLabel;

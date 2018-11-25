@@ -56,6 +56,7 @@ public class Upgrader extends InstallerOrUpgrader {
     private final String automaticBackupDestination;
     private final boolean removeBackup;
     private final boolean upgradeSystemPartition;
+    private final boolean resetDataPartition;
     private final boolean keepPrinterSettings;
     private final boolean keepNetworkSettings;
     private final boolean keepFirewallSettings;
@@ -84,6 +85,7 @@ public class Upgrader extends InstallerOrUpgrader {
      * @param automaticBackupDestination the destination for automatic backups
      * @param removeBackup if temporary backups should be removed
      * @param upgradeSystemPartition if the system partition should be upgraded
+     * @param resetDataPartition if the data partition should be reset
      * @param keepPrinterSettings if the printer settings should be kept when
      * upgrading
      * @param keepNetworkSettings if the network settings should be kept when
@@ -104,10 +106,11 @@ public class Upgrader extends InstallerOrUpgrader {
             DLCopyGUI dlCopyGUI, RepartitionStrategy repartitionStrategy,
             int resizedExchangePartitionSize, boolean automaticBackup,
             String automaticBackupDestination, boolean removeBackup,
-            boolean upgradeSystemPartition, boolean keepPrinterSettings,
-            boolean keepNetworkSettings, boolean keepFirewallSettings,
-            boolean reactivateWelcome, boolean removeHiddenFiles,
-            List<String> filesToOverwrite, long systemSizeEnlarged) {
+            boolean upgradeSystemPartition, boolean resetDataPartition,
+            boolean keepPrinterSettings, boolean keepNetworkSettings,
+            boolean keepFirewallSettings, boolean reactivateWelcome,
+            boolean removeHiddenFiles, List<String> filesToOverwrite,
+            long systemSizeEnlarged) {
 
         super(source, deviceList, exchangePartitionLabel,
                 exchangePartitionFileSystem, dataPartitionFileSystem,
@@ -119,6 +122,7 @@ public class Upgrader extends InstallerOrUpgrader {
         this.automaticBackupDestination = automaticBackupDestination;
         this.removeBackup = removeBackup;
         this.upgradeSystemPartition = upgradeSystemPartition;
+        this.resetDataPartition = resetDataPartition;
         this.keepPrinterSettings = keepPrinterSettings;
         this.keepNetworkSettings = keepNetworkSettings;
         this.keepFirewallSettings = keepFirewallSettings;
@@ -461,8 +465,14 @@ public class Upgrader extends InstallerOrUpgrader {
             mountAufs = true;
         }
 
-        cowPath = mountDataPartition(dataMountPoint,
-                readOnlyMountPoints, mountAufs, true);
+        /**
+         * DON'T use a temporary upper dir here. Otherwise we will most probably
+         * run out of memory during the copyup operation when upgrading the
+         * system partition. The finalizeDataPartition() later also needs
+         * persistent write operations.
+         */
+        cowPath = mountDataPartition(dataMountPoint, readOnlyMountPoints,
+                mountAufs, false /*temporaryUpperDir*/);
 
         // backup
         if (automaticBackup) {
@@ -470,58 +480,14 @@ public class Upgrader extends InstallerOrUpgrader {
         }
 
         // reset data partition
-        // first umount the filesystem union (aufs or overlay)
-        // (otherwise we would wreak havoc on the filesystem metadata)
-        try {
-            // Because we just mounted the cowPath, we have to wait here a
-            // little bit. Otherwise umounting fails with error messages similar
-            // to this one:
-            // umount: /run/rw1/cow: target is busy
-            TimeUnit.SECONDS.sleep(7);
-        } catch (InterruptedException ex) {
-            LOGGER.log(Level.SEVERE, "", ex);
-        }
-        DLCopy.umount(cowPath, dlCopyGUI);
-
-        List<String> excludes = new ArrayList<>();
-        excludes.add("/home.*");
-        String cleanupRoot = dataMountPoint;
-        if (majorDebianVersion > 8 && !upgradeFromAufsToOverlay) {
-            cleanupRoot = dataMountPoint + "/rw";
-        } else {
-            excludes.addAll(Arrays.asList(
-                    "/lost\\+found", "/persistence.conf"));
-        }
-        if (keepPrinterSettings || keepNetworkSettings
-                || keepFirewallSettings) {
-            excludes.add("/etc.*");
-        }
-        cleanup(cleanupRoot, excludes);
-
-        if (keepPrinterSettings || keepNetworkSettings
-                || keepFirewallSettings) {
-            cleanupRoot += "/etc";
-            excludes.clear();
-            if (keepPrinterSettings) {
-                excludes.add("/cups.*");
-            }
-            if (keepNetworkSettings) {
-                excludes.add("/NetworkManager.*");
-            }
-            if (keepFirewallSettings) {
-                excludes.add("/lernstick-firewall.*");
-            }
-            cleanup(cleanupRoot, excludes);
+        if (resetDataPartition) {
+            resetDataPartition(cowPath, dataMountPoint,
+                    majorDebianVersion, upgradeFromAufsToOverlay);
         }
 
-        // rebuild union
-        // !!! DON'T use a temporary upper dir here !!!
-        // Otherwise we will most probably run out of memory during
-        // the copyup operation below.
-        cowPath = mountDataPartition(dataMountPoint,
-                readOnlyMountPoints, mountAufs, false);
-
-        copyUp(cowPath);
+        if (upgradeSystemPartition) {
+            copyUp(cowPath);
+        }
 
         // upgrading from aufs to overlay has to happen before calling
         // finalizeDataPartition() below!
@@ -590,6 +556,55 @@ public class Upgrader extends InstallerOrUpgrader {
         }
 
         return true;
+    }
+
+    private void resetDataPartition(String cowPath, String dataMountPoint,
+            int majorDebianVersion, boolean upgradeFromAufsToOverlay)
+            throws IOException {
+
+        // first umount the filesystem union (aufs or overlay)
+        // (otherwise we would wreak havoc on the filesystem metadata)
+        try {
+            // Because we just mounted the cowPath, we have to wait here a
+            // little bit. Otherwise umounting fails with error messages similar
+            // to this one:
+            // umount: /run/rw1/cow: target is busy
+            TimeUnit.SECONDS.sleep(7);
+        } catch (InterruptedException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+        }
+        DLCopy.umount(cowPath, dlCopyGUI);
+
+        List<String> excludes = new ArrayList<>();
+        excludes.add("/home.*");
+        String cleanupRoot = dataMountPoint;
+        if (majorDebianVersion > 8 && !upgradeFromAufsToOverlay) {
+            cleanupRoot = dataMountPoint + "/rw";
+        } else {
+            excludes.addAll(Arrays.asList(
+                    "/lost\\+found", "/persistence.conf"));
+        }
+        if (keepPrinterSettings || keepNetworkSettings
+                || keepFirewallSettings) {
+            excludes.add("/etc.*");
+        }
+        cleanup(cleanupRoot, excludes);
+
+        if (keepPrinterSettings || keepNetworkSettings
+                || keepFirewallSettings) {
+            cleanupRoot += "/etc";
+            excludes.clear();
+            if (keepPrinterSettings) {
+                excludes.add("/cups.*");
+            }
+            if (keepNetworkSettings) {
+                excludes.add("/NetworkManager.*");
+            }
+            if (keepFirewallSettings) {
+                excludes.add("/lernstick-firewall.*");
+            }
+            cleanup(cleanupRoot, excludes);
+        }
     }
 
     private String mountDataPartition(String dataMountPoint,
