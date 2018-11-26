@@ -6,14 +6,21 @@ import java.awt.GridBagConstraints;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.nio.file.attribute.FileTime;
 import java.text.MessageFormat;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.FormatStyle;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
+import javax.swing.JLabel;
 
 /**
  * Shows a dialog for selecting documents to print
@@ -52,9 +59,13 @@ public class PrintSelectionDialog extends javax.swing.JDialog {
 
         GridBagConstraints checkBoxConstraints = new GridBagConstraints();
         checkBoxConstraints.anchor = GridBagConstraints.WEST;
-        checkBoxConstraints.gridwidth = GridBagConstraints.REMAINDER;
         checkBoxConstraints.insets = new java.awt.Insets(3, 5, 0, 0);
         checkBoxConstraints.weightx = 1.0;
+
+        GridBagConstraints dateLabelConstraints = new GridBagConstraints();
+        dateLabelConstraints.anchor = GridBagConstraints.WEST;
+        dateLabelConstraints.insets = new java.awt.Insets(3, 10, 0, 0);
+        dateLabelConstraints.gridwidth = GridBagConstraints.REMAINDER;
 
         checkBoxes = new ArrayList<>();
         for (final Path document : documents) {
@@ -67,6 +78,22 @@ public class PrintSelectionDialog extends javax.swing.JDialog {
                     document.getFileName().toString());
             checkBoxPanel.add(checkBox, checkBoxConstraints);
             checkBoxes.add(checkBox);
+
+            try {
+                BasicFileAttributes attributes = Files.readAttributes(
+                        document, BasicFileAttributes.class);
+                FileTime lastModifiedTime = attributes.lastModifiedTime();
+                DateTimeFormatter formatter
+                        = DateTimeFormatter.ofLocalizedDateTime(
+                                FormatStyle.MEDIUM).
+                                withZone(ZoneId.systemDefault());
+                String timeStamp
+                        = formatter.format(lastModifiedTime.toInstant());
+                JLabel dateLabel = new JLabel(timeStamp);
+                checkBoxPanel.add(dateLabel, dateLabelConstraints);
+            } catch (IOException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
+            }
         }
 
         infoLabel.setText(MessageFormat.format(
