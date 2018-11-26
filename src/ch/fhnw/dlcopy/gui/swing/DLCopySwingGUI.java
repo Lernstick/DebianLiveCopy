@@ -163,9 +163,11 @@ public class DLCopySwingGUI extends JFrame
     private final static String RESET_BACKUP_DESTINATION = "resetBackupDestination";
     private final static String RESET_BACKUP_SUBDIR_EXCHANGE_PARTITION_LABEL = "resetBackupSubdirExchangePartitionLabel";
     private final static String RESET_BACKUP_SUBDIR_STORAGE_MEDIA_SERIALNUMBER = "resetBackupSubdirStorageMediaSerialNumber";
+    private final static String RESET_BACKUP_SUBDIR_TIMESTAMP = "resetBackupSubdirTimestamp";
     private final static String RESET_BACKUP_SUBDIR_ORDER = "resetBackupSubdirOrder";
     private final static String RESET_BACKUP_SUBDIR_ORDER_LABEL = "Label";
     private final static String RESET_BACKUP_SUBDIR_ORDER_SERIAL = "Serial";
+    private final static String RESET_BACKUP_SUBDIR_ORDER_TIMESTAMP = "Timestamp";
     private final static String RESET_FORMAT_EXCHANGE_PARTITION = "resetformatExchangePartition";
     private final static String RESET_FORMAT_EXCHANGE_PARTITION_FILE_SYSTEM = "resetFormatExchangePartitionFileSystem";
     private final static String RESET_FORMAT_EXCHANGE_PARTITION_KEEP_LABEL = "resetFormatExchangePartitionKeepLabel";
@@ -180,6 +182,7 @@ public class DLCopySwingGUI extends JFrame
     private final SubdirectoryTableModel subdirectoryTableModel;
     private final Subdirectory exchangePartitionLabelSubdirectory;
     private final Subdirectory storageMediaSerialnumberSubdirectory;
+    private final Subdirectory timestampSubdirectory;
     private final List<Subdirectory> orderedSubdirectoriesEntries;
     private CpActionListener cpActionListener;
 
@@ -412,6 +415,10 @@ public class DLCopySwingGUI extends JFrame
                         RESET_BACKUP_SUBDIR_STORAGE_MEDIA_SERIALNUMBER, true),
                 STRINGS.getString("Storage_Media_Serial_Number"));
         subdirectoriesEntries.add(storageMediaSerialnumberSubdirectory);
+        timestampSubdirectory = new Subdirectory(
+                preferences.getBoolean(RESET_BACKUP_SUBDIR_TIMESTAMP, true),
+                STRINGS.getString("Timestamp"));
+        subdirectoriesEntries.add(timestampSubdirectory);
 
         orderedSubdirectoriesEntries = new ArrayList<>();
         String resetBackupSubdirOrder = preferences.get(
@@ -431,6 +438,11 @@ public class DLCopySwingGUI extends JFrame
                         storageMediaSerialnumberSubdirectory);
                 orderedSubdirectoriesEntries.add(
                         storageMediaSerialnumberSubdirectory);
+            } else if (token.equals(RESET_BACKUP_SUBDIR_ORDER_TIMESTAMP)) {
+                subdirectoriesEntries.remove(
+                        timestampSubdirectory);
+                orderedSubdirectoriesEntries.add(
+                        timestampSubdirectory);
             }
         }
         // After introducing new subdir entries they are not yet in the
@@ -5453,6 +5465,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 exchangePartitionLabelSubdirectory.isSelected());
         preferences.putBoolean(RESET_BACKUP_SUBDIR_STORAGE_MEDIA_SERIALNUMBER,
                 storageMediaSerialnumberSubdirectory.isSelected());
+        preferences.putBoolean(RESET_BACKUP_SUBDIR_TIMESTAMP,
+                timestampSubdirectory.isSelected());
         preferences.put(RESET_BACKUP_SUBDIR_ORDER, getSubdirOrderString());
         preferences.putBoolean(RESET_FORMAT_EXCHANGE_PARTITION,
                 resetFormatExchangePartitionCheckBox.isSelected());
@@ -5489,6 +5503,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             } else if (string.equals(
                     STRINGS.getString("Storage_Media_Serial_Number"))) {
                 builder.append(RESET_BACKUP_SUBDIR_ORDER_SERIAL);
+            } else if (string.equals(
+                    STRINGS.getString("Timestamp"))) {
+                builder.append(RESET_BACKUP_SUBDIR_ORDER_TIMESTAMP);
             }
         }
         return builder.toString();

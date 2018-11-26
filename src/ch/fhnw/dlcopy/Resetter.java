@@ -13,6 +13,8 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -299,27 +301,31 @@ public class Resetter extends SwingWorker<Boolean, Void> {
             if (stringBuilder.length() > 0) {
                 stringBuilder.append(' ');
             }
-            if (subdirectory.getDescription().equals(
+            String description = subdirectory.getDescription();
+            if (description.equals(
                     DLCopy.STRINGS.getString("Exchange_Partition_Label"))) {
                 stringBuilder.append(exchangePartition.getIdLabel());
-            }
-            if (subdirectory.getDescription().equals(
+            } else if (description.equals(
                     DLCopy.STRINGS.getString("Storage_Media_Serial_Number"))) {
                 // replace all slashes because they are not allowed in directory
                 // names
                 stringBuilder.append(
                         storageDevice.getSerial().replaceAll("/", "-"));
+            } else if (description.equals(
+                    DLCopy.STRINGS.getString("Timestamp"))) {
+                stringBuilder.append(DateTimeFormatter.ofPattern(
+                        "uuuu-MM-dd-HH-mm-ss").format(LocalDateTime.now()));
             }
         }
         destination = destination.resolve(stringBuilder.toString());
+        Files.createDirectory(destination);
 
         // Unfortunately, rdiffbackup looses all metainformation when backing up
         // a directory that was previously used as destination directory.
         // Therefore we just make a simple copy.
-
         FileCopier fileCopier = new FileCopier();
         dlCopyGUI.showResetBackup(fileCopier);
-        
+
         Source[] sources = new Source[]{new Source(source.toString(), ".*")};
         String[] destinations = new String[]{destination.toString()};
         fileCopier.copy(new CopyJob(sources, destinations));
