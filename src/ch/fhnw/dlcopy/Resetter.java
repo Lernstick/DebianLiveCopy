@@ -168,7 +168,17 @@ public class Resetter extends SwingWorker<Boolean, Void> {
 
             Partition exchangePartition = storageDevice.getExchangePartition();
             printDocuments(storageDevice, exchangePartition);
-            backup(storageDevice, exchangePartition);
+            try {
+                backup(storageDevice, exchangePartition);
+            } catch (DBusException | IOException exception) {
+                String errorMessage
+                        = DLCopy.STRINGS.getString("Error_Reset_Backup");
+                errorMessage = MessageFormat.format(errorMessage,
+                        exception.getMessage(), exchangePartition.getIdLabel(),
+                        storageDevice.getSerial());
+                dlCopyGUI.showErrorMessage(errorMessage);
+                throw exception;
+            }
             resetExchangePartition(exchangePartition);
             resetDataPartition(storageDevice);
 
