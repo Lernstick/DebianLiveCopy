@@ -13,6 +13,7 @@ import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -166,7 +167,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                     });
 
             Partition exchangePartition = storageDevice.getExchangePartition();
-            printDocuments(exchangePartition);
+            printDocuments(storageDevice, exchangePartition);
             backup(storageDevice, exchangePartition);
             resetExchangePartition(exchangePartition);
             resetDataPartition(storageDevice);
@@ -198,8 +199,8 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         }
     }
 
-    private void printDocuments(Partition exchangePartition)
-            throws DBusException, IOException {
+    private void printDocuments(StorageDevice storageDevice,
+            Partition exchangePartition) throws DBusException, IOException {
 
         if (!printDocuments) {
             return;
@@ -209,6 +210,16 @@ public class Resetter extends SwingWorker<Boolean, Void> {
 
         MountInfo mountInfo = exchangePartition.mount();
         Path printDirPath = Paths.get(mountInfo.getMountPath(), printDirectory);
+
+        // sanity check
+        if (!Files.exists(printDirPath)) {
+            String errorMessage = DLCopy.STRINGS.getString(
+                    "Error_Print_Directory_Not_Found");
+            errorMessage = MessageFormat.format(errorMessage, printDirectory,
+                    exchangePartition.getIdLabel(), storageDevice.getSerial());
+            dlCopyGUI.showErrorMessage(errorMessage);
+            throw new IOException(printDirPath + " does'nt exist");
+        }
 
         if (printODT) {
             printDocumentType(printDirPath, "odt",
