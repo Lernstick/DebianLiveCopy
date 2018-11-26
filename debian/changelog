@@ -1,3 +1,13 @@
+dlcopy (201811270022-1) lernstick-9; urgency=medium
+
+  * [fbed77] added support for timestamps in reset backup subdirectories
+  * [b62f3b] use standard file dialog for selecting reset backup destination
+  * [483f8c] show file modification timestamps in print selection dialog
+  * [403c60] show error message if reset print directory is not found
+  * [fde65f] show error message if reset backup fails
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Tue, 27 Nov 2018 00:22:37 +0100
+
 dlcopy (201811251854-1) lernstick-9; urgency=medium
 
   * [3fec63] added support for printing spreadsheets
