@@ -4764,7 +4764,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }//GEN-LAST:event_resetBackupCheckBoxItemStateChanged
 
     private void resetBackupDestinationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBackupDestinationButtonActionPerformed
-        selectBackupDestination(resetBackupDestinationTextField);
+        JFileChooser fileChooser = new JFileChooser();
+        fileChooser.setDialogTitle(STRINGS.getString("Destination_Directory"));
+        fileChooser.setApproveButtonText(STRINGS.getString("Select"));
+        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
+            File selectedFile = fileChooser.getSelectedFile();
+            resetBackupDestinationTextField.setText(selectedFile.toString());
+        }
     }//GEN-LAST:event_resetBackupDestinationButtonActionPerformed
 
     private void resetMoveUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetMoveUpButtonActionPerformed
