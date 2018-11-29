@@ -1,3 +1,12 @@
+dlcopy (201811292050-1) lernstick-9; urgency=medium
+
+  * [085568] separated reset details panel into several tabs
+  * [130afe] first (incomplete) version of an overwrite configuration panel
+  * [9b73c1] added support for restoring files during reset
+  * [23e610] some bugfixes regarding automatic storage device processing
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 29 Nov 2018 20:50:24 +0100
+
 dlcopy (201811270022-1) lernstick-9; urgency=medium
 
   * [fbed77] added support for timestamps in reset backup subdirectories
