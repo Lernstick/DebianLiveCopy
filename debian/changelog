@@ -1,3 +1,9 @@
+dlcopy (201811292108-1) lernstick-9; urgency=medium
+
+  * [d5671f] always update position of StorageDeviceListUpdateDialog
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 29 Nov 2018 21:08:34 +0100
+
 dlcopy (201811292050-1) lernstick-9; urgency=medium
 
   * [085568] separated reset details panel into several tabs
