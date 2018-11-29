@@ -37,6 +37,8 @@ public class StorageDeviceListUpdateDialogHandler {
         if (!showing) {
             if (dialog == null) {
                 dialog = new StorageDeviceListUpdateDialog(parent);
+            } else {
+                dialog.setLocationRelativeTo(parent);
             }
             dialogHandler = new ModalDialogHandler(dialog);
             dialogHandler.show();
