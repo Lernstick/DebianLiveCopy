@@ -1,23 +1,88 @@
 package ch.fhnw.dlcopy.gui.swing;
 
+import ch.fhnw.dlcopy.DLCopy;
+import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Logger;
+import javax.swing.JFileChooser;
+import javax.swing.JPanel;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 
 /**
  *
  * Creates a new OverwriteConfigurationPanel
- * 
+ *
  * @author Ronny Standtke <ronny.standtke@gmx.net>
  */
-public class OverwriteConfigurationPanel extends javax.swing.JPanel {
+public class OverwriteConfigurationPanel
+        extends JPanel implements ListSelectionListener {
 
-    private static final Logger LOGGER = 
-            Logger.getLogger(OverwriteConfigurationPanel.class.getName());
-    
+    private static final Logger LOGGER
+            = Logger.getLogger(OverwriteConfigurationPanel.class.getName());
+    private static final ResourceBundle STRINGS
+            = ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings");    
+
+    private final OverwriteTableModel model;
+
     /**
      * Creates new form OverwriteConfigurationPanel
      */
     public OverwriteConfigurationPanel() {
         initComponents();
+        model = new OverwriteTableModel(table);
+        table.setModel(model);
+        table.getSelectionModel().addListSelectionListener(this);
+        FileChooserCellEditor editor = new FileChooserCellEditor(this,
+                STRINGS.getString("Select_Source"),
+                STRINGS.getString("Select"),
+                JFileChooser.FILES_AND_DIRECTORIES);
+        table.getColumnModel().getColumn(0).setCellEditor(editor);
+    }
+
+    @Override
+    public void valueChanged(ListSelectionEvent e) {
+        if (e.getSource() == table.getSelectionModel()) {
+            int[] selectedRows = table.getSelectedRows();
+            boolean selected = selectedRows.length > 0;
+            removeButton.setEnabled(selected);
+            if (selected) {
+                moveUpButton.setEnabled(selectedRows[0] != 0);
+                moveDownButton.setEnabled(
+                        selectedRows[selectedRows.length - 1]
+                        != model.getRowCount() - 1);
+            } else {
+                moveUpButton.setEnabled(false);
+                moveDownButton.setEnabled(false);
+            }
+        }
+    }
+
+    /**
+     * returns an XML representation of the table model
+     *
+     * @return an XML representation of the table model
+     */
+    public String getXML() {
+        return model.getXML();
+    }
+
+    /**
+     * sets the table model data
+     *
+     * @param data the table model data
+     */
+    public void setXML(String data) {
+        model.setXML(data);
+    }
+
+    /**
+     * returns the list of table entries
+     *
+     * @return the list of table entries
+     */
+    public List<OverwriteEntry> getEntries() {
+        return model.getEntries();
     }
 
     /**
@@ -52,7 +117,7 @@ public class OverwriteConfigurationPanel extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 0);
         add(moveUpButton, gridBagConstraints);
 
         moveDownButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/arrow-down.png"))); // NOI18N
@@ -68,7 +133,7 @@ public class OverwriteConfigurationPanel extends javax.swing.JPanel {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 3;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 10, 0);
         add(moveDownButton, gridBagConstraints);
 
         addButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/list-add.png"))); // NOI18N
@@ -82,7 +147,7 @@ public class OverwriteConfigurationPanel extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(30, 5, 0, 0);
         add(addButton, gridBagConstraints);
 
         removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/list-remove.png"))); // NOI18N
@@ -97,28 +162,9 @@ public class OverwriteConfigurationPanel extends javax.swing.JPanel {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         add(removeButton, gridBagConstraints);
 
-        table.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-                {"", null},
-                {null, null},
-                {null, null},
-                {null, null}
-            },
-            new String [] {
-                "Source", "Destination"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.String.class, java.lang.String.class
-            };
-
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
-            }
-        });
         scrollPane.setViewportView(table);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -131,19 +177,31 @@ public class OverwriteConfigurationPanel extends javax.swing.JPanel {
     }// </editor-fold>//GEN-END:initComponents
 
     private void moveUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveUpButtonActionPerformed
-        // TODO
+        int selectedRows[] = table.getSelectedRows();
+        model.moveUp(selectedRows);
+        table.clearSelection();
+        for (int selectedRow : selectedRows) {
+            int previousRow = selectedRow - 1;
+            table.addRowSelectionInterval(previousRow, previousRow);
+        }
     }//GEN-LAST:event_moveUpButtonActionPerformed
 
     private void moveDownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_moveDownButtonActionPerformed
-        // TODO
+        int selectedRows[] = table.getSelectedRows();
+        model.moveDown(selectedRows);
+        table.clearSelection();
+        for (int selectedRow : selectedRows) {
+            int nextRow = selectedRow + 1;
+            table.addRowSelectionInterval(nextRow, nextRow);
+        }
     }//GEN-LAST:event_moveDownButtonActionPerformed
 
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
-        // TODO
+        model.addRow(new String[]{"", ""});
     }//GEN-LAST:event_addButtonActionPerformed
 
     private void removeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeButtonActionPerformed
-        // TODO
+        model.removeRows(table.getSelectedRows());
     }//GEN-LAST:event_removeButtonActionPerformed
 
 

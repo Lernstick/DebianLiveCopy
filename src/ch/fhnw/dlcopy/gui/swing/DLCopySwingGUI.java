@@ -175,6 +175,7 @@ public class DLCopySwingGUI extends JFrame
     private final static String RESET_FORMAT_DATA_PARTITION = "resetformatDataPartition";
     private final static String RESET_REMOVE_SYSTEM_FILES = "resetRemoveSystemFiles";
     private final static String RESET_REMOVE_HOME_DIRECTORY = "resetRemoveHomeDirectory";
+    private final static String RESET_RESTORE_DATA = "resetRestoreData";
 
     private final ResultsTableModel installationResultsTableModel;
     private final ResultsTableModel upgradeResultsTableModel;
@@ -499,6 +500,11 @@ public class DLCopySwingGUI extends JFrame
                 preferences.getBoolean(RESET_REMOVE_SYSTEM_FILES, false));
         homeDirectoryCheckBox.setSelected(
                 preferences.getBoolean(RESET_REMOVE_HOME_DIRECTORY, false));
+
+        String resetRestoreData = preferences.get(RESET_RESTORE_DATA, null);
+        if (resetRestoreData != null && !resetRestoreData.isEmpty()) {
+            resetRestoreConfigurationPanel.setXML(resetRestoreData);
+        }
 
         if (commandLineExchangePartitionFileSystem == null) {
             exchangePartitionFileSystemComboBox.setSelectedItem(
@@ -1197,6 +1203,12 @@ public class DLCopySwingGUI extends JFrame
     }
 
     @Override
+    public void showResetRestore(FileCopier fileCopier) {
+        // TODO: use a different panel to show this file copy progress?
+        showResetBackup(fileCopier);
+    }
+    
+    @Override
     public void showResetFormattingExchangePartition() {
         SwingUtilities.invokeLater(new Runnable() {
             @Override
@@ -1842,7 +1854,7 @@ public class DLCopySwingGUI extends JFrame
         removeFilesRadioButton = new javax.swing.JRadioButton();
         systemFilesCheckBox = new javax.swing.JCheckBox();
         homeDirectoryCheckBox = new javax.swing.JCheckBox();
-        resetRestorePanel = new javax.swing.JPanel();
+        resetRestoreConfigurationPanel = new ch.fhnw.dlcopy.gui.swing.OverwriteConfigurationPanel();
         resetPanel = new javax.swing.JPanel();
         currentlyResettingDeviceLabel = new javax.swing.JLabel();
         jSeparator5 = new javax.swing.JSeparator();
@@ -3829,9 +3841,7 @@ public class DLCopySwingGUI extends JFrame
         resetDeletePanel.add(resetDataPartitionDetailsPanel, gridBagConstraints);
 
         resetSelectionTabbedPane.addTab(bundle.getString("Delete_Data"), resetDeletePanel); // NOI18N
-
-        resetRestorePanel.setLayout(new java.awt.GridBagLayout());
-        resetSelectionTabbedPane.addTab(bundle.getString("DLCopySwingGUI.resetRestorePanel.TabConstraints.tabTitle"), resetRestorePanel); // NOI18N
+        resetSelectionTabbedPane.addTab(bundle.getString("DLCopySwingGUI.resetRestoreConfigurationPanel.TabConstraints.tabTitle"), resetRestoreConfigurationPanel); // NOI18N
 
         cardPanel.add(resetSelectionTabbedPane, "resetSelectionTabbedPane");
 
@@ -5188,7 +5198,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 resetFormatExchangePartitionNewLabelTextField.getText(),
                 formatDataPartitionRadioButton.isSelected(),
                 dataPartitionFileSystem, homeDirectoryCheckBox.isSelected(),
-                systemFilesCheckBox.isSelected()).execute();
+                systemFilesCheckBox.isSelected(),
+                resetRestoreConfigurationPanel.getEntries()).execute();
     }
 
     private void sortList(boolean ascending) {
@@ -5499,6 +5510,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 systemFilesCheckBox.isSelected());
         preferences.putBoolean(RESET_REMOVE_HOME_DIRECTORY,
                 homeDirectoryCheckBox.isSelected());
+
+        preferences.put(RESET_RESTORE_DATA,
+                resetRestoreConfigurationPanel.getXML());
 
         try {
             preferences.flush();
@@ -6567,7 +6581,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JPanel resetPrintingDetailsPanel;
     private javax.swing.JProgressBar resetProgressBar;
     private javax.swing.JPanel resetProgressPanel;
-    private javax.swing.JPanel resetRestorePanel;
+    private ch.fhnw.dlcopy.gui.swing.OverwriteConfigurationPanel resetRestoreConfigurationPanel;
     private javax.swing.JPanel resetSelectionCardPanel;
     private javax.swing.JLabel resetSelectionCountLabel;
     private javax.swing.JPanel resetSelectionDeviceListPanel;

@@ -1,6 +1,7 @@
 package ch.fhnw.dlcopy;
 
 import ch.fhnw.dlcopy.gui.DLCopyGUI;
+import ch.fhnw.dlcopy.gui.swing.OverwriteEntry;
 import ch.fhnw.filecopier.CopyJob;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.filecopier.Source;
@@ -61,6 +62,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
     private final String dataPartitionFileSystem;
     private final boolean resetHome;
     private final boolean resetSystem;
+    private final List<OverwriteEntry> overwriteEntries;
 
     private int deviceListSize;
     private int batchCounter;
@@ -104,6 +106,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
      * @param dataPartitionFileSystem the file system of the data partition
      * @param resetHome if the home directory should be reset
      * @param resetSystem if the system (without /home) should be reset
+     * @param overwriteEntries the list of entries to overwrite
      */
     public Resetter(DLCopyGUI dlCopyGUI, List<StorageDevice> deviceList,
             String bootDeviceName, boolean printDocuments,
@@ -118,7 +121,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
             boolean keepExchangePartitionLabel,
             String newExchangePartitionLabel, boolean formatDataPartition,
             String dataPartitionFileSystem, boolean resetHome,
-            boolean resetSystem) {
+            boolean resetSystem, List<OverwriteEntry> overwriteEntries) {
 
         this.dlCopyGUI = dlCopyGUI;
         this.deviceList = deviceList;
@@ -146,6 +149,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         this.dataPartitionFileSystem = dataPartitionFileSystem;
         this.resetHome = resetHome;
         this.resetSystem = resetSystem;
+        this.overwriteEntries = overwriteEntries;
     }
 
     @Override
@@ -167,6 +171,8 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                     });
 
             Partition exchangePartition = storageDevice.getExchangePartition();
+            Partition dataPartition = storageDevice.getDataPartition();
+
             printDocuments(storageDevice, exchangePartition);
             try {
                 backup(storageDevice, exchangePartition);
@@ -180,7 +186,8 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                 throw exception;
             }
             resetExchangePartition(exchangePartition);
-            resetDataPartition(storageDevice);
+            resetDataPartition(dataPartition);
+            restoreFiles(dataPartition);
 
             LOGGER.log(Level.INFO, "resetting of storage device finished: "
                     + "{0} of {1} ({2})", new Object[]{
@@ -375,10 +382,8 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         }
     }
 
-    private void resetDataPartition(StorageDevice storageDevice)
+    private void resetDataPartition(Partition dataPartition)
             throws DBusException, IOException {
-
-        Partition dataPartition = storageDevice.getDataPartition();
 
         if (dataPartition == null) {
             return;
@@ -437,10 +442,37 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                 processExecutor.executeProcess("chown", "-R",
                         "user.user", cleanupRoot + "/home/user/");
             }
+        }
+    }
 
-            if (!mountInfo.alreadyMounted()) {
-                dataPartition.umount();
-            }
+    private void restoreFiles(Partition dataPartition)
+            throws IOException, DBusException {
+
+        MountInfo mountInfo = dataPartition.mount();
+        String mountPoint = mountInfo.getMountPath();
+        String restoreRoot = mountPoint;
+        if (!Files.exists(Paths.get(mountPoint, "home"))) {
+            // Debian 9 and newer
+            restoreRoot = mountPoint + "/rw";
+        }
+
+        for (OverwriteEntry overwriteEntry : overwriteEntries) {
+            FileCopier fileCopier = new FileCopier();
+            dlCopyGUI.showResetRestore(fileCopier);
+
+            Source[] sources = new Source[]{
+                new Source(overwriteEntry.getSource())
+            };
+            String destination = 
+                    restoreRoot + '/' + overwriteEntry.getDestination();
+            String[] destinations = new String[]{destination};
+            fileCopier.copy(new CopyJob(sources, destinations));
+            
+            // TODO: Above we are copying files as root so that the normal user
+            // has no access. We "fix" this by blindly chowning the destination
+            // below. This must be configurable somehow.
+            ProcessExecutor executor = new ProcessExecutor();
+            executor.executeProcess("chown", "-R", "user.user", destination);
         }
     }
 

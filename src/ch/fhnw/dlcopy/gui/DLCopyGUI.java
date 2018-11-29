@@ -277,6 +277,14 @@ public interface DLCopyGUI {
     public void showResetRemovingFiles();
 
     /**
+     * shows the user interface for restoring files during a running reset
+     *
+     * @param fileCopier the FileCopier used for restoring files during a
+     * running reset
+     */
+    public void showResetRestore(FileCopier fileCopier);
+
+    /**
      * called when resetting all selected StorageDevices finished
      *
      * @param success if resetting all storage devices was successful
