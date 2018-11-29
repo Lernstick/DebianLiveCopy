@@ -2,8 +2,6 @@ package ch.fhnw.dlcopy.gui.swing;
 
 import ch.fhnw.dlcopy.DLCopy;
 import ch.fhnw.util.StorageDevice;
-import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -31,7 +29,7 @@ public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
     private final boolean showHarddisks;
     private final StorageDeviceListUpdateDialogHandler dialogHandler;
     private final DefaultListModel<StorageDevice> listModel;
-    private final JList list;
+    private final JList<StorageDevice> list;
 
     /**
      * creates a new StorageDeviceAdder
@@ -96,23 +94,28 @@ public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
     public abstract void processAddedDevice();
 
     private void addDeviceToList() {
-        // put new device into a "sorted" position
-        List<StorageDevice> deviceList = new ArrayList<>();
-        Object[] entries = listModel.toArray();
-        for (Object entry : entries) {
-            deviceList.add((StorageDevice) entry);
+
+        // remember selected values
+        List<StorageDevice> selectedValues = list.getSelectedValuesList();
+
+        // insert device in a "sorted" fashion
+        //
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        // DON'T clear the listmodel here and add all devices again because
+        // this would break DLCopySwingGUI.handleListDataEvent() where ALL(!)
+        // devices added to the list model might be automatically upgraded or
+        // reset.
+        // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+        int addIndex = 0;
+        while (addIndex < listModel.size()
+                && listModel.get(addIndex).compareTo(addedDevice) < 0) {
+            addIndex++;
         }
-        deviceList.add(addedDevice);
-        Collections.sort(deviceList);
-        List selectedValues = list.getSelectedValuesList();
-        listModel.clear();
-        for (StorageDevice device : deviceList) {
-            listModel.addElement(device);
-        }
+        listModel.add(addIndex, addedDevice);
 
         // try to restore the previous selection
-        for (Object selectedValue : selectedValues) {
-            int index = deviceList.indexOf(selectedValue);
+        for (StorageDevice selectedValue : selectedValues) {
+            int index = listModel.indexOf(selectedValue);
             if (index != -1) {
                 list.addSelectionInterval(index, index);
             }

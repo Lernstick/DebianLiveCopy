@@ -1,5 +1,5 @@
 /*
- * DLCopy.java
+ * DLCopySwingGUI.java
  *
  * Created on 16. April 2008, 09:14
  */
@@ -1207,7 +1207,7 @@ public class DLCopySwingGUI extends JFrame
         // TODO: use a different panel to show this file copy progress?
         showResetBackup(fileCopier);
     }
-    
+
     @Override
     public void showResetFormattingExchangePartition() {
         SwingUtilities.invokeLater(new Runnable() {
@@ -1402,11 +1402,12 @@ public class DLCopySwingGUI extends JFrame
      * some updates
      */
     public void resetStorageDeviceListChanged() {
-        storageDeviceListChanged(
-                resetStorageDeviceListModel, resetSelectionCardPanel,
-                "resetNoMediaPanel", "resetSelectionDeviceListPanel",
-                resetStorageDeviceRenderer, resetStorageDeviceList);
-
+        if (resetListModeRadioButton.isSelected()) {
+            storageDeviceListChanged(
+                    resetStorageDeviceListModel, resetSelectionCardPanel,
+                    "resetNoMediaPanel", "resetSelectionDeviceListPanel",
+                    resetStorageDeviceRenderer, resetStorageDeviceList);
+        }
     }
 
     /**
@@ -4769,11 +4770,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }//GEN-LAST:event_resetAutomaticRadioButtonActionPerformed
 
     private void resetListModeRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetListModeRadioButtonActionPerformed
-        showCard(resetSelectionCardPanel, "resetSelectionDeviceListPanel");
-        new ResetStorageDeviceListUpdater(this, resetStorageDeviceList,
-                resetStorageDeviceListModel,
-                resetShowHarddisksCheckBox.isSelected(),
-                runningSystemSource.getDeviceName()).execute();
+        if (resetListModeRadioButton.isSelected()) {
+            showCard(resetSelectionCardPanel, "resetSelectionDeviceListPanel");
+            new ResetStorageDeviceListUpdater(this, resetStorageDeviceList,
+                    resetStorageDeviceListModel,
+                    resetShowHarddisksCheckBox.isSelected(),
+                    runningSystemSource.getDeviceName()).execute();
+        }
     }//GEN-LAST:event_resetListModeRadioButtonActionPerformed
 
     private void resetBackupCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_resetBackupCheckBoxItemStateChanged
