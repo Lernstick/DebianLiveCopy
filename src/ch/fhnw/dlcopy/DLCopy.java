@@ -1792,17 +1792,14 @@ public class DLCopy {
             deviceFile = new String(DbusTools.removeNullByte(array));
         }
 
-        LOGGER.log(Level.FINE, "{0} isDrive: {1}", new Object[]{path, isDrive});
-        LOGGER.log(Level.FINE, "{0} isLoop: {1}", new Object[]{path, isLoop});
-        LOGGER.log(Level.FINE, "{0} size: {1}", new Object[]{path, size});
-        LOGGER.log(Level.FINE, "{0} deviceFile: {1}",
-                new Object[]{path, deviceFile});
-
         // early return for non-drives
         // (partitions, loop devices, empty optical drives, ...)
         if ((!isDrive) || isLoop || (size <= 0)) {
+            logPath(path, isDrive, isLoop, size, deviceFile, false/*accepted*/);
             return null;
         }
+
+        logPath(path, isDrive, isLoop, size, deviceFile, true/*accepted*/);
 
         StorageDevice storageDevice
                 = new StorageDevice(deviceFile.substring(5));
@@ -1813,5 +1810,21 @@ public class DLCopy {
         } else {
             return storageDevice;
         }
+    }
+
+    private static void logPath(String path, boolean isDrive, boolean isLoop,
+            long size, String deviceFile, boolean accepted) {
+
+        LOGGER.log(Level.FINE,
+                "\npath={0}\n"
+                + "    isDrive: {1}\n"
+                + "    isLoop: {2}\n"
+                + "    size: {3}\n"
+                + "    deviceFile: {4}\n"
+                + "    {5}",
+                new Object[]{path, isDrive, isLoop, size, deviceFile,
+                    "--> " + (accepted
+                            ? "accepted (detected as real drive)"
+                            : "ignored (no drive)")});
     }
 }

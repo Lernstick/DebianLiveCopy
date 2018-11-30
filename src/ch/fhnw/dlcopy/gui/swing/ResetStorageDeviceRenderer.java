@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.*;
-import org.freedesktop.DBus;
 import org.freedesktop.dbus.exceptions.DBusException;
 import org.freedesktop.dbus.exceptions.DBusExecutionException;
 

@@ -160,46 +160,20 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         deviceListSize = deviceList.size();
 
         for (StorageDevice storageDevice : deviceList) {
-
-            dlCopyGUI.resettingDeviceStarted(storageDevice);
-
-            batchCounter++;
+            /**
+             * We have to synchronize access to the storage device because the
+             * UpgradeStorageDeviceRenderer might access the same device from
+             * another thread and mount and unmount partitions in betweeen. Yes,
+             * we did run into this issue. The UpgradeStorageDeviceRenderer
+             * unmounted our exchange partition while we were trying to print
+             * some documents...
+             */
             LOGGER.log(Level.INFO,
-                    "resetting storage device: {0} of {1} ({2})",
-                    new Object[]{
-                        batchCounter, deviceListSize, storageDevice
-                    });
-
-            Partition exchangePartition = storageDevice.getExchangePartition();
-            Partition dataPartition = storageDevice.getDataPartition();
-
-            printDocuments(storageDevice, exchangePartition);
-            try {
-                backup(storageDevice, exchangePartition);
-            } catch (DBusException | IOException exception) {
-                String errorMessage
-                        = DLCopy.STRINGS.getString("Error_Reset_Backup");
-                errorMessage = MessageFormat.format(errorMessage,
-                        exception.getMessage(), exchangePartition.getIdLabel(),
-                        storageDevice.getSerial());
-                dlCopyGUI.showErrorMessage(errorMessage);
-                throw exception;
-            }
-            resetExchangePartition(exchangePartition);
-            resetDataPartition(dataPartition);
-            restoreFiles(dataPartition);
-
-            LOGGER.log(Level.INFO, "resetting of storage device finished: "
-                    + "{0} of {1} ({2})", new Object[]{
-                        batchCounter, deviceListSize, storageDevice
-                    });
-
-            if (!storageDevice.getDevice().equals(bootDeviceName)) {
-                // Unmount *all* partitions so that the user doesn't have to
-                // manually umount all storage devices after resetting is done.
-                for (Partition partition : storageDevice.getPartitions()) {
-                    DLCopy.umount(partition, dlCopyGUI);
-                }
+                    "waiting to get lock on storage device {0}", storageDevice);
+            synchronized (storageDevice) {
+                LOGGER.log(Level.INFO,
+                        "got lock on storage device {0}", storageDevice);
+                resetStorageDevice(storageDevice);
             }
         }
 
@@ -213,6 +187,51 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         } catch (InterruptedException | ExecutionException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
             dlCopyGUI.resettingFinished(false);
+        }
+    }
+
+    private void resetStorageDevice(StorageDevice storageDevice)
+            throws DBusException, IOException {
+
+        dlCopyGUI.resettingDeviceStarted(storageDevice);
+
+        batchCounter++;
+        LOGGER.log(Level.INFO,
+                "resetting storage device: {0} of {1} ({2})",
+                new Object[]{
+                    batchCounter, deviceListSize, storageDevice
+                });
+
+        Partition exchangePartition = storageDevice.getExchangePartition();
+        Partition dataPartition = storageDevice.getDataPartition();
+
+        printDocuments(storageDevice, exchangePartition);
+        try {
+            backup(storageDevice, exchangePartition);
+        } catch (DBusException | IOException exception) {
+            String errorMessage
+                    = DLCopy.STRINGS.getString("Error_Reset_Backup");
+            errorMessage = MessageFormat.format(errorMessage,
+                    exception.getMessage(), exchangePartition.getIdLabel(),
+                    storageDevice.getSerial());
+            dlCopyGUI.showErrorMessage(errorMessage);
+            throw exception;
+        }
+        resetExchangePartition(exchangePartition);
+        resetDataPartition(dataPartition);
+        restoreFiles(dataPartition);
+
+        LOGGER.log(Level.INFO, "resetting of storage device finished: "
+                + "{0} of {1} ({2})", new Object[]{
+                    batchCounter, deviceListSize, storageDevice
+                });
+
+        if (!storageDevice.getDevice().equals(bootDeviceName)) {
+            // Unmount *all* partitions so that the user doesn't have to
+            // manually umount all storage devices after resetting is done.
+            for (Partition partition : storageDevice.getPartitions()) {
+                DLCopy.umount(partition, dlCopyGUI);
+            }
         }
     }
 
@@ -395,7 +414,8 @@ public class Resetter extends SwingWorker<Boolean, Void> {
             DLCopy.formatPersistencePartition(
                     "/dev/" + dataPartition.getDeviceAndNumber(),
                     dataPartitionFileSystem, dlCopyGUI);
-        } else {
+
+        } else if (resetSystem || resetHome) {
             // remove files from data partition
             dlCopyGUI.showResetRemovingFiles();
 
@@ -448,6 +468,10 @@ public class Resetter extends SwingWorker<Boolean, Void> {
     private void restoreFiles(Partition dataPartition)
             throws IOException, DBusException {
 
+        if (overwriteEntries.isEmpty()) {
+            return;
+        }
+
         MountInfo mountInfo = dataPartition.mount();
         String mountPoint = mountInfo.getMountPath();
         String restoreRoot = mountPoint;
@@ -463,11 +487,11 @@ public class Resetter extends SwingWorker<Boolean, Void> {
             Source[] sources = new Source[]{
                 new Source(overwriteEntry.getSource())
             };
-            String destination = 
-                    restoreRoot + '/' + overwriteEntry.getDestination();
+            String destination
+                    = restoreRoot + '/' + overwriteEntry.getDestination();
             String[] destinations = new String[]{destination};
             fileCopier.copy(new CopyJob(sources, destinations));
-            
+
             // TODO: Above we are copying files as root so that the normal user
             // has no access. We "fix" this by blindly chowning the destination
             // below. This must be configurable somehow.
