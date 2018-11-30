@@ -5,26 +5,26 @@
  */
 package ch.fhnw.dlcopy.gui.swing;
 
-import ch.fhnw.dlcopy.Subdirectory;
 import ch.fhnw.dlcopy.DLCopy;
-import ch.fhnw.dlcopy.DebianLiveDistribution;
-import ch.fhnw.dlcopy.PartitionState;
 import static ch.fhnw.dlcopy.DLCopy.STRINGS;
 import ch.fhnw.dlcopy.DataPartitionMode;
-import ch.fhnw.dlcopy.SystemSource;
-import ch.fhnw.dlcopy.gui.DLCopyGUI;
+import ch.fhnw.dlcopy.DebianLiveDistribution;
 import ch.fhnw.dlcopy.Installer;
 import ch.fhnw.dlcopy.IsoCreator;
 import ch.fhnw.dlcopy.IsoSystemSource;
 import ch.fhnw.dlcopy.PartitionSizes;
-import ch.fhnw.dlcopy.Resetter;
+import ch.fhnw.dlcopy.PartitionState;
 import ch.fhnw.dlcopy.RepartitionStrategy;
+import ch.fhnw.dlcopy.Resetter;
+import ch.fhnw.dlcopy.RunningSystemSource;
 import ch.fhnw.dlcopy.SquashFSCreator;
 import ch.fhnw.dlcopy.StorageDeviceResult;
-import ch.fhnw.dlcopy.RunningSystemSource;
+import ch.fhnw.dlcopy.Subdirectory;
+import ch.fhnw.dlcopy.SystemSource;
 import ch.fhnw.dlcopy.Upgrader;
 import ch.fhnw.dlcopy.exceptions.NoExecutableExtLinuxException;
 import ch.fhnw.dlcopy.exceptions.NoExtLinuxException;
+import ch.fhnw.dlcopy.gui.DLCopyGUI;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.filecopier.FileCopierPanel;
 import ch.fhnw.jbackpack.JSqueezedLabel;
@@ -37,27 +37,75 @@ import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
 import java.applet.Applet;
 import java.applet.AudioClip;
-import java.awt.*;
+import java.awt.CardLayout;
+import java.awt.Color;
+import java.awt.Container;
+import java.awt.Dimension;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Frame;
+import java.awt.Graphics;
+import java.awt.GridBagConstraints;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.*;
+import java.util.logging.ConsoleHandler;
+import java.util.logging.FileHandler;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import java.util.logging.SimpleFormatter;
 import java.util.prefs.BackingStoreException;
 import java.util.prefs.Preferences;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.*;
+import javax.swing.BorderFactory;
+import javax.swing.ComboBoxModel;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.DefaultListModel;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
+import javax.swing.JComponent;
+import javax.swing.JFileChooser;
+import javax.swing.JFormattedTextField;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JList;
+import javax.swing.JOptionPane;
+import javax.swing.JPanel;
+import javax.swing.JProgressBar;
+import javax.swing.JSlider;
+import javax.swing.JSpinner;
+import javax.swing.JTextField;
+import javax.swing.ListModel;
+import javax.swing.ListSelectionModel;
+import javax.swing.SwingUtilities;
+import javax.swing.ToolTipManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
@@ -219,26 +267,38 @@ public class DLCopySwingGUI extends JFrame
         /**
          * set up logging
          */
+        List<Logger> loggers = new ArrayList<>();
         Logger globalLogger = Logger.getLogger("ch.fhnw");
         globalLogger.setLevel(Level.ALL);
+        loggers.add(globalLogger);
+        Logger dbusLogger = Logger.getLogger("ch.fhnw.util.DbusTools");
+        dbusLogger.setLevel(Level.WARNING);
+        loggers.add(dbusLogger);
+
         // log to console
         ConsoleHandler consoleHandler = new ConsoleHandler();
         consoleHandler.setFormatter(new SimpleFormatter());
         consoleHandler.setLevel(Level.ALL);
-        globalLogger.addHandler(consoleHandler);
+        for (Logger logger : loggers) {
+            logger.addHandler(consoleHandler);
+        }
         // also log into a rotating temporaty file of max 50 MB
         try {
             FileHandler fileHandler = new FileHandler(""
                     + "%t/DebianLiveCopy", 50 * DLCopy.MEGA, 2, true);
             fileHandler.setFormatter(new SimpleFormatter());
             fileHandler.setLevel(Level.ALL);
-            globalLogger.addHandler(fileHandler);
+            for (Logger logger : loggers) {
+                logger.addHandler(fileHandler);
+            }
 
         } catch (IOException | SecurityException ex) {
             LOGGER.log(Level.SEVERE, "can not create log file", ex);
         }
         // prevent double logs in console
-        globalLogger.setUseParentHandlers(false);
+        for (Logger logger : loggers) {
+            logger.setUseParentHandlers(false);
+        }
         LOGGER.info("*********** Starting dlcopy ***********");
 
         // prepare processExecutor to always use the POSIX locale
@@ -2114,6 +2174,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         executionPanel.add(stepsPanel, gridBagConstraints);
 
+        cardPanel.setName("cardPanel"); // NOI18N
         cardPanel.setLayout(new java.awt.CardLayout());
 
         installInfoPanel.setLayout(new java.awt.GridBagLayout());
@@ -2184,6 +2245,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         installSelectionPanel.add(installSourcePanel, gridBagConstraints);
 
+        installTargetCardPanel.setName("installTargetCardPanel"); // NOI18N
         installTargetCardPanel.setLayout(new java.awt.CardLayout());
 
         installTargetPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.installTargetPanel.border.title"))); // NOI18N
@@ -2208,6 +2270,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         installTargetPanel.add(installShowHarddisksCheckBox, gridBagConstraints);
 
+        installSelectionCardPanel.setName("installSelectionCardPanel"); // NOI18N
         installSelectionCardPanel.setLayout(new java.awt.CardLayout());
 
         installBasicsPanel.setLayout(new java.awt.GridBagLayout());
@@ -2584,6 +2647,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         installCurrentPanel.add(jSeparator3, gridBagConstraints);
 
+        installCardPanel.setName("installCardPanel"); // NOI18N
         installCardPanel.setLayout(new java.awt.CardLayout());
 
         installIndeterminateProgressPanel.setLayout(new java.awt.GridBagLayout());
@@ -2756,6 +2820,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.weightx = 1.0;
         upgradeSelectionPanel.add(upgradeSelectionSeparator, gridBagConstraints);
 
+        upgradeSelectionCardPanel.setName("upgradeSelectionCardPanel"); // NOI18N
         upgradeSelectionCardPanel.setLayout(new java.awt.CardLayout());
 
         upgradeSelectionDeviceListPanel.setLayout(new java.awt.GridBagLayout());
@@ -3202,6 +3267,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         upgradePanel.add(jSeparator4, gridBagConstraints);
 
+        upgradeCardPanel.setName("upgradeCardPanel"); // NOI18N
         upgradeCardPanel.setLayout(new java.awt.CardLayout());
 
         upgradeIndeterminateProgressPanel.setLayout(new java.awt.GridBagLayout());
@@ -3346,6 +3412,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.weightx = 1.0;
         resetSelectionPanel.add(jSeparator2, gridBagConstraints);
 
+        resetSelectionCardPanel.setName("resetSelectionCardPanel"); // NOI18N
         resetSelectionCardPanel.setLayout(new java.awt.CardLayout());
 
         resetNoMediaPanel.setLayout(new java.awt.GridBagLayout());
@@ -3861,6 +3928,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
         resetPanel.add(jSeparator5, gridBagConstraints);
 
+        resetCardPanel.setName("resetCardPanel"); // NOI18N
         resetCardPanel.setLayout(new java.awt.CardLayout());
 
         resetProgressPanel.setLayout(new java.awt.GridBagLayout());
@@ -4046,6 +4114,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         isoOptionsPanel.add(isoDataPartitionModeComboBox, gridBagConstraints);
 
+        isoOptionsCardPanel.setName("isoOptionsCardPanel"); // NOI18N
         isoOptionsCardPanel.setLayout(new java.awt.CardLayout());
 
         systemMediumPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.systemMediumPanel.border.title"))); // NOI18N
@@ -5241,11 +5310,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         Object source = e.getSource();
 
         if (source == upgradeOverwriteListModel) {
+            LOGGER.info("source == upgradeOverwriteListModel");
             boolean sortable = upgradeOverwriteListModel.getSize() > 1;
             sortAscendingButton.setEnabled(sortable);
             sortDescendingButton.setEnabled(sortable);
 
         } else if (source == upgradeStorageDeviceListModel) {
+            LOGGER.info("source == upgradeStorageDeviceListModel");
             if ((e.getType() == ListDataEvent.INTERVAL_ADDED)
                     && upgradeAutomaticRadioButton.isSelected()) {
 
@@ -5260,6 +5331,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
 
         } else if (source == resetStorageDeviceListModel) {
+            LOGGER.info("source == resetStorageDeviceListModel");
             if ((e.getType() == ListDataEvent.INTERVAL_ADDED)
                     && resetAutomaticRadioButton.isSelected()) {
 
@@ -5272,6 +5344,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
                 resetStorageDevices(deviceList);
             }
+
+        } else {
+            LOGGER.log(Level.WARNING, "unknown source: {0}", source);
         }
     }
 
@@ -5793,7 +5868,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }
 
     private static void showCard(Container container, String cardName) {
-        LOGGER.finest(container + ": " + cardName);
+        LOGGER.log(Level.FINEST, "{0}: {1}",
+                new Object[]{container.getName(), cardName});
         CardLayout cardLayout = (CardLayout) container.getLayout();
         cardLayout.show(container, cardName);
     }
@@ -6366,7 +6442,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         // use local ProcessExecutor because the udisks process is blocking and
         // long-running
-        private final ProcessExecutor executor = new ProcessExecutor();
+        private final ProcessExecutor executor = new ProcessExecutor(false);
 
         @Override
         public void run() {

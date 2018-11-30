@@ -341,6 +341,9 @@
           </SubComponents>
         </Container>
         <Container class="javax.swing.JPanel" name="cardPanel">
+          <Properties>
+            <Property name="name" type="java.lang.String" value="cardPanel" noResource="true"/>
+          </Properties>
           <Constraints>
             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
               <GridBagConstraints gridX="-1" gridY="-1" gridWidth="0" gridHeight="1" fill="1" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="5" insetsBottom="0" insetsRight="10" anchor="10" weightX="1.0" weightY="1.0"/>
@@ -473,6 +476,9 @@
                   </SubComponents>
                 </Container>
                 <Container class="javax.swing.JPanel" name="installTargetCardPanel">
+                  <Properties>
+                    <Property name="name" type="java.lang.String" value="installTargetCardPanel" noResource="true"/>
+                  </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                       <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="1" ipadX="0" ipadY="0" insetsTop="10" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="10" weightX="1.0" weightY="1.0"/>
@@ -538,6 +544,9 @@
                           </Constraints>
                         </Component>
                         <Container class="javax.swing.JPanel" name="installSelectionCardPanel">
+                          <Properties>
+                            <Property name="name" type="java.lang.String" value="installSelectionCardPanel" noResource="true"/>
+                          </Properties>
                           <Constraints>
                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                               <GridBagConstraints gridX="-1" gridY="-1" gridWidth="0" gridHeight="1" fill="1" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="18" weightX="1.0" weightY="1.0"/>
@@ -1243,6 +1252,9 @@
                       </Constraints>
                     </Component>
                     <Container class="javax.swing.JPanel" name="installCardPanel">
+                      <Properties>
+                        <Property name="name" type="java.lang.String" value="installCardPanel" noResource="true"/>
+                      </Properties>
                       <Constraints>
                         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                           <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="1" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="10" insetsBottom="0" insetsRight="10" anchor="10" weightX="1.0" weightY="1.0"/>
@@ -1599,6 +1611,9 @@
                       </Constraints>
                     </Component>
                     <Container class="javax.swing.JPanel" name="upgradeSelectionCardPanel">
+                      <Properties>
+                        <Property name="name" type="java.lang.String" value="upgradeSelectionCardPanel" noResource="true"/>
+                      </Properties>
                       <Constraints>
                         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                           <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="1" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="10" weightX="1.0" weightY="1.0"/>
@@ -2395,6 +2410,9 @@
                       </Constraints>
                     </Component>
                     <Container class="javax.swing.JPanel" name="upgradeCardPanel">
+                      <Properties>
+                        <Property name="name" type="java.lang.String" value="upgradeCardPanel" noResource="true"/>
+                      </Properties>
                       <Constraints>
                         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                           <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="1" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="10" insetsBottom="0" insetsRight="10" anchor="10" weightX="1.0" weightY="1.0"/>
@@ -2681,6 +2699,9 @@
                       </Constraints>
                     </Component>
                     <Container class="javax.swing.JPanel" name="resetSelectionCardPanel">
+                      <Properties>
+                        <Property name="name" type="java.lang.String" value="resetSelectionCardPanel" noResource="true"/>
+                      </Properties>
                       <Constraints>
                         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                           <GridBagConstraints gridX="-1" gridY="-1" gridWidth="0" gridHeight="1" fill="1" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="18" weightX="1.0" weightY="1.0"/>
@@ -3618,6 +3639,9 @@
                   </Constraints>
                 </Component>
                 <Container class="javax.swing.JPanel" name="resetCardPanel">
+                  <Properties>
+                    <Property name="name" type="java.lang.String" value="resetCardPanel" noResource="true"/>
+                  </Properties>
                   <Constraints>
                     <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                       <GridBagConstraints gridX="-1" gridY="-1" gridWidth="1" gridHeight="1" fill="1" ipadX="0" ipadY="0" insetsTop="0" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="10" weightX="1.0" weightY="1.0"/>
@@ -3949,6 +3973,9 @@
                           </Constraints>
                         </Component>
                         <Container class="javax.swing.JPanel" name="isoOptionsCardPanel">
+                          <Properties>
+                            <Property name="name" type="java.lang.String" value="isoOptionsCardPanel" noResource="true"/>
+                          </Properties>
                           <Constraints>
                             <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
                               <GridBagConstraints gridX="-1" gridY="-1" gridWidth="0" gridHeight="1" fill="2" ipadX="0" ipadY="0" insetsTop="5" insetsLeft="0" insetsBottom="0" insetsRight="0" anchor="10" weightX="1.0" weightY="0.0"/>
