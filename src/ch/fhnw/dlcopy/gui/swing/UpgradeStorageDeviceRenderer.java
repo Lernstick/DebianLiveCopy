@@ -77,8 +77,24 @@ public class UpgradeStorageDeviceRenderer extends JPanel
     public Component getListCellRendererComponent(JList list, Object value,
             int index, boolean isSelected, boolean cellHasFocus) {
 
-        if (value instanceof StorageDevice) {
-            storageDevice = (StorageDevice) value;
+        if (!(value instanceof StorageDevice)) {
+            return null;
+        }
+
+        storageDevice = (StorageDevice) value;
+
+        /**
+         * We have to synchronize access to the storage device because the
+         * Resetter might access the same device from another thread and we
+         * mount and unmount partitions in betweeen. Yes, we did run into this
+         * issue. We unmounted the exchange partition while the Resetter was
+         * trying to print some documents...
+         */
+        LOGGER.log(Level.INFO,
+                "waiting to get lock on storage device {0}", storageDevice);
+        synchronized (storageDevice) {
+            LOGGER.log(Level.INFO,
+                    "got lock on storage device {0}", storageDevice);
 
             // set icon based on storage type
             switch (storageDevice.getType()) {
