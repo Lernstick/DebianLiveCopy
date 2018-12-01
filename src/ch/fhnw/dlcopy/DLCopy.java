@@ -1756,7 +1756,10 @@ public class DLCopy {
     private static StorageDevice getStorageDevice(
             String path, boolean includeHardDisks) throws DBusException {
 
-        LOGGER.log(Level.FINE, "path: {0}", path);
+        LOGGER.log(Level.FINE, "\n"
+                + "    thread: {0}\n"
+                + "    path: {1}",
+                new Object[]{Thread.currentThread().getName(), path});
 
         String busName;
         Boolean isDrive = null;

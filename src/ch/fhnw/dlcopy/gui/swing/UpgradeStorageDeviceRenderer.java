@@ -83,178 +83,164 @@ public class UpgradeStorageDeviceRenderer extends JPanel
 
         storageDevice = (StorageDevice) value;
 
-        /**
-         * We have to synchronize access to the storage device because the
-         * Resetter might access the same device from another thread and we
-         * mount and unmount partitions in betweeen. Yes, we did run into this
-         * issue. We unmounted the exchange partition while the Resetter was
-         * trying to print some documents...
-         */
-        LOGGER.log(Level.INFO,
-                "waiting to get lock on storage device {0}", storageDevice);
-        synchronized (storageDevice) {
-            LOGGER.log(Level.INFO,
-                    "got lock on storage device {0}", storageDevice);
+        // set icon based on storage type
+        switch (storageDevice.getType()) {
+            case HardDrive:
+                iconLabel.setIcon(new ImageIcon(getClass().getResource(
+                        "/ch/fhnw/dlcopy/icons/32x32/drive-harddisk.png")));
+                break;
+            case SDMemoryCard:
+                iconLabel.setIcon(new ImageIcon(getClass().getResource(
+                        "/ch/fhnw/dlcopy/icons/32x32/media-flash-sd-mmc.png")));
+                break;
+            case USBFlashDrive:
+                iconLabel.setIcon(new ImageIcon(getClass().getResource(
+                        "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media-usb-pendrive.png")));
+                break;
+            default:
+                LOGGER.log(Level.WARNING, "unsupported device type: {0}",
+                        storageDevice.getType());
+        }
 
-            // set icon based on storage type
-            switch (storageDevice.getType()) {
-                case HardDrive:
-                    iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                            "/ch/fhnw/dlcopy/icons/32x32/drive-harddisk.png")));
-                    break;
-                case SDMemoryCard:
-                    iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                            "/ch/fhnw/dlcopy/icons/32x32/media-flash-sd-mmc.png")));
-                    break;
-                case USBFlashDrive:
-                    iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                            "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media-usb-pendrive.png")));
-                    break;
-                default:
-                    LOGGER.log(Level.WARNING, "unsupported device type: {0}",
-                            storageDevice.getType());
-            }
+        // set device text
+        DLCopySwingGUI.setStorageDeviceLabel(
+                descriptionLabel, storageDevice);
 
-            // set device text
-            DLCopySwingGUI.setStorageDeviceLabel(
-                    descriptionLabel, storageDevice);
+        // partition caption
+        partitionCaptionPanel.removeAll();
+        List<Partition> partitions = storageDevice.getPartitions();
+        for (int i = 0, size = partitions.size(); i < size; i++) {
+            Partition partition = partitions.get(i);
+            JLabel label = new JLabel();
 
-            // partition caption
-            partitionCaptionPanel.removeAll();
-            List<Partition> partitions = storageDevice.getPartitions();
-            for (int i = 0, size = partitions.size(); i < size; i++) {
-                Partition partition = partitions.get(i);
-                JLabel label = new JLabel();
+            // use small, non-bold font
+            Font font = label.getFont();
+            label.setFont(font.deriveFont(
+                    font.getStyle() & ~Font.BOLD, font.getSize() - 1));
 
-                // use small, non-bold font
-                Font font = label.getFont();
-                label.setFont(font.deriveFont(
-                        font.getStyle() & ~Font.BOLD, font.getSize() - 1));
+            boolean extended = partition.isExtended();
 
-                boolean extended = partition.isExtended();
-
-                // set color box
-                try {
-                    if (partition.isEfiPartition()) {
-                        label.setIcon(DARK_BLUE_BOX);
-                    } else if (partition.isExchangePartition()) {
-                        label.setIcon(YELLOW_BOX);
-                    } else if (partition.isPersistencePartition()) {
-                        label.setIcon(GREEN_BOX);
-                    } else if (partition.isSystemPartition()) {
-                        label.setIcon(BLUE_BOX);
-                    } else if (extended) {
-                        label.setIcon(DARK_GRAY_BOX);
-                    } else {
-                        label.setIcon(GRAY_BOX);
-                    }
-                } catch (DBusException ex) {
-                    LOGGER.log(Level.SEVERE, "", ex);
-                }
-
-                // set text
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("<html><b>&#47;dev&#47;");
-                stringBuilder.append(partition.getDeviceAndNumber());
-                stringBuilder.append("</b> (");
-                stringBuilder.append(LernstickFileTools.getDataVolumeString(
-                        partition.getSize(), 1));
-                stringBuilder.append(")<br>");
-                if (extended) {
-                    stringBuilder.append(STRINGS.getString("Extended"));
-                    stringBuilder.append("<br>&nbsp;");
-                } else {
-                    stringBuilder.append(STRINGS.getString("Label"));
-                    stringBuilder.append(": ");
-                    stringBuilder.append(partition.getIdLabel());
-                    stringBuilder.append("<br>");
-                    stringBuilder.append(STRINGS.getString("File_System"));
-                    stringBuilder.append(": ");
-                    stringBuilder.append(partition.getIdType());
-                    stringBuilder.append("<br>");
-                    stringBuilder.append(STRINGS.getString("Used"));
-                    stringBuilder.append(": ");
-                    try {
-                        long usedSpace;
-                        if (partition.isPersistencePartition()) {
-                            usedSpace = partition.getUsedSpace(true);
-                        } else {
-                            usedSpace = partition.getUsedSpace(false);
-                        }
-                        if (usedSpace == -1) {
-                            stringBuilder.append(STRINGS.getString("Unknown"));
-                        } else {
-                            stringBuilder.append(
-                                    LernstickFileTools.getDataVolumeString(
-                                            usedSpace, 1));
-                        }
-                    } catch (DBusExecutionException ex) {
-                        LOGGER.log(Level.SEVERE, "", ex);
-                    }
-                }
-                stringBuilder.append("</html>");
-                label.setText(stringBuilder.toString());
-
-                GridBagConstraints gridBagConstraints
-                        = new GridBagConstraints();
-                gridBagConstraints.anchor = GridBagConstraints.WEST;
-                if (i == (size - 1)) {
-                    // last element
-                    gridBagConstraints.weightx = 1.0;
-                } else {
-                    // non-last element
-                    gridBagConstraints.insets = new Insets(0, 0, 0, 20);
-                }
-                partitionCaptionPanel.add(label, gridBagConstraints);
-            }
-
-            // upgrade info text
+            // set color box
             try {
-                StorageDevice.UpgradeVariant upgradeVariant
-                        = storageDevice.getUpgradeVariant(
-                                DLCopy.getEnlargedSystemSize(
-                                        source.getSystemSize()));
-                switch (upgradeVariant) {
-                    case REGULAR:
-                        upgradeInfoLabel.setIcon(OK_ICON);
-                        upgradeInfoLabel.setText(STRINGS.getString(
-                                "Upgrading_Possible"));
-                        break;
-                    case REPARTITION:
-                        upgradeInfoLabel.setIcon(WARNING_ICON);
-                        upgradeInfoLabel.setText(STRINGS.getString(
-                                "Warning_Repartitioning"));
-                        break;
-                    case BACKUP:
-                        upgradeInfoLabel.setIcon(WARNING_ICON);
-                        upgradeInfoLabel.setText(STRINGS.getString(
-                                "Warning_Upgrade_Backup"));
-                        break;
-                    case INSTALLATION:
-                        upgradeInfoLabel.setIcon(WARNING_ICON);
-                        upgradeInfoLabel.setText(STRINGS.getString(
-                                "Warning_Upgrade_By_Installation"));
-                        break;
-                    case IMPOSSIBLE:
-                        upgradeInfoLabel.setIcon(CANCEL_ICON);
-                        upgradeInfoLabel.setText(
-                                STRINGS.getString("Upgrading_Impossible")
-                                + ": " + storageDevice.getNoUpgradeReason());
-                        break;
-                    default:
-                        LOGGER.log(Level.WARNING,
-                                "unsupported upgradeVariant {0}",
-                                upgradeVariant);
+                if (partition.isEfiPartition()) {
+                    label.setIcon(DARK_BLUE_BOX);
+                } else if (partition.isExchangePartition()) {
+                    label.setIcon(YELLOW_BOX);
+                } else if (partition.isPersistencePartition()) {
+                    label.setIcon(GREEN_BOX);
+                } else if (partition.isSystemPartition()) {
+                    label.setIcon(BLUE_BOX);
+                } else if (extended) {
+                    label.setIcon(DARK_GRAY_BOX);
+                } else {
+                    label.setIcon(GRAY_BOX);
                 }
-            } catch (DBusException | IOException ex) {
+            } catch (DBusException ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
             }
 
-            if (isSelected) {
-                setBackground(list.getSelectionBackground());
+            // set text
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("<html><b>&#47;dev&#47;");
+            stringBuilder.append(partition.getDeviceAndNumber());
+            stringBuilder.append("</b> (");
+            stringBuilder.append(LernstickFileTools.getDataVolumeString(
+                    partition.getSize(), 1));
+            stringBuilder.append(")<br>");
+            if (extended) {
+                stringBuilder.append(STRINGS.getString("Extended"));
+                stringBuilder.append("<br>&nbsp;");
             } else {
-                setBackground(list.getBackground());
+                stringBuilder.append(STRINGS.getString("Label"));
+                stringBuilder.append(": ");
+                stringBuilder.append(partition.getIdLabel());
+                stringBuilder.append("<br>");
+                stringBuilder.append(STRINGS.getString("File_System"));
+                stringBuilder.append(": ");
+                stringBuilder.append(partition.getIdType());
+                stringBuilder.append("<br>");
+                stringBuilder.append(STRINGS.getString("Used"));
+                stringBuilder.append(": ");
+                try {
+                    long usedSpace;
+                    if (partition.isPersistencePartition()) {
+                        usedSpace = partition.getUsedSpace(true);
+                    } else {
+                        usedSpace = partition.getUsedSpace(false);
+                    }
+                    if (usedSpace == -1) {
+                        stringBuilder.append(STRINGS.getString("Unknown"));
+                    } else {
+                        stringBuilder.append(
+                                LernstickFileTools.getDataVolumeString(
+                                        usedSpace, 1));
+                    }
+                } catch (DBusExecutionException ex) {
+                    LOGGER.log(Level.SEVERE, "", ex);
+                }
             }
+            stringBuilder.append("</html>");
+            label.setText(stringBuilder.toString());
+
+            GridBagConstraints gridBagConstraints
+                    = new GridBagConstraints();
+            gridBagConstraints.anchor = GridBagConstraints.WEST;
+            if (i == (size - 1)) {
+                // last element
+                gridBagConstraints.weightx = 1.0;
+            } else {
+                // non-last element
+                gridBagConstraints.insets = new Insets(0, 0, 0, 20);
+            }
+            partitionCaptionPanel.add(label, gridBagConstraints);
+        }
+
+        // upgrade info text
+        try {
+            StorageDevice.UpgradeVariant upgradeVariant
+                    = storageDevice.getUpgradeVariant(
+                            DLCopy.getEnlargedSystemSize(
+                                    source.getSystemSize()));
+            switch (upgradeVariant) {
+                case REGULAR:
+                    upgradeInfoLabel.setIcon(OK_ICON);
+                    upgradeInfoLabel.setText(STRINGS.getString(
+                            "Upgrading_Possible"));
+                    break;
+                case REPARTITION:
+                    upgradeInfoLabel.setIcon(WARNING_ICON);
+                    upgradeInfoLabel.setText(STRINGS.getString(
+                            "Warning_Repartitioning"));
+                    break;
+                case BACKUP:
+                    upgradeInfoLabel.setIcon(WARNING_ICON);
+                    upgradeInfoLabel.setText(STRINGS.getString(
+                            "Warning_Upgrade_Backup"));
+                    break;
+                case INSTALLATION:
+                    upgradeInfoLabel.setIcon(WARNING_ICON);
+                    upgradeInfoLabel.setText(STRINGS.getString(
+                            "Warning_Upgrade_By_Installation"));
+                    break;
+                case IMPOSSIBLE:
+                    upgradeInfoLabel.setIcon(CANCEL_ICON);
+                    upgradeInfoLabel.setText(
+                            STRINGS.getString("Upgrading_Impossible")
+                            + ": " + storageDevice.getNoUpgradeReason());
+                    break;
+                default:
+                    LOGGER.log(Level.WARNING,
+                            "unsupported upgradeVariant {0}",
+                            upgradeVariant);
+            }
+        } catch (DBusException | IOException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+        }
+
+        if (isSelected) {
+            setBackground(list.getSelectionBackground());
+        } else {
+            setBackground(list.getBackground());
         }
 
         return this;

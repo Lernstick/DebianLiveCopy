@@ -57,6 +57,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.nio.file.Path;
 import java.text.DateFormat;
@@ -456,7 +457,7 @@ public class DLCopySwingGUI extends JFrame
                 preferences.getBoolean(PRINT_XLSX, false));
         printCopiesSpinner.setValue(preferences.getInt(PRINT_COPIES, 1));
         printDuplexCheckBox.setSelected(
-                preferences.getBoolean(PRINT_DUPLEX, true));
+                preferences.getBoolean(PRINT_DUPLEX, false));
 
         resetBackupCheckBox.setSelected(
                 preferences.getBoolean(RESET_BACKUP, false));
@@ -1239,16 +1240,25 @@ public class DLCopySwingGUI extends JFrame
 
     @Override
     public List<Path> selectDocumentsToPrint(
-            String type, List<Path> documents) {
-
-        PrintSelectionDialog dialog
-                = new PrintSelectionDialog(this, type, documents);
-        dialog.setVisible(true);
-        if (dialog.okPressed()) {
-            return dialog.getSelectedDocuments();
-        } else {
-            return null;
+            final String type, final List<Path> documents) {
+        
+        final List<Path> selectedDocuments = new ArrayList<>();
+        try {
+            SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    PrintSelectionDialog dialog = new PrintSelectionDialog(
+                            DLCopySwingGUI.this, type, documents);
+                    dialog.setVisible(true);
+                    if (dialog.okPressed()) {
+                        selectedDocuments.addAll(dialog.getSelectedDocuments());
+                    }
+                }
+            });
+        } catch (InterruptedException | InvocationTargetException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
         }
+        return selectedDocuments;
     }
 
     @Override

@@ -57,6 +57,9 @@ public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
 
     @Override
     protected Void doInBackground() throws Exception {
+        
+        Thread.currentThread().setName(getClass().getName());
+        
         addedDevice = DLCopy.getStorageDeviceAfterTimeout(
                 addedPath, showHarddisks);
         if (addedDevice != null) {

@@ -5,10 +5,12 @@ import ch.fhnw.dlcopy.gui.swing.OverwriteEntry;
 import ch.fhnw.filecopier.CopyJob;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.filecopier.Source;
+import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.MountInfo;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
@@ -154,27 +156,15 @@ public class Resetter extends SwingWorker<Boolean, Void> {
 
     @Override
     protected Boolean doInBackground() throws Exception {
+        
+        Thread.currentThread().setName(getClass().getName());
 
         dlCopyGUI.showResetProgress();
 
         deviceListSize = deviceList.size();
 
         for (StorageDevice storageDevice : deviceList) {
-            /**
-             * We have to synchronize access to the storage device because the
-             * UpgradeStorageDeviceRenderer might access the same device from
-             * another thread and mount and unmount partitions in betweeen. Yes,
-             * we did run into this issue. The UpgradeStorageDeviceRenderer
-             * unmounted our exchange partition while we were trying to print
-             * some documents...
-             */
-            LOGGER.log(Level.INFO,
-                    "waiting to get lock on storage device {0}", storageDevice);
-            synchronized (storageDevice) {
-                LOGGER.log(Level.INFO,
-                        "got lock on storage device {0}", storageDevice);
-                resetStorageDevice(storageDevice);
-            }
+            resetStorageDevice(storageDevice);
         }
 
         return true;
@@ -484,11 +474,22 @@ public class Resetter extends SwingWorker<Boolean, Void> {
             FileCopier fileCopier = new FileCopier();
             dlCopyGUI.showResetRestore(fileCopier);
 
-            Source[] sources = new Source[]{
-                new Source(overwriteEntry.getSource())
-            };
+            String sourceString = overwriteEntry.getSource();
+            Path sourcePath = Paths.get(sourceString);
             String destination
                     = restoreRoot + '/' + overwriteEntry.getDestination();
+
+            // remove old destination
+            LernstickFileTools.recursiveDelete(new File(destination), true);
+
+            Source source;
+            if (Files.isDirectory(sourcePath)) {
+                source = new Source(sourceString, ".*");
+                Files.createDirectories(Paths.get(destination));
+            } else {
+                source = new Source(sourceString);
+            }
+            Source[] sources = new Source[]{source};
             String[] destinations = new String[]{destination};
             fileCopier.copy(new CopyJob(sources, destinations));
 
