@@ -439,7 +439,7 @@ public class DLCopySwingGUI extends JFrame
         isoLabelTextField.setText("lernstick");
 
         if (preferences.getBoolean(RESET_AUTOMATIC, false)) {
-            resetAutomaticRadioButton.setSelected(true);
+            resetAutomaticModeRadioButton.setSelected(true);
         } else {
             resetListModeRadioButton.setSelected(true);
         }
@@ -1871,7 +1871,7 @@ public class DLCopySwingGUI extends JFrame
         resetSelectionTabbedPane = new javax.swing.JTabbedPane();
         resetSelectionPanel = new javax.swing.JPanel();
         resetListModeRadioButton = new javax.swing.JRadioButton();
-        resetAutomaticRadioButton = new javax.swing.JRadioButton();
+        resetAutomaticModeRadioButton = new javax.swing.JRadioButton();
         jSeparator2 = new javax.swing.JSeparator();
         resetSelectionCardPanel = new javax.swing.JPanel();
         resetNoMediaPanel = new javax.swing.JPanel();
@@ -3411,18 +3411,18 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         resetSelectionPanel.add(resetListModeRadioButton, gridBagConstraints);
 
-        resetSelectionModeButtonGroup.add(resetAutomaticRadioButton);
-        resetAutomaticRadioButton.setText(bundle.getString("DLCopySwingGUI.resetAutomaticRadioButton.text")); // NOI18N
-        resetAutomaticRadioButton.addActionListener(new java.awt.event.ActionListener() {
+        resetSelectionModeButtonGroup.add(resetAutomaticModeRadioButton);
+        resetAutomaticModeRadioButton.setText(bundle.getString("DLCopySwingGUI.resetAutomaticModeRadioButton.text")); // NOI18N
+        resetAutomaticModeRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetAutomaticRadioButtonActionPerformed(evt);
+                resetAutomaticModeRadioButtonActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-        resetSelectionPanel.add(resetAutomaticRadioButton, gridBagConstraints);
+        resetSelectionPanel.add(resetAutomaticModeRadioButton, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -4850,10 +4850,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         printDuplexCheckBox.setEnabled(enabled);
     }//GEN-LAST:event_printDocumentsCheckBoxItemStateChanged
 
-    private void resetAutomaticRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetAutomaticRadioButtonActionPerformed
+    private void resetAutomaticModeRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetAutomaticModeRadioButtonActionPerformed
         showCard(resetSelectionCardPanel, "resetNoMediaPanel");
         nextButton.setEnabled(false);
-    }//GEN-LAST:event_resetAutomaticRadioButtonActionPerformed
+    }//GEN-LAST:event_resetAutomaticModeRadioButtonActionPerformed
 
     private void resetListModeRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetListModeRadioButtonActionPerformed
         if (resetListModeRadioButton.isSelected()) {
@@ -5350,7 +5350,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         } else if (source == resetStorageDeviceListModel) {
             LOGGER.info("source == resetStorageDeviceListModel");
             if ((e.getType() == ListDataEvent.INTERVAL_ADDED)
-                    && resetAutomaticRadioButton.isSelected()) {
+                    && resetAutomaticModeRadioButton.isSelected()) {
 
                 List<StorageDevice> deviceList = new ArrayList<>();
                 for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
@@ -5565,7 +5565,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 getUpgradeOverwriteListString());
 
         preferences.putBoolean(RESET_AUTOMATIC,
-                resetAutomaticRadioButton.isSelected());
+                resetAutomaticModeRadioButton.isSelected());
         preferences.putBoolean(PRINT_DOCUMENTS,
                 printDocumentsCheckBox.isSelected());
         preferences.put(PRINTING_DIRECTORY,
@@ -6633,7 +6633,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JRadioButton removeFilesRadioButton;
     private javax.swing.JCheckBox removeHiddenFilesCheckBox;
     private javax.swing.JPanel repartitionExchangeOptionsPanel;
-    private javax.swing.JRadioButton resetAutomaticRadioButton;
+    private javax.swing.JRadioButton resetAutomaticModeRadioButton;
     private javax.swing.JCheckBox resetBackupCheckBox;
     private javax.swing.JLabel resetBackupCopyLabel;
     private javax.swing.JPanel resetBackupDataPanel;

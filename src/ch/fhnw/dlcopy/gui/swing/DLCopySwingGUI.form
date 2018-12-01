@@ -2673,17 +2673,17 @@
                         </Constraint>
                       </Constraints>
                     </Component>
-                    <Component class="javax.swing.JRadioButton" name="resetAutomaticRadioButton">
+                    <Component class="javax.swing.JRadioButton" name="resetAutomaticModeRadioButton">
                       <Properties>
                         <Property name="buttonGroup" type="javax.swing.ButtonGroup" editor="org.netbeans.modules.form.RADComponent$ButtonGroupPropertyEditor">
                           <ComponentRef name="resetSelectionModeButtonGroup"/>
                         </Property>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
-                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.resetAutomaticRadioButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.resetAutomaticModeRadioButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                         </Property>
                       </Properties>
                       <Events>
-                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="resetAutomaticRadioButtonActionPerformed"/>
+                        <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="resetAutomaticModeRadioButtonActionPerformed"/>
                       </Events>
                       <Constraints>
                         <Constraint layoutClass="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout" value="org.netbeans.modules.form.compat2.layouts.DesignGridBagLayout$GridBagConstraintsDescription">
