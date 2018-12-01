@@ -1,3 +1,14 @@
+dlcopy (201812011449-1) lernstick-9; urgency=medium
+
+  * [920229] save reset mode in preferences
+  * [b5d744] made checkbox variable name more consistent
+  * [c21de8] switch back to reset selection (instead of information) after reset
+             finished
+  * [d84190] renamed "processAddedDevice" to more precise "updateGUI"
+  * [0951ec] improved logging and synchronization
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 01 Dec 2018 14:59:20 +0100
+
 dlcopy (201812010145-1) lernstick-9; urgency=medium
 
   * [ae6fd3] fixed imports, improved logging
