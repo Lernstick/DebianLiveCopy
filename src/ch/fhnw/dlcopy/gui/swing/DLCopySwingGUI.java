@@ -196,6 +196,7 @@ public class DLCopySwingGUI extends JFrame
     private final static String BACKUP_DESTINATION = "backupDestination";
     private final static String AUTO_REMOVE_BACKUP = "autoRemoveBackup";
     private final static String UPGRADE_OVERWRITE_LIST = "upgradeOverwriteList";
+    private final static String RESET_AUTOMATIC = "resetAutomatic";
     private final static String PRINT_DOCUMENTS = "printDocuments";
     private final static String PRINTING_DIRECTORY = "printingDirectory";
     private final static String PRINT_ODT = "printODT";
@@ -436,6 +437,12 @@ public class DLCopySwingGUI extends JFrame
                 preferences.getInt(AUTO_NUMBER_MIN_DIGITS, 1));
 
         isoLabelTextField.setText("lernstick");
+
+        if (preferences.getBoolean(RESET_AUTOMATIC, false)) {
+            resetAutomaticRadioButton.setSelected(true);
+        } else {
+            resetListModeRadioButton.setSelected(true);
+        }
 
         printDocumentsCheckBox.setSelected(
                 preferences.getBoolean(PRINT_DOCUMENTS, false));
@@ -1241,7 +1248,7 @@ public class DLCopySwingGUI extends JFrame
     @Override
     public List<Path> selectDocumentsToPrint(
             final String type, final List<Path> documents) {
-        
+
         final List<Path> selectedDocuments = new ArrayList<>();
         try {
             SwingUtilities.invokeAndWait(new Runnable() {
@@ -5557,6 +5564,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         preferences.put(UPGRADE_OVERWRITE_LIST,
                 getUpgradeOverwriteListString());
 
+        preferences.putBoolean(RESET_AUTOMATIC,
+                resetAutomaticRadioButton.isSelected());
         preferences.putBoolean(PRINT_DOCUMENTS,
                 printDocumentsCheckBox.isSelected());
         preferences.put(PRINTING_DIRECTORY,
@@ -5598,7 +5607,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 systemFilesCheckBox.isSelected());
         preferences.putBoolean(RESET_REMOVE_HOME_DIRECTORY,
                 homeDirectoryCheckBox.isSelected());
-
         preferences.put(RESET_RESTORE_DATA,
                 resetRestoreConfigurationPanel.getXML());
 
