@@ -1,3 +1,12 @@
+dlcopy (201812010145-1) lernstick-9; urgency=medium
+
+  * [ae6fd3] fixed imports, improved logging
+  * [69a109] improved synchronization
+  * [5fa11c] improved logging, synchronization and small speedup
+  * [1d65ee] improved logging, synchronization and restoring in resetter
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 01 Dec 2018 01:45:49 +0100
+
 dlcopy (201811292108-1) lernstick-9; urgency=medium
 
   * [d5671f] always update position of StorageDeviceListUpdateDialog
