@@ -64,7 +64,7 @@ public class ResetStorageDeviceAdder extends StorageDeviceAdder {
     }
 
     @Override
-    public void processAddedDevice() {
+    public void updateGUI() {
         swingGUI.resetStorageDeviceListChanged();
         swingGUI.updateResetSelectionCountAndNextButton();
     }

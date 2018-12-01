@@ -37,7 +37,7 @@ public class InstallStorageDeviceAdder extends StorageDeviceAdder {
     }
 
     @Override
-    public void processAddedDevice() {
+    public void updateGUI() {
         swingGUI.installStorageDeviceListChanged();
         swingGUI.updateInstallSelectionCountAndExchangeInfo();
     }

@@ -57,9 +57,9 @@ public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
 
     @Override
     protected Void doInBackground() throws Exception {
-        
+
         Thread.currentThread().setName(getClass().getName());
-        
+
         addedDevice = DLCopy.getStorageDeviceAfterTimeout(
                 addedPath, showHarddisks);
         if (addedDevice != null) {
@@ -80,7 +80,7 @@ public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
             // e.g. via a StorageDeviceListUpdater
             if (!listModel.contains(addedDevice)) {
                 addDeviceToList();
-                processAddedDevice();
+                updateGUI();
             }
         }
     }
@@ -92,9 +92,10 @@ public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
     public abstract void initDevice();
 
     /**
-     * do all the necessary things after a device has been added to the list
+     * do all the necessary GUI updates (showing or hiding panels, disabling or
+     * enabling buttons, ...) after a device has been added to the list
      */
-    public abstract void processAddedDevice();
+    public abstract void updateGUI();
 
     private void addDeviceToList() {
 
