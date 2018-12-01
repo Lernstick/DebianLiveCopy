@@ -4447,7 +4447,7 @@ public class DLCopySwingGUI extends JFrame
                 break;
 
             case RESET:
-                switchToResetInformation();
+                switchToResetSelection();
                 resetNextButton();
                 break;
 
