@@ -137,6 +137,8 @@ public class Upgrader extends InstallerOrUpgrader {
     @Override
     protected Void doInBackground() throws Exception {
 
+        Thread.currentThread().setName(getClass().getName());
+
         lock.lock();
         try {
             inhibit = new LogindInhibit("Upgrading");
@@ -431,8 +433,8 @@ public class Upgrader extends InstallerOrUpgrader {
         String dataMountPoint = dataMountInfo.getMountPath();
 
         // union old squashfs with data partitin
-        MountInfo systemMountInfo
-                = storageDevice.getSystemPartition().mount();
+        Partition systemPartition = storageDevice.getSystemPartition();
+        MountInfo systemMountInfo = systemPartition.mount();
         List<String> readOnlyMountPoints = LernstickFileTools.mountAllSquashFS(
                 systemMountInfo.getMountPath());
 
@@ -494,6 +496,10 @@ public class Upgrader extends InstallerOrUpgrader {
         if (resetDataPartition) {
             resetDataPartition(cowPath, dataMountPoint,
                     majorDebianVersion, upgradeFromAufsToOverlay);
+            // the data partition gets unmounted by resetDataPartition
+            // therefore we have to remount it here
+            cowPath = mountDataPartition(dataMountPoint, readOnlyMountPoints,
+                    mountAufs, false /*temporaryUpperDir*/);
         }
 
         if (upgradeSystemPartition) {
@@ -555,6 +561,10 @@ public class Upgrader extends InstallerOrUpgrader {
         // umount
         if ((!dataMountInfo.alreadyMounted())
                 && (!DLCopy.umount(dataPartition, dlCopyGUI))) {
+            return false;
+        }
+        if ((!systemMountInfo.alreadyMounted())
+                && (!DLCopy.umount(systemPartition, dlCopyGUI))) {
             return false;
         }
 
