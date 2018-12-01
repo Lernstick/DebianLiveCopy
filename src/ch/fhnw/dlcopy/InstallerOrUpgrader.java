@@ -4,6 +4,7 @@ import ch.fhnw.dlcopy.gui.DLCopyGUI;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.StorageDevice;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 import javax.swing.SwingWorker;
 
 /**
@@ -40,6 +41,11 @@ public abstract class InstallerOrUpgrader
     protected final FileCopier fileCopier = new FileCopier();
 
     /**
+     * the lock to aquire before executing in background
+     */
+    protected final Lock lock;
+
+    /**
      * the LogindInhibit for preventing to switch into power saving mode
      */
     protected LogindInhibit inhibit;
@@ -62,17 +68,20 @@ public abstract class InstallerOrUpgrader
      * partition
      * @param dataPartitionFileSystem the file system of the data partition
      * @param dlCopyGUI the graphical user interface
+     * @param lock the lock to aquire before executing in background
      */
     public InstallerOrUpgrader(SystemSource source,
             List<StorageDevice> deviceList, String exchangePartitionLabel,
             String exhangePartitionFileSystem, String dataPartitionFileSystem,
-            DLCopyGUI dlCopyGUI) {
+            DLCopyGUI dlCopyGUI, Lock lock) {
+
         this.source = source;
         this.deviceList = deviceList;
         this.exchangePartitionLabel = exchangePartitionLabel;
         this.exhangePartitionFileSystem = exhangePartitionFileSystem;
         this.dataPartitionFileSystem = dataPartitionFileSystem;
         this.dlCopyGUI = dlCopyGUI;
+        this.lock = lock;
         deviceListSize = deviceList.size();
     }
 

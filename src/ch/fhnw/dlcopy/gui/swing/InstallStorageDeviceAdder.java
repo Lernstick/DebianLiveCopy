@@ -1,6 +1,7 @@
 package ch.fhnw.dlcopy.gui.swing;
 
 import ch.fhnw.util.StorageDevice;
+import java.util.concurrent.locks.Lock;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
@@ -22,13 +23,14 @@ public class InstallStorageDeviceAdder extends StorageDeviceAdder {
      * @param listModel the ListModel of the storage devices JList
      * @param list the storage devices JList
      * @param swingGUI the DLCopySwingGUI
+     * @param lock the lock to aquire before adding the device to the listModel
      */
     public InstallStorageDeviceAdder(String addedPath, boolean showHarddisks,
             StorageDeviceListUpdateDialogHandler dialogHandler,
             DefaultListModel<StorageDevice> listModel, JList list,
-            DLCopySwingGUI swingGUI) {
+            DLCopySwingGUI swingGUI, Lock lock) {
         super(addedPath, showHarddisks, dialogHandler,
-                listModel, list, swingGUI);
+                listModel, list, swingGUI, lock);
     }
 
     @Override

@@ -75,6 +75,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.ConsoleHandler;
 import java.util.logging.FileHandler;
 import java.util.logging.Level;
@@ -259,6 +261,12 @@ public class DLCopySwingGUI extends JFrame
     private boolean instantUpgrade;
     private boolean autoUpgrade;
     private boolean isolatedAutoUpgrade;
+
+    // some locks to synchronize the Installer, Upgrader and Resetter with their
+    // corresponding StorageDeviceAdder
+    private Lock installLock = new ReentrantLock();
+    private Lock upgradeLock = new ReentrantLock();
+    private Lock resetLock = new ReentrantLock();
 
     /**
      * Creates new form DLCopy
@@ -793,7 +801,8 @@ public class DLCopySwingGUI extends JFrame
                             installShowHarddisksCheckBox.isSelected(),
                             storageDeviceListUpdateDialogHandler,
                             installStorageDeviceListModel,
-                            installStorageDeviceList, this).execute();
+                            installStorageDeviceList, this, installLock)
+                            .execute();
                     break;
 
                 case UPGRADE_SELECTION:
@@ -802,7 +811,8 @@ public class DLCopySwingGUI extends JFrame
                             upgradeShowHarddisksCheckBox.isSelected(),
                             storageDeviceListUpdateDialogHandler,
                             upgradeStorageDeviceListModel,
-                            upgradeStorageDeviceList, this).execute();
+                            upgradeStorageDeviceList, this, upgradeLock)
+                            .execute();
                     break;
 
                 case RESET_SELECTION:
@@ -810,7 +820,7 @@ public class DLCopySwingGUI extends JFrame
                             resetShowHarddisksCheckBox.isSelected(),
                             storageDeviceListUpdateDialogHandler,
                             resetStorageDeviceListModel,
-                            resetStorageDeviceList, this,
+                            resetStorageDeviceList, this, resetLock,
                             resetListModeRadioButton.isSelected()).execute();
                     break;
 
@@ -1211,13 +1221,20 @@ public class DLCopySwingGUI extends JFrame
 
     @Override
     public void showResetProgress() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                showCard(cardPanel, "resetPanel");
-                showCard(resetCardPanel, "resetProgressPanel");
-            }
-        });
+        // DON'T (!) use invokeLater here or we might run into a timing issue so
+        // that after a very quick reset the resetProgressPanel is still shown
+        // because the code below code gets executed much later.
+        try {
+            SwingUtilities.invokeAndWait(new Runnable() {
+                @Override
+                public void run() {
+                    showCard(cardPanel, "resetPanel");
+                    showCard(resetCardPanel, "resetProgressPanel");
+                }
+            });
+        } catch (InterruptedException | InvocationTargetException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+        }
     }
 
     @Override
@@ -5288,7 +5305,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 formatDataPartitionRadioButton.isSelected(),
                 dataPartitionFileSystem, homeDirectoryCheckBox.isSelected(),
                 systemFilesCheckBox.isSelected(),
-                resetRestoreConfigurationPanel.getEntries()).execute();
+                resetRestoreConfigurationPanel.getEntries(), resetLock)
+                .execute();
     }
 
     private void sortList(boolean ascending) {
@@ -5886,8 +5904,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }
 
     private static void showCard(Container container, String cardName) {
-        LOGGER.log(Level.FINEST, "{0}: {1}",
-                new Object[]{container.getName(), cardName});
+        LOGGER.log(Level.FINEST, "\n"
+                + "    thread: {0}\n"
+                + "    container : {1}\n"
+                + "    card: {2}",
+                new Object[]{Thread.currentThread().getName(),
+                    container.getName(), cardName});
         CardLayout cardLayout = (CardLayout) container.getLayout();
         cardLayout.show(container, cardName);
     }
@@ -6020,7 +6042,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 exchangePartitionFileSystem, dataPartitionFileSystem, this,
                 exchangePartitionSizeSlider.getValue(), copyExchange,
                 autoNumberPatternTextField.getText(), autoNumber, autoIncrement,
-                autoMinDigits, copyData, dataPartitionMode).execute();
+                autoMinDigits, copyData, dataPartitionMode, installLock)
+                .execute();
     }
 
     private boolean upgradeSanityChecks() {
@@ -6152,7 +6175,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 reactivateWelcomeCheckBox.isSelected(),
                 removeHiddenFilesCheckBox.isSelected(), overWriteList,
                 DLCopy.getEnlargedSystemSize(
-                        runningSystemSource.getSystemSize()))
+                        runningSystemSource.getSystemSize()), upgradeLock)
                 .execute();
     }
 

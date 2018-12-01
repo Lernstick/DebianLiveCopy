@@ -3,6 +3,9 @@ package ch.fhnw.dlcopy.gui.swing;
 import ch.fhnw.dlcopy.DLCopy;
 import ch.fhnw.util.StorageDevice;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 import javax.swing.SwingWorker;
@@ -14,6 +17,9 @@ import javax.swing.SwingWorker;
  * @author Ronny Standtke <ronny.standtke@gmx.net>
  */
 public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
+
+    private static final Logger LOGGER
+            = Logger.getLogger(StorageDeviceAdder.class.getName());
 
     /**
      * the DLCopySwingGUI
@@ -30,6 +36,7 @@ public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
     private final StorageDeviceListUpdateDialogHandler dialogHandler;
     private final DefaultListModel<StorageDevice> listModel;
     private final JList<StorageDevice> list;
+    private final Lock lock;
 
     /**
      * creates a new StorageDeviceAdder
@@ -41,17 +48,19 @@ public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
      * @param listModel the ListModel of the storage devices JList
      * @param list the storage devices JList
      * @param swingGUI the DLCopySwingGUI
+     * @param lock the lock to aquire before adding the device to the listModel
      */
     public StorageDeviceAdder(String addedPath, boolean showHarddisks,
             StorageDeviceListUpdateDialogHandler dialogHandler,
             DefaultListModel<StorageDevice> listModel, JList list,
-            DLCopySwingGUI swingGUI) {
+            DLCopySwingGUI swingGUI, Lock lock) {
         this.addedPath = addedPath;
         this.showHarddisks = showHarddisks;
         this.dialogHandler = dialogHandler;
         this.listModel = listModel;
         this.list = list;
         this.swingGUI = swingGUI;
+        this.lock = lock;
         dialogHandler.addPath(addedPath);
     }
 
@@ -79,8 +88,17 @@ public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
             // do nothing, if device was added in the meantime
             // e.g. via a StorageDeviceListUpdater
             if (!listModel.contains(addedDevice)) {
-                addDeviceToList();
-                updateGUI();
+                LOGGER.info("trying to acquire lock...");
+                lock.lock();
+                LOGGER.info("lock aquired");
+                try {
+                    addDeviceToList();
+                    updateGUI();
+                } finally {
+                    LOGGER.info("releasing lock...");
+                    lock.unlock();
+                    LOGGER.info("unlocked");
+                }
             }
         }
     }
@@ -115,6 +133,8 @@ public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
                 && listModel.get(addIndex).compareTo(addedDevice) < 0) {
             addIndex++;
         }
+        LOGGER.log(Level.INFO, "adding {0} to index {1}",
+                new Object[]{addedDevice, addIndex});
         listModel.add(addIndex, addedDevice);
 
         // try to restore the previous selection

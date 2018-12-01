@@ -3,6 +3,7 @@ package ch.fhnw.dlcopy.gui.swing;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.StorageDevice;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
@@ -30,6 +31,7 @@ public class ResetStorageDeviceAdder extends StorageDeviceAdder {
      * @param listModel the ListModel of the storage devices JList
      * @param list the storage devices JList
      * @param swingGUI the DLCopySwingGUI
+     * @param lock the lock to aquire before adding the device to the listModel
      * @param mustInit if the device must be initialized (not needed for
      * automatic upgrades where the detail information is never rendered on
      * screen)
@@ -37,10 +39,10 @@ public class ResetStorageDeviceAdder extends StorageDeviceAdder {
     public ResetStorageDeviceAdder(String addedPath, boolean showHarddisks,
             StorageDeviceListUpdateDialogHandler dialogHandler,
             DefaultListModel<StorageDevice> listModel, JList list,
-            DLCopySwingGUI swingGUI, boolean mustInit) {
+            DLCopySwingGUI swingGUI, Lock lock, boolean mustInit) {
 
         super(addedPath, showHarddisks, dialogHandler,
-                listModel, list, swingGUI);
+                listModel, list, swingGUI, lock);
 
         this.mustInit = mustInit;
     }

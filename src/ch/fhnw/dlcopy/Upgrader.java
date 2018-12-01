@@ -35,6 +35,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.Timer;
@@ -99,6 +100,7 @@ public class Upgrader extends InstallerOrUpgrader {
      * running system to the upgraded storage device
      * @param systemSizeEnlarged the "enlarged" system size (multiplied with a
      * small file system overhead factor)
+     * @param lock the lock to aquire before executing in background
      */
     public Upgrader(SystemSource source, List<StorageDevice> deviceList,
             String exchangePartitionLabel, String exchangePartitionFileSystem,
@@ -110,11 +112,11 @@ public class Upgrader extends InstallerOrUpgrader {
             boolean keepPrinterSettings, boolean keepNetworkSettings,
             boolean keepFirewallSettings, boolean reactivateWelcome,
             boolean removeHiddenFiles, List<String> filesToOverwrite,
-            long systemSizeEnlarged) {
+            long systemSizeEnlarged, Lock lock) {
 
         super(source, deviceList, exchangePartitionLabel,
                 exchangePartitionFileSystem, dataPartitionFileSystem,
-                dlCopyGUI);
+                dlCopyGUI, lock);
 
         this.repartitionStrategy = repartitionStrategy;
         this.resizedExchangePartitionSize = resizedExchangePartitionSize;
@@ -134,72 +136,81 @@ public class Upgrader extends InstallerOrUpgrader {
 
     @Override
     protected Void doInBackground() throws Exception {
-        inhibit = new LogindInhibit("Upgrading");
 
-        // upgrade all selected storage devices
-        int batchCounter = 0;
-        for (StorageDevice storageDevice : deviceList) {
+        lock.lock();
+        try {
+            inhibit = new LogindInhibit("Upgrading");
 
-            // update overall progress message
-            batchCounter++;
-            dlCopyGUI.upgradingDeviceStarted(storageDevice);
-            LOGGER.log(Level.INFO,
-                    "upgrading storage device: {0} of {1} ({2})",
-                    new Object[]{
-                        batchCounter, deviceListSize, storageDevice
-                    });
+            // upgrade all selected storage devices
+            int batchCounter = 0;
+            for (StorageDevice storageDevice : deviceList) {
 
-            File backupDestination = getBackupDestination(storageDevice);
+                // update overall progress message
+                batchCounter++;
+                dlCopyGUI.upgradingDeviceStarted(storageDevice);
+                LOGGER.log(Level.INFO,
+                        "upgrading storage device: {0} of {1} ({2})",
+                        new Object[]{
+                            batchCounter, deviceListSize, storageDevice
+                        });
 
-            String errorMessage = null;
-            try {
-                StorageDevice.UpgradeVariant upgradeVariant
-                        = storageDevice.getUpgradeVariant(
-                                DLCopy.getEnlargedSystemSize(
-                                        source.getSystemSize()));
-                switch (upgradeVariant) {
-                    case REGULAR:
-                    case REPARTITION:
-                        if (upgradeDataPartition(
-                                storageDevice, backupDestination)
-                                & upgradeSystemPartition) {
-                            upgradeSystemPartition(storageDevice);
-                        }
-                        break;
+                File backupDestination = getBackupDestination(storageDevice);
 
-                    case BACKUP:
-                        backupInstallRestore(storageDevice);
-                        break;
+                String errorMessage = null;
+                try {
+                    StorageDevice.UpgradeVariant upgradeVariant
+                            = storageDevice.getUpgradeVariant(
+                                    DLCopy.getEnlargedSystemSize(
+                                            source.getSystemSize()));
+                    switch (upgradeVariant) {
+                        case REGULAR:
+                        case REPARTITION:
+                            if (upgradeDataPartition(
+                                    storageDevice, backupDestination)
+                                    & upgradeSystemPartition) {
+                                upgradeSystemPartition(storageDevice);
+                            }
+                            break;
 
-                    case INSTALLATION:
-                        DLCopy.copyToStorageDevice(source, fileCopier,
-                                storageDevice, exchangePartitionLabel,
-                                this, dlCopyGUI);
-                        break;
+                        case BACKUP:
+                            backupInstallRestore(storageDevice);
+                            break;
 
-                    default:
-                        LOGGER.log(Level.WARNING,
-                                "Unsupported variant {0}", upgradeVariant);
+                        case INSTALLATION:
+                            DLCopy.copyToStorageDevice(source, fileCopier,
+                                    storageDevice, exchangePartitionLabel,
+                                    this, dlCopyGUI);
+                            break;
+
+                        default:
+                            LOGGER.log(Level.WARNING,
+                                    "Unsupported variant {0}", upgradeVariant);
+                    }
+
+                    // automatic removal of (temporary) backup
+                    if (removeBackup) {
+                        LernstickFileTools.recursiveDelete(
+                                backupDestination, true);
+                    }
+                } catch (DBusException | IOException
+                        | InterruptedException ex) {
+                    LOGGER.log(Level.WARNING, "", ex);
+                    errorMessage = ex.getMessage();
                 }
 
-                // automatic removal of (temporary) backup
-                if (removeBackup) {
-                    LernstickFileTools.recursiveDelete(backupDestination, true);
-                }
-            } catch (DBusException | IOException | InterruptedException ex) {
-                LOGGER.log(Level.WARNING, "", ex);
-                errorMessage = ex.getMessage();
+                dlCopyGUI.upgradingDeviceFinished(errorMessage);
+
+                LOGGER.log(Level.INFO, "upgrading of storage device finished: "
+                        + "{0} of {1} ({2})", new Object[]{
+                            batchCounter, deviceListSize, storageDevice
+                        });
             }
 
-            dlCopyGUI.upgradingDeviceFinished(errorMessage);
+            return null;
 
-            LOGGER.log(Level.INFO, "upgrading of storage device finished: "
-                    + "{0} of {1} ({2})", new Object[]{
-                        batchCounter, deviceListSize, storageDevice
-                    });
+        } finally {
+            lock.unlock();
         }
-
-        return null;
     }
 
     @Override

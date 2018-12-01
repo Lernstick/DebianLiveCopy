@@ -8,6 +8,7 @@ import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -52,6 +53,7 @@ public class Installer extends InstallerOrUpgrader
      * @param copyDataPartition if the data partition should be copied
      * @param dataPartitionMode the mode of the data partition to set in the
      * bootloaders config
+     * @param lock the lock to aquire before executing in background
      */
     public Installer(SystemSource source, List<StorageDevice> deviceList,
             String exchangePartitionLabel, String exchangePartitionFileSystem,
@@ -59,12 +61,12 @@ public class Installer extends InstallerOrUpgrader
             int exchangePartitionSize, boolean copyExchangePartition,
             String autoNumberPattern, int autoNumberStart,
             int autoNumberIncrement, int autoNumberMinDigits,
-            boolean copyDataPartition,
-            DataPartitionMode dataPartitionMode) {
+            boolean copyDataPartition, DataPartitionMode dataPartitionMode,
+            Lock lock) {
 
         super(source, deviceList, exchangePartitionLabel,
                 exchangePartitionFileSystem, dataPartitionFileSystem,
-                dlCopyGUI);
+                dlCopyGUI, lock);
 
         this.exchangePartitionSize = exchangePartitionSize;
         this.copyExchangePartition = copyExchangePartition;
@@ -78,43 +80,52 @@ public class Installer extends InstallerOrUpgrader
 
     @Override
     protected Void doInBackground() throws Exception {
-        inhibit = new LogindInhibit("Installing");
 
-        dlCopyGUI.showInstallProgress();
+        lock.lock();
+        try {
+            inhibit = new LogindInhibit("Installing");
 
-        String currentExchangePartitionLabel = exchangePartitionLabel;
-        for (StorageDevice storageDevice : deviceList) {
+            dlCopyGUI.showInstallProgress();
 
-            // update overall progress message
-            dlCopyGUI.installingDeviceStarted(storageDevice);
+            String currentExchangePartitionLabel = exchangePartitionLabel;
+            for (StorageDevice storageDevice : deviceList) {
 
-            // auto numbering
-            if (!autoNumberPattern.isEmpty()) {
-                String autoNumberString = String.valueOf(autoNumber);
-                int nrOfPrefixZeros
-                        = autoNumberMinDigits - autoNumberString.length();
-                for (int i = 0; i < nrOfPrefixZeros; i++) {
-                    autoNumberString = "0" + autoNumberString;
+                // update overall progress message
+                dlCopyGUI.installingDeviceStarted(storageDevice);
+
+                // auto numbering
+                if (!autoNumberPattern.isEmpty()) {
+                    String autoNumberString = String.valueOf(autoNumber);
+                    int nrOfPrefixZeros
+                            = autoNumberMinDigits - autoNumberString.length();
+                    for (int i = 0; i < nrOfPrefixZeros; i++) {
+                        autoNumberString = "0" + autoNumberString;
+                    }
+                    currentExchangePartitionLabel
+                            = exchangePartitionLabel.replace(
+                                    autoNumberPattern, autoNumberString);
+                    autoNumber += autoNumberIncrement;
                 }
-                currentExchangePartitionLabel = exchangePartitionLabel.replace(
-                        autoNumberPattern, autoNumberString);
-                autoNumber += autoNumberIncrement;
+
+                String errorMessage = null;
+                try {
+                    DLCopy.copyToStorageDevice(source, fileCopier,
+                            storageDevice, currentExchangePartitionLabel,
+                            this, dlCopyGUI);
+                } catch (InterruptedException | IOException
+                        | DBusException exception) {
+                    LOGGER.log(Level.WARNING, "", exception);
+                    errorMessage = exception.getMessage();
+                }
+
+                dlCopyGUI.installingDeviceFinished(errorMessage, autoNumber);
             }
 
-            String errorMessage = null;
-            try {
-                DLCopy.copyToStorageDevice(source, fileCopier, storageDevice,
-                        currentExchangePartitionLabel, this, dlCopyGUI);
-            } catch (InterruptedException | IOException
-                    | DBusException exception) {
-                LOGGER.log(Level.WARNING, "", exception);
-                errorMessage = exception.getMessage();
-            }
+            return null;
 
-            dlCopyGUI.installingDeviceFinished(errorMessage, autoNumber);
+        } finally {
+            lock.unlock();
         }
-
-        return null;
     }
 
     @Override

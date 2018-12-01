@@ -22,6 +22,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.SwingWorker;
@@ -65,6 +66,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
     private final boolean resetHome;
     private final boolean resetSystem;
     private final List<OverwriteEntry> overwriteEntries;
+    private final Lock lock;
 
     private int deviceListSize;
     private int batchCounter;
@@ -109,6 +111,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
      * @param resetHome if the home directory should be reset
      * @param resetSystem if the system (without /home) should be reset
      * @param overwriteEntries the list of entries to overwrite
+     * @param lock the lock to aquire before executing in background
      */
     public Resetter(DLCopyGUI dlCopyGUI, List<StorageDevice> deviceList,
             String bootDeviceName, boolean printDocuments,
@@ -123,7 +126,8 @@ public class Resetter extends SwingWorker<Boolean, Void> {
             boolean keepExchangePartitionLabel,
             String newExchangePartitionLabel, boolean formatDataPartition,
             String dataPartitionFileSystem, boolean resetHome,
-            boolean resetSystem, List<OverwriteEntry> overwriteEntries) {
+            boolean resetSystem, List<OverwriteEntry> overwriteEntries,
+            Lock lock) {
 
         this.dlCopyGUI = dlCopyGUI;
         this.deviceList = deviceList;
@@ -152,22 +156,32 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         this.resetHome = resetHome;
         this.resetSystem = resetSystem;
         this.overwriteEntries = overwriteEntries;
+        this.lock = lock;
     }
 
     @Override
     protected Boolean doInBackground() throws Exception {
-        
-        Thread.currentThread().setName(getClass().getName());
+        LOGGER.info("trying to acquire lock...");
+        lock.lock();
+        LOGGER.info("lock aquired");
+        try {
+            Thread.currentThread().setName(getClass().getName());
 
-        dlCopyGUI.showResetProgress();
+            dlCopyGUI.showResetProgress();
 
-        deviceListSize = deviceList.size();
+            deviceListSize = deviceList.size();
 
-        for (StorageDevice storageDevice : deviceList) {
-            resetStorageDevice(storageDevice);
+            for (StorageDevice storageDevice : deviceList) {
+                resetStorageDevice(storageDevice);
+            }
+
+            return true;
+
+        } finally {
+            LOGGER.info("releasing lock...");
+            lock.unlock();
+            LOGGER.info("unlocked");
         }
-
-        return true;
     }
 
     @Override
