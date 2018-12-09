@@ -25,6 +25,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
+import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -38,6 +39,8 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import javax.swing.Timer;
 import org.freedesktop.dbus.exceptions.DBusException;
 
@@ -61,6 +64,7 @@ public class Upgrader extends InstallerOrUpgrader {
     private final boolean keepPrinterSettings;
     private final boolean keepNetworkSettings;
     private final boolean keepFirewallSettings;
+    private final boolean keepUserSettings;
     private final boolean reactivateWelcome;
     private final boolean removeHiddenFiles;
     private final List<String> filesToOverwrite;
@@ -93,6 +97,8 @@ public class Upgrader extends InstallerOrUpgrader {
      * upgrading
      * @param keepFirewallSettings if the firewall settings should be kept when
      * upgrading
+     * @param keepUserSettings if the user name, password and groups should be
+     * kept when upgrading
      * @param reactivateWelcome if the welcome program should be reactivated
      * @param removeHiddenFiles if hidden files in the user's home of the
      * storage device should be removed
@@ -110,9 +116,9 @@ public class Upgrader extends InstallerOrUpgrader {
             String automaticBackupDestination, boolean removeBackup,
             boolean upgradeSystemPartition, boolean resetDataPartition,
             boolean keepPrinterSettings, boolean keepNetworkSettings,
-            boolean keepFirewallSettings, boolean reactivateWelcome,
-            boolean removeHiddenFiles, List<String> filesToOverwrite,
-            long systemSizeEnlarged, Lock lock) {
+            boolean keepFirewallSettings, boolean keepUserSettings,
+            boolean reactivateWelcome, boolean removeHiddenFiles,
+            List<String> filesToOverwrite, long systemSizeEnlarged, Lock lock) {
 
         super(source, deviceList, exchangePartitionLabel,
                 exchangePartitionFileSystem, dataPartitionFileSystem,
@@ -128,6 +134,7 @@ public class Upgrader extends InstallerOrUpgrader {
         this.keepPrinterSettings = keepPrinterSettings;
         this.keepNetworkSettings = keepNetworkSettings;
         this.keepFirewallSettings = keepFirewallSettings;
+        this.keepUserSettings = keepUserSettings;
         this.reactivateWelcome = reactivateWelcome;
         this.removeHiddenFiles = removeHiddenFiles;
         this.filesToOverwrite = filesToOverwrite;
@@ -492,6 +499,29 @@ public class Upgrader extends InstallerOrUpgrader {
             backupUserData(cowPath, backupDestination);
         }
 
+        // remember user settings before reset
+        String passwdLine = null;
+        String shadowLine = null;
+        String groupLine = null;
+        List<String> groups = null;
+        if (keepUserSettings) {
+            passwdLine = getUserLine(Paths.get(cowPath, "/etc/passwd"));
+            shadowLine = getUserLine(Paths.get(cowPath, "/etc/shadow"));
+            Path groupPath = Paths.get(cowPath, "/etc/group");
+            groupLine = getUserLine(groupPath);
+            try (Stream<String> lines = Files.lines(groupPath)) {
+                groups = lines
+                        .filter(line -> groupContainsUser(line))
+                        .map(line -> line.split(":")[0])
+                        .collect(Collectors.toList());
+            }
+            LOGGER.log(Level.INFO, "passwdLine:\n{0}", passwdLine);
+            LOGGER.log(Level.INFO, "shadowLine:\n{0}", shadowLine);
+            LOGGER.log(Level.INFO, "groupLine:\n{0}", groupLine);
+            LOGGER.log(Level.INFO, "groups:\n{0}",
+                    Arrays.toString(groups.toArray()));
+        }
+
         // reset data partition
         if (resetDataPartition) {
             resetDataPartition(cowPath, dataMountPoint,
@@ -500,6 +530,21 @@ public class Upgrader extends InstallerOrUpgrader {
             // therefore we have to remount it here
             cowPath = mountDataPartition(dataMountPoint, readOnlyMountPoints,
                     mountAufs, false /*temporaryUpperDir*/);
+        }
+
+        // restore user settings after reset
+        if (keepUserSettings) {
+            appendLine(Paths.get(cowPath, "/etc/passwd"), passwdLine);
+            appendLine(Paths.get(cowPath, "/etc/shadow"), shadowLine);
+            Path groupPath = Paths.get(cowPath, "/etc/group");
+            appendLine(groupPath, groupLine);
+            try (Stream<String> lines = Files.lines(groupPath)) {
+                final List<String> finalGroups = groups;
+                List<String> newGroup = lines
+                        .map(line -> addUsertoGroup(finalGroups, line))
+                        .collect(Collectors.toList());
+                Files.write(groupPath, newGroup);
+            }
         }
 
         if (upgradeSystemPartition) {
@@ -579,6 +624,40 @@ public class Upgrader extends InstallerOrUpgrader {
         return true;
     }
 
+    private String addUsertoGroup(List<String> groups, String line) {
+        for (String group : groups) {
+            if (line.startsWith(group + ':')) {
+                if (!groupContainsUser(line)) {
+                    line += (line.endsWith(":") ? "" : ",") + "user";
+                }
+            }
+        }
+        return line;
+    }
+
+    private boolean groupContainsUser(String groupLine) {
+        String[] tokens = groupLine.split(":");
+        if (tokens.length > 3) {
+            return tokens[3].contains("user");
+        }
+        return false;
+    }
+
+    private void appendLine(Path path, String line) throws IOException {
+        Files.write(path, line.getBytes(), StandardOpenOption.APPEND);
+    }
+
+    private String getUserLine(Path path)
+            throws IOException {
+
+        // wrap into try-with-ressources block so that the stream gets closed
+        // after reading all lines
+        try (Stream<String> lines = Files.lines(path)) {
+            return lines.filter(line -> line.startsWith("user:"))
+                    .findFirst().get();
+        }
+    }
+
     private void resetDataPartition(String cowPath, String dataMountPoint,
             int majorDebianVersion, boolean upgradeFromAufsToOverlay)
             throws IOException {
@@ -611,10 +690,11 @@ public class Upgrader extends InstallerOrUpgrader {
         }
         cleanup(cleanupRoot, excludes);
 
+        cleanupRoot += "/etc";
+        excludes.clear();
         if (keepPrinterSettings || keepNetworkSettings
-                || keepFirewallSettings) {
-            cleanupRoot += "/etc";
-            excludes.clear();
+                || keepFirewallSettings || keepUserSettings) {
+
             if (keepPrinterSettings) {
                 excludes.add("/cups.*");
             }
@@ -624,8 +704,11 @@ public class Upgrader extends InstallerOrUpgrader {
             if (keepFirewallSettings) {
                 excludes.add("/lernstick-firewall.*");
             }
-            cleanup(cleanupRoot, excludes);
+            if (keepUserSettings) {
+                excludes.add("/gdm3.*");
+            }
         }
+        cleanup(cleanupRoot, excludes);
     }
 
     private String mountDataPartition(String dataMountPoint,
