@@ -1,3 +1,11 @@
+dlcopy (201812091824-1) lernstick-9; urgency=medium
+
+  * [856193] switched to Java 8 (we really want to use the new Streams API now...)
+  * [4372f7] moved "show harddrive" checkboxes to better place,
+             upgrader can now keep user settings (name, password, groups, autologin)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 09 Dec 2018 18:24:29 +0100
+
 dlcopy (201812011841-1) lernstick-9; urgency=medium
 
   * [ca7321] fixed (un)mounting of system partition in Upgrader
