@@ -1,3 +1,9 @@
+dlcopy (201812131246-1) lernstick-9; urgency=medium
+
+  * [3c8588] better defaults for printing and backup in resetter
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 13 Dec 2018 12:46:35 +0100
+
 dlcopy (201812091824-1) lernstick-9; urgency=medium
 
   * [856193] switched to Java 8 (we really want to use the new Streams API now...)
