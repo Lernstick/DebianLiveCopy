@@ -456,7 +456,10 @@ public class DLCopySwingGUI extends JFrame
         printDocumentsCheckBox.setSelected(
                 preferences.getBoolean(PRINT_DOCUMENTS, false));
         printingDirectoryTextField.setText(
-                preferences.get(PRINTING_DIRECTORY, null));
+                preferences.get(PRINTING_DIRECTORY,
+                        STRINGS.getString("Default_Backup_Directory")
+                        + File.separatorChar
+                        + STRINGS.getString("Default_Documents_Directory")));
         printOdtCheckBox.setSelected(
                 preferences.getBoolean(PRINT_ODT, false));
         printOdsCheckBox.setSelected(
@@ -478,7 +481,8 @@ public class DLCopySwingGUI extends JFrame
         resetBackupCheckBox.setSelected(
                 preferences.getBoolean(RESET_BACKUP, false));
         resetBackupSourceTextField.setText(
-                preferences.get(RESET_BACKUP_SOURCE, null));
+                preferences.get(RESET_BACKUP_SOURCE,
+                        STRINGS.getString("Default_Backup_Directory")));
         resetBackupDestinationTextField.setText(
                 preferences.get(RESET_BACKUP_DESTINATION, null));
 
