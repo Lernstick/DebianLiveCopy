@@ -1,3 +1,9 @@
+dlcopy (201812182351-1) lernstick-9; urgency=medium
+
+  * [8358cb] restore user settings after upgrade instead of reset
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Tue, 18 Dec 2018 23:51:40 +0100
+
 dlcopy (201812131246-1) lernstick-9; urgency=medium
 
   * [3c8588] better defaults for printing and backup in resetter
