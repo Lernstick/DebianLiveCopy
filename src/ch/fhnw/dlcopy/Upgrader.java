@@ -54,6 +54,8 @@ public class Upgrader extends InstallerOrUpgrader {
     private static final Logger LOGGER
             = Logger.getLogger(Upgrader.class.getName());
 
+    private static final String GDM_AUTO_LOGIN_KEY = "AutomaticLoginEnable=";
+
     private final RepartitionStrategy repartitionStrategy;
     private final int resizedExchangePartitionSize;
     private final boolean automaticBackup;
@@ -69,6 +71,12 @@ public class Upgrader extends InstallerOrUpgrader {
     private final boolean removeHiddenFiles;
     private final List<String> filesToOverwrite;
     private final long systemSizeEnlarged;
+
+    private String passwdLine;
+    private String shadowLine;
+    private String groupLine;
+    private List<String> groups;
+    private boolean gdmAutoLogin;
 
     /**
      * Creates a new Upgrader
@@ -500,10 +508,6 @@ public class Upgrader extends InstallerOrUpgrader {
         }
 
         // remember user settings before reset
-        String passwdLine = null;
-        String shadowLine = null;
-        String groupLine = null;
-        List<String> groups = null;
         if (keepUserSettings) {
             passwdLine = getUserLine(Paths.get(cowPath, "/etc/passwd"));
             shadowLine = getUserLine(Paths.get(cowPath, "/etc/shadow"));
@@ -515,11 +519,14 @@ public class Upgrader extends InstallerOrUpgrader {
                         .map(line -> line.split(":")[0])
                         .collect(Collectors.toList());
             }
+            gdmAutoLogin = isAutomaticLoginEnabled(
+                    Paths.get(cowPath, "/etc/gdm3/daemon.conf"));
             LOGGER.log(Level.INFO, "passwdLine:\n{0}", passwdLine);
             LOGGER.log(Level.INFO, "shadowLine:\n{0}", shadowLine);
             LOGGER.log(Level.INFO, "groupLine:\n{0}", groupLine);
             LOGGER.log(Level.INFO, "groups:\n{0}",
                     Arrays.toString(groups.toArray()));
+            LOGGER.log(Level.INFO, "gdmAutoLogin:\n{0}", gdmAutoLogin);
         }
 
         // reset data partition
@@ -530,21 +537,6 @@ public class Upgrader extends InstallerOrUpgrader {
             // therefore we have to remount it here
             cowPath = mountDataPartition(dataMountPoint, readOnlyMountPoints,
                     mountAufs, false /*temporaryUpperDir*/);
-        }
-
-        // restore user settings after reset
-        if (keepUserSettings) {
-            appendLine(Paths.get(cowPath, "/etc/passwd"), passwdLine);
-            appendLine(Paths.get(cowPath, "/etc/shadow"), shadowLine);
-            Path groupPath = Paths.get(cowPath, "/etc/group");
-            appendLine(groupPath, groupLine);
-            try (Stream<String> lines = Files.lines(groupPath)) {
-                final List<String> finalGroups = groups;
-                List<String> newGroup = lines
-                        .map(line -> addUsertoGroup(finalGroups, line))
-                        .collect(Collectors.toList());
-                Files.write(groupPath, newGroup);
-            }
         }
 
         if (upgradeSystemPartition) {
@@ -658,6 +650,19 @@ public class Upgrader extends InstallerOrUpgrader {
         }
     }
 
+    private boolean isAutomaticLoginEnabled(Path path) throws IOException {
+
+        // wrap into try-with-ressources block so that the stream gets closed
+        // after reading all lines
+        try (Stream<String> lines = Files.lines(path)) {
+            return lines
+                    .filter(line -> line.startsWith(GDM_AUTO_LOGIN_KEY))
+                    .findFirst()
+                    .get()
+                    .toLowerCase().replaceAll("\\s+", "").endsWith("true");
+        }
+    }
+
     private void resetDataPartition(String cowPath, String dataMountPoint,
             int majorDebianVersion, boolean upgradeFromAufsToOverlay)
             throws IOException {
@@ -693,7 +698,7 @@ public class Upgrader extends InstallerOrUpgrader {
         cleanupRoot += "/etc";
         excludes.clear();
         if (keepPrinterSettings || keepNetworkSettings
-                || keepFirewallSettings || keepUserSettings) {
+                || keepFirewallSettings) {
 
             if (keepPrinterSettings) {
                 excludes.add("/cups.*");
@@ -703,9 +708,6 @@ public class Upgrader extends InstallerOrUpgrader {
             }
             if (keepFirewallSettings) {
                 excludes.add("/lernstick-firewall.*");
-            }
-            if (keepUserSettings) {
-                excludes.add("/gdm3.*");
             }
         }
         cleanup(cleanupRoot, excludes);
@@ -1120,6 +1122,69 @@ public class Upgrader extends InstallerOrUpgrader {
         // make storage device bootable
         dlCopyGUI.showUpgradeWritingBootSector();
         DLCopy.makeBootable(source, devicePath, systemPartition);
+
+        if (keepUserSettings) {
+            // restore user settings after upgrading
+            dataPartition = storageDevice.getDataPartition();
+            MountInfo dataMountInfo = dataPartition.mount();
+            String dataMountPoint = dataMountInfo.getMountPath();
+
+            MountInfo systemMountInfo = systemPartition.mount();
+            List<String> readOnlyMountPoints
+                    = LernstickFileTools.mountAllSquashFS(
+                            systemMountInfo.getMountPath());
+            String cowPath = mountDataPartition(dataMountPoint,
+                    readOnlyMountPoints, false, false /*temporaryUpperDir*/);
+
+            appendLine(Paths.get(cowPath, "/etc/passwd"), passwdLine);
+            appendLine(Paths.get(cowPath, "/etc/shadow"), shadowLine);
+            Path groupPath = Paths.get(cowPath, "/etc/group");
+            appendLine(groupPath, groupLine);
+            try (Stream<String> lines = Files.lines(groupPath)) {
+                final List<String> finalGroups = groups;
+                List<String> newGroup = lines
+                        .map(line -> addUsertoGroup(finalGroups, line))
+                        .collect(Collectors.toList());
+                Files.write(groupPath, newGroup);
+            }
+
+            // TODO: integrate with live-config?
+            /**
+             * This doesn't work yet as exptected because gdm3 is also
+             * configured by live-config (especially in
+             * /lib/live/config/0080-lernstick-gdm3).
+             */
+//            Path gdm3ConfPath = Paths.get(cowPath, "/etc/gdm3/daemon.conf");
+//            try (Stream<String> lines = Files.lines(gdm3ConfPath)) {
+//                final boolean finalGdmAutoLogin = gdmAutoLogin;
+//                List<String> newConfig = lines
+//                        .map(line -> {
+//                            if (line.startsWith(GDM_AUTO_LOGIN_KEY)) {
+//                                return GDM_AUTO_LOGIN_KEY
+//                                        + (finalGdmAutoLogin
+//                                                ? "true" : "false");
+//                            }
+//                            return line;
+//                        })
+//                        .collect(Collectors.toList());
+//                Files.write(gdm3ConfPath, newConfig);
+//            }
+
+            // umount
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
+            }
+            DLCopy.umount(cowPath, dlCopyGUI);
+            for (String readOnlyMountPoint : readOnlyMountPoints) {
+                DLCopy.umount(readOnlyMountPoint, dlCopyGUI);
+            }
+            if ((!dataMountInfo.alreadyMounted())
+                    && (!DLCopy.umount(dataPartition, dlCopyGUI))) {
+                return false;
+            }
+        }
 
         // cleanup
         source.unmountTmpPartitions();
