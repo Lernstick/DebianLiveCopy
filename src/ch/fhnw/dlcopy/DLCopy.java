@@ -1129,7 +1129,7 @@ public class DLCopy {
                         setFlag(partedCommandList, "1", "boot", "on");
                     }
                     if (persistenceMB == 0) {
-                        // third partitions: system
+                        // third partition: system
                         mkpart(partedCommandList, secondBorder, "100%");
                         setFlag(partedCommandList, "3", "boot", "on");
                     } else {
