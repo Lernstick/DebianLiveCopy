@@ -209,8 +209,11 @@ public class Upgrader extends InstallerOrUpgrader {
                         LernstickFileTools.recursiveDelete(
                                 backupDestination, true);
                     }
-                } catch (DBusException | IOException
-                        | InterruptedException ex) {
+                    
+                } catch (Exception ex) {
+                    // We really want to catch *ALL* exceptions here, including
+                    // all possible unchecked runtime exceptions. Otherwise they
+                    // just get lost as we dont catch them in the done() method.
                     LOGGER.log(Level.WARNING, "", ex);
                     errorMessage = ex.getMessage();
                 }
@@ -639,8 +642,7 @@ public class Upgrader extends InstallerOrUpgrader {
         Files.write(path, line.getBytes(), StandardOpenOption.APPEND);
     }
 
-    private String getUserLine(Path path)
-            throws IOException {
+    private String getUserLine(Path path) throws IOException {
 
         // wrap into try-with-ressources block so that the stream gets closed
         // after reading all lines
@@ -755,7 +757,7 @@ public class Upgrader extends InstallerOrUpgrader {
         // have to be recreated to be "copied up" to the data partition.
         final FileTime fileTime = FileTime.fromMillis(
                 System.currentTimeMillis());
-        FileVisitor copyUpFileVisitor = new SimpleFileVisitor<Path>() {
+        FileVisitor<Path> copyUpFileVisitor = new SimpleFileVisitor<Path>() {
             @Override
             public FileVisitResult visitFile(Path file,
                     BasicFileAttributes attributes) throws IOException {
@@ -808,7 +810,7 @@ public class Upgrader extends InstallerOrUpgrader {
     }
 
     private void copyUp(String cowPath, String directory,
-            FileVisitor fileVisitor) throws IOException {
+            FileVisitor<Path> fileVisitor) throws IOException {
 
         Path path = Paths.get(cowPath, directory);
         if (Files.exists(path)) {
