@@ -1,3 +1,12 @@
+dlcopy (201902032218-1) lernstick-9; urgency=medium
+
+  * [39fe0c] fixed typo in comment
+  * [c67491] improved formatting, generics and exception handling
+  * [373139] improved error handling in Upgrader
+  * [44b6d9] show start, finish and summary in results table
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 03 Feb 2019 22:18:02 +0100
+
 dlcopy (201812182351-1) lernstick-9; urgency=medium
 
   * [8358cb] restore user settings after upgrade instead of reset
