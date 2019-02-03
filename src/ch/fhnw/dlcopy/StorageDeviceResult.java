@@ -1,6 +1,8 @@
 package ch.fhnw.dlcopy;
 
 import ch.fhnw.util.StorageDevice;
+import java.time.Duration;
+import java.time.LocalTime;
 
 /**
  * the result of an operation on a storage device
@@ -10,22 +12,27 @@ import ch.fhnw.util.StorageDevice;
 public class StorageDeviceResult {
 
     private final StorageDevice storageDevice;
-    private final long duration;
-    private final String errorMessage;
+    private final LocalTime startTime;
+    private LocalTime finishTime;
+    private Duration duration;
+    private String errorMessage;
 
     /**
      * creates a new StorageDeviceResult
      *
      * @param storageDevice the storage device
-     * @param duration the duration of the operation
-     * @param errorMessage the error message of the operation or <tt>null</tt>
-     * if there was no error
      */
-    public StorageDeviceResult(StorageDevice storageDevice,
-            long duration, String errorMessage) {
+    public StorageDeviceResult(StorageDevice storageDevice) {
         this.storageDevice = storageDevice;
-        this.duration = duration;
-        this.errorMessage = errorMessage;
+        startTime = LocalTime.now();
+    }
+
+    /**
+     * sets the finishTime to the current time and calculates the duration
+     */
+    public void finish() {
+        finishTime = LocalTime.now();
+        duration = Duration.between(startTime, finishTime);
     }
 
     /**
@@ -38,13 +45,31 @@ public class StorageDeviceResult {
     }
 
     /**
-     * returns the duration (in ms) or "-1" if the operation is still in
-     * progress
+     * returns the start time of the operation
      *
-     * @return the duration (in ms) or "-1" if the operation is still in
-     * progress
+     * @return the start time of the operation
      */
-    public long getDuration() {
+    public LocalTime getStartTime() {
+        return startTime;
+    }
+
+    /**
+     * returns the finish time of the operation
+     *
+     * @return the finish time of the operation
+     */
+    public LocalTime getFinishTime() {
+        return finishTime;
+    }
+
+    /**
+     * returns the duration (in ms) or <tt>null</tt> if the operation is still
+     * in progress
+     *
+     * @return the duration (in ms) or <tt>null</tt> if the operation is still
+     * in progress
+     */
+    public Duration getDuration() {
         return duration;
     }
 
@@ -57,5 +82,14 @@ public class StorageDeviceResult {
      */
     public String getErrorMessage() {
         return errorMessage;
+    }
+
+    /**
+     * sets the error message of an operation
+     *
+     * @param errorMessage the error message of the operation
+     */
+    public void setErrorMessage(String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }

@@ -22,6 +22,11 @@ public class ResultsTableModel extends PreferredSizesTableModel {
      * the column for the storage device size
      */
     public static final int SIZE_COLUMN = 5;
+
+    /**
+     * the column for the duration of the operation
+     */
+    public static final int DURATION_COLUMN = 8;
     private static final ResourceBundle STRINGS
             = ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings");
     private List<StorageDeviceResult> resultList;
@@ -54,8 +59,12 @@ public class ResultsTableModel extends PreferredSizesTableModel {
             case SIZE_COLUMN:
                 return STRINGS.getString("Size");
             case 6:
-                return STRINGS.getString("Duration");
+                return STRINGS.getString("Start");
             case 7:
+                return STRINGS.getString("Finish");
+            case DURATION_COLUMN:
+                return STRINGS.getString("Duration");
+            case 9:
                 return STRINGS.getString("Status");
         }
         return null;
@@ -66,77 +75,126 @@ public class ResultsTableModel extends PreferredSizesTableModel {
         if (resultList == null) {
             return 0;
         }
-        return resultList.size();
+        return resultList.size() + 1;
     }
 
     @Override
     public int getColumnCount() {
-        return 8;
+        return 10;
     }
 
     @Override
     public Object getValueAt(int rowIndex, int columnIndex) {
 
-        StorageDeviceResult result = resultList.get(rowIndex);
+        if (resultList.size() == rowIndex) {
+            // summary row
+            switch (columnIndex) {
+                case 0:
+                    return STRINGS.getString("Summary");
 
-        switch (columnIndex) {
-            case 0:
-                // result number
-                return rowIndex + 1;
+                case 6:
+                    // start
+                    return (resultList.isEmpty())
+                            ? ""
+                            : getValueAt(0, columnIndex);
 
-            case 1:
-                // device
-                StorageDevice device = result.getStorageDevice();
-                return "/dev/" + device.getDevice();
+                case 7:
+                    // finish
+                    return (resultList.isEmpty())
+                            ? ""
+                            : getValueAt(rowIndex - 1, columnIndex);
 
-            case 2:
-                // vendor
-                device = result.getStorageDevice();
-                return device.getVendor();
-
-            case 3:
-                // model
-                device = result.getStorageDevice();
-                return device.getModel();
-
-            case 4:
-                // serial number
-                device = result.getStorageDevice();
-                return device.getSerial();
-
-            case SIZE_COLUMN:
-                // size
-                device = result.getStorageDevice();
-                return device.getSize();
-
-            case 6:
-                // duration
-                long durationMillis = result.getDuration();
-                if (durationMillis == -1) {
-                    // in progress
-                    return "";
-                }
-                Duration duration = Duration.ofMillis(durationMillis);
-                return LocalTime.MIDNIGHT.plus(duration).
-                        format(dateTimeFormatter);
-
-            case 7:
-                // status
-                String errorMessage = result.getErrorMessage();
-                if (errorMessage == null) {
-                    if (result.getDuration() == -1) {
-                        return "<html><font color=\"green\">"
-                                + STRINGS.getString("In_Progress")
-                                + "</font></html>";
-                    } else {
-                        return "<html><font color=\"green\">"
-                                + STRINGS.getString("OK")
-                                + "</font></html>";
+                case DURATION_COLUMN:
+                    if (resultList.isEmpty()) {
+                        return "";
                     }
-                } else {
-                    return "<html><font color=\"red\">"
-                            + errorMessage + "</font></html>";
-                }
+                    StorageDeviceResult lastResult
+                            = resultList.get(resultList.size() - 1);
+                    LocalTime finishTime = lastResult.getFinishTime();
+                    if (finishTime == null) {
+                        // calculate temporary duration
+                        finishTime = LocalTime.now();
+                    }
+                    Duration duration = Duration.between(
+                            resultList.get(0).getStartTime(), finishTime);
+                    return LocalTime.MIDNIGHT.plus(duration).format(
+                            dateTimeFormatter);
+            }
+
+        } else {
+            // standard rows
+            StorageDeviceResult result = resultList.get(rowIndex);
+
+            switch (columnIndex) {
+                case 0:
+                    // result number
+                    return rowIndex + 1;
+
+                case 1:
+                    // device
+                    StorageDevice device = result.getStorageDevice();
+                    return "/dev/" + device.getDevice();
+
+                case 2:
+                    // vendor
+                    device = result.getStorageDevice();
+                    return device.getVendor();
+
+                case 3:
+                    // model
+                    device = result.getStorageDevice();
+                    return device.getModel();
+
+                case 4:
+                    // serial number
+                    device = result.getStorageDevice();
+                    return device.getSerial();
+
+                case SIZE_COLUMN:
+                    // size
+                    device = result.getStorageDevice();
+                    return device.getSize();
+
+                case 6:
+                    // start
+                    return result.getStartTime().format(dateTimeFormatter);
+
+                case 7:
+                    // finish
+                    LocalTime finishTime = result.getFinishTime();
+                    return finishTime == null
+                            ? ""
+                            : finishTime.format(dateTimeFormatter);
+
+                case DURATION_COLUMN:
+                    // duration
+                    Duration duration = result.getDuration();
+                    if (duration == null) {
+                        // calculate temporary duration
+                        duration = Duration.between(
+                                result.getStartTime(), LocalTime.now());
+                    }
+                    return LocalTime.MIDNIGHT.plus(duration).format(
+                            dateTimeFormatter);
+
+                case 9:
+                    // status
+                    String errorMessage = result.getErrorMessage();
+                    if (errorMessage == null) {
+                        if (result.getDuration() == null) {
+                            return "<html><font color=\"green\">"
+                                    + STRINGS.getString("In_Progress")
+                                    + "</font></html>";
+                        } else {
+                            return "<html><font color=\"green\">"
+                                    + STRINGS.getString("OK")
+                                    + "</font></html>";
+                        }
+                    } else {
+                        return "<html><font color=\"red\">"
+                                + errorMessage + "</font></html>";
+                    }
+            }
         }
 
         return null;

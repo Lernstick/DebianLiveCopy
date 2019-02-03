@@ -108,6 +108,7 @@ import javax.swing.JTextField;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.ToolTipManager;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
@@ -239,6 +240,8 @@ public class DLCopySwingGUI extends JFrame
     private final Subdirectory timestampSubdirectory;
     private final List<Subdirectory> orderedSubdirectoriesEntries;
     private CpActionListener cpActionListener;
+    private UpdateChangingDurationsTableActionListener updateTableActionListener;
+    private Timer tableUpdateTimer;
 
     private final static Pattern ADDED_PATTERN = Pattern.compile(
             ".*: Added (/org/freedesktop/UDisks2/block_devices/.*)");
@@ -701,7 +704,7 @@ public class DLCopySwingGUI extends JFrame
         // The preferred width of the labels with HTML text is much too wide.
         // Therefore we reset the width to a sane size.
         Dimension size = getSize();
-        size.width = 1000;
+        size.width = 1050;
         setSize(size);
 
         // center on screen
@@ -927,8 +930,7 @@ public class DLCopySwingGUI extends JFrame
             Installer installer, String copyScript, String sourcePath) {
         cpActionListener = new CpActionListener(
                 cpFilenameLabel, cpTimeLabel, sourcePath);
-        javax.swing.Timer cpTimer
-                = new javax.swing.Timer(1000, cpActionListener);
+        Timer cpTimer = new Timer(1000, cpActionListener);
         cpTimer.setInitialDelay(0);
         cpTimer.start();
         SwingUtilities.invokeLater(new Runnable() {
@@ -998,6 +1000,7 @@ public class DLCopySwingGUI extends JFrame
         if (instantInstallation) {
             instantInstallation = false;
         }
+        tableUpdateTimer.stop();
     }
 
     @Override
@@ -1187,6 +1190,7 @@ public class DLCopySwingGUI extends JFrame
             playNotifySound();
             state = State.UPGRADE_SELECTION;
         }
+        tableUpdateTimer.stop();
     }
 
     @Override
@@ -5888,18 +5892,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         currentDevice = storageDevice;
         deviceStartTime = System.currentTimeMillis();
         batchCounter++;
-        resultsList.add(new StorageDeviceResult(storageDevice, -1, null));
+        resultsList.add(new StorageDeviceResult(storageDevice));
     }
 
     private void deviceFinished(String errorMessage) {
-        long duration = System.currentTimeMillis() - deviceStartTime;
-
-        // remove "in progress" entry
-        resultsList.remove(resultsList.size() - 1);
-
-        // add current result
-        resultsList.add(new StorageDeviceResult(
-                currentDevice, duration, errorMessage));
+        // update "in progress" entry
+        StorageDeviceResult result = resultsList.get(resultsList.size() - 1);
+        result.finish();
+        result.setErrorMessage(errorMessage);
 
         // update final report
         resultsTableModel.setList(resultsList);
@@ -6077,6 +6077,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 autoNumberPatternTextField.getText(), autoNumber, autoIncrement,
                 autoMinDigits, copyData, dataPartitionMode, installLock)
                 .execute();
+        
+        updateTableActionListener = 
+                new UpdateChangingDurationsTableActionListener(
+                        installationResultsTableModel);
+        tableUpdateTimer = new Timer(1000, updateTableActionListener);
+        tableUpdateTimer.setInitialDelay(0);
+        tableUpdateTimer.start();
     }
 
     private boolean upgradeSanityChecks() {
@@ -6211,6 +6218,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 DLCopy.getEnlargedSystemSize(
                         runningSystemSource.getSystemSize()), upgradeLock)
                 .execute();
+
+        updateTableActionListener = 
+                new UpdateChangingDurationsTableActionListener(
+                        upgradeResultsTableModel);
+        tableUpdateTimer = new Timer(1000, updateTableActionListener);
+        tableUpdateTimer.setInitialDelay(0);
+        tableUpdateTimer.start();
     }
 
     private void upgradeSelectedStorageDevices() {

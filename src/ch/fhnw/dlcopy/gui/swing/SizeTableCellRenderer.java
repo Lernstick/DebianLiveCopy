@@ -15,8 +15,11 @@ public class SizeTableCellRenderer extends DefaultTableCellRenderer {
     @Override
     public Component getTableCellRendererComponent(JTable table, Object value,
             boolean isSelected, boolean hasFocus, int row, int column) {
-        long size = (long) value;
-        String sizeString = LernstickFileTools.getDataVolumeString(size, 1);
+        String sizeString = "";
+        if (value != null) {
+            long size = (long) value;
+            sizeString = LernstickFileTools.getDataVolumeString(size, 1);
+        }
         return super.getTableCellRendererComponent(table, sizeString,
                 isSelected, hasFocus, row, column);
     }
