@@ -76,7 +76,7 @@ public class Upgrader extends InstallerOrUpgrader {
     private String shadowLine;
     private String groupLine;
     private List<String> groups;
-    private boolean gdmAutoLogin;
+    private Boolean gdmAutoLogin;
 
     /**
      * Creates a new Upgrader
@@ -209,7 +209,7 @@ public class Upgrader extends InstallerOrUpgrader {
                         LernstickFileTools.recursiveDelete(
                                 backupDestination, true);
                     }
-                    
+
                 } catch (Exception ex) {
                     // We really want to catch *ALL* exceptions here, including
                     // all possible unchecked runtime exceptions. Otherwise they
@@ -516,20 +516,26 @@ public class Upgrader extends InstallerOrUpgrader {
             shadowLine = getUserLine(Paths.get(cowPath, "/etc/shadow"));
             Path groupPath = Paths.get(cowPath, "/etc/group");
             groupLine = getUserLine(groupPath);
-            try (Stream<String> lines = Files.lines(groupPath)) {
-                groups = lines
-                        .filter(line -> groupContainsUser(line))
-                        .map(line -> line.split(":")[0])
-                        .collect(Collectors.toList());
+            if (Files.exists(groupPath)) {
+                try (Stream<String> lines = Files.lines(groupPath)) {
+                    groups = lines
+                            .filter(line -> groupContainsUser(line))
+                            .map(line -> line.split(":")[0])
+                            .collect(Collectors.toList());
+                }
+            } else {
+                LOGGER.log(Level.WARNING, "path {0} doesn't exist", groupPath);
             }
             gdmAutoLogin = isAutomaticLoginEnabled(
                     Paths.get(cowPath, "/etc/gdm3/daemon.conf"));
-            LOGGER.log(Level.INFO, "passwdLine:\n{0}", passwdLine);
-            LOGGER.log(Level.INFO, "shadowLine:\n{0}", shadowLine);
-            LOGGER.log(Level.INFO, "groupLine:\n{0}", groupLine);
-            LOGGER.log(Level.INFO, "groups:\n{0}",
-                    Arrays.toString(groups.toArray()));
-            LOGGER.log(Level.INFO, "gdmAutoLogin:\n{0}", gdmAutoLogin);
+
+            LOGGER.log(Level.INFO, "\npasswdLine:\n{0}"
+                    + "\nshadowLine:\n{1}"
+                    + "\ngroupLine:\n{2}"
+                    + "\ngroups:\n{3}"
+                    + "\ngdmAutoLogin:\n{4}", new Object[]{
+                        passwdLine, shadowLine, groupLine,
+                        Arrays.toString(groups.toArray()), gdmAutoLogin});
         }
 
         // reset data partition
@@ -639,20 +645,32 @@ public class Upgrader extends InstallerOrUpgrader {
     }
 
     private void appendLine(Path path, String line) throws IOException {
-        Files.write(path, line.getBytes(), StandardOpenOption.APPEND);
+        if (line != null) {
+            Files.write(path, line.getBytes(), StandardOpenOption.APPEND);
+        }
     }
 
     private String getUserLine(Path path) throws IOException {
+
+        if (!Files.exists(path)) {
+            LOGGER.log(Level.WARNING, "path {0} doesn't exist", path);
+            return null;
+        }
 
         // wrap into try-with-ressources block so that the stream gets closed
         // after reading all lines
         try (Stream<String> lines = Files.lines(path)) {
             return lines.filter(line -> line.startsWith("user:"))
-                    .findFirst().get();
+                    .findFirst().orElse(null);
         }
     }
 
-    private boolean isAutomaticLoginEnabled(Path path) throws IOException {
+    private Boolean isAutomaticLoginEnabled(Path path) throws IOException {
+
+        if (!Files.exists(path)) {
+            LOGGER.log(Level.WARNING, "path {0} doesn't exist", path);
+            return null;
+        }
 
         // wrap into try-with-ressources block so that the stream gets closed
         // after reading all lines
@@ -660,8 +678,8 @@ public class Upgrader extends InstallerOrUpgrader {
             return lines
                     .filter(line -> line.startsWith(GDM_AUTO_LOGIN_KEY))
                     .findFirst()
-                    .get()
-                    .toLowerCase().replaceAll("\\s+", "").endsWith("true");
+                    .map(line -> line.toLowerCase().replaceAll("\\s+", "").endsWith("true"))
+                    .orElse(null);
         }
     }
 
@@ -1125,7 +1143,10 @@ public class Upgrader extends InstallerOrUpgrader {
         dlCopyGUI.showUpgradeWritingBootSector();
         DLCopy.makeBootable(source, devicePath, systemPartition);
 
-        if (keepUserSettings) {
+        if (keepUserSettings && (passwdLine != null || shadowLine != null
+                || groupLine != null || groups != null
+                || gdmAutoLogin != null)) {
+
             // restore user settings after upgrading
             dataPartition = storageDevice.getDataPartition();
             MountInfo dataMountInfo = dataPartition.mount();
@@ -1142,12 +1163,14 @@ public class Upgrader extends InstallerOrUpgrader {
             appendLine(Paths.get(cowPath, "/etc/shadow"), shadowLine);
             Path groupPath = Paths.get(cowPath, "/etc/group");
             appendLine(groupPath, groupLine);
-            try (Stream<String> lines = Files.lines(groupPath)) {
-                final List<String> finalGroups = groups;
-                List<String> newGroup = lines
-                        .map(line -> addUsertoGroup(finalGroups, line))
-                        .collect(Collectors.toList());
-                Files.write(groupPath, newGroup);
+            if (groups != null) {
+                try (Stream<String> lines = Files.lines(groupPath)) {
+                    final List<String> finalGroups = groups;
+                    List<String> newGroup = lines
+                            .map(line -> addUsertoGroup(finalGroups, line))
+                            .collect(Collectors.toList());
+                    Files.write(groupPath, newGroup);
+                }
             }
 
             // TODO: integrate with live-config?
