@@ -1,3 +1,12 @@
+dlcopy (201902070039-1) lernstick-9; urgency=medium
+
+  * [f62fb7] enlarged window width to prevent scroll bars in reports table
+  * [de067e] improved printing (search several directories, optional recursive
+             search, print presentations, different auto printing modes,
+             separated tabs for printing and backup)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 07 Feb 2019 00:39:26 +0100
+
 dlcopy (201902032218-1) lernstick-9; urgency=medium
 
   * [39fe0c] fixed typo in comment
