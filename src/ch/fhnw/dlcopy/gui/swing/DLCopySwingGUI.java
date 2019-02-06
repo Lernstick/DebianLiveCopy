@@ -704,7 +704,7 @@ public class DLCopySwingGUI extends JFrame
         // The preferred width of the labels with HTML text is much too wide.
         // Therefore we reset the width to a sane size.
         Dimension size = getSize();
-        size.width = 1050;
+        size.width = 1060;
         setSize(size);
 
         // center on screen
