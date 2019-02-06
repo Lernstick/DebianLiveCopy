@@ -202,14 +202,19 @@ public class DLCopySwingGUI extends JFrame
     private final static String UPGRADE_OVERWRITE_LIST = "upgradeOverwriteList";
     private final static String RESET_AUTOMATIC = "resetAutomatic";
     private final static String PRINT_DOCUMENTS = "printDocuments";
-    private final static String PRINTING_DIRECTORY = "printingDirectory";
+    private final static String PRINTING_DIRECTORIES = "printingDirectories";
+    private final static String SCAN_DIRECTORIES_RECURSIVELY = "scanDirectoriesRecursively";
     private final static String PRINT_ODT = "printODT";
     private final static String PRINT_ODS = "printODS";
+    private final static String PRINT_ODP = "printODP";
     private final static String PRINT_PDF = "printPDF";
     private final static String PRINT_DOC = "printDOC";
     private final static String PRINT_DOCX = "printDOCX";
     private final static String PRINT_XLS = "printXLS";
     private final static String PRINT_XLSX = "printXLSX";
+    private final static String PRINT_PPT = "printPPT";
+    private final static String PRINT_PPTX = "printPPTX";
+    private final static String AUTO_PRINT_MODE = "autoPrintMode";
     private final static String PRINT_COPIES = "printCopies";
     private final static String PRINT_DUPLEX = "printDuplex";
     private final static String RESET_BACKUP = "resetBackup";
@@ -458,15 +463,19 @@ public class DLCopySwingGUI extends JFrame
 
         printDocumentsCheckBox.setSelected(
                 preferences.getBoolean(PRINT_DOCUMENTS, false));
-        printingDirectoryTextField.setText(
-                preferences.get(PRINTING_DIRECTORY,
-                        STRINGS.getString("Default_Backup_Directory")
-                        + File.separatorChar
-                        + STRINGS.getString("Default_Documents_Directory")));
+        printingDirectoriesTextArea.setText(preferences.get(
+                PRINTING_DIRECTORIES,
+                STRINGS.getString("Default_Backup_Directory")
+                + File.separatorChar
+                + STRINGS.getString("Default_Documents_Directory")));
+        scanDirectoriesRecursivelyCheckBox.setSelected(
+                preferences.getBoolean(SCAN_DIRECTORIES_RECURSIVELY, true));
         printOdtCheckBox.setSelected(
                 preferences.getBoolean(PRINT_ODT, false));
         printOdsCheckBox.setSelected(
                 preferences.getBoolean(PRINT_ODS, false));
+        printOdpCheckBox.setSelected(
+                preferences.getBoolean(PRINT_ODP, false));
         printPdfCheckBox.setSelected(
                 preferences.getBoolean(PRINT_PDF, false));
         printDocCheckBox.setSelected(
@@ -477,6 +486,23 @@ public class DLCopySwingGUI extends JFrame
                 preferences.getBoolean(PRINT_XLS, false));
         printXlsxCheckBox.setSelected(
                 preferences.getBoolean(PRINT_XLSX, false));
+        printPptCheckBox.setSelected(
+                preferences.getBoolean(PRINT_PPT, false));
+        printPptxCheckBox.setSelected(
+                preferences.getBoolean(PRINT_PPTX, false));
+        Resetter.AutoPrintMode autoPrintMode = Resetter.AutoPrintMode.valueOf(
+                preferences.get(AUTO_PRINT_MODE,
+                        Resetter.AutoPrintMode.NONE.toString()));
+        switch (autoPrintMode) {
+            case ALL:
+                autoPrintAllDocumentsRadioButton.setSelected(true);
+                break;
+            case SINGLE:
+                autoPrintSingleDocumentsRadioButton.setSelected(true);
+                break;
+            case NONE:
+                autoPrintNoneRadioButton.setSelected(true);
+        }
         printCopiesSpinner.setValue(preferences.getInt(PRINT_COPIES, 1));
         printDuplexCheckBox.setSelected(
                 preferences.getBoolean(PRINT_DUPLEX, false));
@@ -1275,7 +1301,7 @@ public class DLCopySwingGUI extends JFrame
 
     @Override
     public List<Path> selectDocumentsToPrint(
-            final String type, final List<Path> documents) {
+            final String type, final String mountPath, final List<Path> documents) {
 
         final List<Path> selectedDocuments = new ArrayList<>();
         try {
@@ -1283,7 +1309,7 @@ public class DLCopySwingGUI extends JFrame
                 @Override
                 public void run() {
                     PrintSelectionDialog dialog = new PrintSelectionDialog(
-                            DLCopySwingGUI.this, type, documents);
+                            DLCopySwingGUI.this, type, mountPath, documents);
                     dialog.setVisible(true);
                     if (dialog.okPressed()) {
                         selectedDocuments.addAll(dialog.getSelectedDocuments());
@@ -1720,6 +1746,7 @@ public class DLCopySwingGUI extends JFrame
         installSourceButtonGroup = new javax.swing.ButtonGroup();
         upgradeSelectionModeButtonGroup = new javax.swing.ButtonGroup();
         resetSelectionModeButtonGroup = new javax.swing.ButtonGroup();
+        automaticPrintingButtonGroup = new javax.swing.ButtonGroup();
         choicePanel = new javax.swing.JPanel();
         choiceLabel = new javax.swing.JLabel();
         buttonGridPanel = new javax.swing.JPanel();
@@ -1915,25 +1942,32 @@ public class DLCopySwingGUI extends JFrame
         resetExchangeDefinitionLabel = new javax.swing.JLabel();
         resetDataDefinitionLabel = new javax.swing.JLabel();
         resetOsDefinitionLabel = new javax.swing.JLabel();
-        resetBackupDataPanel = new javax.swing.JPanel();
         resetPrintingDetailsPanel = new javax.swing.JPanel();
         printDocumentsCheckBox = new javax.swing.JCheckBox();
         printingDirectoryPanel = new javax.swing.JPanel();
-        printingDirectoryLabel = new javax.swing.JLabel();
-        printingDirectoryTextField = new javax.swing.JTextField();
+        printingDirectoriesScrollPane = new javax.swing.JScrollPane();
+        printingDirectoriesTextArea = new javax.swing.JTextArea();
+        scanDirectoriesRecursivelyCheckBox = new javax.swing.JCheckBox();
         printFileFormatsPanel = new javax.swing.JPanel();
         printOdtCheckBox = new javax.swing.JCheckBox();
         printOdsCheckBox = new javax.swing.JCheckBox();
+        printOdpCheckBox = new javax.swing.JCheckBox();
         printPdfCheckBox = new javax.swing.JCheckBox();
         printDocCheckBox = new javax.swing.JCheckBox();
         printDocxCheckBox = new javax.swing.JCheckBox();
         printXlsCheckBox = new javax.swing.JCheckBox();
         printXlsxCheckBox = new javax.swing.JCheckBox();
+        printPptCheckBox = new javax.swing.JCheckBox();
+        printPptxCheckBox = new javax.swing.JCheckBox();
+        rightPrintingPanel = new javax.swing.JPanel();
+        automaticPrintingPanel = new javax.swing.JPanel();
+        autoPrintAllDocumentsRadioButton = new javax.swing.JRadioButton();
+        autoPrintSingleDocumentsRadioButton = new javax.swing.JRadioButton();
+        autoPrintNoneRadioButton = new javax.swing.JRadioButton();
         printCopiesPanel = new javax.swing.JPanel();
         printCopiesLabel = new javax.swing.JLabel();
         printCopiesSpinner = new javax.swing.JSpinner();
         printDuplexCheckBox = new javax.swing.JCheckBox();
-        printingSpacer = new javax.swing.JPanel();
         resetBackupDetailsPanel = new javax.swing.JPanel();
         resetBackupCheckBox = new javax.swing.JCheckBox();
         resetBackupSourcePanel = new javax.swing.JPanel();
@@ -3574,9 +3608,6 @@ public class DLCopySwingGUI extends JFrame
 
         resetSelectionTabbedPane.addTab(bundle.getString("Selection"), resetSelectionPanel); // NOI18N
 
-        resetBackupDataPanel.setLayout(new java.awt.GridBagLayout());
-
-        resetPrintingDetailsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED), bundle.getString("DLCopySwingGUI.resetPrintingDetailsPanel.border.title"))); // NOI18N
         resetPrintingDetailsPanel.setLayout(new java.awt.GridBagLayout());
 
         printDocumentsCheckBox.setText(bundle.getString("DLCopySwingGUI.printDocumentsCheckBox.text")); // NOI18N
@@ -3588,28 +3619,34 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 10, 5);
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 0, 5);
         resetPrintingDetailsPanel.add(printDocumentsCheckBox, gridBagConstraints);
 
+        printingDirectoryPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.printingDirectoryPanel.border.title"))); // NOI18N
         printingDirectoryPanel.setLayout(new java.awt.GridBagLayout());
 
-        printingDirectoryLabel.setText(bundle.getString("DLCopySwingGUI.printingDirectoryLabel.text")); // NOI18N
-        printingDirectoryLabel.setEnabled(false);
-        printingDirectoryPanel.add(printingDirectoryLabel, new java.awt.GridBagConstraints());
-
-        printingDirectoryTextField.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-        printingDirectoryPanel.add(printingDirectoryTextField, gridBagConstraints);
+        printingDirectoriesScrollPane.setViewportView(printingDirectoriesTextArea);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 10);
+        gridBagConstraints.weighty = 1.0;
+        printingDirectoryPanel.add(printingDirectoriesScrollPane, gridBagConstraints);
+
+        scanDirectoriesRecursivelyCheckBox.setText(bundle.getString("DLCopySwingGUI.scanDirectoriesRecursivelyCheckBox.text")); // NOI18N
+        scanDirectoriesRecursivelyCheckBox.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        printingDirectoryPanel.add(scanDirectoriesRecursivelyCheckBox, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 10);
         resetPrintingDetailsPanel.add(printingDirectoryPanel, gridBagConstraints);
 
         printFileFormatsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.printFileFormatsPanel.border.title"))); // NOI18N
@@ -3626,7 +3663,15 @@ public class DLCopySwingGUI extends JFrame
         printOdsCheckBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         printFileFormatsPanel.add(printOdsCheckBox, gridBagConstraints);
+
+        printOdpCheckBox.setText(bundle.getString("DLCopySwingGUI.printOdpCheckBox.text")); // NOI18N
+        printOdpCheckBox.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        printFileFormatsPanel.add(printOdpCheckBox, gridBagConstraints);
 
         printPdfCheckBox.setText(bundle.getString("DLCopySwingGUI.printPdfCheckBox.text")); // NOI18N
         printPdfCheckBox.setEnabled(false);
@@ -3659,14 +3704,66 @@ public class DLCopySwingGUI extends JFrame
         printXlsxCheckBox.setText(bundle.getString("DLCopySwingGUI.printXlsxCheckBox.text")); // NOI18N
         printXlsxCheckBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         printFileFormatsPanel.add(printXlsxCheckBox, gridBagConstraints);
 
+        printPptCheckBox.setText(bundle.getString("DLCopySwingGUI.printPptCheckBox.text")); // NOI18N
+        printPptCheckBox.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        printFileFormatsPanel.add(printPptCheckBox, gridBagConstraints);
+
+        printPptxCheckBox.setText(bundle.getString("DLCopySwingGUI.printPptxCheckBox.text")); // NOI18N
+        printPptxCheckBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(5, 25, 0, 0);
+        printFileFormatsPanel.add(printPptxCheckBox, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 5, 5);
         resetPrintingDetailsPanel.add(printFileFormatsPanel, gridBagConstraints);
+
+        rightPrintingPanel.setLayout(new java.awt.GridBagLayout());
+
+        automaticPrintingPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.automaticPrintingPanel.border.title"))); // NOI18N
+        automaticPrintingPanel.setLayout(new java.awt.GridBagLayout());
+
+        automaticPrintingButtonGroup.add(autoPrintAllDocumentsRadioButton);
+        autoPrintAllDocumentsRadioButton.setText(bundle.getString("DLCopySwingGUI.autoPrintAllDocumentsRadioButton.text")); // NOI18N
+        autoPrintAllDocumentsRadioButton.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        automaticPrintingPanel.add(autoPrintAllDocumentsRadioButton, gridBagConstraints);
+
+        automaticPrintingButtonGroup.add(autoPrintSingleDocumentsRadioButton);
+        autoPrintSingleDocumentsRadioButton.setText(bundle.getString("DLCopySwingGUI.autoPrintSingleDocumentsRadioButton.text")); // NOI18N
+        autoPrintSingleDocumentsRadioButton.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        automaticPrintingPanel.add(autoPrintSingleDocumentsRadioButton, gridBagConstraints);
+
+        automaticPrintingButtonGroup.add(autoPrintNoneRadioButton);
+        autoPrintNoneRadioButton.setSelected(true);
+        autoPrintNoneRadioButton.setText(bundle.getString("DLCopySwingGUI.autoPrintNoneRadioButton.text")); // NOI18N
+        autoPrintNoneRadioButton.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.weightx = 1.0;
+        automaticPrintingPanel.add(autoPrintNoneRadioButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        rightPrintingPanel.add(automaticPrintingPanel, gridBagConstraints);
 
         printCopiesPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -3685,8 +3782,8 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 30, 0, 5);
-        resetPrintingDetailsPanel.add(printCopiesPanel, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(10, 7, 0, 5);
+        rightPrintingPanel.add(printCopiesPanel, gridBagConstraints);
 
         printDuplexCheckBox.setSelected(true);
         printDuplexCheckBox.setText(bundle.getString("DLCopySwingGUI.printDuplexCheckBox.text")); // NOI18N
@@ -3694,22 +3791,16 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 5, 0);
-        resetPrintingDetailsPanel.add(printDuplexCheckBox, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        resetPrintingDetailsPanel.add(printingSpacer, gridBagConstraints);
+        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 0);
+        rightPrintingPanel.add(printDuplexCheckBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 5);
-        resetBackupDataPanel.add(resetPrintingDetailsPanel, gridBagConstraints);
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 5, 5);
+        resetPrintingDetailsPanel.add(rightPrintingPanel, gridBagConstraints);
 
-        resetBackupDetailsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), bundle.getString("DLCopySwingGUI.resetBackupDetailsPanel.border.title"))); // NOI18N
+        resetSelectionTabbedPane.addTab(bundle.getString("DLCopySwingGUI.resetPrintingDetailsPanel.TabConstraints.tabTitle"), resetPrintingDetailsPanel); // NOI18N
+
         resetBackupDetailsPanel.setLayout(new java.awt.GridBagLayout());
 
         resetBackupCheckBox.setText(bundle.getString("DLCopySwingGUI.resetBackupCheckBox.text")); // NOI18N
@@ -3739,7 +3830,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 0, 5);
         resetBackupDetailsPanel.add(resetBackupSourcePanel, gridBagConstraints);
 
         resetBackupDestinationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.resetBackupDestinationPanel.border.title"))); // NOI18N
@@ -3767,7 +3858,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 0, 5);
         resetBackupDetailsPanel.add(resetBackupDestinationPanel, gridBagConstraints);
 
         resetBackupSubdirectoryPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.resetBackupSubdirectoryPanel.border.title"))); // NOI18N
@@ -3818,7 +3909,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        gridBagConstraints.insets = new java.awt.Insets(15, 5, 5, 5);
         resetBackupDetailsPanel.add(resetBackupSubdirectoryPanel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -3827,15 +3918,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.weighty = 1.0;
         resetBackupDetailsPanel.add(resetBackupSpacerPanel, gridBagConstraints);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 5);
-        resetBackupDataPanel.add(resetBackupDetailsPanel, gridBagConstraints);
-
-        resetSelectionTabbedPane.addTab(bundle.getString("DLCopySwingGUI.resetBackupDataPanel.TabConstraints.tabTitle"), resetBackupDataPanel); // NOI18N
+        resetSelectionTabbedPane.addTab(bundle.getString("DLCopySwingGUI.resetBackupDetailsPanel.TabConstraints.tabTitle"), resetBackupDetailsPanel); // NOI18N
 
         resetDeletePanel.setLayout(new java.awt.GridBagLayout());
 
@@ -4883,15 +4966,21 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private void printDocumentsCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_printDocumentsCheckBoxItemStateChanged
         boolean enabled = printDocumentsCheckBox.isSelected();
-        printingDirectoryLabel.setEnabled(enabled);
-        printingDirectoryTextField.setEnabled(enabled);
+        printingDirectoriesTextArea.setEnabled(enabled);
+        scanDirectoriesRecursivelyCheckBox.setEnabled(enabled);
         printOdtCheckBox.setEnabled(enabled);
         printOdsCheckBox.setEnabled(enabled);
+        printOdpCheckBox.setEnabled(enabled);
         printPdfCheckBox.setEnabled(enabled);
         printDocCheckBox.setEnabled(enabled);
         printDocxCheckBox.setEnabled(enabled);
         printXlsCheckBox.setEnabled(enabled);
         printXlsxCheckBox.setEnabled(enabled);
+        printPptCheckBox.setEnabled(enabled);
+        printPptxCheckBox.setEnabled(enabled);
+        autoPrintAllDocumentsRadioButton.setEnabled(enabled);
+        autoPrintSingleDocumentsRadioButton.setEnabled(enabled);
+        autoPrintNoneRadioButton.setEnabled(enabled);
         printCopiesLabel.setEnabled(enabled);
         printCopiesSpinner.setEnabled(enabled);
         printDuplexCheckBox.setEnabled(enabled);
@@ -5322,11 +5411,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         new Resetter(this, deviceList, runningSystemSource.getDeviceName(),
                 printDocumentsCheckBox.isSelected(),
-                printingDirectoryTextField.getText(),
+                printingDirectoriesTextArea.getText(),
+                scanDirectoriesRecursivelyCheckBox.isSelected(),
                 printOdtCheckBox.isSelected(), printOdsCheckBox.isSelected(),
-                printPdfCheckBox.isSelected(), printDocCheckBox.isSelected(),
-                printDocxCheckBox.isSelected(), printXlsCheckBox.isSelected(),
-                printXlsxCheckBox.isSelected(),
+                printOdpCheckBox.isSelected(), printPdfCheckBox.isSelected(),
+                printDocCheckBox.isSelected(), printDocxCheckBox.isSelected(),
+                printXlsCheckBox.isSelected(), printXlsxCheckBox.isSelected(),
+                printPptCheckBox.isSelected(), printPptxCheckBox.isSelected(),
+                getAutoPrintMode(),
                 ((Number) printCopiesSpinner.getValue()).intValue(),
                 printDuplexCheckBox.isSelected(),
                 resetBackupCheckBox.isSelected(),
@@ -5623,15 +5715,21 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 resetAutomaticModeRadioButton.isSelected());
         preferences.putBoolean(PRINT_DOCUMENTS,
                 printDocumentsCheckBox.isSelected());
-        preferences.put(PRINTING_DIRECTORY,
-                printingDirectoryTextField.getText());
+        preferences.put(PRINTING_DIRECTORIES,
+                printingDirectoriesTextArea.getText());
+        preferences.putBoolean(SCAN_DIRECTORIES_RECURSIVELY,
+                scanDirectoriesRecursivelyCheckBox.isSelected());
         preferences.putBoolean(PRINT_ODT, printOdtCheckBox.isSelected());
         preferences.putBoolean(PRINT_ODS, printOdsCheckBox.isSelected());
+        preferences.putBoolean(PRINT_ODP, printOdpCheckBox.isSelected());
         preferences.putBoolean(PRINT_PDF, printPdfCheckBox.isSelected());
         preferences.putBoolean(PRINT_DOC, printDocCheckBox.isSelected());
         preferences.putBoolean(PRINT_DOCX, printDocxCheckBox.isSelected());
         preferences.putBoolean(PRINT_XLS, printXlsCheckBox.isSelected());
         preferences.putBoolean(PRINT_XLSX, printXlsxCheckBox.isSelected());
+        preferences.putBoolean(PRINT_PPT, printPptCheckBox.isSelected());
+        preferences.putBoolean(PRINT_PPTX, printPptxCheckBox.isSelected());
+        preferences.put(AUTO_PRINT_MODE, getAutoPrintMode().toString());
         preferences.putInt(PRINT_COPIES,
                 ((Number) printCopiesSpinner.getValue()).intValue());
         preferences.putBoolean(PRINT_DUPLEX, printDuplexCheckBox.isSelected());
@@ -5669,6 +5767,16 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             preferences.flush();
         } catch (BackingStoreException ex) {
             LOGGER.warning("failed flushing preferences");
+        }
+    }
+
+    private Resetter.AutoPrintMode getAutoPrintMode() {
+        if (autoPrintAllDocumentsRadioButton.isSelected()) {
+            return Resetter.AutoPrintMode.ALL;
+        } else if (autoPrintSingleDocumentsRadioButton.isSelected()) {
+            return Resetter.AutoPrintMode.SINGLE;
+        } else {
+            return Resetter.AutoPrintMode.NONE;
         }
     }
 
@@ -6077,9 +6185,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 autoNumberPatternTextField.getText(), autoNumber, autoIncrement,
                 autoMinDigits, copyData, dataPartitionMode, installLock)
                 .execute();
-        
-        updateTableActionListener = 
-                new UpdateChangingDurationsTableActionListener(
+
+        updateTableActionListener
+                = new UpdateChangingDurationsTableActionListener(
                         installationResultsTableModel);
         tableUpdateTimer = new Timer(1000, updateTableActionListener);
         tableUpdateTimer.setInitialDelay(0);
@@ -6219,8 +6327,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                         runningSystemSource.getSystemSize()), upgradeLock)
                 .execute();
 
-        updateTableActionListener = 
-                new UpdateChangingDurationsTableActionListener(
+        updateTableActionListener
+                = new UpdateChangingDurationsTableActionListener(
                         upgradeResultsTableModel);
         tableUpdateTimer = new Timer(1000, updateTableActionListener);
         tableUpdateTimer.setInitialDelay(0);
@@ -6563,12 +6671,17 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JTextField autoNumberPatternTextField;
     private javax.swing.JLabel autoNumberStartLabel;
     private javax.swing.JSpinner autoNumberStartSpinner;
+    private javax.swing.JRadioButton autoPrintAllDocumentsRadioButton;
+    private javax.swing.JRadioButton autoPrintNoneRadioButton;
+    private javax.swing.JRadioButton autoPrintSingleDocumentsRadioButton;
     private javax.swing.JCheckBox autoStartInstallerCheckBox;
     private javax.swing.JButton automaticBackupButton;
     private javax.swing.JCheckBox automaticBackupCheckBox;
     private javax.swing.JLabel automaticBackupLabel;
     private javax.swing.JCheckBox automaticBackupRemoveCheckBox;
     private javax.swing.JTextField automaticBackupTextField;
+    private javax.swing.ButtonGroup automaticPrintingButtonGroup;
+    private javax.swing.JPanel automaticPrintingPanel;
     private javax.swing.JPanel backupDestinationPanel;
     private javax.swing.JPanel basicDataPartitionPanel;
     private javax.swing.JPanel basicExchangePartitionPanel;
@@ -6690,15 +6803,17 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JCheckBox printDocxCheckBox;
     private javax.swing.JCheckBox printDuplexCheckBox;
     private javax.swing.JPanel printFileFormatsPanel;
+    private javax.swing.JCheckBox printOdpCheckBox;
     private javax.swing.JCheckBox printOdsCheckBox;
     private javax.swing.JCheckBox printOdtCheckBox;
     private javax.swing.JCheckBox printPdfCheckBox;
+    private javax.swing.JCheckBox printPptCheckBox;
+    private javax.swing.JCheckBox printPptxCheckBox;
     private javax.swing.JCheckBox printXlsCheckBox;
     private javax.swing.JCheckBox printXlsxCheckBox;
-    private javax.swing.JLabel printingDirectoryLabel;
+    private javax.swing.JScrollPane printingDirectoriesScrollPane;
+    private javax.swing.JTextArea printingDirectoriesTextArea;
     private javax.swing.JPanel printingDirectoryPanel;
-    private javax.swing.JTextField printingDirectoryTextField;
-    private javax.swing.JPanel printingSpacer;
     private javax.swing.JPanel radioButtonPanel;
     private javax.swing.JCheckBox reactivateWelcomeCheckBox;
     private javax.swing.JRadioButton removeExchangeRadioButton;
@@ -6708,7 +6823,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JRadioButton resetAutomaticModeRadioButton;
     private javax.swing.JCheckBox resetBackupCheckBox;
     private javax.swing.JLabel resetBackupCopyLabel;
-    private javax.swing.JPanel resetBackupDataPanel;
     private javax.swing.JButton resetBackupDestinationButton;
     private javax.swing.JPanel resetBackupDestinationPanel;
     private javax.swing.JTextField resetBackupDestinationTextField;
@@ -6770,10 +6884,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JScrollPane resultsScrollPane;
     private javax.swing.JTable resultsTable;
     private javax.swing.JPanel resultsTitledPanel;
+    private javax.swing.JPanel rightPrintingPanel;
     private javax.swing.JPanel rsyncPanel;
     private javax.swing.JProgressBar rsyncPogressBar;
     private javax.swing.JLabel rsyncTimeLabel;
     private javax.swing.JRadioButton runningSystemSourceRadioButton;
+    private javax.swing.JCheckBox scanDirectoriesRecursivelyCheckBox;
     private javax.swing.JLabel selectionLabel;
     private javax.swing.JCheckBox showNotUsedDialogCheckBox;
     private javax.swing.JButton sortAscendingButton;

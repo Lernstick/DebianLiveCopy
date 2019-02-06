@@ -41,11 +41,13 @@ public class PrintSelectionDialog extends javax.swing.JDialog {
      * Creates new form PrintSelectionDialog
      *
      * @param parent the parent frame
-     * @param type the type of documents to select
+     * @param type the type of documents to select, <tt>null</tt> if no special
+     * type was selected and several types are allowed in the list
+     * @param mountPath the path where the exchange partition is mounted
      * @param documents the list of documents
      */
     public PrintSelectionDialog(java.awt.Frame parent, String type,
-            List<Path> documents) {
+            String mountPath, List<Path> documents) {
 
         super(parent, true);
 
@@ -68,14 +70,14 @@ public class PrintSelectionDialog extends javax.swing.JDialog {
         dateLabelConstraints.gridwidth = GridBagConstraints.REMAINDER;
 
         checkBoxes = new ArrayList<>();
-        for (final Path document : documents) {
+        documents.forEach((document) -> {
             JButton previewButton = new JButton(
                     DLCopy.STRINGS.getString("Preview"));
             previewButton.addActionListener(new PreviewAction(document));
             checkBoxPanel.add(previewButton, previewConstraints);
 
             JCheckBox checkBox = new JCheckBox(
-                    document.getFileName().toString());
+                    document.toString().substring(mountPath.length() + 1));
             checkBoxPanel.add(checkBox, checkBoxConstraints);
             checkBoxes.add(checkBox);
 
@@ -94,11 +96,16 @@ public class PrintSelectionDialog extends javax.swing.JDialog {
             } catch (IOException ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
             }
-        }
+        });
 
-        infoLabel.setText(MessageFormat.format(
-                DLCopy.STRINGS.getString("PrintSelectionDialog.infoLabel.text"),
-                type));
+        if (type == null) {
+            infoLabel.setText(DLCopy.STRINGS.getString(
+                    "Info_Several_Files_To_Print"));
+        } else {
+            infoLabel.setText(MessageFormat.format(DLCopy.STRINGS.getString(
+                    "Info_Several_Files_Of_Type_To_Print"),
+                    type));
+        }
 
         pack();
         setLocationRelativeTo(parent);
@@ -149,7 +156,7 @@ public class PrintSelectionDialog extends javax.swing.JDialog {
         setTitle(bundle.getString("PrintSelectionDialog.title")); // NOI18N
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        infoLabel.setText(bundle.getString("PrintSelectionDialog.infoLabel.text")); // NOI18N
+        infoLabel.setText(bundle.getString("Info_Several_Files_Of_Type_To_Print")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.insets = new java.awt.Insets(10, 5, 10, 5);

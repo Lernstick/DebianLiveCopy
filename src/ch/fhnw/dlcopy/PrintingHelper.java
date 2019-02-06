@@ -6,7 +6,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Stream;
 
 /**
  * A helper class for printing documents
@@ -27,9 +26,7 @@ public class PrintingHelper {
      * paper
      */
     public static void print(Path document, int copies, boolean duplex) {
-        String lowerCaseFileName
-                = document.getFileName().toString().toLowerCase();
-        if (lowerCaseFileName.endsWith("pdf")) {
+        if (document.getFileName().toString().toLowerCase().endsWith("pdf")) {
             printWithLPR(document, copies, duplex);
         } else {
             printWithLibreOffice(document, copies, duplex);
@@ -51,8 +48,7 @@ public class PrintingHelper {
                     "--convert-to", "pdf",
                     "--outdir", tempDir.toString(),
                     document.toString());
-            Stream<Path> list = Files.list(tempDir);
-            printWithLPR(list.findFirst().get(), copies, duplex);
+            printWithLPR(Files.list(tempDir).findFirst().get(), copies, duplex);
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
         }

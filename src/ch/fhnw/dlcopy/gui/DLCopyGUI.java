@@ -246,10 +246,12 @@ public interface DLCopyGUI {
      * shows the user a list of documents that can be selected to print
      *
      * @param type the type of documents to select
+     * @param mountPath the path where the exchange partition is mounted
      * @param documents the list of documents to print
      * @return the list of documents selected for printing
      */
-    public List<Path> selectDocumentsToPrint(String type, List<Path> documents);
+    public List<Path> selectDocumentsToPrint(
+            String type, String mountPath, List<Path> documents);
 
     /**
      * shows the user interface for backing up the exchange partition during a

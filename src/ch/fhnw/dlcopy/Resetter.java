@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
+import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
@@ -23,8 +24,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.Lock;
+import java.util.function.BiPredicate;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Stream;
 import javax.swing.SwingWorker;
 import org.freedesktop.dbus.exceptions.DBusException;
 
@@ -35,6 +38,25 @@ import org.freedesktop.dbus.exceptions.DBusException;
  */
 public class Resetter extends SwingWorker<Boolean, Void> {
 
+    /**
+     * different modes to print found documents automatically
+     */
+    public static enum AutoPrintMode {
+
+        /**
+         * all documents
+         */
+        ALL,
+        /**
+         * single documents of a certain format
+         */
+        SINGLE,
+        /**
+         * no document
+         */
+        NONE
+    }
+
     private static final Logger LOGGER
             = Logger.getLogger(Resetter.class.getName());
 
@@ -43,14 +65,19 @@ public class Resetter extends SwingWorker<Boolean, Void> {
     private final String bootDeviceName;
 
     private final boolean printDocuments;
-    private final String printDirectory;
+    private final String printDirectories;
+    private final boolean scanDirectoriesRecursively;
     private final boolean printODT;
     private final boolean printODS;
+    private final boolean printODP;
     private final boolean printPDF;
     private final boolean printDOC;
     private final boolean printDOCX;
     private final boolean printXLS;
     private final boolean printXLSX;
+    private final boolean printPPT;
+    private final boolean printPPTX;
+    private final AutoPrintMode autoPrintMode;
     private final int printCopies;
     private final boolean printDuplex;
     private final boolean backupData;
@@ -79,15 +106,21 @@ public class Resetter extends SwingWorker<Boolean, Void> {
      * @param bootDeviceName the name of the boot device
      * @param printDocuments if documents on the exchange partition should be
      * printed
-     * @param printDirectory the directory where documents to be printed should
-     * be searched
+     * @param printDirectories the directories where documents to be printed
+     * should be searched
+     * @param scanDirectoriesRecursively if the directories should be scanned
+     * recursively
      * @param printODT if OpenDocument Texts should be printed
-     * @param printODS if OpenDocument Texts should be printed
+     * @param printODS if OpenDocument Spreadsheets should be printed
+     * @param printODP if OpenDocument Presentations should be printed
      * @param printPDF if Portable Document Formats should be printed
      * @param printDOC if older MS Word documents should be printed
      * @param printDOCX if newer MS Word documents should be printed
      * @param printXLS if older MS Excel documents should be printed
      * @param printXLSX if newer MS Excel documents should be printed
+     * @param printPPT if older MS PowerPoint documents should be printed
+     * @param printPPTX if newer MS PowerPoint documents should be printed
+     * @param autoPrintMode the mode of automatic document printing
      * @param printCopies the number of copies to print
      * @param printDuplex if the document should be printed on both sides of the
      * paper
@@ -115,9 +148,11 @@ public class Resetter extends SwingWorker<Boolean, Void> {
      */
     public Resetter(DLCopyGUI dlCopyGUI, List<StorageDevice> deviceList,
             String bootDeviceName, boolean printDocuments,
-            String printDirectory, boolean printODT, boolean printODS,
+            String printDirectories, boolean scanDirectoriesRecursively,
+            boolean printODT, boolean printODS, boolean printODP,
             boolean printPDF, boolean printDOC, boolean printDOCX,
-            boolean printXLS, boolean printXLSX, int printCopies,
+            boolean printXLS, boolean printXLSX, boolean printPPT,
+            boolean printPPTX, AutoPrintMode autoPrintMode, int printCopies,
             boolean printDuplex, boolean backupData, String backupSource,
             String backupDestination,
             List<Subdirectory> orderedSubdirectoriesEntries,
@@ -133,14 +168,19 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         this.deviceList = deviceList;
         this.bootDeviceName = bootDeviceName;
         this.printDocuments = printDocuments;
-        this.printDirectory = printDirectory;
+        this.printDirectories = printDirectories;
+        this.scanDirectoriesRecursively = scanDirectoriesRecursively;
         this.printODT = printODT;
         this.printODS = printODS;
+        this.printODP = printODP;
         this.printPDF = printPDF;
         this.printDOC = printDOC;
         this.printDOCX = printDOCX;
         this.printXLS = printXLS;
         this.printXLSX = printXLSX;
+        this.printPPT = printPPT;
+        this.printPPTX = printPPTX;
+        this.autoPrintMode = autoPrintMode;
         this.printCopies = printCopies;
         this.printDuplex = printDuplex;
         this.backupData = backupData;
@@ -249,69 +289,63 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         dlCopyGUI.showPrintingDocuments();
 
         MountInfo mountInfo = exchangePartition.mount();
-        Path printDirPath = Paths.get(mountInfo.getMountPath(), printDirectory);
+        String[] printDirs = printDirectories.split(System.lineSeparator());
 
         // sanity check
-        if (!Files.exists(printDirPath)) {
+        boolean dirExists = false;
+        for (String printDir : printDirs) {
+            Path printDirPath = Paths.get(mountInfo.getMountPath(), printDir);
+            if (Files.exists(printDirPath)) {
+                dirExists = true;
+                break;
+            }
+        }
+        if (!dirExists) {
             String errorMessage = DLCopy.STRINGS.getString(
-                    "Error_Print_Directory_Not_Found");
-            errorMessage = MessageFormat.format(errorMessage, printDirectory,
+                    "Error_Print_Directories_Not_Found");
+            errorMessage = MessageFormat.format(errorMessage,
+                    printDirectories.replaceAll(System.lineSeparator(), "<br>"),
                     exchangePartition.getIdLabel(), storageDevice.getSerial());
             dlCopyGUI.showErrorMessage(errorMessage);
-            throw new IOException(printDirPath + " does'nt exist");
+            throw new IOException(printDirectories + " don't exist");
         }
 
-        if (printODT) {
-            printDocumentType(printDirPath, "odt",
-                    DLCopy.STRINGS.getString("OpenDocument_Text"));
-        }
+        // search, collect and print wanted documents
+        switch (autoPrintMode) {
+            case ALL:
+                for (Path document : getAllDocuments(mountInfo, printDirs)) {
+                    PrintingHelper.print(document, printCopies, printDuplex);
+                }
+                break;
 
-        if (printODS) {
-            printDocumentType(printDirPath, "ods",
-                    DLCopy.STRINGS.getString("OpenDocument_Spreadsheet"));
-        }
+            case SINGLE:
+                autoPrintSingleTypes(mountInfo, printDirs);
+                break;
 
-        if (printPDF) {
-            printDocumentType(printDirPath, "pdf",
-                    DLCopy.STRINGS.getString("Portable_Document_Format"));
-        }
+            case NONE:
+                List<Path> documents = getAllDocuments(mountInfo, printDirs);
+                List<Path> selectedDocuments = dlCopyGUI.selectDocumentsToPrint(
+                        null/*no type*/, mountInfo.getMountPath(), documents);
+                if (selectedDocuments != null) {
+                    for (Path selectedDocument : selectedDocuments) {
+                        PrintingHelper.print(
+                                selectedDocument, printCopies, printDuplex);
+                    }
+                }
+                break;
 
-        if (printDOC) {
-            printDocumentType(printDirPath, "doc",
-                    DLCopy.STRINGS.getString("MS_Word"));
-        }
-
-        if (printDOCX) {
-            printDocumentType(printDirPath, "docx",
-                    DLCopy.STRINGS.getString("MS_Word"));
-        }
-
-        if (printXLS) {
-            printDocumentType(printDirPath, "xls",
-                    DLCopy.STRINGS.getString("MS_Excel"));
-        }
-
-        if (printXLSX) {
-            printDocumentType(printDirPath, "xlsx",
-                    DLCopy.STRINGS.getString("MS_Excel"));
+            default:
+                LOGGER.log(Level.WARNING,
+                        "unsupported autoPrintMode \"{0}\"", autoPrintMode);
         }
     }
 
-    private void printDocumentType(
-            Path printDirPath, String suffix, String type) throws IOException {
+    private void autoPrintType(MountInfo mountInfo, String[] printDirs,
+            String type, String suffix) throws IOException {
 
-        // search and collect wanted documents
-        List<Path> documents = new ArrayList<>();
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(
-                printDirPath, new MyFilter(suffix))) {
-            for (Path path : stream) {
-                LOGGER.log(Level.INFO, "found {0} to print: {1}",
-                        new Object[]{suffix, path});
-                documents.add(path);
-            }
-        }
+        List<Path> documents = getAllDocumentsOfType(
+                mountInfo, printDirs, suffix);
 
-        // print document(s)
         switch (documents.size()) {
             case 0:
                 LOGGER.log(Level.WARNING, "found no {0} file to print", suffix);
@@ -321,8 +355,9 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                         documents.get(0), printCopies, printDuplex);
                 break;
             default:
-                List<Path> selectedDocuments
-                        = dlCopyGUI.selectDocumentsToPrint(type, documents);
+                List<Path> selectedDocuments = dlCopyGUI.selectDocumentsToPrint(
+                        DLCopy.STRINGS.getString(type),
+                        mountInfo.getMountPath(), documents);
                 if (selectedDocuments != null) {
                     for (Path selectedDocument : selectedDocuments) {
                         PrintingHelper.print(
@@ -330,6 +365,139 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                     }
                 }
         }
+    }
+
+    private void autoPrintSingleTypes(MountInfo mountInfo, String[] printDirs)
+            throws IOException {
+
+        if (printODT) {
+            autoPrintType(mountInfo, printDirs, "OpenDocument_Text", "odt");
+        }
+        if (printODS) {
+            autoPrintType(mountInfo, printDirs,
+                    "OpenDocument_Spreadsheet", "ods");
+        }
+        if (printODP) {
+            autoPrintType(mountInfo, printDirs,
+                    "OpenDocument_Presentation", "odp");
+        }
+        if (printPDF) {
+            autoPrintType(mountInfo, printDirs,
+                    "Portable_Document_Format", "pdf");
+        }
+        if (printDOC) {
+            autoPrintType(mountInfo, printDirs, "MS_Word", "doc");
+        }
+        if (printDOCX) {
+            autoPrintType(mountInfo, printDirs, "MS_Word", "docx");
+        }
+        if (printXLS) {
+            autoPrintType(mountInfo, printDirs, "MS_Excel", "xls");
+        }
+        if (printXLSX) {
+            autoPrintType(mountInfo, printDirs, "MS_Excel", "xlsx");
+        }
+        if (printPPT) {
+            autoPrintType(mountInfo, printDirs, "MS_PowerPoint", "ppt");
+        }
+        if (printPPTX) {
+            autoPrintType(mountInfo, printDirs, "MS_PowerPoint", "pptx");
+        }
+    }
+
+    private List<Path> getAllDocumentsOfType(MountInfo mountInfo,
+            String[] printDirs, String suffix) throws IOException {
+
+        List<Path> documents = new ArrayList<>();
+
+        String mountPath = mountInfo.getMountPath();
+        for (String printDir : printDirs) {
+            Path printDirPath = Paths.get(mountPath, printDir);
+            documents.addAll(searchDocuments(printDirPath, suffix));
+        }
+
+        return documents;
+    }
+
+    private List<Path> getAllDocuments(MountInfo mountInfo, String[] printDirs)
+            throws IOException {
+
+        List<Path> documents = new ArrayList<>();
+
+        String mountPath = mountInfo.getMountPath();
+        for (String printDir : printDirs) {
+            Path printDirPath = Paths.get(mountPath, printDir);
+            if (printODT) {
+                documents.addAll(searchDocuments(printDirPath, "odt"));
+            }
+            if (printODS) {
+                documents.addAll(searchDocuments(printDirPath, "ods"));
+            }
+            if (printODP) {
+                documents.addAll(searchDocuments(printDirPath, "odp"));
+            }
+            if (printPDF) {
+                documents.addAll(searchDocuments(printDirPath, "pdf"));
+            }
+            if (printDOC) {
+                documents.addAll(searchDocuments(printDirPath, "doc"));
+            }
+            if (printDOCX) {
+                documents.addAll(searchDocuments(printDirPath, "docx"));
+            }
+            if (printXLS) {
+                documents.addAll(searchDocuments(printDirPath, "xls"));
+            }
+            if (printXLSX) {
+                documents.addAll(searchDocuments(printDirPath, "xlsx"));
+            }
+            if (printPPT) {
+                documents.addAll(searchDocuments(printDirPath, "ppt"));
+            }
+            if (printPPTX) {
+                documents.addAll(searchDocuments(printDirPath, "pptx"));
+            }
+        }
+
+        return documents;
+    }
+
+    private List<Path> searchDocuments(Path printDirPath, String suffix)
+            throws IOException {
+
+        List<Path> documents = new ArrayList<>();
+
+        if (scanDirectoriesRecursively) {
+            BiPredicate predicate = (path, attributes)
+                    -> path.toString().toLowerCase().endsWith(
+                            suffix.toLowerCase());
+            try (Stream<Path> stream
+                    = Files.find(printDirPath, Integer.MAX_VALUE, predicate)) {
+                stream.forEach(path -> {
+                    LOGGER.log(Level.INFO, "found {0} to print: {1}",
+                            new Object[]{suffix, path});
+                    documents.add(path);
+                });
+            } catch (NoSuchFileException e) {
+                // not important, sanity check is done earlier
+                LOGGER.log(Level.INFO, "", e);
+            }
+
+        } else {
+            try (DirectoryStream<Path> stream = Files.newDirectoryStream(
+                    printDirPath, new MyFilter(suffix))) {
+                for (Path path : stream) {
+                    LOGGER.log(Level.INFO, "found {0} to print: {1}",
+                            new Object[]{suffix, path});
+                    documents.add(path);
+                }
+            } catch (NoSuchFileException e) {
+                // not important, sanity check is done earlier
+                LOGGER.log(Level.INFO, "", e);
+            }
+        }
+
+        return documents;
     }
 
     private void backup(StorageDevice storageDevice,
