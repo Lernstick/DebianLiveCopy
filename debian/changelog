@@ -1,3 +1,9 @@
+dlcopy (201902071029-1) lernstick-9; urgency=medium
+
+  * [c069c2] improved backup (GUI, robustness)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 07 Feb 2019 10:29:16 +0100
+
 dlcopy (201902070039-1) lernstick-9; urgency=medium
 
   * [f62fb7] enlarged window width to prevent scroll bars in reports table
