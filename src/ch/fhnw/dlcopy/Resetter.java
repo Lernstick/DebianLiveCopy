@@ -537,7 +537,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
             }
         }
         destination = destination.resolve(stringBuilder.toString());
-        Files.createDirectory(destination);
+        Files.createDirectories(destination);
 
         // Unfortunately, rdiffbackup looses all metainformation when backing up
         // a directory that was previously used as destination directory.

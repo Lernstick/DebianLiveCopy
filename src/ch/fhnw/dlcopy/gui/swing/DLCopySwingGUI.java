@@ -39,6 +39,7 @@ import java.applet.Applet;
 import java.applet.AudioClip;
 import java.awt.CardLayout;
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -104,6 +105,7 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
+import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
 import javax.swing.ListSelectionModel;
@@ -117,6 +119,8 @@ import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
+import javax.swing.table.DefaultTableCellRenderer;
+import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
@@ -258,8 +262,6 @@ public class DLCopySwingGUI extends JFrame
     private final Color DARK_GREEN = new Color(0, 190, 0);
 
     private int batchCounter;
-    private long deviceStartTime;
-    private StorageDevice currentDevice;
     private List<StorageDeviceResult> resultsList;
 
     private Integer commandLineExchangePartitionSize;
@@ -567,6 +569,11 @@ public class DLCopySwingGUI extends JFrame
                 ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
         resetBackupSubdirectoryTable.getSelectionModel().
                 addListSelectionListener(this);
+        // set renderer that respects the "enabled" state of the table
+        setEnabledRespectingDefaultRenderer(
+                resetBackupSubdirectoryTable, Boolean.class);
+        setEnabledRespectingDefaultRenderer(
+                resetBackupSubdirectoryTable, String.class);
 
         String[] exchangePartitionFileSystemItems;
         if (debianLiveDistribution == DebianLiveDistribution.LERNSTICK_EXAM) {
@@ -3828,9 +3835,9 @@ public class DLCopySwingGUI extends JFrame
         resetBackupSourcePanel.add(resetBackupSourceTextField, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(15, 5, 0, 5);
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 5);
         resetBackupDetailsPanel.add(resetBackupSourcePanel, gridBagConstraints);
 
         resetBackupDestinationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.resetBackupDestinationPanel.border.title"))); // NOI18N
@@ -3858,7 +3865,8 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(15, 5, 0, 5);
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 5);
         resetBackupDetailsPanel.add(resetBackupDestinationPanel, gridBagConstraints);
 
         resetBackupSubdirectoryPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.resetBackupSubdirectoryPanel.border.title"))); // NOI18N
@@ -3895,6 +3903,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(3, 0, 5, 0);
         resetBackupSubdirectoryPanel.add(resetMoveDownButton, gridBagConstraints);
 
+        resetBackupSubdirectoryTable.setEnabled(false);
         resetBackupSubdirectoryScrollPane.setViewportView(resetBackupSubdirectoryTable);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -3907,9 +3916,11 @@ public class DLCopySwingGUI extends JFrame
         resetBackupSubdirectoryPanel.add(resetBackupSubdirectoryScrollPane, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(15, 5, 5, 5);
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 5);
         resetBackupDetailsPanel.add(resetBackupSubdirectoryPanel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -5009,6 +5020,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         boolean enabled = resetBackupCheckBox.isSelected();
         resetBackupSourceTextField.setEnabled(enabled);
         resetBackupDestinationButton.setEnabled(enabled);
+        resetBackupSubdirectoryTable.setEnabled(enabled);
+        resetMoveUpButton.setEnabled(enabled);
+        resetMoveDownButton.setEnabled(enabled);
     }//GEN-LAST:event_resetBackupCheckBoxItemStateChanged
 
     private void resetBackupDestinationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBackupDestinationButtonActionPerformed
@@ -5016,6 +5030,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         fileChooser.setDialogTitle(STRINGS.getString("Destination_Directory"));
         fileChooser.setApproveButtonText(STRINGS.getString("Select"));
         fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
+        File directory = new File(resetBackupDestinationTextField.getText());
+        fileChooser.setSelectedFile(directory);
+        // TODO: still broken? (https://bugs.openjdk.java.net/browse/JDK-6572365)
+        fileChooser.ensureFileIsVisible(directory);
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             File selectedFile = fileChooser.getSelectedFile();
             resetBackupDestinationTextField.setText(selectedFile.toString());
@@ -5063,6 +5081,25 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private void upgradeSystemPartitionCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_upgradeSystemPartitionCheckBoxItemStateChanged
         resetDataPartitionCheckBox.setSelected(true);
     }//GEN-LAST:event_upgradeSystemPartitionCheckBoxItemStateChanged
+
+    private void setEnabledRespectingDefaultRenderer(
+            JTable table, Class columnClass) {
+
+        TableCellRenderer renderer = table.getDefaultRenderer(columnClass);
+
+        table.setDefaultRenderer(columnClass, new DefaultTableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table,
+                    Object value, boolean isSelected, boolean hasFocus,
+                    int row, int column) {
+
+                Component component = renderer.getTableCellRendererComponent(
+                        table, value, isSelected, hasFocus, row, column);
+                component.setEnabled(table.isEnabled());
+                return component;
+            }
+        });
+    }
 
     private void selectBackupDestination(JTextField textField) {
         String selectedPath = textField.getText();
@@ -5997,8 +6034,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }
 
     private void deviceStarted(StorageDevice storageDevice) {
-        currentDevice = storageDevice;
-        deviceStartTime = System.currentTimeMillis();
         batchCounter++;
         resultsList.add(new StorageDeviceResult(storageDevice));
     }

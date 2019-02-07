@@ -1,6 +1,5 @@
 package ch.fhnw.dlcopy.gui.swing;
 
-import ch.fhnw.dlcopy.DLCopy;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.logging.Logger;
@@ -11,7 +10,7 @@ import javax.swing.event.ListSelectionListener;
 
 /**
  *
- * Creates a new OverwriteConfigurationPanel
+ * A panel with a list of files to overwrite.
  *
  * @author Ronny Standtke <ronny.standtke@gmx.net>
  */
@@ -21,7 +20,7 @@ public class OverwriteConfigurationPanel
     private static final Logger LOGGER
             = Logger.getLogger(OverwriteConfigurationPanel.class.getName());
     private static final ResourceBundle STRINGS
-            = ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings");    
+            = ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings");
 
     private final OverwriteTableModel model;
 
