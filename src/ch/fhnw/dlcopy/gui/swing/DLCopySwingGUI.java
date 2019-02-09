@@ -3626,7 +3626,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 4, 0, 5);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
         resetPrintingDetailsPanel.add(printDocumentsCheckBox, gridBagConstraints);
 
         printingDirectoryPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.printingDirectoryPanel.border.title"))); // NOI18N
