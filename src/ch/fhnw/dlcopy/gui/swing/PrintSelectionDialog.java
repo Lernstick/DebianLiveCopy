@@ -98,14 +98,17 @@ public class PrintSelectionDialog extends javax.swing.JDialog {
             }
         });
 
-        if (type == null) {
-            infoLabel.setText(DLCopy.STRINGS.getString(
-                    "Info_Several_Files_To_Print"));
-        } else {
-            infoLabel.setText(MessageFormat.format(DLCopy.STRINGS.getString(
-                    "Info_Several_Files_Of_Type_To_Print"),
-                    type));
+        String infoText = null;
+        if (documents.size() > 1) {
+            if (type == null) {
+                infoText = DLCopy.STRINGS.getString(
+                        "Info_Several_Files_To_Print");
+            } else {
+                infoText = MessageFormat.format(DLCopy.STRINGS.getString(
+                        "Info_Several_Files_Of_Type_To_Print"), type);
+            }
         }
+        infoLabel.setText(infoText);
 
         pack();
         setLocationRelativeTo(parent);
