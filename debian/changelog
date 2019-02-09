@@ -1,3 +1,12 @@
+dlcopy (201902091453-1) lernstick-9; urgency=medium
+
+  * [f97438] fixed insets
+  * [235f2c] show infotext in PrintSelectionDialog only when there are several
+             documents to choose from
+  * [f61ddc] improved error handling in resetter
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 09 Feb 2019 14:53:44 +0100
+
 dlcopy (201902071029-1) lernstick-9; urgency=medium
 
   * [c069c2] improved backup (GUI, robustness)
