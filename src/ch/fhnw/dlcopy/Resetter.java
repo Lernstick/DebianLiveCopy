@@ -22,7 +22,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.locks.Lock;
 import java.util.function.BiPredicate;
 import java.util.logging.Level;
@@ -228,7 +227,9 @@ public class Resetter extends SwingWorker<Boolean, Void> {
     protected void done() {
         try {
             dlCopyGUI.resettingFinished(get());
-        } catch (InterruptedException | ExecutionException ex) {
+        } catch (Exception ex) {
+            // don't catch more specific exceptions, otherwise we will miss
+            // occuring runtime exceptions in the LOGGER
             LOGGER.log(Level.SEVERE, "", ex);
             dlCopyGUI.resettingFinished(false);
         }
@@ -237,44 +238,49 @@ public class Resetter extends SwingWorker<Boolean, Void> {
     private void resetStorageDevice(StorageDevice storageDevice)
             throws DBusException, IOException {
 
-        dlCopyGUI.resettingDeviceStarted(storageDevice);
-
-        batchCounter++;
-        LOGGER.log(Level.INFO,
-                "resetting storage device: {0} of {1} ({2})",
-                new Object[]{
-                    batchCounter, deviceListSize, storageDevice
-                });
-
-        Partition exchangePartition = storageDevice.getExchangePartition();
-        Partition dataPartition = storageDevice.getDataPartition();
-
-        printDocuments(storageDevice, exchangePartition);
         try {
-            backup(storageDevice, exchangePartition);
-        } catch (DBusException | IOException exception) {
-            String errorMessage
-                    = DLCopy.STRINGS.getString("Error_Reset_Backup");
-            errorMessage = MessageFormat.format(errorMessage,
-                    exception.getMessage(), exchangePartition.getIdLabel(),
-                    storageDevice.getSerial());
-            dlCopyGUI.showErrorMessage(errorMessage);
-            throw exception;
-        }
-        resetExchangePartition(exchangePartition);
-        resetDataPartition(dataPartition);
-        restoreFiles(dataPartition);
+            dlCopyGUI.resettingDeviceStarted(storageDevice);
 
-        LOGGER.log(Level.INFO, "resetting of storage device finished: "
-                + "{0} of {1} ({2})", new Object[]{
-                    batchCounter, deviceListSize, storageDevice
-                });
+            batchCounter++;
+            LOGGER.log(Level.INFO,
+                    "resetting storage device: {0} of {1} ({2})",
+                    new Object[]{
+                        batchCounter, deviceListSize, storageDevice
+                    });
 
-        if (!storageDevice.getDevice().equals(bootDeviceName)) {
-            // Unmount *all* partitions so that the user doesn't have to
-            // manually umount all storage devices after resetting is done.
-            for (Partition partition : storageDevice.getPartitions()) {
-                DLCopy.umount(partition, dlCopyGUI);
+            Partition exchangePartition = storageDevice.getExchangePartition();
+            Partition dataPartition = storageDevice.getDataPartition();
+
+            printDocuments(storageDevice, exchangePartition);
+            try {
+                backup(storageDevice, exchangePartition);
+            } catch (Exception exception) {
+                // don't catch more specific exceptions, otherwise we will miss
+                // occuring runtime exceptions
+                String errorMessage
+                        = DLCopy.STRINGS.getString("Error_Reset_Backup");
+                errorMessage = MessageFormat.format(errorMessage,
+                        exception.getMessage(), exchangePartition.getIdLabel(),
+                        storageDevice.getSerial());
+                dlCopyGUI.showErrorMessage(errorMessage);
+                throw exception;
+            }
+            resetExchangePartition(exchangePartition);
+            resetDataPartition(dataPartition);
+            restoreFiles(dataPartition);
+
+            LOGGER.log(Level.INFO, "resetting of storage device finished: "
+                    + "{0} of {1} ({2})", new Object[]{
+                        batchCounter, deviceListSize, storageDevice
+                    });
+
+        } finally {
+            if (!storageDevice.getDevice().equals(bootDeviceName)) {
+                // Unmount *all* partitions so that the user doesn't have to
+                // manually umount all storage devices after resetting is done.
+                for (Partition partition : storageDevice.getPartitions()) {
+                    DLCopy.umount(partition, dlCopyGUI);
+                }
             }
         }
     }
@@ -287,6 +293,15 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         }
 
         dlCopyGUI.showPrintingDocuments();
+
+        if (exchangePartition == null) {
+            String errorMessage = DLCopy.STRINGS.getString(
+                    "Error_No_Exchange_Partition");
+            errorMessage = MessageFormat.format(
+                    errorMessage, storageDevice.getSerial());
+            dlCopyGUI.showErrorMessage(errorMessage);
+            throw new IOException(errorMessage);
+        }
 
         MountInfo mountInfo = exchangePartition.mount();
         String[] printDirs = printDirectories.split(System.lineSeparator());
