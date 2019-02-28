@@ -3632,6 +3632,7 @@ public class DLCopySwingGUI extends JFrame
         printingDirectoryPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.printingDirectoryPanel.border.title"))); // NOI18N
         printingDirectoryPanel.setLayout(new java.awt.GridBagLayout());
 
+        printingDirectoriesTextArea.setEnabled(false);
         printingDirectoriesScrollPane.setViewportView(printingDirectoriesTextArea);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
