@@ -1,3 +1,9 @@
+dlcopy (201902280621-1) lernstick-9; urgency=medium
+
+  * [59afc4] disable printingDirectoriesTextArea at startup
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 28 Feb 2019 06:21:15 +0100
+
 dlcopy (201902091453-1) lernstick-9; urgency=medium
 
   * [f97438] fixed insets
