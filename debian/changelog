@@ -1,3 +1,15 @@
+dlcopy (201904111850-1) lernstick-9; urgency=medium
+
+  * [cbe7b4] fixed typo in comment
+  * [27c2d0] fixed resetting home
+             (use /etc/skel from storage device instead of the running system)
+  * [54b954] added "global" checkbox for deleting data
+             on the data partition during reset
+  * [df2095] added "global" checkbox for restoring data
+             to the data partition during reset
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 11 Apr 2019 18:50:39 +0200
+
 dlcopy (201902280621-1) lernstick-9; urgency=medium
 
   * [59afc4] disable printingDirectoriesTextArea at startup
