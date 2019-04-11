@@ -1,3 +1,11 @@
+dlcopy (201904111938-1) lernstick-9; urgency=medium
+
+  * [dbe27a] restore /home/user from /etc/skel also after formatting data
+             partition in resetter
+             (fixes issues with restoring data at the same time)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 11 Apr 2019 19:38:16 +0200
+
 dlcopy (201904111850-1) lernstick-9; urgency=medium
 
   * [cbe7b4] fixed typo in comment
