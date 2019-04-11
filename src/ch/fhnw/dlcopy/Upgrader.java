@@ -459,7 +459,7 @@ public class Upgrader extends InstallerOrUpgrader {
         MountInfo dataMountInfo = dataPartition.mount();
         String dataMountPoint = dataMountInfo.getMountPath();
 
-        // union old squashfs with data partitin
+        // union old squashfs with data partition
         Partition systemPartition = storageDevice.getSystemPartition();
         MountInfo systemMountInfo = systemPartition.mount();
         List<String> readOnlyMountPoints = LernstickFileTools.mountAllSquashFS(
