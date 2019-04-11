@@ -239,6 +239,7 @@ public class DLCopySwingGUI extends JFrame
     private final static String RESET_FORMAT_DATA_PARTITION = "resetformatDataPartition";
     private final static String RESET_REMOVE_SYSTEM_FILES = "resetRemoveSystemFiles";
     private final static String RESET_REMOVE_HOME_DIRECTORY = "resetRemoveHomeDirectory";
+    private final static String RESET_RESTORE_ENABLED = "resetRestoreEnabled";
     private final static String RESET_RESTORE_DATA = "resetRestoreData";
 
     private final ResultsTableModel installationResultsTableModel;
@@ -621,6 +622,9 @@ public class DLCopySwingGUI extends JFrame
                 preferences.getBoolean(RESET_REMOVE_SYSTEM_FILES, false));
         homeDirectoryCheckBox.setSelected(
                 preferences.getBoolean(RESET_REMOVE_HOME_DIRECTORY, false));
+
+        resetRestoreDataCheckBox.setSelected(
+                preferences.getBoolean(RESET_RESTORE_ENABLED, false));
 
         String resetRestoreData = preferences.get(RESET_RESTORE_DATA, null);
         if (resetRestoreData != null && !resetRestoreData.isEmpty()) {
@@ -2007,6 +2011,8 @@ public class DLCopySwingGUI extends JFrame
         removeFilesRadioButton = new javax.swing.JRadioButton();
         systemFilesCheckBox = new javax.swing.JCheckBox();
         homeDirectoryCheckBox = new javax.swing.JCheckBox();
+        resetRestorePanel = new javax.swing.JPanel();
+        resetRestoreDataCheckBox = new javax.swing.JCheckBox();
         resetRestoreConfigurationPanel = new ch.fhnw.dlcopy.gui.swing.OverwriteConfigurationPanel();
         resetPanel = new javax.swing.JPanel();
         currentlyResettingDeviceLabel = new javax.swing.JLabel();
@@ -4041,7 +4047,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 10);
+        gridBagConstraints.insets = new java.awt.Insets(5, 20, 0, 10);
         resetDataPartitionDetailsPanel.add(formatDataPartitionRadioButton, gridBagConstraints);
 
         resetDataPartitionButtonGroup.add(removeFilesRadioButton);
@@ -4056,7 +4062,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 20, 0, 10);
         resetDataPartitionDetailsPanel.add(removeFilesRadioButton, gridBagConstraints);
 
         systemFilesCheckBox.setText(bundle.getString("DLCopySwingGUI.systemFilesCheckBox.text")); // NOI18N
@@ -4064,7 +4070,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 0, 0);
+        gridBagConstraints.insets = new java.awt.Insets(0, 40, 0, 0);
         resetDataPartitionDetailsPanel.add(systemFilesCheckBox, gridBagConstraints);
 
         homeDirectoryCheckBox.setText(bundle.getString("DLCopySwingGUI.homeDirectoryCheckBox.text")); // NOI18N
@@ -4073,7 +4079,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(0, 40, 10, 10);
         resetDataPartitionDetailsPanel.add(homeDirectoryCheckBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -4085,7 +4091,30 @@ public class DLCopySwingGUI extends JFrame
         resetDeletePanel.add(resetDataPartitionDetailsPanel, gridBagConstraints);
 
         resetSelectionTabbedPane.addTab(bundle.getString("Delete_Data"), resetDeletePanel); // NOI18N
-        resetSelectionTabbedPane.addTab(bundle.getString("DLCopySwingGUI.resetRestoreConfigurationPanel.TabConstraints.tabTitle"), resetRestoreConfigurationPanel); // NOI18N
+
+        resetRestorePanel.setLayout(new java.awt.GridBagLayout());
+
+        resetRestoreDataCheckBox.setText(bundle.getString("DLCopySwingGUI.resetRestoreDataCheckBox.text")); // NOI18N
+        resetRestoreDataCheckBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                resetRestoreDataCheckBoxItemStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
+        resetRestorePanel.add(resetRestoreDataCheckBox, gridBagConstraints);
+
+        resetRestoreConfigurationPanel.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+        resetRestorePanel.add(resetRestoreConfigurationPanel, gridBagConstraints);
+
+        resetSelectionTabbedPane.addTab(bundle.getString("DLCopySwingGUI.resetRestorePanel.TabConstraints.tabTitle"), resetRestorePanel); // NOI18N
 
         cardPanel.add(resetSelectionTabbedPane, "resetSelectionTabbedPane");
 
@@ -5112,6 +5141,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         homeDirectoryCheckBox.setEnabled(enabled);
     }//GEN-LAST:event_deleteOnDataPartitionCheckBoxItemStateChanged
 
+    private void resetRestoreDataCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_resetRestoreDataCheckBoxItemStateChanged
+        resetRestoreConfigurationPanel.setEnabled(
+                resetRestoreDataCheckBox.isSelected());
+    }//GEN-LAST:event_resetRestoreDataCheckBoxItemStateChanged
+
     private void setEnabledRespectingDefaultRenderer(
             JTable table, Class columnClass) {
 
@@ -5500,6 +5534,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 formatDataPartitionRadioButton.isSelected(),
                 dataPartitionFileSystem, homeDirectoryCheckBox.isSelected(),
                 systemFilesCheckBox.isSelected(),
+                resetRestoreDataCheckBox.isSelected(),
                 resetRestoreConfigurationPanel.getEntries(), resetLock)
                 .execute();
     }
@@ -5830,6 +5865,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 systemFilesCheckBox.isSelected());
         preferences.putBoolean(RESET_REMOVE_HOME_DIRECTORY,
                 homeDirectoryCheckBox.isSelected());
+        preferences.putBoolean(RESET_RESTORE_ENABLED,
+                resetRestoreDataCheckBox.isSelected());
         preferences.put(RESET_RESTORE_DATA,
                 resetRestoreConfigurationPanel.getXML());
 
@@ -6934,6 +6971,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JProgressBar resetProgressBar;
     private javax.swing.JPanel resetProgressPanel;
     private ch.fhnw.dlcopy.gui.swing.OverwriteConfigurationPanel resetRestoreConfigurationPanel;
+    private javax.swing.JCheckBox resetRestoreDataCheckBox;
+    private javax.swing.JPanel resetRestorePanel;
     private javax.swing.JPanel resetSelectionCardPanel;
     private javax.swing.JLabel resetSelectionCountLabel;
     private javax.swing.JPanel resetSelectionDeviceListPanel;

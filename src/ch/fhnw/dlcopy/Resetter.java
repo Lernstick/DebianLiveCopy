@@ -93,6 +93,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
     private final String dataPartitionFileSystem;
     private final boolean resetHome;
     private final boolean resetSystem;
+    private final boolean restoreData;
     private final List<OverwriteEntry> overwriteEntries;
     private final Lock lock;
 
@@ -146,7 +147,9 @@ public class Resetter extends SwingWorker<Boolean, Void> {
      * @param dataPartitionFileSystem the file system of the data partition
      * @param resetHome if the home directory should be reset
      * @param resetSystem if the system (without /home) should be reset
-     * @param overwriteEntries the list of entries to overwrite
+     * @param restoreData if data should be restored at all
+     * @param overwriteEntries the list of entries to overwrite (if restoreData
+     * is true)
      * @param lock the lock to aquire before executing in background
      */
     public Resetter(DLCopyGUI dlCopyGUI, List<StorageDevice> deviceList,
@@ -164,7 +167,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
             boolean keepExchangePartitionLabel,
             String newExchangePartitionLabel, boolean deleteOnDataPartition,
             boolean formatDataPartition, String dataPartitionFileSystem,
-            boolean resetHome, boolean resetSystem,
+            boolean resetHome, boolean resetSystem, boolean restoreData,
             List<OverwriteEntry> overwriteEntries, Lock lock) {
 
         this.dlCopyGUI = dlCopyGUI;
@@ -199,6 +202,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         this.dataPartitionFileSystem = dataPartitionFileSystem;
         this.resetHome = resetHome;
         this.resetSystem = resetSystem;
+        this.restoreData = restoreData;
         this.overwriteEntries = overwriteEntries;
         this.lock = lock;
     }
@@ -694,7 +698,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
     private void restoreFiles(Partition dataPartition)
             throws IOException, DBusException {
 
-        if (overwriteEntries.isEmpty()) {
+        if (!restoreData || overwriteEntries.isEmpty()) {
             return;
         }
 

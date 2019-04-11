@@ -42,18 +42,7 @@ public class OverwriteConfigurationPanel
     @Override
     public void valueChanged(ListSelectionEvent e) {
         if (e.getSource() == table.getSelectionModel()) {
-            int[] selectedRows = table.getSelectedRows();
-            boolean selected = selectedRows.length > 0;
-            removeButton.setEnabled(selected);
-            if (selected) {
-                moveUpButton.setEnabled(selectedRows[0] != 0);
-                moveDownButton.setEnabled(
-                        selectedRows[selectedRows.length - 1]
-                        != model.getRowCount() - 1);
-            } else {
-                moveUpButton.setEnabled(false);
-                moveDownButton.setEnabled(false);
-            }
+            updateEnabledButtons();
         }
     }
 
@@ -84,6 +73,29 @@ public class OverwriteConfigurationPanel
         return model.getEntries();
     }
 
+    @Override
+    public void setEnabled(boolean enabled) {
+        super.setEnabled(enabled);
+        updateEnabledButtons();
+        table.setEnabled(enabled);
+    }
+
+    private void updateEnabledButtons() {
+        addButton.setEnabled(isEnabled());
+        int[] selectedRows = table.getSelectedRows();
+        boolean selected = selectedRows.length > 0;
+        removeButton.setEnabled(isEnabled() && selected);
+        if (selected) {
+            moveUpButton.setEnabled(isEnabled() && selectedRows[0] != 0);
+            moveDownButton.setEnabled(isEnabled()
+                    && (selectedRows[selectedRows.length - 1]
+                    != model.getRowCount() - 1));
+        } else {
+            moveUpButton.setEnabled(false);
+            moveDownButton.setEnabled(false);
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -94,17 +106,46 @@ public class OverwriteConfigurationPanel
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        moveUpButton = new javax.swing.JButton();
-        moveDownButton = new javax.swing.JButton();
         addButton = new javax.swing.JButton();
         removeButton = new javax.swing.JButton();
+        moveUpButton = new javax.swing.JButton();
+        moveDownButton = new javax.swing.JButton();
         scrollPane = new javax.swing.JScrollPane();
         table = new javax.swing.JTable();
 
         setLayout(new java.awt.GridBagLayout());
 
-        moveUpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/arrow-up.png"))); // NOI18N
+        addButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/list-add.png"))); // NOI18N
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings"); // NOI18N
+        addButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeOverwriteAddButton.toolTipText")); // NOI18N
+        addButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        addButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                addButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(30, 5, 0, 0);
+        add(addButton, gridBagConstraints);
+
+        removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/list-remove.png"))); // NOI18N
+        removeButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeOverwriteRemoveButton.toolTipText")); // NOI18N
+        removeButton.setEnabled(false);
+        removeButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        removeButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                removeButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
+        add(removeButton, gridBagConstraints);
+
+        moveUpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/arrow-up.png"))); // NOI18N
         moveUpButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeMoveUpButton.toolTipText")); // NOI18N
         moveUpButton.setEnabled(false);
         moveUpButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -134,35 +175,6 @@ public class OverwriteConfigurationPanel
         gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 10, 0);
         add(moveDownButton, gridBagConstraints);
-
-        addButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/list-add.png"))); // NOI18N
-        addButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeOverwriteAddButton.toolTipText")); // NOI18N
-        addButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        addButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(30, 5, 0, 0);
-        add(addButton, gridBagConstraints);
-
-        removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/list-remove.png"))); // NOI18N
-        removeButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeOverwriteRemoveButton.toolTipText")); // NOI18N
-        removeButton.setEnabled(false);
-        removeButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        removeButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
-        add(removeButton, gridBagConstraints);
 
         scrollPane.setViewportView(table);
 
