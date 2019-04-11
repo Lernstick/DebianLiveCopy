@@ -88,6 +88,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
     private final String exchangePartitionFileSystem;
     private final boolean keepExchangePartitionLabel;
     private final String newExchangePartitionLabel;
+    private final boolean deleteOnDataPartition;
     private final boolean formatDataPartition;
     private final String dataPartitionFileSystem;
     private final boolean resetHome;
@@ -139,6 +140,8 @@ public class Resetter extends SwingWorker<Boolean, Void> {
      * @param newExchangePartitionLabel if
      * <code>keepExchangePartitionLabel</code> is <code>false</code> this string
      * will be used as the new label when reformatting the exchange partition
+     * @param deleteOnDataPartition if data on the data partition should be
+     * deleted at all
      * @param formatDataPartition if the data partition should be formatted
      * @param dataPartitionFileSystem the file system of the data partition
      * @param resetHome if the home directory should be reset
@@ -159,10 +162,10 @@ public class Resetter extends SwingWorker<Boolean, Void> {
             boolean formatExchangePartition,
             String exchangePartitionFileSystem,
             boolean keepExchangePartitionLabel,
-            String newExchangePartitionLabel, boolean formatDataPartition,
-            String dataPartitionFileSystem, boolean resetHome,
-            boolean resetSystem, List<OverwriteEntry> overwriteEntries,
-            Lock lock) {
+            String newExchangePartitionLabel, boolean deleteOnDataPartition,
+            boolean formatDataPartition, String dataPartitionFileSystem,
+            boolean resetHome, boolean resetSystem,
+            List<OverwriteEntry> overwriteEntries, Lock lock) {
 
         this.dlCopyGUI = dlCopyGUI;
         this.deviceList = deviceList;
@@ -191,6 +194,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         this.exchangePartitionFileSystem = exchangePartitionFileSystem;
         this.keepExchangePartitionLabel = keepExchangePartitionLabel;
         this.newExchangePartitionLabel = newExchangePartitionLabel;
+        this.deleteOnDataPartition = deleteOnDataPartition;
         this.formatDataPartition = formatDataPartition;
         this.dataPartitionFileSystem = dataPartitionFileSystem;
         this.resetHome = resetHome;
@@ -594,7 +598,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
             Partition systemPartition, Partition dataPartition)
             throws DBusException, IOException {
 
-        if (dataPartition == null) {
+        if (dataPartition == null || !deleteOnDataPartition) {
             return;
         }
 

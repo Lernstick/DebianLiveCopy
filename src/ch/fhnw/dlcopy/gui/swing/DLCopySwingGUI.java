@@ -235,6 +235,7 @@ public class DLCopySwingGUI extends JFrame
     private final static String RESET_FORMAT_EXCHANGE_PARTITION_FILE_SYSTEM = "resetFormatExchangePartitionFileSystem";
     private final static String RESET_FORMAT_EXCHANGE_PARTITION_KEEP_LABEL = "resetFormatExchangePartitionKeepLabel";
     private final static String RESET_FORMAT_EXCHANGE_PARTITION_NEW_LABEL = "resetFormatExchangePartitionNewLabel";
+    private final static String RESET_DELETE_ON_DATA_PARTITION = "resetDeleteOnDataPartition";
     private final static String RESET_FORMAT_DATA_PARTITION = "resetformatDataPartition";
     private final static String RESET_REMOVE_SYSTEM_FILES = "resetRemoveSystemFiles";
     private final static String RESET_REMOVE_HOME_DIRECTORY = "resetRemoveHomeDirectory";
@@ -607,6 +608,9 @@ public class DLCopySwingGUI extends JFrame
         }
         resetFormatExchangePartitionNewLabelTextField.setText(preferences.get(
                 RESET_FORMAT_EXCHANGE_PARTITION_NEW_LABEL, null));
+
+        deleteOnDataPartitionCheckBox.setSelected(
+                preferences.getBoolean(RESET_DELETE_ON_DATA_PARTITION, false));
 
         if (preferences.getBoolean(RESET_FORMAT_DATA_PARTITION, false)) {
             formatDataPartitionRadioButton.setSelected(true);
@@ -1998,6 +2002,7 @@ public class DLCopySwingGUI extends JFrame
         resetFormatExchangePartitionNewLabelTextField = new javax.swing.JTextField();
         resetExchangespacer = new javax.swing.JPanel();
         resetDataPartitionDetailsPanel = new javax.swing.JPanel();
+        deleteOnDataPartitionCheckBox = new javax.swing.JCheckBox();
         formatDataPartitionRadioButton = new javax.swing.JRadioButton();
         removeFilesRadioButton = new javax.swing.JRadioButton();
         systemFilesCheckBox = new javax.swing.JCheckBox();
@@ -4012,8 +4017,21 @@ public class DLCopySwingGUI extends JFrame
         resetDataPartitionDetailsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), bundle.getString("Data_Partition"))); // NOI18N
         resetDataPartitionDetailsPanel.setLayout(new java.awt.GridBagLayout());
 
+        deleteOnDataPartitionCheckBox.setText(bundle.getString("DLCopySwingGUI.deleteOnDataPartitionCheckBox.text")); // NOI18N
+        deleteOnDataPartitionCheckBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                deleteOnDataPartitionCheckBoxItemStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
+        resetDataPartitionDetailsPanel.add(deleteOnDataPartitionCheckBox, gridBagConstraints);
+
         resetDataPartitionButtonGroup.add(formatDataPartitionRadioButton);
         formatDataPartitionRadioButton.setText(bundle.getString("DLCopySwingGUI.formatDataPartitionRadioButton.text")); // NOI18N
+        formatDataPartitionRadioButton.setEnabled(false);
         formatDataPartitionRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 formatDataPartitionRadioButtonActionPerformed(evt);
@@ -4029,6 +4047,7 @@ public class DLCopySwingGUI extends JFrame
         resetDataPartitionButtonGroup.add(removeFilesRadioButton);
         removeFilesRadioButton.setSelected(true);
         removeFilesRadioButton.setText(bundle.getString("DLCopySwingGUI.removeFilesRadioButton.text")); // NOI18N
+        removeFilesRadioButton.setEnabled(false);
         removeFilesRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 removeFilesRadioButtonActionPerformed(evt);
@@ -4041,6 +4060,7 @@ public class DLCopySwingGUI extends JFrame
         resetDataPartitionDetailsPanel.add(removeFilesRadioButton, gridBagConstraints);
 
         systemFilesCheckBox.setText(bundle.getString("DLCopySwingGUI.systemFilesCheckBox.text")); // NOI18N
+        systemFilesCheckBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
@@ -4048,6 +4068,7 @@ public class DLCopySwingGUI extends JFrame
         resetDataPartitionDetailsPanel.add(systemFilesCheckBox, gridBagConstraints);
 
         homeDirectoryCheckBox.setText(bundle.getString("DLCopySwingGUI.homeDirectoryCheckBox.text")); // NOI18N
+        homeDirectoryCheckBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
@@ -5083,6 +5104,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         resetDataPartitionCheckBox.setSelected(true);
     }//GEN-LAST:event_upgradeSystemPartitionCheckBoxItemStateChanged
 
+    private void deleteOnDataPartitionCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_deleteOnDataPartitionCheckBoxItemStateChanged
+        boolean enabled = deleteOnDataPartitionCheckBox.isSelected();
+        formatDataPartitionRadioButton.setEnabled(enabled);
+        removeFilesRadioButton.setEnabled(enabled);
+        systemFilesCheckBox.setEnabled(enabled);
+        homeDirectoryCheckBox.setEnabled(enabled);
+    }//GEN-LAST:event_deleteOnDataPartitionCheckBoxItemStateChanged
+
     private void setEnabledRespectingDefaultRenderer(
             JTable table, Class columnClass) {
 
@@ -5467,6 +5496,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 exchangePartitionFileSystem,
                 resetFormatExchangePartitionKeepLabelRadioButton.isSelected(),
                 resetFormatExchangePartitionNewLabelTextField.getText(),
+                deleteOnDataPartitionCheckBox.isSelected(),
                 formatDataPartitionRadioButton.isSelected(),
                 dataPartitionFileSystem, homeDirectoryCheckBox.isSelected(),
                 systemFilesCheckBox.isSelected(),
@@ -5792,6 +5822,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 resetFormatExchangePartitionKeepLabelRadioButton.isSelected());
         preferences.put(RESET_FORMAT_EXCHANGE_PARTITION_NEW_LABEL,
                 resetFormatExchangePartitionNewLabelTextField.getText());
+        preferences.putBoolean(RESET_DELETE_ON_DATA_PARTITION,
+                deleteOnDataPartitionCheckBox.isSelected());
         preferences.putBoolean(RESET_FORMAT_DATA_PARTITION,
                 formatDataPartitionRadioButton.isSelected());
         preferences.putBoolean(RESET_REMOVE_SYSTEM_FILES,
@@ -6745,6 +6777,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel dataPartitionModeLabel;
     private javax.swing.JRadioButton dataPartitionRadioButton;
     private javax.swing.JSeparator dataPartitionSeparator;
+    private javax.swing.JCheckBox deleteOnDataPartitionCheckBox;
     private javax.swing.JLabel doneLabel;
     private javax.swing.JPanel donePanel;
     private javax.swing.ButtonGroup exchangeButtonGroup;
