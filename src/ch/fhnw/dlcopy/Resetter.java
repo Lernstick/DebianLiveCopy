@@ -606,6 +606,9 @@ public class Resetter extends SwingWorker<Boolean, Void> {
             return;
         }
 
+        ProcessExecutor processExecutor = new ProcessExecutor();
+        String cleanupRoot = null;
+
         if (formatDataPartition) {
             // format data partition
             dlCopyGUI.showResetFormattingDataPartition();
@@ -613,18 +616,19 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                     "/dev/" + dataPartition.getDeviceAndNumber(),
                     dataPartitionFileSystem, dlCopyGUI);
 
+            cleanupRoot = dataPartition.mount().getMountPath() + "/rw";
+
         } else if (resetSystem || resetHome) {
             // remove files from data partition
             dlCopyGUI.showResetRemovingFiles();
 
             MountInfo mountInfo = dataPartition.mount();
             String mountPoint = mountInfo.getMountPath();
-            String cleanupRoot = mountPoint;
+            cleanupRoot = mountPoint;
             if (!Files.exists(Paths.get(mountPoint, "home"))) {
                 // Debian 9 and newer
                 cleanupRoot = mountPoint + "/rw";
             }
-            ProcessExecutor processExecutor = new ProcessExecutor();
             if (resetSystem && resetHome) {
                 // remove all files
                 // but keep "/lost+found/" and "persistence.conf"
@@ -651,46 +655,52 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                             "rm", "-rf", cleanupRoot + "/home/user/");
                 }
             }
-            if (resetHome) {
+        }
 
-                /**
-                 * We have to assemble the union here so that we can copy
-                 * "etc/skel/" from the storage media that is currently reset.
-                 * (We can't use "etc/skel/" from the currently running system
-                 * as this might have a completely different configuration!)
-                 */
+        /**
+         * Restore /home/user also after formatting the data partition.
+         * Otherwise, when restoring files into /home/user here at the Resetter
+         * the home directory would already be there after reboot and the user
+         * setup scripts would not populate it from /etc/skel and we end up with
+         * a very incomplete /home/user folder.
+         */
+        if (formatDataPartition || resetHome) {
 
-                // union squashfs with data partition
-                MountInfo systemMountInfo = systemPartition.mount();
-                List<String> readOnlyMountPoints
-                        = LernstickFileTools.mountAllSquashFS(
-                                systemMountInfo.getMountPath());
-                File overlayDir = LernstickFileTools.mountOverlay(
-                        dataPartition.getMountPath(), readOnlyMountPoints,
-                        true);
-                String cowPath = new File(overlayDir, "merged").getPath();
+            /**
+             * We have to assemble the union here so that we can copy
+             * "etc/skel/" from the storage media that is currently reset. (We
+             * can't use "etc/skel/" from the currently running system as this
+             * might have a completely different configuration!)
+             */
+            // union squashfs with data partition
+            MountInfo systemMountInfo = systemPartition.mount();
+            List<String> readOnlyMountPoints
+                    = LernstickFileTools.mountAllSquashFS(
+                            systemMountInfo.getMountPath());
+            File overlayDir = LernstickFileTools.mountOverlay(
+                    dataPartition.getMountPath(), readOnlyMountPoints, true);
+            String cowPath = new File(overlayDir, "merged").getPath();
 
-                // restore "/home/user/" from "/etc/skel/"
-                processExecutor.executeProcess("mkdir", "-p",
-                        cleanupRoot + "/home/");
-                processExecutor.executeProcess("cp", "-a",
-                        cowPath + "/etc/skel/", cleanupRoot + "/home/user/");
-                processExecutor.executeProcess("chown", "-R",
-                        "user.user", cleanupRoot + "/home/user/");
+            // restore "/home/user/" from "/etc/skel/"
+            processExecutor.executeProcess("mkdir", "-p",
+                    cleanupRoot + "/home/");
+            processExecutor.executeProcess("cp", "-a",
+                    cowPath + "/etc/skel/", cleanupRoot + "/home/user/");
+            processExecutor.executeProcess("chown", "-R",
+                    "user.user", cleanupRoot + "/home/user/");
 
-                // disassemble union
-                try {
-                    TimeUnit.SECONDS.sleep(5);
-                } catch (InterruptedException ex) {
-                    LOGGER.log(Level.SEVERE, "", ex);
-                }
-                DLCopy.umount(cowPath, dlCopyGUI);
-                for (String readOnlyMountPoint : readOnlyMountPoints) {
-                    DLCopy.umount(readOnlyMountPoint, dlCopyGUI);
-                }
-                if (!systemMountInfo.alreadyMounted()) {
-                    DLCopy.umount(systemPartition, dlCopyGUI);
-                }
+            // disassemble union
+            try {
+                TimeUnit.SECONDS.sleep(5);
+            } catch (InterruptedException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
+            }
+            DLCopy.umount(cowPath, dlCopyGUI);
+            for (String readOnlyMountPoint : readOnlyMountPoints) {
+                DLCopy.umount(readOnlyMountPoint, dlCopyGUI);
+            }
+            if (!systemMountInfo.alreadyMounted()) {
+                DLCopy.umount(systemPartition, dlCopyGUI);
             }
         }
     }
