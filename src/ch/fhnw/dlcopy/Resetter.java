@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.function.BiPredicate;
 import java.util.logging.Level;
@@ -266,7 +267,8 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                 throw exception;
             }
             resetExchangePartition(exchangePartition);
-            resetDataPartition(dataPartition);
+            resetDataPartition(storageDevice.getSystemPartition(),
+                    dataPartition);
             restoreFiles(dataPartition);
 
             LOGGER.log(Level.INFO, "resetting of storage device finished: "
@@ -588,7 +590,8 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         }
     }
 
-    private void resetDataPartition(Partition dataPartition)
+    private void resetDataPartition(
+            Partition systemPartition, Partition dataPartition)
             throws DBusException, IOException {
 
         if (dataPartition == null) {
@@ -641,13 +644,45 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                 }
             }
             if (resetHome) {
+
+                /**
+                 * We have to assemble the union here so that we can copy
+                 * "etc/skel/" from the storage media that is currently reset.
+                 * (We can't use "etc/skel/" from the currently running system
+                 * as this might have a completely different configuration!)
+                 */
+
+                // union squashfs with data partition
+                MountInfo systemMountInfo = systemPartition.mount();
+                List<String> readOnlyMountPoints
+                        = LernstickFileTools.mountAllSquashFS(
+                                systemMountInfo.getMountPath());
+                File overlayDir = LernstickFileTools.mountOverlay(
+                        dataPartition.getMountPath(), readOnlyMountPoints,
+                        true);
+                String cowPath = new File(overlayDir, "merged").getPath();
+
                 // restore "/home/user/" from "/etc/skel/"
                 processExecutor.executeProcess("mkdir", "-p",
                         cleanupRoot + "/home/");
                 processExecutor.executeProcess("cp", "-a",
-                        "/etc/skel/", cleanupRoot + "/home/user/");
+                        cowPath + "/etc/skel/", cleanupRoot + "/home/user/");
                 processExecutor.executeProcess("chown", "-R",
                         "user.user", cleanupRoot + "/home/user/");
+
+                // disassemble union
+                try {
+                    TimeUnit.SECONDS.sleep(5);
+                } catch (InterruptedException ex) {
+                    LOGGER.log(Level.SEVERE, "", ex);
+                }
+                DLCopy.umount(cowPath, dlCopyGUI);
+                for (String readOnlyMountPoint : readOnlyMountPoints) {
+                    DLCopy.umount(readOnlyMountPoint, dlCopyGUI);
+                }
+                if (!systemMountInfo.alreadyMounted()) {
+                    DLCopy.umount(systemPartition, dlCopyGUI);
+                }
             }
         }
     }
