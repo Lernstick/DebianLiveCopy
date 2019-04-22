@@ -219,8 +219,10 @@ public class DLCopy {
         PartitionState partitionState = getPartitionState(storageDeviceSize,
                 DLCopy.getEnlargedSystemSize(source.getSystemSize()));
 
-        boolean sdDevice = (storageDevice.getType()
-                == StorageDevice.Type.SDMemoryCard);
+        StorageDevice.Type deviceType = storageDevice.getType();
+        boolean pPartition
+                = deviceType == StorageDevice.Type.SDMemoryCard
+                || deviceType == StorageDevice.Type.NVMe;
 
         // determine devices
         String destinationEfiDevice = null;
@@ -229,41 +231,41 @@ public class DLCopy {
         String destinationSystemDevice;
         switch (partitionState) {
             case ONLY_SYSTEM:
-                destinationEfiDevice = device + (sdDevice ? "p1" : '1');
-                destinationSystemDevice = device + (sdDevice ? "p2" : '2');
+                destinationEfiDevice = device + (pPartition ? "p1" : '1');
+                destinationSystemDevice = device + (pPartition ? "p2" : '2');
                 break;
 
             case PERSISTENCE:
-                destinationEfiDevice = device + (sdDevice ? "p1" : '1');
-                destinationDataDevice = device + (sdDevice ? "p2" : '2');
-                destinationSystemDevice = device + (sdDevice ? "p3" : '3');
+                destinationEfiDevice = device + (pPartition ? "p1" : '1');
+                destinationDataDevice = device + (pPartition ? "p2" : '2');
+                destinationSystemDevice = device + (pPartition ? "p3" : '3');
                 break;
 
             case EXCHANGE:
                 if (exchangeMB == 0) {
-                    destinationEfiDevice = device + (sdDevice ? "p1" : '1');
-                    destinationDataDevice = device + (sdDevice ? "p2" : '2');
-                    destinationSystemDevice = device + (sdDevice ? "p3" : '3');
+                    destinationEfiDevice = device + (pPartition ? "p1" : '1');
+                    destinationDataDevice = device + (pPartition ? "p2" : '2');
+                    destinationSystemDevice = device + (pPartition ? "p3" : '3');
                 } else {
                     if (storageDevice.isRemovable()) {
                         destinationExchangeDevice
-                                = device + (sdDevice ? "p1" : '1');
+                                = device + (pPartition ? "p1" : '1');
                         destinationEfiDevice
-                                = device + (sdDevice ? "p2" : '2');
+                                = device + (pPartition ? "p2" : '2');
                     } else {
                         destinationEfiDevice
-                                = device + (sdDevice ? "p1" : '1');
+                                = device + (pPartition ? "p1" : '1');
                         destinationExchangeDevice
-                                = device + (sdDevice ? "p2" : '2');
+                                = device + (pPartition ? "p2" : '2');
                     }
                     if (partitionSizes.getPersistenceMB() == 0) {
                         destinationSystemDevice
-                                = device + (sdDevice ? "p3" : '3');
+                                = device + (pPartition ? "p3" : '3');
                     } else {
                         destinationDataDevice
-                                = device + (sdDevice ? "p3" : '3');
+                                = device + (pPartition ? "p3" : '3');
                         destinationSystemDevice
-                                = device + (sdDevice ? "p4" : '4');
+                                = device + (pPartition ? "p4" : '4');
                     }
                 }
                 break;

@@ -84,7 +84,8 @@ public class UpgradeStorageDeviceRenderer extends JPanel
         storageDevice = (StorageDevice) value;
 
         // set icon based on storage type
-        switch (storageDevice.getType()) {
+        StorageDevice.Type deviceType = storageDevice.getType();
+        switch (deviceType) {
             case HardDrive:
                 iconLabel.setIcon(new ImageIcon(getClass().getResource(
                         "/ch/fhnw/dlcopy/icons/32x32/drive-harddisk.png")));
@@ -98,8 +99,10 @@ public class UpgradeStorageDeviceRenderer extends JPanel
                         "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media-usb-pendrive.png")));
                 break;
             default:
-                LOGGER.log(Level.WARNING, "unsupported device type: {0}",
-                        storageDevice.getType());
+                iconLabel.setIcon(new ImageIcon(getClass().getResource(
+                        "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media.png")));
+                LOGGER.log(Level.WARNING,
+                        "unsupported device type: {0}", deviceType);
         }
 
         // set device text

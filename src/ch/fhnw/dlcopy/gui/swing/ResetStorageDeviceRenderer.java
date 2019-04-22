@@ -67,7 +67,8 @@ public class ResetStorageDeviceRenderer extends JPanel
             storageDevice = (StorageDevice) value;
 
             // set icon based on storage type
-            switch (storageDevice.getType()) {
+            StorageDevice.Type deviceType = storageDevice.getType();
+            switch (deviceType) {
                 case HardDrive:
                     iconLabel.setIcon(new ImageIcon(getClass().getResource(
                             "/ch/fhnw/dlcopy/icons/32x32/drive-harddisk.png")));
@@ -79,6 +80,12 @@ public class ResetStorageDeviceRenderer extends JPanel
                 case USBFlashDrive:
                     iconLabel.setIcon(new ImageIcon(getClass().getResource(
                             "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media-usb-pendrive.png")));
+                    break;
+                default:
+                    iconLabel.setIcon(new ImageIcon(getClass().getResource(
+                            "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media.png")));
+                    LOGGER.log(Level.WARNING,
+                            "unsupported deviceType:{0}", deviceType);
             }
 
             // set device text
