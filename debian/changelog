@@ -1,3 +1,10 @@
+dlcopy (201904230009-1) lernstick-9; urgency=medium
+
+  * [100d89] treat NVMes as "hard disks" (only show them after activating checkbox)
+  * [615db2] improved text rendering when storage device vendor and model is empty
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Tue, 23 Apr 2019 00:09:28 +0200
+
 dlcopy (201904222339-2) lernstick-9; urgency=medium
 
   * [eeb679] added support for NVMe
