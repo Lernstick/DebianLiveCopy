@@ -101,8 +101,14 @@ public class InstallStorageDeviceRenderer extends JPanel
                 stringBuilder.append(" ");
             }
 
-            stringBuilder.append(storageDevice.getModel());
-            stringBuilder.append(", ");
+            String model = storageDevice.getModel();
+            if ((model != null) && !model.isEmpty()) {
+                stringBuilder.append(model);
+            }
+
+            if (stringBuilder.length() != 0) {
+                stringBuilder.append(", ");
+            }
         }
 
         long storageSize = storageDevice.getSize();
