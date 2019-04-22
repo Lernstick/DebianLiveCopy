@@ -1809,7 +1809,9 @@ public class DLCopy {
         StorageDevice storageDevice
                 = new StorageDevice(deviceFile.substring(5));
 
-        if ((storageDevice.getType() == StorageDevice.Type.HardDrive)
+        StorageDevice.Type deviceType = storageDevice.getType();
+        if ((deviceType == StorageDevice.Type.HardDrive
+                || deviceType == StorageDevice.Type.NVMe)
                 && !includeHardDisks) {
             return null;
         } else {
