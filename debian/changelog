@@ -1,3 +1,9 @@
+dlcopy (201904222339-1) lernstick-9; urgency=medium
+
+  * [eeb679] added support for NVMe
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Mon, 22 Apr 2019 23:39:47 +0200
+
 dlcopy (201904111938-1) lernstick-9; urgency=medium
 
   * [dbe27a] restore /home/user from /etc/skel also after formatting data
