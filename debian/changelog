@@ -1,3 +1,9 @@
+dlcopy (201904230854-1) lernstick-9; urgency=medium
+
+  * [fedb58] improved device info text rendering
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Tue, 23 Apr 2019 08:54:37 +0200
+
 dlcopy (201904230009-1) lernstick-9; urgency=medium
 
   * [100d89] treat NVMes as "hard disks" (only show them after activating checkbox)
