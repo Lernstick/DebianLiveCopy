@@ -1460,7 +1460,10 @@ public class DLCopySwingGUI extends JFrame
                 stringBuilder.append(model);
             }
         }
-        stringBuilder.append("</b>, ");
+        stringBuilder.append("</b>");
+        if (!stringBuilder.toString().equals("<html><b></b>")) {
+            stringBuilder.append(", ");
+        }
         stringBuilder.append(STRINGS.getString("Size"));
         stringBuilder.append(": ");
         stringBuilder.append(LernstickFileTools.getDataVolumeString(
