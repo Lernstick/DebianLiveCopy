@@ -179,6 +179,7 @@ public class DLCopySwingGUI extends JFrame
     private JFileChooser addFileChooser;
     private RdiffBackupRestore rdiffBackupRestore;
     private Preferences preferences;
+    private final static String JUMP_TO = "jumpTo";
     private final static String ISO_SOURCE_SELECTED = "isoSourceSelected";
     private final static String ISO_SOURCE = "isoSource";
     private final static String EXPLICIT_EXCHANGE_SIZE = "explicitExchangeSize";
@@ -381,6 +382,17 @@ public class DLCopySwingGUI extends JFrame
         }
 
         initComponents();
+
+        // init jump targets
+        String[] jumpTargets = new String[]{
+            STRINGS.getString("Main_Menu"),
+            installButton.getText(),
+            upgradeButton.getText(),
+            toISOButton.getText(),
+            resetButton.getText()
+        };
+        jumpComboBox.setModel(new DefaultComboBoxModel(jumpTargets));
+        jumpComboBox.setSelectedIndex(preferences.getInt(JUMP_TO, 0));
 
         // do not show initial "{0}" placeholder
         String countString = STRINGS.getString("Selection_Count");
@@ -750,6 +762,24 @@ public class DLCopySwingGUI extends JFrame
 
         // center on screen
         setLocationRelativeTo(null);
+
+        switch (jumpComboBox.getSelectedIndex()) {
+            case 1:
+                globalShow("executionPanel");
+                switchToInstallSelection();
+                break;
+            case 2:
+                globalShow("executionPanel");
+                switchToUpgradeSelection();
+                break;
+            case 3:
+                globalShow("executionPanel");
+                switchToISOSelection();
+                break;
+            case 4:
+                globalShow("executionPanel");
+                switchToResetSelection();
+        }
 
         if (autoUpgrade) {
             globalShow("executionPanel");
@@ -1776,6 +1806,9 @@ public class DLCopySwingGUI extends JFrame
         upgradeLabel = new javax.swing.JLabel();
         toISOButton = new javax.swing.JButton();
         resetButton = new javax.swing.JButton();
+        jumpLabel1 = new javax.swing.JLabel();
+        jumpComboBox = new javax.swing.JComboBox<>();
+        jumpLabel2 = new javax.swing.JLabel();
         executionPanel = new javax.swing.JPanel();
         stepsPanel = new javax.swing.JPanel();
         stepsLabel = new javax.swing.JLabel();
@@ -2221,8 +2254,24 @@ public class DLCopySwingGUI extends JFrame
         buttonGridPanel.add(resetButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.insets = new java.awt.Insets(20, 0, 0, 0);
         choicePanel.add(buttonGridPanel, gridBagConstraints);
+
+        jumpLabel1.setText(bundle.getString("DLCopySwingGUI.jumpLabel1.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(20, 0, 0, 0);
+        choicePanel.add(jumpLabel1, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(20, 5, 0, 0);
+        choicePanel.add(jumpComboBox, gridBagConstraints);
+
+        jumpLabel2.setText(bundle.getString("DLCopySwingGUI.jumpLabel2.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(20, 5, 0, 0);
+        choicePanel.add(jumpLabel2, gridBagConstraints);
 
         getContentPane().add(choicePanel, "choicePanel");
 
@@ -4511,13 +4560,7 @@ public class DLCopySwingGUI extends JFrame
                 break;
 
             case ISO_INFORMATION:
-                setLabelHighlighted(infoStepLabel, false);
-                setLabelHighlighted(selectionLabel, true);
-                setLabelHighlighted(executionLabel, false);
-                showCard(cardPanel, "toISOSelectionPanel");
-                checkFreeSpaceTextField();
-                enableNextButton();
-                state = State.ISO_SELECTION;
+                switchToISOSelection();
                 break;
 
             case UPGRADE_INFORMATION:
@@ -5767,6 +5810,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }
 
     private void savePreferences() {
+        preferences.putInt(JUMP_TO, jumpComboBox.getSelectedIndex());
         preferences.putBoolean(ISO_SOURCE_SELECTED,
                 isoSourceRadioButton.isSelected());
         preferences.put(ISO_SOURCE, isoSourceTextField.getText());
@@ -6633,6 +6677,16 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         state = State.ISO_INFORMATION;
     }
 
+    private void switchToISOSelection() {
+        setLabelHighlighted(infoStepLabel, false);
+        setLabelHighlighted(selectionLabel, true);
+        setLabelHighlighted(executionLabel, false);
+        showCard(cardPanel, "toISOSelectionPanel");
+        checkFreeSpaceTextField();
+        enableNextButton();
+        state = State.ISO_SELECTION;
+    }
+
     private void switchToInstallInformation() {
         setLabelHighlighted(infoStepLabel, true);
         setLabelHighlighted(selectionLabel, false);
@@ -6894,6 +6948,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
     private javax.swing.JSeparator jSeparator5;
+    private javax.swing.JComboBox<String> jumpComboBox;
+    private javax.swing.JLabel jumpLabel1;
+    private javax.swing.JLabel jumpLabel2;
     private javax.swing.JCheckBox keepFirewallSettingsCheckBox;
     private javax.swing.JCheckBox keepNetworkSettingsCheckBox;
     private javax.swing.JCheckBox keepPrinterSettingsCheckBox;
