@@ -1,3 +1,10 @@
+dlcopy (201904272052-1) lernstick-9; urgency=medium
+
+  * [ee46dd] strings cleanup
+  * [cecac6] added jump targets in main menu
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 27 Apr 2019 20:52:23 +0200
+
 dlcopy (201904230854-1) lernstick-9; urgency=medium
 
   * [fedb58] improved device info text rendering
