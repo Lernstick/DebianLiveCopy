@@ -1,3 +1,9 @@
+dlcopy (201906070930-1) lernstick-9; urgency=medium
+
+  * [12045a] cleared up wording for automatic reset radio button
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 07 Jun 2019 09:30:49 +0200
+
 dlcopy (201904272052-1) lernstick-9; urgency=medium
 
   * [ee46dd] strings cleanup
