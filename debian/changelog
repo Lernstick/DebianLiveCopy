@@ -1,3 +1,10 @@
+dlcopy (201906081416-1) lernstick-9; urgency=medium
+
+  * [feaa5b] string cleanup
+  * [00d022] improved PrintSelectionDialog (scrollpane, resizing, ...)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 08 Jun 2019 14:16:05 +0200
+
 dlcopy (201906070930-1) lernstick-9; urgency=medium
 
   * [12045a] cleared up wording for automatic reset radio button
