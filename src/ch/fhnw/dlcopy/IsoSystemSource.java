@@ -268,6 +268,8 @@ public class IsoSystemSource extends SystemSource {
             } else if (signature.contains("Jessie")
                     || signature.contains("Stretch")) {
                 return DebianLiveVersion.DEBIAN_8_to_9;
+            } else if (signature.contains("Buster")) {
+                return DebianLiveVersion.DEBIAN_10;
             }
             LOGGER.log(Level.SEVERE, "Invalid version signature:  {0}",
                     signature);

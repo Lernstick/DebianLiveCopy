@@ -15,6 +15,12 @@ public enum DebianLiveVersion {
      */
     DEBIAN_7("/lib/live/mount/medium", "/usr/lib/syslinux/mbr.bin"),
     /**
+     * Debian 10 (buster)
+     * (must be probed before Debian 8 or 9 because /lib/live/mount/medium is
+     * still there for compatibility reasons)
+     */
+    DEBIAN_10("/run/live/medium", "/usr/lib/syslinux/mbr/mbr.bin"),
+    /**
      * Debian 8 (jessie) to Debian 9 (stretch)
      */
     DEBIAN_8_to_9("/lib/live/mount/medium", "/usr/lib/syslinux/mbr/mbr.bin");
