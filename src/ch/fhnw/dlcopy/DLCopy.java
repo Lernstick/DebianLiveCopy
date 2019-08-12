@@ -33,7 +33,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.xml.bind.DatatypeConverter;
 import javax.xml.parsers.ParserConfigurationException;
 import org.freedesktop.DBus;
 import org.freedesktop.dbus.DBusConnection;
@@ -936,7 +935,11 @@ public class DLCopy {
                 i = digestInputStream.read(byteArray);
             }
             byte[] digest = md5.digest();
-            return DatatypeConverter.printHexBinary(digest).toLowerCase();
+            StringBuilder stringBuilder = new StringBuilder(32);
+            for (byte b : digest) {
+                stringBuilder.append(String.format("%02x", b));
+            }
+            return stringBuilder.toString();
         }
     }
 
