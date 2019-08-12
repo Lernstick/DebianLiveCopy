@@ -1,3 +1,12 @@
+dlcopy (201908122126-1) lernstick-10; urgency=medium
+
+  * [f4e67f] hex printing without jaxb (removed from Java 11)
+  * [d9862a] added Debian 10 detection
+  * [976a16] no longer add java.xml.bind module
+             (no longer supported, relevant source code was already replaced)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Mon, 12 Aug 2019 21:26:45 +0200
+
 dlcopy (201906081416-1) lernstick-9; urgency=medium
 
   * [feaa5b] string cleanup
