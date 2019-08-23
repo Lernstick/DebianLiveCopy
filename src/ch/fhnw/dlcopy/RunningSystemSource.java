@@ -250,8 +250,8 @@ public final class RunningSystemSource extends SystemSource {
 
     private boolean hasLegacyGrub() throws IOException, DBusException {
         try {
-            return GRUB_LEGACY_MD5.equals(
-                    DLCopy.getMd5String(getBasePath() + GRUB_EFI_PATH));
+            String filePath = findGrubEfiFile(getBasePath());
+            return GRUB_LEGACY_MD5.equals(DLCopy.getMd5String(filePath));
         } catch (NoSuchAlgorithmException ex) {
             throw new IOException(ex);
         } finally {

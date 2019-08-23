@@ -285,8 +285,8 @@ public class IsoSystemSource extends SystemSource {
     private boolean hasLegacyGrub() throws IOException {
         mountIsoImageIfNeeded();
         try {
-            return GRUB_LEGACY_MD5.equals(
-                    DLCopy.getMd5String(mediaPath + GRUB_EFI_PATH));
+            String filePath = findGrubEfiFile(mediaPath);
+            return GRUB_LEGACY_MD5.equals(DLCopy.getMd5String(filePath));
         } catch (NoSuchAlgorithmException ex) {
             throw new IOException(ex);
         }

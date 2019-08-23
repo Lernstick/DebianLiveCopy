@@ -6,6 +6,8 @@ import ch.fhnw.util.Partition;
 import ch.fhnw.util.StorageDevice.Type;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import org.freedesktop.dbus.exceptions.DBusException;
 
@@ -18,7 +20,7 @@ public abstract class SystemSource {
      * the pattern of files that need to be copied to the EFI partition
      */
     public final static String EFI_COPY_PATTERN
-            = "efi.*|\\.VolumeIcon.icns|\\.disk_label.*";
+            = "EFI.*|efi.*|\\.VolumeIcon.icns|\\.disk_label.*";
 
     /**
      * the pattern of files that need to be copied to the EFI partition on
@@ -66,7 +68,7 @@ public abstract class SystemSource {
     /**
      * the path to the GRUB EFI file
      */
-    public static final String GRUB_EFI_PATH = "/efi/boot/grubx64.efi";
+    public static final String GRUB_EFI_PATH = "/boot/grubx64.efi";
 
     /**
      * Returns the device name (e.g. sda) of this system source. This is mostly
@@ -79,6 +81,7 @@ public abstract class SystemSource {
 
     /**
      * returns the device type if this system source
+     *
      * @return the device type if this system source
      */
     public abstract Type getDeviceType();
@@ -117,12 +120,14 @@ public abstract class SystemSource {
 
     /**
      * returns the path where the system is mounted
+     *
      * @return the path where the system is mounted
      */
     public abstract String getSystemPath();
 
     /**
      * returns the size of the system in byte
+     *
      * @return the size of the system in byte
      */
     public abstract long getSystemSize();
@@ -198,5 +203,25 @@ public abstract class SystemSource {
         } catch (DBusException ex) {
             throw new IOException(ex);
         }
+    }
+
+    /**
+     * Depending on the Debian Live version the EFI directory is lowercase or
+     * uppercase.This function tries to find the file in either case.
+     *
+     * @param base the base directory where the directory "efi" or "EFI" is
+     * located
+     * @return the location of the grubx64.efi file
+     * @throws java.io.IOException if the grubx64.efi can't be found
+     */
+    protected String findGrubEfiFile(String base) throws IOException {
+        String filePath = base + "/efi" + GRUB_EFI_PATH;
+        if (!Files.exists(Paths.get(filePath))) {
+            filePath = base + "/EFI" + GRUB_EFI_PATH;
+        }
+        if (!Files.exists(Paths.get(filePath))) {
+            throw new IOException(filePath + " not found");
+        }
+        return filePath;
     }
 }
