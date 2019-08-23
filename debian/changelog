@@ -1,3 +1,10 @@
+dlcopy (201908231315-1) lernstick-10; urgency=medium
+
+  * [640cbc] added support for "EFI" directory in capital letters
+             (as in Debian 10)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 23 Aug 2019 13:15:28 +0200
+
 dlcopy (201908122126-1) lernstick-10; urgency=medium
 
   * [f4e67f] hex printing without jaxb (removed from Java 11)
