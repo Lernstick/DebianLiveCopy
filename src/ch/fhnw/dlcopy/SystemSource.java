@@ -20,7 +20,9 @@ public abstract class SystemSource {
      * the pattern of files that need to be copied to the EFI partition
      */
     public final static String EFI_COPY_PATTERN
-            = "EFI.*|efi.*|\\.VolumeIcon.icns|\\.disk_label.*";
+            = "autorun.inf|boot.*|efi.*|EFI.*|isolinux.*|syslinux.*|"
+            + "lernstick.ico|live/initrd.*|live/memtest|live/vmlinuz.*|"
+            + "md5sum.txt|\\.disk.*|\\.VolumeIcon.icns";
 
     /**
      * the pattern of files that need to be copied to the EFI partition on
@@ -42,14 +44,13 @@ public abstract class SystemSource {
      * the pattern of files that need to be copied to the system partition (only
      * the files that are needed to boot the system, without the squashfs files)
      */
-    public final static String SYSTEM_COPY_PATTERN_BOOT
-            = LEGACY_SYSTEM_COPY_PATTERN_BOOT + "|boot.*";
+    public final static String SYSTEM_COPY_PATTERN_BOOT = "";
 
     /**
      * the pattern of files that need to be copied to the system partition
      */
     public final static String SYSTEM_COPY_PATTERN_FULL
-            = SYSTEM_COPY_PATTERN_BOOT + "|live/filesystem.*";
+            = "live/filesystem.*";
 
     /**
      * the pattern of files that need to be copied to the system partition on

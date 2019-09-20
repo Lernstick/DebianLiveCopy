@@ -59,7 +59,7 @@ public class DLCopy {
     /**
      * the size of the efi partition (given in MiB)
      */
-    public static final long EFI_PARTITION_SIZE = 10;
+    public static final long EFI_PARTITION_SIZE = 150;
 
     /**
      * the label to use for the system partition
@@ -382,7 +382,7 @@ public class DLCopy {
 
         // make storage device bootable
         installerOrUpgrader.showWritingBootSector();
-        makeBootable(source, device, destinationSystemPartition);
+        makeBootable(source, device, destinationBootPartition);
 
         if (!umount(destinationBootPartition, dlCopyGUI)) {
             String errorMessage = "could not umount destination boot partition";
@@ -1085,7 +1085,7 @@ public class DLCopy {
                 String efiBorder = EFI_PARTITION_SIZE + "MiB";
                 mkpart(partedCommandList, "0%", efiBorder);
                 mkpart(partedCommandList, efiBorder, "100%");
-                setFlag(partedCommandList, "2", "boot", "on");
+                setFlag(partedCommandList, "1", "boot", "on");
                 setFlag(partedCommandList, "1", "lba", "on");
                 break;
 
@@ -1097,7 +1097,7 @@ public class DLCopy {
                 mkpart(partedCommandList, "0%", efiBorder);
                 mkpart(partedCommandList, efiBorder, persistenceBorder);
                 mkpart(partedCommandList, persistenceBorder, "100%");
-                setFlag(partedCommandList, "3", "boot", "on");
+                setFlag(partedCommandList, "1", "boot", "on");
                 setFlag(partedCommandList, "1", "lba", "on");
                 break;
 
@@ -1110,7 +1110,7 @@ public class DLCopy {
                     mkpart(partedCommandList, "0%", efiBorder);
                     mkpart(partedCommandList, efiBorder, persistenceBorder);
                     mkpart(partedCommandList, persistenceBorder, "100%");
-                    setFlag(partedCommandList, "3", "boot", "on");
+                    setFlag(partedCommandList, "1", "boot", "on");
                     setFlag(partedCommandList, "1", "lba", "on");
 
                 } else {
@@ -1136,7 +1136,6 @@ public class DLCopy {
                     if (persistenceMB == 0) {
                         // third partition: system
                         mkpart(partedCommandList, secondBorder, "100%");
-                        setFlag(partedCommandList, "3", "boot", "on");
                     } else {
                         // last two partitions: persistence, system
                         persistenceBorder = (EFI_PARTITION_SIZE
@@ -1144,7 +1143,6 @@ public class DLCopy {
                         mkpart(partedCommandList,
                                 secondBorder, persistenceBorder);
                         mkpart(partedCommandList, persistenceBorder, "100%");
-                        setFlag(partedCommandList, "4", "boot", "on");
                     }
                     setFlag(partedCommandList, "1", "lba", "on");
                     setFlag(partedCommandList, "2", "lba", "on");
@@ -1451,12 +1449,12 @@ public class DLCopy {
             destinationExchangePartition.umount();
         }
 
-        String destinationSystemPath = copyJobsInfo.getDestinationSystemPath();
+        String destinationEfiPath = copyJobsInfo.getDestinationEfiPath();
         // isolinux -> syslinux renaming
         // !!! don't check here for boot storage device type !!!
         // (usb flash drives with an isohybrid image also contain the
         //  isolinux directory)
-        isolinuxToSyslinux(destinationSystemPath, dlCopyGUI);
+        isolinuxToSyslinux(destinationEfiPath, dlCopyGUI);
 
         // change data partition mode on target (if needed)
         if (installerOrUpgrader instanceof Installer) {
@@ -1464,7 +1462,7 @@ public class DLCopy {
             DataPartitionMode dataPartitionMode
                     = installer.getDataPartitionMode();
             setDataPartitionMode(source, dataPartitionMode,
-                    destinationSystemPath);
+                    destinationEfiPath);
         }
     }
 
