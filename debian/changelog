@@ -1,3 +1,10 @@
+dlcopy (201909272104-1) lernstick-10; urgency=medium
+
+  * [c63605] no longer add java.xml.bind module
+             (no longer supported, relevant source code was already replaced)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 27 Sep 2019 21:04:55 +0200
+
 dlcopy (201909202058-1) lernstick-10; urgency=medium
 
   * [98839f] updated partition/files schema to support upstream shim/grub
