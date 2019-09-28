@@ -1,3 +1,10 @@
+dlcopy (201909282227-1) lernstick-10; urgency=medium
+
+  * [1b1573] added special logging for file copy library
+  * [b51249] updated file copy library
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 28 Sep 2019 22:27:03 +0200
+
 dlcopy (201909272104-1) lernstick-10; urgency=medium
 
   * [c63605] no longer add java.xml.bind module
