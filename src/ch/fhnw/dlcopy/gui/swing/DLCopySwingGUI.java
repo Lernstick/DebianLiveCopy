@@ -298,6 +298,9 @@ public class DLCopySwingGUI extends JFrame
         Logger dbusLogger = Logger.getLogger("ch.fhnw.util.DbusTools");
         dbusLogger.setLevel(Level.WARNING);
         loggers.add(dbusLogger);
+        Logger fileCopierLibrary = Logger.getLogger("ch.fhnw.filecopier");
+        fileCopierLibrary.setLevel(Level.INFO);
+        loggers.add(fileCopierLibrary);
 
         // log to console
         ConsoleHandler consoleHandler = new ConsoleHandler();
