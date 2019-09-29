@@ -1633,13 +1633,24 @@ public class DLCopy {
         List<String> debianVersionFile = LernstickFileTools.readFile(
                 new File(debianVersionPath));
         String versionString = debianVersionFile.get(0);
-        Pattern versionPattern = Pattern.compile("(\\p{Digit}).*");
+        // first try pattern <major>.<minor>
+        Pattern versionPattern = Pattern.compile("(\\p{Digit}*)\\..*");
         Matcher matcher = versionPattern.matcher(versionString);
         if (matcher.matches()) {
             int majorDebianVersion = Integer.parseInt(matcher.group(1));
             LOGGER.log(Level.INFO, "majorDebianVersion: {0}",
                     majorDebianVersion);
             return majorDebianVersion;
+        } else {
+            // retry with a simple number pattern
+            versionPattern = Pattern.compile("(\\p{Digit}*)");
+            matcher = versionPattern.matcher(versionString);
+            if (matcher.matches()) {
+                int majorDebianVersion = Integer.parseInt(matcher.group(1));
+                LOGGER.log(Level.INFO, "majorDebianVersion: {0}",
+                        majorDebianVersion);
+                return majorDebianVersion;
+            }
         }
         throw new IOException("could not parse " + debianVersionPath);
     }
