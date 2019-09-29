@@ -1,3 +1,10 @@
+dlcopy (201909291101-1) lernstick-10; urgency=medium
+
+  * [54c6b7] fixed detection of Debian version
+  * [ce8c14] updated some strings
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 29 Sep 2019 11:02:29 +0200
+
 dlcopy (201909282227-1) lernstick-10; urgency=medium
 
   * [1b1573] added special logging for file copy library
