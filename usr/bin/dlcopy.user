@@ -4,11 +4,15 @@
 CURRENT_AUTOMOUNT=$(gsettings get org.gnome.desktop.media-handling automount)
 CURRENT_IDLE_DIM=$(gsettings get org.gnome.settings-daemon.plugins.power idle-dim)
 CURRENT_IDLE_DELAY=$(gsettings get org.gnome.desktop.session idle-delay)
+CURRENT_INACTIVE_BATTERY=$(gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type)
+CURRENT_INACTIVE_AC=$(gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type)
 
 # change states for DLCopy
 gsettings set org.gnome.desktop.media-handling automount "false"
 gsettings set org.gnome.settings-daemon.plugins.power idle-dim "false"
 gsettings set org.gnome.desktop.session idle-delay "uint32 0"
+gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type "nothing"
+gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type "nothing"
 
 # run dlcopy with root rights
 pkexec /usr/bin/dlcopy $@
@@ -17,3 +21,5 @@ pkexec /usr/bin/dlcopy $@
 gsettings set org.gnome.desktop.media-handling automount "${CURRENT_AUTOMOUNT}"
 gsettings set org.gnome.settings-daemon.plugins.power idle-dim "${CURRENT_IDLE_DIM}"
 gsettings set org.gnome.desktop.session idle-delay "${CURRENT_IDLE_DELAY}"
+gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type "${CURRENT_INACTIVE_BATTERY}"
+gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type "${CURRENT_INACTIVE_AC}"
