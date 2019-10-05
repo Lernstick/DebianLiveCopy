@@ -1,3 +1,9 @@
+dlcopy (201910052041-1) lernstick-10; urgency=medium
+
+  * [3467ca] use updated GNOME power settings keys in Debian 10
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 05 Oct 2019 20:41:58 +0200
+
 dlcopy (201909291101-1) lernstick-10; urgency=medium
 
   * [54c6b7] fixed detection of Debian version
