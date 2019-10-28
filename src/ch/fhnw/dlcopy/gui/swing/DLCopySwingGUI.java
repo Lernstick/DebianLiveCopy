@@ -191,6 +191,7 @@ public class DLCopySwingGUI extends JFrame
     private final static String EXCHANGE_PARTITION_FILESYSTEM = "exchangePartitionFileSystem";
     private final static String COPY_EXCHANGE_PARTITION = "copyExchangePartition";
     private final static String DATA_PARTITION_FILESYSTEM = "dataPartitionFileSystem";
+    private final static String CHECK_COPIES = "checkCopies";
     private final static String DATA_PARTITION_MODE = "dataPartitionMode";
     private final static String COPY_DATA_PARTITION = "copyDataPartition";
     private final static String UPGRADE_SYSTEM_PARTITION = "upgradeSystemPartition";
@@ -281,6 +282,9 @@ public class DLCopySwingGUI extends JFrame
     private Lock installLock = new ReentrantLock();
     private Lock upgradeLock = new ReentrantLock();
     private Lock resetLock = new ReentrantLock();
+    
+    // global cache for file digests to speed up repeated file copy checks
+    private final HashMap<String, byte[]> digestCache = new HashMap<>();
 
     /**
      * Creates new form DLCopy
@@ -660,6 +664,10 @@ public class DLCopySwingGUI extends JFrame
 
         dataPartitionFileSystemComboBox.setSelectedItem(
                 preferences.get(DATA_PARTITION_FILESYSTEM, "ext4"));
+
+        checkCopiesCheckBox.setSelected(
+                preferences.getBoolean(CHECK_COPIES, false));
+
         if (commandLineCopyDataPartition == null) {
             copyDataPartitionCheckBox.setSelected(
                     preferences.getBoolean(COPY_DATA_PARTITION, false));
@@ -1874,6 +1882,7 @@ public class DLCopySwingGUI extends JFrame
         dataPartitionDetailsPanel = new javax.swing.JPanel();
         dataPartitionFileSystemLabel = new javax.swing.JLabel();
         dataPartitionFileSystemComboBox = new javax.swing.JComboBox();
+        checkCopiesCheckBox = new javax.swing.JCheckBox();
         installNoMediaPanel = new javax.swing.JPanel();
         installNoMediaLabel = new javax.swing.JLabel();
         installNoSourcePanel = new javax.swing.JPanel();
@@ -2738,11 +2747,20 @@ public class DLCopySwingGUI extends JFrame
         dataPartitionDetailsPanel.add(dataPartitionFileSystemComboBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.weighty = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
         installDetailsPanel.add(dataPartitionDetailsPanel, gridBagConstraints);
+
+        checkCopiesCheckBox.setText(bundle.getString("DLCopySwingGUI.checkCopiesCheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
+        installDetailsPanel.add(checkCopiesCheckBox, gridBagConstraints);
 
         installSelectionTabbedPane.addTab(bundle.getString("Details"), installDetailsPanel); // NOI18N
 
@@ -5835,6 +5853,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 copyExchangePartitionCheckBox.isSelected());
         preferences.put(DATA_PARTITION_FILESYSTEM,
                 dataPartitionFileSystemComboBox.getSelectedItem().toString());
+        preferences.putBoolean(CHECK_COPIES, checkCopiesCheckBox.isSelected());
         preferences.putInt(DATA_PARTITION_MODE,
                 dataPartitionModeComboBox.getSelectedIndex());
         preferences.putBoolean(COPY_DATA_PARTITION,
@@ -6335,11 +6354,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         new Installer(systemSource, deviceList,
                 exchangePartitionTextField.getText(),
-                exchangePartitionFileSystem, dataPartitionFileSystem, this,
-                exchangePartitionSizeSlider.getValue(), copyExchange,
-                autoNumberPatternTextField.getText(), autoNumber, autoIncrement,
-                autoMinDigits, copyData, dataPartitionMode, installLock)
-                .execute();
+                exchangePartitionFileSystem, dataPartitionFileSystem,
+                digestCache, this, exchangePartitionSizeSlider.getValue(),
+                copyExchange, autoNumberPatternTextField.getText(), autoNumber,
+                autoIncrement, autoMinDigits, copyData, dataPartitionMode,
+                checkCopiesCheckBox.isSelected(), installLock).execute();
 
         updateTableActionListener
                 = new UpdateChangingDurationsTableActionListener(
@@ -6466,8 +6485,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         // because the input field it is not visible when upgrading
         new Upgrader(runningSystemSource, deviceList,
                 exchangePartitionTextField.getText(),
-                exchangePartitionFileSystem, dataPartitionFileSystem, this,
-                this, repartitionStrategy, exchangeMB,
+                exchangePartitionFileSystem, dataPartitionFileSystem,
+                digestCache, this, this, repartitionStrategy, exchangeMB,
                 automaticBackupCheckBox.isSelected(),
                 automaticBackupTextField.getText(), removeBackup,
                 upgradeSystemPartitionCheckBox.isSelected(),
@@ -6855,6 +6874,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JRadioButton bootMediumRadioButton;
     private javax.swing.JPanel buttonGridPanel;
     private javax.swing.JPanel cardPanel;
+    private javax.swing.JCheckBox checkCopiesCheckBox;
     private javax.swing.JLabel choiceLabel;
     private javax.swing.JPanel choicePanel;
     private javax.swing.JCheckBox copyDataPartitionCheckBox;

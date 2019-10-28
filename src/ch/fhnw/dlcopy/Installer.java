@@ -7,6 +7,7 @@ import ch.fhnw.util.StorageDevice;
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
@@ -32,6 +33,7 @@ public class Installer extends InstallerOrUpgrader
     private final int autoNumberMinDigits;
     private final boolean copyDataPartition;
     private final DataPartitionMode dataPartitionMode;
+    private final boolean checkCopies;
 
     /**
      * creates a new Installer
@@ -42,6 +44,8 @@ public class Installer extends InstallerOrUpgrader
      * @param exchangePartitionFileSystem the file system of the exchange
      * partition
      * @param dataPartitionFileSystem the file system of the data partition
+     * @param digestCache a global digest cache for speeding up repeated file
+     * checks
      * @param dlCopyGUI the DLCopy GUI
      * @param exchangePartitionSize the size of the exchange partition
      * @param copyExchangePartition if the exchange partition should be copied
@@ -53,20 +57,22 @@ public class Installer extends InstallerOrUpgrader
      * @param copyDataPartition if the data partition should be copied
      * @param dataPartitionMode the mode of the data partition to set in the
      * bootloaders config
+     * @param checkCopies if copies should be checked for errors
      * @param lock the lock to aquire before executing in background
      */
     public Installer(SystemSource source, List<StorageDevice> deviceList,
             String exchangePartitionLabel, String exchangePartitionFileSystem,
-            String dataPartitionFileSystem, DLCopyGUI dlCopyGUI,
-            int exchangePartitionSize, boolean copyExchangePartition,
-            String autoNumberPattern, int autoNumberStart,
-            int autoNumberIncrement, int autoNumberMinDigits,
-            boolean copyDataPartition, DataPartitionMode dataPartitionMode,
+            String dataPartitionFileSystem, HashMap<String, byte[]> digestCache,
+            DLCopyGUI dlCopyGUI, int exchangePartitionSize,
+            boolean copyExchangePartition, String autoNumberPattern,
+            int autoNumberStart, int autoNumberIncrement,
+            int autoNumberMinDigits, boolean copyDataPartition,
+            DataPartitionMode dataPartitionMode, boolean checkCopies,
             Lock lock) {
 
         super(source, deviceList, exchangePartitionLabel,
                 exchangePartitionFileSystem, dataPartitionFileSystem,
-                dlCopyGUI, lock);
+                digestCache, dlCopyGUI, lock);
 
         this.exchangePartitionSize = exchangePartitionSize;
         this.copyExchangePartition = copyExchangePartition;
@@ -76,6 +82,7 @@ public class Installer extends InstallerOrUpgrader
         this.autoNumberMinDigits = autoNumberMinDigits;
         this.copyDataPartition = copyDataPartition;
         this.dataPartitionMode = dataPartitionMode;
+        this.checkCopies = checkCopies;
     }
 
     @Override
@@ -111,7 +118,7 @@ public class Installer extends InstallerOrUpgrader
                 try {
                     DLCopy.copyToStorageDevice(source, fileCopier,
                             storageDevice, currentExchangePartitionLabel,
-                            this, dlCopyGUI);
+                            this, checkCopies, dlCopyGUI);
                 } catch (InterruptedException | IOException
                         | DBusException exception) {
                     LOGGER.log(Level.WARNING, "", exception);

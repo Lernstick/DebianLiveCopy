@@ -29,10 +29,12 @@ import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
+import java.security.NoSuchAlgorithmException;
 import java.sql.SQLException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.TimeUnit;
@@ -87,6 +89,8 @@ public class Upgrader extends InstallerOrUpgrader {
      * @param exchangePartitionFileSystem the file system of the exchange
      * partition
      * @param dataPartitionFileSystem the file system of the data partition
+     * @param digestCache a global digest cache for speeding up repeated file
+     * checks
      * @param dlCopy the main DLCopy instance
      * @param dlCopyGUI the DLCopy GUI
      * @param repartitionStrategy the repartition strategie for the exchange
@@ -118,8 +122,9 @@ public class Upgrader extends InstallerOrUpgrader {
      */
     public Upgrader(SystemSource source, List<StorageDevice> deviceList,
             String exchangePartitionLabel, String exchangePartitionFileSystem,
-            String dataPartitionFileSystem, DLCopySwingGUI dlCopy,
-            DLCopyGUI dlCopyGUI, RepartitionStrategy repartitionStrategy,
+            String dataPartitionFileSystem, HashMap<String, byte[]> digestCache,
+            DLCopySwingGUI dlCopy, DLCopyGUI dlCopyGUI,
+            RepartitionStrategy repartitionStrategy,
             int resizedExchangePartitionSize, boolean automaticBackup,
             String automaticBackupDestination, boolean removeBackup,
             boolean upgradeSystemPartition, boolean resetDataPartition,
@@ -130,7 +135,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
         super(source, deviceList, exchangePartitionLabel,
                 exchangePartitionFileSystem, dataPartitionFileSystem,
-                dlCopyGUI, lock);
+                digestCache, dlCopyGUI, lock);
 
         this.repartitionStrategy = repartitionStrategy;
         this.resizedExchangePartitionSize = resizedExchangePartitionSize;
@@ -196,7 +201,7 @@ public class Upgrader extends InstallerOrUpgrader {
                         case INSTALLATION:
                             DLCopy.copyToStorageDevice(source, fileCopier,
                                     storageDevice, exchangePartitionLabel,
-                                    this, dlCopyGUI);
+                                    this, false, dlCopyGUI);
                             break;
 
                         default:
@@ -280,7 +285,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
     private void backupInstallRestore(StorageDevice storageDevice)
             throws InterruptedException, IOException, DBusException,
-            SQLException {
+            SQLException, NoSuchAlgorithmException {
 
         //TODO: union old squashfs and data partition!
         // prepare backup destination directories
@@ -300,7 +305,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
         // installation
         DLCopy.copyToStorageDevice(source, fileCopier, storageDevice,
-                exchangePartitionLabel, this, dlCopyGUI);
+                exchangePartitionLabel, this, false, dlCopyGUI);
 
         // !!! update reference to storage device !!!
         // copyToStorageDevice() may change the storage device completely
@@ -342,7 +347,8 @@ public class Upgrader extends InstallerOrUpgrader {
     }
 
     private void backupExchangeParitition(StorageDevice storageDevice,
-            File exchangeDestination) throws DBusException, IOException {
+            File exchangeDestination)
+            throws DBusException, IOException, NoSuchAlgorithmException {
 
         Partition exchangePartition = storageDevice.getExchangePartition();
         if (exchangePartition == null) {
@@ -424,7 +430,8 @@ public class Upgrader extends InstallerOrUpgrader {
 
     private void restoreExchangePartition(
             StorageDevice storageDevice, File restoreSourceDir)
-            throws DBusException, IOException, SQLException {
+            throws DBusException, IOException, 
+            SQLException, NoSuchAlgorithmException {
 
         Partition exchangePartition = storageDevice.getExchangePartition();
         if (exchangePartition == null) {
@@ -908,7 +915,8 @@ public class Upgrader extends InstallerOrUpgrader {
     }
 
     private boolean upgradeSystemPartition(StorageDevice storageDevice)
-            throws DBusException, IOException, InterruptedException {
+            throws DBusException, IOException, 
+            InterruptedException, NoSuchAlgorithmException {
 
         String device = storageDevice.getDevice();
         String devicePath = "/dev/" + device;

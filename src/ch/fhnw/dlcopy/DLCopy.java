@@ -198,16 +198,21 @@ public class DLCopy {
      * @param exchangePartitionLabel the label of the exchange partition
      * @param installerOrUpgrader the Installer or Upgrader that is calling this
      * method
+     * @param checkCopies if copies should be checked for errors
      * @param dlCopyGUI the program GUI
      * @throws InterruptedException when the installation was interrupted
      * @throws IOException when an I/O exception occurs
      * @throws DBusException when there was a problem with DBus
+     * @throws java.security.NoSuchAlgorithmException when the file checking
+     * algorithm can't be found
      */
     public static void copyToStorageDevice(SystemSource source,
             FileCopier fileCopier, StorageDevice storageDevice,
             String exchangePartitionLabel,
-            InstallerOrUpgrader installerOrUpgrader, DLCopyGUI dlCopyGUI)
-            throws InterruptedException, IOException, DBusException {
+            InstallerOrUpgrader installerOrUpgrader, boolean checkCopies,
+            DLCopyGUI dlCopyGUI)
+            throws InterruptedException, IOException,
+            DBusException, NoSuchAlgorithmException {
 
         // determine size and state
         String device = "/dev/" + storageDevice.getDevice();
@@ -374,7 +379,8 @@ public class DLCopy {
         // copy operating system files
         copyExchangeEfiAndSystem(source, fileCopier, storageDevice,
                 destinationExchangePartition, destinationBootPartition,
-                destinationSystemPartition, installerOrUpgrader, dlCopyGUI);
+                destinationSystemPartition, installerOrUpgrader, checkCopies,
+                dlCopyGUI);
 
         // copy persistence layer
         copyPersistence(source, installerOrUpgrader,
@@ -1385,8 +1391,10 @@ public class DLCopy {
             Partition destinationExchangePartition,
             Partition destinationEfiPartition,
             Partition destinationSystemPartition,
-            InstallerOrUpgrader installerOrUpgrader, DLCopyGUI dlCopyGUI)
-            throws InterruptedException, IOException, DBusException {
+            InstallerOrUpgrader installerOrUpgrader, boolean checkCopies,
+            DLCopyGUI dlCopyGUI)
+            throws InterruptedException, IOException,
+            DBusException, NoSuchAlgorithmException {
 
         // define CopyJob for exchange paritition
         String destinationExchangePath = null;
@@ -1412,7 +1420,7 @@ public class DLCopy {
         installerOrUpgrader.showCopyingFiles(fileCopier);
 
         CopyJob efiFilesCopyJob = copyJobsInfo.getExchangeEfiCopyJob();
-        fileCopier.copy(exchangeCopyJob, efiFilesCopyJob,
+        fileCopier.copy(checkCopies, exchangeCopyJob, efiFilesCopyJob,
                 copyJobsInfo.getEfiCopyJob(), copyJobsInfo.getSystemCopyJob());
 
         if (efiFilesCopyJob != null) {

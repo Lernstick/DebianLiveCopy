@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -245,7 +246,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
     }
 
     private void resetStorageDevice(StorageDevice storageDevice)
-            throws DBusException, IOException {
+            throws DBusException, IOException, NoSuchAlgorithmException {
 
         try {
             dlCopyGUI.resettingDeviceStarted(storageDevice);
@@ -526,7 +527,8 @@ public class Resetter extends SwingWorker<Boolean, Void> {
     }
 
     private void backup(StorageDevice storageDevice,
-            Partition exchangePartition) throws DBusException, IOException {
+            Partition exchangePartition) 
+            throws DBusException, IOException, NoSuchAlgorithmException {
 
         if (!backupData) {
             return;
@@ -706,7 +708,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
     }
 
     private void restoreFiles(Partition dataPartition)
-            throws IOException, DBusException {
+            throws IOException, DBusException, NoSuchAlgorithmException {
 
         if (!restoreData || overwriteEntries.isEmpty()) {
             return;

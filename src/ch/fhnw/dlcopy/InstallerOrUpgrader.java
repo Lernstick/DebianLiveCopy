@@ -3,6 +3,7 @@ package ch.fhnw.dlcopy;
 import ch.fhnw.dlcopy.gui.DLCopyGUI;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.StorageDevice;
+import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.locks.Lock;
 import javax.swing.SwingWorker;
@@ -38,7 +39,7 @@ public abstract class InstallerOrUpgrader
     /**
      * the FileCopier to use for copying files
      */
-    protected final FileCopier fileCopier = new FileCopier();
+    protected final FileCopier fileCopier;
 
     /**
      * the lock to aquire before executing in background
@@ -67,19 +68,23 @@ public abstract class InstallerOrUpgrader
      * @param exhangePartitionFileSystem the file system of the exchange
      * partition
      * @param dataPartitionFileSystem the file system of the data partition
+     * @param digestCache a global digest cache for speeding up repeated file
+     * checks
      * @param dlCopyGUI the graphical user interface
      * @param lock the lock to aquire before executing in background
      */
     public InstallerOrUpgrader(SystemSource source,
             List<StorageDevice> deviceList, String exchangePartitionLabel,
             String exhangePartitionFileSystem, String dataPartitionFileSystem,
-            DLCopyGUI dlCopyGUI, Lock lock) {
+            HashMap<String, byte[]> digestCache, DLCopyGUI dlCopyGUI,
+            Lock lock) {
 
         this.source = source;
         this.deviceList = deviceList;
         this.exchangePartitionLabel = exchangePartitionLabel;
         this.exhangePartitionFileSystem = exhangePartitionFileSystem;
         this.dataPartitionFileSystem = dataPartitionFileSystem;
+        this.fileCopier = new FileCopier(digestCache);
         this.dlCopyGUI = dlCopyGUI;
         this.lock = lock;
         deviceListSize = deviceList.size();
