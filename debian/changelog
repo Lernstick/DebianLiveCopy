@@ -1,3 +1,9 @@
+dlcopy (201911021631-1) lernstick-10; urgency=medium
+
+  * [640bd7] updated file copy library
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 02 Nov 2019 16:31:35 +0100
+
 dlcopy (201910280108-1) lernstick-10; urgency=medium
 
   * [9a7c78] added option to check copies for errors
