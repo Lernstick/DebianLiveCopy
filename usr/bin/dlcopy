@@ -2,7 +2,7 @@
 # On some machines (e.g. Dell Vostro 15, HP ProBook 430 G4) the JVM just crashes
 # in java.util.GregorianCalendar.computeFields.
 # Using the interpreted-only mode switch (-Xint) prevents these crashes.
-java \
+auto-gdk-scale java \
 	-Djava.library.path=/usr/lib/jni \
 	-Dawt.useSystemAAFontSettings=on \
 	-jar /usr/bin/DLCopy.jar \
