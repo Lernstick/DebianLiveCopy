@@ -1,3 +1,9 @@
+dlcopy (201911172134-1) lernstick-10; urgency=medium
+
+  * [0d0cf8] use auto-gdk-scale to support hidpi monitors
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 17 Nov 2019 21:34:08 +0100
+
 dlcopy (201911021631-1) lernstick-10; urgency=medium
 
   * [640bd7] updated file copy library
