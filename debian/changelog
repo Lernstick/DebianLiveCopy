@@ -1,3 +1,9 @@
+dlcopy (201911252248-1) lernstick-10; urgency=medium
+
+  * [163278] fixed document preview (can now be run as root in Debian 10)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Mon, 25 Nov 2019 22:48:51 +0100
+
 dlcopy (201911172134-1) lernstick-10; urgency=medium
 
   * [0d0cf8] use auto-gdk-scale to support hidpi monitors
