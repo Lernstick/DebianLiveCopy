@@ -251,34 +251,26 @@ public class PrintSelectionDialog extends javax.swing.JDialog {
             Thread thread = new Thread() {
                 @Override
                 public void run() {
-                    // This line doesn't work because we are running as root:
-                    // Desktop.getDesktop().open(document.toFile());
-                    // Until we have a better idea we use the workaround below
-                    // with a script:
+                    // for whatever reason the following line tries to open ODTs
+                    // in calibre and PDFs in xournal++
+                    // try {
+                    //     Desktop.getDesktop().open(document.toFile());
+                    // } catch (IOException ex) {
+                    //     LOGGER.log(Level.SEVERE, "", ex);
+                    // }
+                    // Until we have a better idea we use the workaround below:
                     ProcessExecutor processExecutor = new ProcessExecutor();
-                    try {
-                        if (document.getFileName().toString().toLowerCase()
-                                .endsWith("pdf")) {
-                            processExecutor.executeScript(true, true,
-                                    createScript(document, "evince"));
-                        } else {
-                            processExecutor.executeScript(true, true,
-                                    createScript(document, "libreoffice"));
-                        }
-                    } catch (IOException ex) {
-                        LOGGER.log(Level.SEVERE, "", ex);
+                    String documentPath = document.toString();
+                    if (documentPath.toLowerCase().endsWith("pdf")) {
+                        processExecutor.executeProcess(true, true,
+                                "evince", documentPath);
+                    } else {
+                        processExecutor.executeProcess(true, true,
+                                "libreoffice", documentPath);
                     }
                 }
             };
             thread.start();
-        }
-
-        private String createScript(Path document, String program) {
-            String fileName = document.getFileName().toString();
-            return "#!/bin/sh\n"
-                    + "cp \"" + document.toString() + "\" /tmp/\n"
-                    + "cd /tmp\n"
-                    + "sudo -u user " + program + " \"/tmp/" + fileName + "\"";
         }
     }
 
