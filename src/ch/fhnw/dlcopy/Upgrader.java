@@ -243,7 +243,7 @@ public class Upgrader extends InstallerOrUpgrader {
         if (inhibit != null) {
             inhibit.delete();
         }
-        
+
         // the following try-catch block is needed to log otherwise invisible
         // runtime exceptions
         try {
@@ -251,7 +251,7 @@ public class Upgrader extends InstallerOrUpgrader {
         } catch (Exception ex) {
             LOGGER.log(Level.WARNING, "", ex);
         }
-        
+
         dlCopyGUI.upgradingListFinished();
     }
 
@@ -430,7 +430,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
     private void restoreExchangePartition(
             StorageDevice storageDevice, File restoreSourceDir)
-            throws DBusException, IOException, 
+            throws DBusException, IOException,
             SQLException, NoSuchAlgorithmException {
 
         Partition exchangePartition = storageDevice.getExchangePartition();
@@ -915,7 +915,7 @@ public class Upgrader extends InstallerOrUpgrader {
     }
 
     private boolean upgradeSystemPartition(StorageDevice storageDevice)
-            throws DBusException, IOException, 
+            throws DBusException, IOException,
             InterruptedException, NoSuchAlgorithmException {
 
         String device = storageDevice.getDevice();
@@ -1084,8 +1084,8 @@ public class Upgrader extends InstallerOrUpgrader {
                     "/dev/" + systemPartition.getDeviceAndNumber());
 
             // update boot flag
-            efiPartition.setBootFlag(false);
-            systemPartition.setBootFlag(true);
+            efiPartition.setBootFlag(true);
+            systemPartition.setBootFlag(false);
             // we have to wait for d-bus to settle after changing the boot flag
             TimeUnit.SECONDS.sleep(7);
         }
@@ -1154,7 +1154,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
         dlCopyGUI.showUpgradeUnmounting();
         DLCopy.isolinuxToSyslinux(
-                copyJobsInfo.getDestinationSystemPath(), dlCopyGUI);
+                copyJobsInfo.getDestinationEfiPath(), dlCopyGUI);
 
         // make storage device bootable
         dlCopyGUI.showUpgradeWritingBootSector();
