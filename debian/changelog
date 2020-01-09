@@ -1,3 +1,9 @@
+dlcopy (202001091452-1) lernstick-10; urgency=medium
+
+  * [c375b2] use Debian 10 partitioning format in Upgrader
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 09 Jan 2020 14:52:46 +0100
+
 dlcopy (201911252248-1) lernstick-10; urgency=medium
 
   * [163278] fixed document preview (can now be run as root in Debian 10)
