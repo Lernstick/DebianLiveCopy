@@ -56,7 +56,7 @@ public abstract class InstallerOrUpgrader
      */
     protected int deviceListSize;
 
-    private final String exhangePartitionFileSystem;
+    private final String exchangePartitionFileSystem;
     private final String dataPartitionFileSystem;
 
     /**
@@ -82,7 +82,7 @@ public abstract class InstallerOrUpgrader
         this.source = source;
         this.deviceList = deviceList;
         this.exchangePartitionLabel = exchangePartitionLabel;
-        this.exhangePartitionFileSystem = exhangePartitionFileSystem;
+        this.exchangePartitionFileSystem = exhangePartitionFileSystem;
         this.dataPartitionFileSystem = dataPartitionFileSystem;
         this.fileCopier = new FileCopier(digestCache);
         this.dlCopyGUI = dlCopyGUI;
@@ -126,8 +126,8 @@ public abstract class InstallerOrUpgrader
      *
      * @return the selected file system of the exchange partition
      */
-    public String getExhangePartitionFileSystem() {
-        return exhangePartitionFileSystem;
+    public String getExchangePartitionFileSystem() {
+        return exchangePartitionFileSystem;
     }
 
     /**

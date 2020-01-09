@@ -57,7 +57,7 @@ public class DLCopy {
     public static final ResourceBundle STRINGS
             = ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings");
     /**
-     * the size of the efi partition (given in MiB)
+     * the size of the EFI partition (given in MiB)
      */
     public static final long EFI_PARTITION_SIZE = 150;
 
@@ -159,20 +159,20 @@ public class DLCopy {
      *
      * @param source the system source
      * @param device the device where the MBR should be installed
-     * @param systemPartition the boot partition of the device, where syslinux
-     * is installed
+     * @param bootPartition the boot partition of the device, where syslinux is
+     * installed
      * @throws IOException when an IOException occurs
      */
     public static void makeBootable(SystemSource source, String device,
-            Partition systemPartition) throws IOException {
+            Partition bootPartition) throws IOException {
 
         // install syslinux
         try {
-            source.installExtlinux(systemPartition);
+            source.installExtlinux(bootPartition);
         } catch (IOException iOException) {
             String errorMessage = STRINGS.getString("Make_Bootable_Failed");
             errorMessage = MessageFormat.format(errorMessage,
-                    systemPartition, iOException.getMessage());
+                    bootPartition, iOException.getMessage());
             LOGGER.severe(errorMessage);
             throw new IOException(errorMessage);
         }
@@ -724,7 +724,9 @@ public class DLCopy {
      */
     public static void isolinuxToSyslinux(String mountPoint,
             DLCopyGUI dlCopyGUI) throws IOException {
-        final String isolinuxPath = mountPoint + "/isolinux";
+
+        String isolinuxPath = mountPoint + "/isolinux";
+
         if (new File(isolinuxPath).exists()) {
             LOGGER.info("replacing isolinux with syslinux");
             final String syslinuxPath = mountPoint + "/syslinux";
@@ -785,22 +787,33 @@ public class DLCopy {
     public static void formatEfiAndSystemPartition(
             String efiDevice, String systemDevice) throws IOException {
 
+        formatEfiPartition(efiDevice);
+
+        int exitValue = PROCESS_EXECUTOR.executeProcess(
+                "/sbin/mkfs.ext3", "-L", systemPartitionLabel, systemDevice);
+        if (exitValue != 0) {
+            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
+            String errorMessage
+                    = STRINGS.getString("Error_Create_System_Partition");
+            LOGGER.severe(errorMessage);
+            throw new IOException(errorMessage);
+        }
+    }
+
+    /**
+     * formats the efi partition
+     *
+     * @param efiDevice the efi device
+     * @throws IOException
+     */
+    public static void formatEfiPartition(String efiDevice) throws IOException {
+
         int exitValue = PROCESS_EXECUTOR.executeProcess(
                 "/sbin/mkfs.vfat", "-n", Partition.EFI_LABEL, efiDevice);
         if (exitValue != 0) {
             LOGGER.severe(PROCESS_EXECUTOR.getOutput());
             String errorMessage
                     = STRINGS.getString("Error_Create_EFI_Partition");
-            LOGGER.severe(errorMessage);
-            throw new IOException(errorMessage);
-        }
-
-        exitValue = PROCESS_EXECUTOR.executeProcess(
-                "/sbin/mkfs.ext3", "-L", systemPartitionLabel, systemDevice);
-        if (exitValue != 0) {
-            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
-            String errorMessage
-                    = STRINGS.getString("Error_Create_System_Partition");
             LOGGER.severe(errorMessage);
             throw new IOException(errorMessage);
         }
@@ -1304,7 +1317,7 @@ public class DLCopy {
                     // determine ID for exchange partition
                     String exchangePartitionID;
                     String fileSystem = installerOrUpgrader.
-                            getExhangePartitionFileSystem();
+                            getExchangePartitionFileSystem();
                     if (fileSystem.equalsIgnoreCase("fat32")) {
                         exchangePartitionID = "c";
                     } else {
@@ -1367,8 +1380,9 @@ public class DLCopy {
                 if (exchangeMB != 0) {
                     // create file system for exchange partition
                     formatExchangePartition(exchangeDevice,
-                            exchangePartitionLabel, installerOrUpgrader.
-                                    getExhangePartitionFileSystem(), dlCopyGUI);
+                            exchangePartitionLabel,
+                            installerOrUpgrader.getExchangePartitionFileSystem(),
+                            dlCopyGUI);
                 }
                 if (persistenceDevice != null) {
                     formatPersistencePartition(persistenceDevice,
@@ -1414,7 +1428,7 @@ public class DLCopy {
         CopyJobsInfo copyJobsInfo = prepareEfiAndSystemCopyJobs(source,
                 storageDevice, destinationEfiPartition,
                 destinationExchangePartition, destinationSystemPartition,
-                installerOrUpgrader.getExhangePartitionFileSystem());
+                installerOrUpgrader.getExchangePartitionFileSystem());
 
         // copy all files
         installerOrUpgrader.showCopyingFiles(fileCopier);
@@ -1661,6 +1675,83 @@ public class DLCopy {
             }
         }
         throw new IOException("could not parse " + debianVersionPath);
+    }
+
+    /**
+     * moves the offset of an ext[234] partition forward
+     *
+     * @param previousPartition the partition previous to the one we move
+     * @param partition the partition to change
+     * @param delta how far the start of the partition should be moved forward
+     * @throws java.io.IOException if an I/O exception occurs
+     * @throws org.freedesktop.dbus.exceptions.DBusException if a DBus exception
+     * occurs
+     */
+    public static void moveExtPartitionOffsetForward(
+            Partition previousPartition, Partition partition, long delta)
+            throws IOException, DBusException {
+
+        LOGGER.log(Level.INFO,
+                "\nprevious partition: {0}\npartition: {1}\ndelta: {2}",
+                new Object[]{previousPartition, partition, delta});
+
+        String partitionDeviceFile = "/dev/" + partition.getDeviceAndNumber();
+        ProcessExecutor processExecutor = new ProcessExecutor(true);
+
+        // run initial filesystem check
+        int returnValue = processExecutor.executeProcess(true, true, "e2fsck",
+                "-f", "-y", "-v", partitionDeviceFile);
+        if ((returnValue != 0) && (returnValue != 1)) {
+            throw new IOException(
+                    "filesystem check on " + partitionDeviceFile + " failed");
+        }
+
+        // shrink filesystem
+        long newSize = (partition.getSize() - delta) / 1024;
+        returnValue = processExecutor.executeProcess(true, true, "resize2fs",
+                partitionDeviceFile, newSize + "K");
+        if (returnValue != 0) {
+            throw new IOException("shrinking filesystem on "
+                    + partitionDeviceFile + " failed");
+        }
+
+        // move filesystem
+        returnValue = processExecutor.executeProcess(true, true, "e2image",
+                "-ra", "-O", String.valueOf(delta), partitionDeviceFile);
+        if (returnValue != 0) {
+            throw new IOException(
+                    "moving filesystem on " + partitionDeviceFile + " failed");
+        }
+
+        String deviceFile = "/dev/" + partition.getStorageDevice().getDevice();
+
+        // remove partition
+        returnValue = processExecutor.executeProcess(true, true, "parted",
+                deviceFile, "rm", String.valueOf(partition.getNumber()));
+        if (returnValue != 0) {
+            throw new IOException(
+                    "removing partition " + partitionDeviceFile + " failed");
+        }
+
+        // re-create partition on new offset
+        long newOffset = partition.getOffset() + delta;
+        long end = partition.getOffset() + partition.getSize() - 1;
+        returnValue = processExecutor.executeProcess(true, true, "parted",
+                deviceFile, "mkpart", "primary", newOffset + "B", end + "B");
+        if (returnValue != 0) {
+            throw new IOException(
+                    "creating partition " + partitionDeviceFile + " failed");
+        }
+
+        // resize previous partition to new boundary
+        returnValue = processExecutor.executeProcess(true, true, "parted",
+                deviceFile, "resizepart",
+                String.valueOf(previousPartition.getNumber()),
+                String.valueOf(newOffset - 1) + "B");
+        if (returnValue != 0) {
+            throw new IOException(
+                    "resizing partition " + previousPartition + " failed");
+        }
     }
 
     private static void copyPersistenceCp(Installer installer,

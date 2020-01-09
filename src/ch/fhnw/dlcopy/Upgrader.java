@@ -190,7 +190,7 @@ public class Upgrader extends InstallerOrUpgrader {
                             if (upgradeDataPartition(
                                     storageDevice, backupDestination)
                                     & upgradeSystemPartition) {
-                                upgradeSystemPartition(storageDevice);
+                                upgradeEfiAndSystemPartition(storageDevice);
                             }
                             break;
 
@@ -914,7 +914,7 @@ public class Upgrader extends InstallerOrUpgrader {
         }
     }
 
-    private boolean upgradeSystemPartition(StorageDevice storageDevice)
+    private boolean upgradeEfiAndSystemPartition(StorageDevice storageDevice)
             throws DBusException, IOException,
             InterruptedException, NoSuchAlgorithmException {
 
@@ -927,6 +927,41 @@ public class Upgrader extends InstallerOrUpgrader {
         int systemPartitionNumber = systemPartition.getNumber();
 
         ProcessExecutor processExecutor = new ProcessExecutor();
+
+        // enlarge EFI partition if necessary and possible
+        long efiPartitionSize = efiPartition.getSize();
+        if (efiPartitionSize < DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA) {
+            // enlarging is (for now) only possible when the next partition is
+            // ext[234]
+            // (the list returned by getPartitions() is 0-based and getNumber()
+            // is 1-based, so we really get the next partition...)
+            Partition nextPartition = storageDevice.getPartitions().get(
+                    efiPartition.getNumber());
+            if (nextPartition.getIdType().toLowerCase().startsWith("ext")) {
+
+                // move partition boundaries
+                long offset = DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA
+                        - efiPartitionSize;
+                DLCopy.moveExtPartitionOffsetForward(
+                        efiPartition, nextPartition, offset);
+                DLCopy.formatEfiPartition(
+                        "/dev/" + efiPartition.getDeviceAndNumber());
+                // we have to wait for D-Bus to settle
+                TimeUnit.SECONDS.sleep(7);
+
+                // must update partition info because of moveoperation above
+                storageDevice = new StorageDevice(storageDevice.getDevice());
+                efiPartition = storageDevice.getEfiPartition();
+                exchangePartition = storageDevice.getExchangePartition();
+                dataPartition = storageDevice.getDataPartition();
+                systemPartition = storageDevice.getSystemPartition();
+                systemPartitionNumber = systemPartition.getNumber();
+            } else {
+                // TODO: make this work via automatic backup/restore?
+                throw new IOException("enlarging EFI partition failed because "
+                        + nextPartition + " can't be resized (yet)");
+            }
+        }
 
         // make sure that systemPartition is unmounted
         if (!DLCopy.umount(systemPartition, dlCopyGUI)) {
@@ -1090,21 +1125,21 @@ public class Upgrader extends InstallerOrUpgrader {
             TimeUnit.SECONDS.sleep(7);
         }
 
-        // upgrade boot and system partition
+        // upgrade EFI and system partition
         dlCopyGUI.showUpgradeSystemPartitionReset();
 
         if (!efiPartition.getIdLabel().equals(Partition.EFI_LABEL)) {
             // The EFI partition is a pre 2016-02 boot partition with the label
-            // "boot", a boot flag and the system partition has no boot flag.
+            // "boot".
             // We need to upgrade that to the current partitioning schema where
-            // the EFI partition has the label "EFI" and has no boot flag but
-            // the system partition has one.
+            // the EFI partition has the label "EFI", has a boot flag but the
+            // system partition has no boot flag.
             DLCopy.formatEfiAndSystemPartition(
                     "/dev/" + efiPartition.getDeviceAndNumber(),
                     "/dev/" + systemPartition.getDeviceAndNumber());
 
-            efiPartition.setBootFlag(false);
-            systemPartition.setBootFlag(true);
+            efiPartition.setBootFlag(true);
+            systemPartition.setBootFlag(false);
             // we have to wait for d-bus to settle after changing the boot flag
             TimeUnit.SECONDS.sleep(7);
         }
@@ -1120,22 +1155,10 @@ public class Upgrader extends InstallerOrUpgrader {
         CopyJobsInfo copyJobsInfo = DLCopy.prepareEfiAndSystemCopyJobs(source,
                 storageDevice, efiPartition, exchangePartition,
                 systemPartition, exchangePartitionFS);
-        File bootMountPointFile = new File(
-                copyJobsInfo.getDestinationEfiPath());
-        LOGGER.log(Level.INFO, "recursively deleting {0}",
-                bootMountPointFile);
-        LernstickFileTools.recursiveDelete(bootMountPointFile, false);
-        String destinationSystemPath = copyJobsInfo.getDestinationSystemPath();
-        File systemMountPointFile = new File(destinationSystemPath);
-        LOGGER.log(Level.INFO, "recursively deleting {0}",
-                systemMountPointFile);
-        // The file syslinux/ldlinux.sys has the immutable flag set. To be able
-        // to remove this file, we first have to remove the immutable flag.
-        String ldLinuxPath = destinationSystemPath + "/syslinux/ldlinux.sys";
-        if (new File(ldLinuxPath).exists()) {
-            processExecutor.executeProcess("chattr", "-i", ldLinuxPath);
-        }
-        LernstickFileTools.recursiveDelete(systemMountPointFile, false);
+
+        // clean up EFI and system partition
+        cleanupPartition(new File(copyJobsInfo.getDestinationEfiPath()));
+        cleanupPartition(new File(copyJobsInfo.getDestinationSystemPath()));
 
         LOGGER.info("starting copy job");
         dlCopyGUI.showUpgradeFileCopy(fileCopier);
@@ -1158,7 +1181,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
         // make storage device bootable
         dlCopyGUI.showUpgradeWritingBootSector();
-        DLCopy.makeBootable(source, devicePath, systemPartition);
+        DLCopy.makeBootable(source, devicePath, efiPartition);
 
         if (keepUserSettings && (passwdLine != null || shadowLine != null
                 || groupLine != null || groups != null
@@ -1211,7 +1234,6 @@ public class Upgrader extends InstallerOrUpgrader {
 //                        .collect(Collectors.toList());
 //                Files.write(gdm3ConfPath, newConfig);
 //            }
-
             // umount
             try {
                 TimeUnit.SECONDS.sleep(5);
@@ -1234,6 +1256,19 @@ public class Upgrader extends InstallerOrUpgrader {
             return false;
         }
         return DLCopy.umount(systemPartition, dlCopyGUI);
+    }
+
+    private void cleanupPartition(File moutPoint) throws IOException {
+        LOGGER.log(Level.INFO, "recursively deleting {0}", moutPoint);
+        // The file syslinux/ldlinux.sys has the immutable flag set. To be able
+        // to remove this file, we first have to remove the immutable flag.
+        String ldLinuxPath = moutPoint + "/syslinux/ldlinux.sys";
+        if (new File(ldLinuxPath).exists()) {
+            ProcessExecutor processExecutor = new ProcessExecutor();
+            processExecutor.executeProcess("chattr", "-i", ldLinuxPath);
+        }
+        LernstickFileTools.recursiveDelete(moutPoint, false);
+
     }
 
     @Override
