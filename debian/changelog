@@ -1,3 +1,12 @@
+dlcopy (202001101921-1) lernstick-10; urgency=medium
+
+  * [8e945c] added initial support for EFI partition resizing
+  * [e0ae78] added support for backup/restore of exchange partition during
+             upgrade when EFI partition must be enlarged (exchange partition
+             will be shrinked accordingly)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 10 Jan 2020 19:21:43 +0100
+
 dlcopy (202001091452-1) lernstick-10; urgency=medium
 
   * [c375b2] use Debian 10 partitioning format in Upgrader
