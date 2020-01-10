@@ -52,7 +52,7 @@ public class UpgradeStorageDeviceAdder extends StorageDeviceAdder {
     public void initDevice() {
         try {
             TimeUnit.SECONDS.sleep(7);
-            addedDevice.getUpgradeVariant(
+            addedDevice.getSystemUpgradeVariant(
                     DLCopy.getEnlargedSystemSize(source.getSystemSize()));
             for (Partition partition : addedDevice.getPartitions()) {
                 try {

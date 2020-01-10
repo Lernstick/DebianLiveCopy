@@ -1726,22 +1726,14 @@ public class DLCopy {
         String deviceFile = "/dev/" + partition.getStorageDevice().getDevice();
 
         // remove partition
-        returnValue = processExecutor.executeProcess(true, true, "parted",
-                deviceFile, "rm", String.valueOf(partition.getNumber()));
-        if (returnValue != 0) {
-            throw new IOException(
-                    "removing partition " + partitionDeviceFile + " failed");
-        }
+        partition.remove();
 
         // re-create partition on new offset
-        long newOffset = partition.getOffset() + delta;
-        long end = partition.getOffset() + partition.getSize() - 1;
-        returnValue = processExecutor.executeProcess(true, true, "parted",
-                deviceFile, "mkpart", "primary", newOffset + "B", end + "B");
-        if (returnValue != 0) {
-            throw new IOException(
-                    "creating partition " + partitionDeviceFile + " failed");
-        }
+        long oldOffset = partition.getOffset();
+        long newOffset = oldOffset + delta;
+        long end = oldOffset + partition.getSize() - 1;
+        partition.getStorageDevice().createPrimaryPartition(
+                partition.getIdType(), newOffset, end);
 
         // resize previous partition to new boundary
         returnValue = processExecutor.executeProcess(true, true, "parted",

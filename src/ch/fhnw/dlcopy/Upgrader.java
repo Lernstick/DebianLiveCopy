@@ -176,19 +176,22 @@ public class Upgrader extends InstallerOrUpgrader {
                             batchCounter, deviceListSize, storageDevice
                         });
 
-                File backupDestination = getBackupDestination(storageDevice);
+                File dataDestination = new File(
+                        getBackupDestination(storageDevice),
+                        STRINGS.getString("Data_Partition"));
+                dataDestination.mkdirs();
 
                 String errorMessage = null;
                 try {
-                    StorageDevice.UpgradeVariant upgradeVariant
-                            = storageDevice.getUpgradeVariant(
+                    StorageDevice.SystemUpgradeVariant upgradeVariant
+                            = storageDevice.getSystemUpgradeVariant(
                                     DLCopy.getEnlargedSystemSize(
                                             source.getSystemSize()));
                     switch (upgradeVariant) {
                         case REGULAR:
                         case REPARTITION:
                             if (upgradeDataPartition(
-                                    storageDevice, backupDestination)
+                                    storageDevice, dataDestination)
                                     & upgradeSystemPartition) {
                                 upgradeEfiAndSystemPartition(storageDevice);
                             }
@@ -212,7 +215,7 @@ public class Upgrader extends InstallerOrUpgrader {
                     // automatic removal of (temporary) backup
                     if (removeBackup) {
                         LernstickFileTools.recursiveDelete(
-                                backupDestination, true);
+                                dataDestination, true);
                     }
 
                 } catch (Exception ex) {
@@ -289,11 +292,11 @@ public class Upgrader extends InstallerOrUpgrader {
 
         //TODO: union old squashfs and data partition!
         // prepare backup destination directories
-        File dataDestination
-                = new File(getBackupDestination(storageDevice), "data");
+        File dataDestination = new File(getBackupDestination(storageDevice),
+                STRINGS.getString("Data_Partition"));
         dataDestination.mkdirs();
-        File exchangeDestination
-                = new File(getBackupDestination(storageDevice), "exchange");
+        File exchangeDestination = new File(getBackupDestination(storageDevice),
+                STRINGS.getString("Exchange_Partition"));
         exchangeDestination.mkdirs();
 
         // backup
@@ -301,7 +304,7 @@ public class Upgrader extends InstallerOrUpgrader {
         String dataMountPoint = dataPartition.mount().getMountPath();
         backupUserData(dataMountPoint, dataDestination);
         dataPartition.umount();
-        backupExchangeParitition(storageDevice, exchangeDestination);
+        backupExchangePartition(storageDevice, exchangeDestination);
 
         // installation
         DLCopy.copyToStorageDevice(source, fileCopier, storageDevice,
@@ -346,7 +349,7 @@ public class Upgrader extends InstallerOrUpgrader {
         backupTimer.stop();
     }
 
-    private void backupExchangeParitition(StorageDevice storageDevice,
+    private void backupExchangePartition(StorageDevice storageDevice,
             File exchangeDestination)
             throws DBusException, IOException, NoSuchAlgorithmException {
 
@@ -524,6 +527,7 @@ public class Upgrader extends InstallerOrUpgrader {
         // backup
         if (automaticBackup) {
             backupUserData(cowPath, backupDestination);
+            dlCopyGUI.showUpgradeDataPartitionReset();
         }
 
         // remember user settings before reset
@@ -916,7 +920,7 @@ public class Upgrader extends InstallerOrUpgrader {
 
     private boolean upgradeEfiAndSystemPartition(StorageDevice storageDevice)
             throws DBusException, IOException,
-            InterruptedException, NoSuchAlgorithmException {
+            InterruptedException, NoSuchAlgorithmException, SQLException {
 
         String device = storageDevice.getDevice();
         String devicePath = "/dev/" + device;
@@ -929,37 +933,70 @@ public class Upgrader extends InstallerOrUpgrader {
         ProcessExecutor processExecutor = new ProcessExecutor();
 
         // enlarge EFI partition if necessary and possible
-        long efiPartitionSize = efiPartition.getSize();
-        if (efiPartitionSize < DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA) {
+        long currentEfiPartitionSize = efiPartition.getSize();
+        long wantedEfiPartitionSize = DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA;
+        if (currentEfiPartitionSize < wantedEfiPartitionSize) {
             // enlarging is (for now) only possible when the next partition is
             // ext[234]
             // (the list returned by getPartitions() is 0-based and getNumber()
             // is 1-based, so we really get the next partition...)
             Partition nextPartition = storageDevice.getPartitions().get(
                     efiPartition.getNumber());
-            if (nextPartition.getIdType().toLowerCase().startsWith("ext")) {
+            File exchangeDestination = null;
 
-                // move partition boundaries
-                long offset = DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA
-                        - efiPartitionSize;
+            if (nextPartition.hasExtendedFilesystem()) {
+                // repartition EFI and next partition
+                long offset = wantedEfiPartitionSize - currentEfiPartitionSize;
                 DLCopy.moveExtPartitionOffsetForward(
                         efiPartition, nextPartition, offset);
                 DLCopy.formatEfiPartition(
                         "/dev/" + efiPartition.getDeviceAndNumber());
-                // we have to wait for D-Bus to settle
-                TimeUnit.SECONDS.sleep(7);
 
-                // must update partition info because of moveoperation above
-                storageDevice = new StorageDevice(storageDevice.getDevice());
-                efiPartition = storageDevice.getEfiPartition();
-                exchangePartition = storageDevice.getExchangePartition();
-                dataPartition = storageDevice.getDataPartition();
-                systemPartition = storageDevice.getSystemPartition();
-                systemPartitionNumber = systemPartition.getNumber();
             } else {
-                // TODO: make this work via automatic backup/restore?
-                throw new IOException("enlarging EFI partition failed because "
-                        + nextPartition + " can't be resized (yet)");
+                // backup
+                exchangeDestination = new File(
+                        getBackupDestination(storageDevice),
+                        STRINGS.getString("Exchange_Partition"));
+                exchangeDestination.mkdirs();
+                backupExchangePartition(storageDevice, exchangeDestination);
+
+                dlCopyGUI.showUpgradeChangingPartitionSizes();
+                
+                // remove old EFI and exchange partitions
+                efiPartition.remove();
+                nextPartition.remove();
+
+                // create and format new EFI partition
+                long nextOffset = efiPartition.getOffset()
+                        + wantedEfiPartitionSize;
+                storageDevice.createPrimaryPartition(efiPartition.getIdType(),
+                        efiPartition.getOffset(), nextOffset - 1);
+                DLCopy.formatEfiPartition(
+                        "/dev/" + efiPartition.getDeviceAndNumber());
+
+                // create new exchange partition
+                long nextEnd = nextPartition.getOffset()
+                        + nextPartition.getSize() - 1;
+                storageDevice.createPrimaryPartition(
+                        nextPartition.getIdType(), nextOffset, nextEnd);
+                DLCopy.formatExchangePartition(
+                    "/dev/" + exchangePartition.getDeviceAndNumber(),
+                    exchangePartition.getIdLabel(),
+                    exchangePartition.getIdType(), dlCopyGUI);
+            }
+
+            // must update partition info because of changes above
+            TimeUnit.SECONDS.sleep(7);
+            storageDevice = new StorageDevice(storageDevice.getDevice());
+            efiPartition = storageDevice.getEfiPartition();
+            exchangePartition = storageDevice.getExchangePartition();
+            dataPartition = storageDevice.getDataPartition();
+            systemPartition = storageDevice.getSystemPartition();
+            systemPartitionNumber = systemPartition.getNumber();
+
+            if (!nextPartition.hasExtendedFilesystem()) {
+                restoreExchangePartition(storageDevice, exchangeDestination);
+                dlCopyGUI.showUpgradeChangingPartitionSizes();
             }
         }
 
@@ -970,8 +1007,8 @@ public class Upgrader extends InstallerOrUpgrader {
 
         long enlargedSystemSize
                 = DLCopy.getEnlargedSystemSize(source.getSystemSize());
-        if (storageDevice.getUpgradeVariant(enlargedSystemSize)
-                == StorageDevice.UpgradeVariant.REPARTITION) {
+        if (storageDevice.getSystemUpgradeVariant(enlargedSystemSize)
+                == StorageDevice.SystemUpgradeVariant.REPARTITION) {
 
             dlCopyGUI.showUpgradeChangingPartitionSizes();
 

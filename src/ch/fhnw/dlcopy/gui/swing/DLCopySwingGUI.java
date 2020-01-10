@@ -282,7 +282,7 @@ public class DLCopySwingGUI extends JFrame
     private Lock installLock = new ReentrantLock();
     private Lock upgradeLock = new ReentrantLock();
     private Lock resetLock = new ReentrantLock();
-    
+
     // global cache for file digests to speed up repeated file copy checks
     private final HashMap<String, byte[]> digestCache = new HashMap<>();
 
@@ -970,12 +970,8 @@ public class DLCopySwingGUI extends JFrame
 
     @Override
     public void showInstallProgress() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                showCard(cardPanel, "installTabbedPane");
-            }
-        });
+        SwingUtilities.invokeLater(
+                () -> showCard(cardPanel, "installTabbedPane"));
     }
 
     @Override
@@ -1015,14 +1011,11 @@ public class DLCopySwingGUI extends JFrame
         Timer cpTimer = new Timer(1000, cpActionListener);
         cpTimer.setInitialDelay(0);
         cpTimer.start();
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                cpFilenameLabel.setText(" ");
-                cpPogressBar.setValue(0);
-                cpTimeLabel.setText(timeFormat.format(new Date(0)));
-                showCard(installCardPanel, "cpPanel");
-            }
+        SwingUtilities.invokeLater(() -> {
+            cpFilenameLabel.setText(" ");
+            cpPogressBar.setValue(0);
+            cpTimeLabel.setText(timeFormat.format(new Date(0)));
+            showCard(installCardPanel, "cpPanel");
         });
 
         try {
@@ -1114,15 +1107,12 @@ public class DLCopySwingGUI extends JFrame
 
     @Override
     public void showUpgradeBackup() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                upgradeBackupLabel.setText(
-                        STRINGS.getString("Backing_Up_User_Data"));
-                upgradeBackupDurationLabel.setText(
-                        timeFormat.format(new Date(0)));
-                showCard(upgradeCardPanel, "upgradeBackupPanel");
-            }
+        SwingUtilities.invokeLater(() -> {
+            upgradeBackupLabel.setText(
+                    STRINGS.getString("Backing_Up_User_Data"));
+            upgradeBackupDurationLabel.setText(
+                    timeFormat.format(new Date(0)));
+            showCard(upgradeCardPanel, "upgradeBackupPanel");
         });
     }
 
@@ -1144,64 +1134,58 @@ public class DLCopySwingGUI extends JFrame
 
     @Override
     public void showUpgradeBackupExchangePartition(FileCopier fileCopier) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                upgradeCopyLabel.setText(STRINGS.getString(
-                        "Backing_Up_Exchange_Partition"));
-                showCard(upgradeCardPanel, "upgradeCopyPanel");
-            }
+        SwingUtilities.invokeLater(() -> {
+            upgradeCopyLabel.setText(STRINGS.getString(
+                    "Backing_Up_Exchange_Partition"));
+            showCard(upgradeCardPanel, "upgradeCopyPanel");
         });
         upgradeFileCopierPanel.setFileCopier(fileCopier);
     }
 
     @Override
     public void showUpgradeRestoreInit() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                showCard(upgradeCardPanel, "upgradeIndeterminateProgressPanel");
-                upgradeIndeterminateProgressBar.setString(
-                        STRINGS.getString("Reading_Backup"));
-            }
+        SwingUtilities.invokeLater(() -> {
+            upgradeIndeterminateProgressBar.setString(
+                    STRINGS.getString("Reading_Backup"));
+            showCard(upgradeCardPanel, "upgradeIndeterminateProgressPanel");
         });
     }
 
     @Override
     public void showUpgradeRestoreRunning() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                upgradeBackupLabel.setText(
-                        STRINGS.getString("Restoring_User_Data"));
-                upgradeBackupDurationLabel.setText(
-                        timeFormat.format(new Date(0)));
-                showCard(upgradeCardPanel, "upgradeBackupPanel");
-            }
+        SwingUtilities.invokeLater(() -> {
+            upgradeBackupLabel.setText(
+                    STRINGS.getString("Restoring_User_Data"));
+            upgradeBackupDurationLabel.setText(
+                    timeFormat.format(new Date(0)));
+            showCard(upgradeCardPanel, "upgradeBackupPanel");
         });
     }
 
     @Override
     public void showUpgradeRestoreExchangePartition(FileCopier fileCopier) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                upgradeCopyLabel.setText(STRINGS.getString(
-                        "Restoring_Exchange_Partition"));
-                showCard(upgradeCardPanel, "upgradeCopyPanel");
-            }
+        SwingUtilities.invokeLater(() -> {
+            upgradeCopyLabel.setText(STRINGS.getString(
+                    "Restoring_Exchange_Partition"));
+            showCard(upgradeCardPanel, "upgradeCopyPanel");
         });
         upgradeFileCopierPanel.setFileCopier(fileCopier);
     }
 
     @Override
     public void showUpgradeChangingPartitionSizes() {
+        SwingUtilities.invokeLater(() -> {
+            showCard(upgradeCardPanel, "upgradeIndeterminateProgressPanel");
+        });
         setProgressBarStringOnEDT(upgradeIndeterminateProgressBar,
                 STRINGS.getString("Changing_Partition_Sizes"));
     }
 
     @Override
     public void showUpgradeDataPartitionReset() {
+        SwingUtilities.invokeLater(() -> {
+            showCard(upgradeCardPanel, "upgradeIndeterminateProgressPanel");
+        });
         setProgressBarStringOnEDT(upgradeIndeterminateProgressBar,
                 STRINGS.getString("Resetting_Data_Partition"));
     }
@@ -1224,13 +1208,10 @@ public class DLCopySwingGUI extends JFrame
 
     @Override
     public void showUpgradeSystemPartitionReset() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                showCard(upgradeCardPanel, "upgradeIndeterminateProgressPanel");
-                upgradeIndeterminateProgressBar.setString(
-                        STRINGS.getString("Resetting_System_Partition"));
-            }
+        SwingUtilities.invokeLater(() -> {
+            showCard(upgradeCardPanel, "upgradeIndeterminateProgressPanel");
+            upgradeIndeterminateProgressBar.setString(
+                    STRINGS.getString("Resetting_System_Partition"));
         });
     }
 
@@ -1277,24 +1258,18 @@ public class DLCopySwingGUI extends JFrame
 
     @Override
     public void showIsoProgressMessage(final String message) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                toISOProgressBar.setIndeterminate(true);
-                toISOProgressBar.setString(message);
-            }
+        SwingUtilities.invokeLater(() -> {
+            toISOProgressBar.setIndeterminate(true);
+            toISOProgressBar.setString(message);
         });
     }
 
     @Override
     public void showIsoProgressMessage(final String message, final int value) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                toISOProgressBar.setIndeterminate(false);
-                toISOProgressBar.setString(message);
-                toISOProgressBar.setValue(value);
-            }
+        SwingUtilities.invokeLater(() -> {
+            toISOProgressBar.setIndeterminate(false);
+            toISOProgressBar.setString(message);
+            toISOProgressBar.setValue(value);
         });
     }
 
@@ -1318,12 +1293,9 @@ public class DLCopySwingGUI extends JFrame
         // that after a very quick reset the resetProgressPanel is still shown
         // because the code below code gets executed much later.
         try {
-            SwingUtilities.invokeAndWait(new Runnable() {
-                @Override
-                public void run() {
-                    showCard(cardPanel, "resetPanel");
-                    showCard(resetCardPanel, "resetProgressPanel");
-                }
+            SwingUtilities.invokeAndWait(() -> {
+                showCard(cardPanel, "resetPanel");
+                showCard(resetCardPanel, "resetProgressPanel");
             });
         } catch (InterruptedException | InvocationTargetException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
@@ -1361,15 +1333,12 @@ public class DLCopySwingGUI extends JFrame
 
         final List<Path> selectedDocuments = new ArrayList<>();
         try {
-            SwingUtilities.invokeAndWait(new Runnable() {
-                @Override
-                public void run() {
-                    PrintSelectionDialog dialog = new PrintSelectionDialog(
-                            DLCopySwingGUI.this, type, mountPath, documents);
-                    dialog.setVisible(true);
-                    if (dialog.okPressed()) {
-                        selectedDocuments.addAll(dialog.getSelectedDocuments());
-                    }
+            SwingUtilities.invokeAndWait(() -> {
+                PrintSelectionDialog dialog = new PrintSelectionDialog(
+                        DLCopySwingGUI.this, type, mountPath, documents);
+                dialog.setVisible(true);
+                if (dialog.okPressed()) {
+                    selectedDocuments.addAll(dialog.getSelectedDocuments());
                 }
             });
         } catch (InterruptedException | InvocationTargetException ex) {
@@ -1380,12 +1349,8 @@ public class DLCopySwingGUI extends JFrame
 
     @Override
     public void showResetBackup(FileCopier fileCopier) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                showCard(resetCardPanel, "resetBackupPanel");
-            }
-        });
+        SwingUtilities.invokeLater(
+                () -> showCard(resetCardPanel, "resetBackupPanel"));
         resetBackupFileCopierPanel.setFileCopier(fileCopier);
     }
 
@@ -1397,36 +1362,24 @@ public class DLCopySwingGUI extends JFrame
 
     @Override
     public void showResetFormattingExchangePartition() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                showCard(resetCardPanel, "resetProgressPanel");
-            }
-        });
+        SwingUtilities.invokeLater(
+                () -> showCard(resetCardPanel, "resetProgressPanel"));
         setProgressBarStringOnEDT(resetProgressBar,
                 STRINGS.getString("Formatting_Exchange_Partition"));
     }
 
     @Override
     public void showResetFormattingDataPartition() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                showCard(resetCardPanel, "resetProgressPanel");
-            }
-        });
+        SwingUtilities.invokeLater(
+                () -> showCard(resetCardPanel, "resetProgressPanel"));
         setProgressBarStringOnEDT(resetProgressBar,
                 STRINGS.getString("Formatting_Data_Partition"));
     }
 
     @Override
     public void showResetRemovingFiles() {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                showCard(resetCardPanel, "resetProgressPanel");
-            }
-        });
+        SwingUtilities.invokeLater(
+                () -> showCard(resetCardPanel, "resetProgressPanel"));
         setProgressBarStringOnEDT(resetProgressBar,
                 STRINGS.getString("Removing_Selected_Files"));
     }
@@ -1463,13 +1416,10 @@ public class DLCopySwingGUI extends JFrame
 
     @Override
     public void showErrorMessage(final String errorMessage) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                JOptionPane.showMessageDialog(DLCopySwingGUI.this, errorMessage,
-                        STRINGS.getString("Error"), JOptionPane.ERROR_MESSAGE);
-            }
-        });
+        SwingUtilities.invokeLater(() -> JOptionPane.showMessageDialog(
+                DLCopySwingGUI.this, errorMessage,
+                STRINGS.getString("Error"), JOptionPane.ERROR_MESSAGE)
+        );
     }
 
     /**
@@ -1704,11 +1654,22 @@ public class DLCopySwingGUI extends JFrame
         for (int i : selectedIndices) {
             StorageDevice storageDevice = upgradeStorageDeviceListModel.get(i);
             try {
-                StorageDevice.UpgradeVariant upgradeVariant
-                        = storageDevice.getUpgradeVariant(
+                StorageDevice.SystemUpgradeVariant systemUpgradeVariant
+                        = storageDevice.getSystemUpgradeVariant(
                                 DLCopy.getEnlargedSystemSize(
                                         runningSystemSource.getSystemSize()));
-                switch (upgradeVariant) {
+                switch (systemUpgradeVariant) {
+                    case REGULAR:
+                    case REPARTITION:
+                        switch (storageDevice.getEfiUpgradeVariant(
+                                DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA)) {
+                            case ENLARGE_BACKUP:
+                                if (!backupSelected) {
+                                    canUpgrade = false;
+                                }
+                                break;
+                        }
+                        break;
                     case IMPOSSIBLE:
                         canUpgrade = false;
                         break;
@@ -1719,8 +1680,8 @@ public class DLCopySwingGUI extends JFrame
                         break;
                     default:
                         LOGGER.log(Level.WARNING,
-                                "unsupported upgradeVariant: {0}",
-                                upgradeVariant);
+                                "unsupported systemUpgradeVariant: {0}",
+                                systemUpgradeVariant);
                 }
                 if (!canUpgrade) {
                     break;
@@ -4594,47 +4555,47 @@ public class DLCopySwingGUI extends JFrame
 
             case INSTALL_SELECTION:
                 try {
-                    checkAndInstallSelection(true);
-                } catch (IOException | DBusException ex) {
-                    LOGGER.log(Level.SEVERE,
-                            "checking the selected usb flash drive failed", ex);
-                }
-                break;
+                checkAndInstallSelection(true);
+            } catch (IOException | DBusException ex) {
+                LOGGER.log(Level.SEVERE,
+                        "checking the selected usb flash drive failed", ex);
+            }
+            break;
 
             case ISO_SELECTION:
                 try {
-                    if (systemMediumRadioButton.isSelected()
-                            && !isUnmountedPersistenceAvailable()) {
-                        return;
-                    }
-                } catch (IOException | DBusException ex) {
-                    LOGGER.log(Level.SEVERE, "", ex);
+                if (systemMediumRadioButton.isSelected()
+                        && !isUnmountedPersistenceAvailable()) {
+                    return;
                 }
-                state = State.ISO_INSTALLATION;
-                setLabelHighlighted(infoStepLabel, false);
-                setLabelHighlighted(selectionLabel, false);
-                setLabelHighlighted(executionLabel, true);
-                showCard(cardPanel, "toISOProgressPanel");
-                previousButton.setEnabled(false);
-                nextButton.setEnabled(false);
+            } catch (IOException | DBusException ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
+            }
+            state = State.ISO_INSTALLATION;
+            setLabelHighlighted(infoStepLabel, false);
+            setLabelHighlighted(selectionLabel, false);
+            setLabelHighlighted(executionLabel, true);
+            showCard(cardPanel, "toISOProgressPanel");
+            previousButton.setEnabled(false);
+            nextButton.setEnabled(false);
 
-                if (dataPartitionRadioButton.isSelected()) {
-                    new SquashFSCreator(this, runningSystemSource,
-                            tmpDirTextField.getText(),
-                            showNotUsedDialogCheckBox.isSelected(),
-                            autoStartInstallerCheckBox.isSelected()).execute();
-                } else {
-                    DataPartitionMode dataPartitionMode = getDataPartitionMode(
-                            isoDataPartitionModeComboBox);
-                    new IsoCreator(this, runningSystemSource,
-                            bootMediumRadioButton.isSelected(),
-                            tmpDirTextField.getText(), dataPartitionMode,
-                            showNotUsedDialogCheckBox.isSelected(),
-                            autoStartInstallerCheckBox.isSelected(),
-                            isoLabelTextField.getText()).execute();
-                }
+            if (dataPartitionRadioButton.isSelected()) {
+                new SquashFSCreator(this, runningSystemSource,
+                        tmpDirTextField.getText(),
+                        showNotUsedDialogCheckBox.isSelected(),
+                        autoStartInstallerCheckBox.isSelected()).execute();
+            } else {
+                DataPartitionMode dataPartitionMode = getDataPartitionMode(
+                        isoDataPartitionModeComboBox);
+                new IsoCreator(this, runningSystemSource,
+                        bootMediumRadioButton.isSelected(),
+                        tmpDirTextField.getText(), dataPartitionMode,
+                        showNotUsedDialogCheckBox.isSelected(),
+                        autoStartInstallerCheckBox.isSelected(),
+                        isoLabelTextField.getText()).execute();
+            }
 
-                break;
+            break;
 
             case UPGRADE_SELECTION:
                 upgradeSelectedStorageDevices();
@@ -5736,51 +5697,48 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         String[] tokens = udisksLine.split("/");
         final String device = tokens[tokens.length - 1];
         LOGGER.log(Level.INFO, "removed device: {0}", device);
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                DefaultListModel listModel;
-                switch (state) {
-                    case INSTALL_SELECTION:
-                        listModel = installStorageDeviceListModel;
-                        break;
-                    case UPGRADE_SELECTION:
-                        if (isolatedAutoUpgrade) {
-                            upgradeNoMediaPanel.setBackground(Color.YELLOW);
-                            upgradeNoMediaLabel.setText(
-                                    STRINGS.getString("Insert_Media_Isolated"));
-                        }
-                        listModel = upgradeStorageDeviceListModel;
-                        break;
-                    case RESET_SELECTION:
-                        listModel = resetStorageDeviceListModel;
-                        break;
-                    default:
-                        LOGGER.log(Level.WARNING,
-                                "Unsupported state: {0}", state);
-                        return;
-                }
-
-                for (int i = 0, size = listModel.getSize(); i < size; i++) {
-                    StorageDevice storageDevice
-                            = (StorageDevice) listModel.get(i);
-                    if (storageDevice.getDevice().equals(device)) {
-                        listModel.remove(i);
-                        LOGGER.log(Level.INFO,
-                                "removed from storage device list: {0}",
-                                device);
-                        switch (state) {
-                            case INSTALL_SELECTION:
-                                installStorageDeviceListChanged();
-                                break;
-                            case UPGRADE_SELECTION:
-                                upgradeStorageDeviceListChanged();
-                                break;
-                            case RESET_SELECTION:
-                                resetStorageDeviceListChanged();
-                        }
-                        break; // for
+        SwingUtilities.invokeLater(() -> {
+            DefaultListModel listModel;
+            switch (state) {
+                case INSTALL_SELECTION:
+                    listModel = installStorageDeviceListModel;
+                    break;
+                case UPGRADE_SELECTION:
+                    if (isolatedAutoUpgrade) {
+                        upgradeNoMediaPanel.setBackground(Color.YELLOW);
+                        upgradeNoMediaLabel.setText(
+                                STRINGS.getString("Insert_Media_Isolated"));
                     }
+                    listModel = upgradeStorageDeviceListModel;
+                    break;
+                case RESET_SELECTION:
+                    listModel = resetStorageDeviceListModel;
+                    break;
+                default:
+                    LOGGER.log(Level.WARNING,
+                            "Unsupported state: {0}", state);
+                    return;
+            }
+
+            for (int i = 0, size = listModel.getSize(); i < size; i++) {
+                StorageDevice storageDevice
+                        = (StorageDevice) listModel.get(i);
+                if (storageDevice.getDevice().equals(device)) {
+                    listModel.remove(i);
+                    LOGGER.log(Level.INFO,
+                            "removed from storage device list: {0}",
+                            device);
+                    switch (state) {
+                        case INSTALL_SELECTION:
+                            installStorageDeviceListChanged();
+                            break;
+                        case UPGRADE_SELECTION:
+                            upgradeStorageDeviceListChanged();
+                            break;
+                        case RESET_SELECTION:
+                            resetStorageDeviceListChanged();
+                    }
+                    break; // for
                 }
             }
         });
@@ -6163,12 +6121,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private static void showIndeterminateProgressBarText(
             final Container container, final String cardName,
             final JProgressBar progressBar, final String text) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                showCard(container, cardName);
-                progressBar.setString(STRINGS.getString(text));
-            }
+        SwingUtilities.invokeLater(() -> {
+            showCard(container, cardName);
+            progressBar.setString(STRINGS.getString(text));
         });
     }
 
@@ -6233,33 +6188,20 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             FileCopier fileCopier, final JLabel label,
             final Container container, final String cardName) {
         fileCopierPanel.setFileCopier(fileCopier);
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                label.setText(STRINGS.getString("Copying_Files"));
-                showCard(container, cardName);
-            }
+        SwingUtilities.invokeLater(() -> {
+            label.setText(STRINGS.getString("Copying_Files"));
+            showCard(container, cardName);
         });
     }
 
     private static void setLabelTextonEDT(
             final JLabel label, final String text) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                label.setText(text);
-            }
-        });
+        SwingUtilities.invokeLater(() -> label.setText(text));
     }
 
     private static void setProgressBarStringOnEDT(
             final JProgressBar progressBar, final String string) {
-        SwingUtilities.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                progressBar.setString(string);
-            }
-        });
+        SwingUtilities.invokeLater(() -> progressBar.setString(string));
     }
 
     private void checkAndInstallSelection(boolean interactive)

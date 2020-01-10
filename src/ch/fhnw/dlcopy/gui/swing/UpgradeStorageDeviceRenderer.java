@@ -200,20 +200,46 @@ public class UpgradeStorageDeviceRenderer extends JPanel
 
         // upgrade info text
         try {
-            StorageDevice.UpgradeVariant upgradeVariant
-                    = storageDevice.getUpgradeVariant(
+            StorageDevice.SystemUpgradeVariant systemUpgradeVariant
+                    = storageDevice.getSystemUpgradeVariant(
                             DLCopy.getEnlargedSystemSize(
                                     source.getSystemSize()));
-            switch (upgradeVariant) {
+            switch (systemUpgradeVariant) {
                 case REGULAR:
-                    upgradeInfoLabel.setIcon(OK_ICON);
-                    upgradeInfoLabel.setText(STRINGS.getString(
-                            "Upgrading_Possible"));
+                    switch (storageDevice.getEfiUpgradeVariant(
+                            DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA)) {
+                        case REGULAR:
+                            upgradeInfoLabel.setIcon(OK_ICON);
+                            upgradeInfoLabel.setText(STRINGS.getString(
+                                    "Upgrading_Possible"));
+                            break;
+                        case ENLARGE_REPARTITION:
+                            upgradeInfoLabel.setIcon(WARNING_ICON);
+                            upgradeInfoLabel.setText(STRINGS.getString(
+                                    "Warning_Repartitioning"));
+                            break;
+                        case ENLARGE_BACKUP:
+                            upgradeInfoLabel.setIcon(WARNING_ICON);
+                            upgradeInfoLabel.setText(STRINGS.getString(
+                                    "Warning_Upgrade_Backup"));
+                            break;
+                    }
                     break;
                 case REPARTITION:
-                    upgradeInfoLabel.setIcon(WARNING_ICON);
-                    upgradeInfoLabel.setText(STRINGS.getString(
-                            "Warning_Repartitioning"));
+                    switch (storageDevice.getEfiUpgradeVariant(
+                            DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA)) {
+                        case REGULAR:
+                        case ENLARGE_REPARTITION:
+                            upgradeInfoLabel.setIcon(WARNING_ICON);
+                            upgradeInfoLabel.setText(STRINGS.getString(
+                                    "Warning_Repartitioning"));
+                            break;
+                        case ENLARGE_BACKUP:
+                            upgradeInfoLabel.setIcon(WARNING_ICON);
+                            upgradeInfoLabel.setText(STRINGS.getString(
+                                    "Warning_Upgrade_Backup"));
+                            break;
+                    }
                     break;
                 case BACKUP:
                     upgradeInfoLabel.setIcon(WARNING_ICON);
@@ -234,7 +260,7 @@ public class UpgradeStorageDeviceRenderer extends JPanel
                 default:
                     LOGGER.log(Level.WARNING,
                             "unsupported upgradeVariant {0}",
-                            upgradeVariant);
+                            systemUpgradeVariant);
             }
         } catch (DBusException | IOException ex) {
             LOGGER.log(Level.SEVERE, "", ex);

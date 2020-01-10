@@ -43,7 +43,7 @@ public class UpgradeStorageDeviceListUpdater extends StorageDeviceListUpdater {
     public void initDevices() {
         for (StorageDevice device : storageDevices) {
             try {
-                device.getUpgradeVariant(
+                device.getSystemUpgradeVariant(
                         DLCopy.getEnlargedSystemSize(source.getSystemSize()));
                 for (Partition partition : device.getPartitions()) {
                     try {
