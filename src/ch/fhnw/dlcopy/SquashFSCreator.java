@@ -218,7 +218,7 @@ public class SquashFSCreator
         PROCESS_EXECUTOR.addPropertyChangeListener(this);
         int exitValue = PROCESS_EXECUTOR.executeProcess("mksquashfs",
                 dataPartitionPath, squashFsPath,
-                "-comp", "xz", "-wildcards",
+                "-comp", "zstd", "-Xcompression-level", "22", "-wildcards",
                 "-ef", excludeFile.getPath());
         if (exitValue != 0) {
             throw new IOException(

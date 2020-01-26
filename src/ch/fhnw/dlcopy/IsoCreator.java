@@ -386,7 +386,7 @@ public class IsoCreator
         PROCESS_EXECUTOR.addPropertyChangeListener(this);
         int exitValue = PROCESS_EXECUTOR.executeProcess("mksquashfs",
                 cowPath, targetDirectory + "/live/filesystem.squashfs",
-                "-comp", "xz");
+                "-comp", "zstd", "-Xcompression-level", "22");
         if (exitValue != 0) {
             throw new IOException(
                     STRINGS.getString("Error_Creating_Squashfs"));
