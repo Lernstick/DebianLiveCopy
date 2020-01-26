@@ -670,7 +670,7 @@ public class DLCopy {
 
     /**
      * tries to hide the boot files on the exchange partition with FAT
-     * attributes (works on Windows) and a .hidden file (works on OS X)
+     * attributes (works on Windows) and a .hidden file (works on macOS)
      *
      * @param bootFilesCopyJob the CopyJob for the boot file, used to get the
      * list of files to hide
@@ -695,7 +695,7 @@ public class DLCopy {
             }
         }
 
-        // use ".hidden" file to hide boot files in OS X
+        // use ".hidden" file to hide boot files in macOS
         String osxHiddenFilePath = destinationExchangePath + "/.hidden";
         try (FileWriter fileWriter = new FileWriter(osxHiddenFilePath)) {
             String lineSeperator = System.lineSeparator();
@@ -710,7 +710,7 @@ public class DLCopy {
             LOGGER.log(Level.WARNING, "", ex);
         }
 
-        // use FAT attributes again to hide OS X ".hidden" file in Windows
+        // use FAT attributes again to hide macOS ".hidden" file in Windows
         PROCESS_EXECUTOR.executeProcess("fatattr", "+h", osxHiddenFilePath);
     }
 

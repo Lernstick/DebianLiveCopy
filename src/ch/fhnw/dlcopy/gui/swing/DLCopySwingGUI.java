@@ -598,14 +598,19 @@ public class DLCopySwingGUI extends JFrame
 
         String[] exchangePartitionFileSystemItems;
         if (debianLiveDistribution == DebianLiveDistribution.LERNSTICK_EXAM) {
-            // default to FAT32 for exchange partition
-            // (rdiff-backup can't cope with destinations on exFAT)
+            // default to NTFS for exchange partition
+            // exFAT: rdiff-backup simply aborts with an AssertionError in
+            //        set_case_sensitive_readwrite
+            // FAT32: is case insensitive and therefore makes mirroring files
+            //        like .config/geogebra (GeoGebra v5) and .config/GeoGebra
+            //        (GeoGebra v6) at the same time impossible
             exchangePartitionFileSystemItems
-                    = new String[]{"FAT32", "exFAT", "NTFS"};
+                    = new String[]{"NTFS", "exFAT", "FAT32"};
         } else {
             // default to exFAT for exchange partition
+            // (best compatibility with other OSes and feature set)
             exchangePartitionFileSystemItems
-                    = new String[]{"exFAT", "FAT32", "NTFS"};
+                    = new String[]{"exFAT", "NTFS", "FAT32"};
         }
 
         resetFormatExchangePartitionCheckBox.setSelected(
