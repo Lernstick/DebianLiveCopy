@@ -1,3 +1,11 @@
+dlcopy (202001261957-1) lernstick-10; urgency=medium
+
+  * [d1a47c] default to NTFS for exchange partition in exam environment
+             (FAT32 is case insensitive and therefore can't support all
+             filenames)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 26 Jan 2020 19:57:27 +0100
+
 dlcopy (202001261333-1) lernstick-10; urgency=medium
 
   * [3ad5c8] use zstd instead of xz for squashfs compression
