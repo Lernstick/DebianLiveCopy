@@ -1,3 +1,9 @@
+dlcopy (202001261333-1) lernstick-10; urgency=medium
+
+  * [3ad5c8] use zstd instead of xz for squashfs compression
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 26 Jan 2020 13:33:25 +0100
+
 dlcopy (202001101921-1) lernstick-10; urgency=medium
 
   * [8e945c] added initial support for EFI partition resizing
