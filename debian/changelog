@@ -1,3 +1,9 @@
+dlcopy (202002062155-1) lernstick-10; urgency=medium
+
+  * [c6b12d] added support for Cinnamon
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 06 Feb 2020 21:55:35 +0100
+
 dlcopy (202001261957-1) lernstick-10; urgency=medium
 
   * [d1a47c] default to NTFS for exchange partition in exam environment
