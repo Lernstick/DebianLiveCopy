@@ -9,6 +9,7 @@ GNOME_SLEEP_INACTIVE_AC=$(gsettings get org.gnome.settings-daemon.plugins.power 
 GNOME_SLEEP_INACTIVE_BATTERY=$(gsettings get org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type)
 # Cinnamon
 CINNAMON_AUTOMOUNT=$(gsettings get org.cinnamon.desktop.media-handling automount)
+CINNAMON_AUTOMOUNT_OPEN=$(gsettings get org.cinnamon.desktop.media-handling automount-open)
 CINNAMON_IDLE_DELAY=$(gsettings get org.cinnamon.desktop.session idle-delay)
 CINNAMON_IDLE_DIM_BATTERY=$(gsettings get org.cinnamon.settings-daemon.plugins.power idle-dim-battery)
 CINNAMON_SLEEP_DISPLAY_AC=$(gsettings get org.cinnamon.settings-daemon.plugins.power sleep-display-ac)
@@ -25,6 +26,7 @@ gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type "no
 gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type "nothing"
 # Cinnamon
 gsettings set org.cinnamon.desktop.media-handling automount "false"
+gsettings set org.cinnamon.desktop.media-handling automount-open "false"
 gsettings set org.cinnamon.desktop.session idle-delay 0
 gsettings set org.cinnamon.settings-daemon.plugins.power idle-dim-battery "false"
 gsettings set org.cinnamon.settings-daemon.plugins.power sleep-display-ac 0
@@ -44,6 +46,7 @@ gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-ac-type "${
 gsettings set org.gnome.settings-daemon.plugins.power sleep-inactive-battery-type "${GNOME_SLEEP_INACTIVE_BATTERY}"
 # Cinnamon
 gsettings set org.cinnamon.desktop.media-handling automount "${CINNAMON_AUTOMOUNT}"
+gsettings set org.cinnamon.desktop.media-handling automount-open "${CINNAMON_AUTOMOUNT_OPEN}"
 gsettings set org.cinnamon.desktop.session idle-delay "${CINNAMON_IDLE_DELAY}"
 gsettings set org.cinnamon.settings-daemon.plugins.power idle-dim-battery "${CINNAMON_IDLE_DIM_BATTERY}"
 gsettings set org.cinnamon.settings-daemon.plugins.power sleep-display-ac "${CINNAMON_SLEEP_DISPLAY_AC}"
