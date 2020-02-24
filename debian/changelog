@@ -1,3 +1,9 @@
+dlcopy (202002241822-1) lernstick-10; urgency=medium
+
+  * [82b6ac] fixed apostrophe encoding in HTML texts
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Mon, 24 Feb 2020 18:22:52 +0100
+
 dlcopy (202002091909-1) lernstick-10; urgency=medium
 
   * [bb032c] improved Cinnamon support
