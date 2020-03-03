@@ -1,3 +1,14 @@
+dlcopy (202003031449-1) lernstick-10; urgency=medium
+
+  * [1e4385] Current Lenovo laptops only boot if the EFI partition is the first
+    partition. We therefore have to drop support for the partition layout where
+    the exchange partition comes before the EFI partition. This will make it
+    impossible to read the exchange partition in Windows 7 and older on
+    "removable" USB flash drives. But when even Microsoft no longer supports
+    Windows 7, why should we?
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Tue, 03 Mar 2020 14:49:30 +0100
+
 dlcopy (202002241822-1) lernstick-10; urgency=medium
 
   * [82b6ac] fixed apostrophe encoding in HTML texts
