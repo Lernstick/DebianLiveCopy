@@ -961,7 +961,7 @@ public class Upgrader extends InstallerOrUpgrader {
                 backupExchangePartition(storageDevice, exchangeDestination);
 
                 dlCopyGUI.showUpgradeChangingPartitionSizes();
-                
+
                 // remove old EFI and exchange partitions
                 efiPartition.remove();
                 nextPartition.remove();
@@ -980,9 +980,9 @@ public class Upgrader extends InstallerOrUpgrader {
                 storageDevice.createPrimaryPartition(
                         nextPartition.getIdType(), nextOffset, nextEnd);
                 DLCopy.formatExchangePartition(
-                    "/dev/" + exchangePartition.getDeviceAndNumber(),
-                    exchangePartition.getIdLabel(),
-                    exchangePartition.getIdType(), dlCopyGUI);
+                        "/dev/" + exchangePartition.getDeviceAndNumber(),
+                        exchangePartition.getIdLabel(),
+                        exchangePartition.getIdType(), dlCopyGUI);
             }
 
             // must update partition info because of changes above
@@ -1203,14 +1203,6 @@ public class Upgrader extends InstallerOrUpgrader {
         CopyJob bootFilesCopyJob = copyJobsInfo.getExchangeEfiCopyJob();
         fileCopier.copy(copyJobsInfo.getEfiCopyJob(),
                 bootFilesCopyJob, copyJobsInfo.getSystemCopyJob());
-
-        // hide boot files in exchange partition
-        // (only necessary with FAT32 on removable media...)
-        if (bootFilesCopyJob != null) {
-            String exchangePath = exchangePartition.getMountPath();
-            DLCopy.hideBootFiles(bootFilesCopyJob, exchangePath);
-            DLCopy.umount(exchangePartition, dlCopyGUI);
-        }
 
         dlCopyGUI.showUpgradeUnmounting();
         DLCopy.isolinuxToSyslinux(

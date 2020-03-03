@@ -291,16 +291,9 @@ public class InstallStorageDeviceRenderer extends JPanel
                 systemText = LernstickFileTools.getDataVolumeString(
                         systemSize, 1);
 
-                int exchangePartitionX;
-                if (storageDevice.isRemovable()) {
-                    exchangePartitionX = iconGap + OFFSET;
-                    efiPartitionX = exchangePartitionX + exchangeWidth;
-                    persistentPartitionX = efiPartitionX + efiWidth;
-                } else {
-                    efiPartitionX = iconGap + OFFSET;
-                    exchangePartitionX = efiPartitionX + efiWidth;
-                    persistentPartitionX = exchangePartitionX + exchangeWidth;
-                }
+                efiPartitionX = iconGap + OFFSET;
+                int exchangePartitionX = efiPartitionX + efiWidth;
+                persistentPartitionX = exchangePartitionX + exchangeWidth;
 
                 // paint color blocks first and texts later
                 // this way the persistent color block can not overwrite the

@@ -251,17 +251,10 @@ public class DLCopy {
                     destinationDataDevice = device + (pPartition ? "p2" : '2');
                     destinationSystemDevice = device + (pPartition ? "p3" : '3');
                 } else {
-                    if (storageDevice.isRemovable()) {
-                        destinationExchangeDevice
-                                = device + (pPartition ? "p1" : '1');
-                        destinationEfiDevice
-                                = device + (pPartition ? "p2" : '2');
-                    } else {
-                        destinationEfiDevice
-                                = device + (pPartition ? "p1" : '1');
-                        destinationExchangeDevice
-                                = device + (pPartition ? "p2" : '2');
-                    }
+                    destinationEfiDevice
+                            = device + (pPartition ? "p1" : '1');
+                    destinationExchangeDevice
+                            = device + (pPartition ? "p2" : '2');
                     if (partitionSizes.getPersistenceMB() == 0) {
                         destinationSystemDevice
                                 = device + (pPartition ? "p3" : '3');
@@ -645,27 +638,12 @@ public class DLCopy {
                 new Source[]{efiCopyJobSource},
                 new String[]{destinationEfiPath});
 
-        // Only if we have a FAT32 exchange partition on a removable media we
-        // have to copy the boot files also to the exchange partition.
-        CopyJob bootFilesCopyJob = null;
-        if ((destinationExchangePartition != null)
-                && (storageDevice.isRemovable())) {
-            if ("fat32".equalsIgnoreCase(
-                    destinationExchangePartitionFileSystem)) {
-                String destinationExchangePath
-                        = destinationExchangePartition.mount().getMountPath();
-                bootFilesCopyJob = new CopyJob(
-                        new Source[]{efiCopyJobSource},
-                        new String[]{destinationExchangePath});
-            }
-        }
-
         CopyJob systemCopyJob = new CopyJob(
                 new Source[]{systemCopyJobSource},
                 new String[]{destinationSystemPath});
 
         return new CopyJobsInfo(destinationEfiPath, destinationSystemPath,
-                efiCopyJob, bootFilesCopyJob, systemCopyJob);
+                efiCopyJob, null, systemCopyJob);
     }
 
     /**
@@ -1133,25 +1111,14 @@ public class DLCopy {
                     setFlag(partedCommandList, "1", "lba", "on");
 
                 } else {
-                    String secondBorder;
-                    if (storageDevice.isRemovable()) {
-                        // first two partitions: exchange, efi
-                        String exchangeBorder = exchangeMB + "MiB";
-                        efiBorder = (exchangeMB + EFI_PARTITION_SIZE) + "MiB";
-                        secondBorder = efiBorder;
-                        mkpart(partedCommandList, "0%", exchangeBorder);
-                        mkpart(partedCommandList, exchangeBorder, efiBorder);
-                        setFlag(partedCommandList, "2", "boot", "on");
-                    } else {
-                        // first two partitions: efi, exchange
-                        efiBorder = EFI_PARTITION_SIZE + "MiB";
-                        String exchangeBorder
-                                = (EFI_PARTITION_SIZE + exchangeMB) + "MiB";
-                        secondBorder = exchangeBorder;
-                        mkpart(partedCommandList, "0%", efiBorder);
-                        mkpart(partedCommandList, efiBorder, exchangeBorder);
-                        setFlag(partedCommandList, "1", "boot", "on");
-                    }
+                    // first two partitions: efi, exchange
+                    efiBorder = EFI_PARTITION_SIZE + "MiB";
+                    String exchangeBorder
+                            = (EFI_PARTITION_SIZE + exchangeMB) + "MiB";
+                    String secondBorder = exchangeBorder;
+                    mkpart(partedCommandList, "0%", efiBorder);
+                    mkpart(partedCommandList, efiBorder, exchangeBorder);
+                    setFlag(partedCommandList, "1", "boot", "on");
                     if (persistenceMB == 0) {
                         // third partition: system
                         mkpart(partedCommandList, secondBorder, "100%");
@@ -1325,21 +1292,12 @@ public class DLCopy {
                         exchangePartitionID = "7";
                     }
 
-                    if (storageDevice.isRemovable()) {
-                        //  1) exchange (exFAT, FAT32 or NTFS)
-                        //  2) efi (EFI)
-                        PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
-                                "--id", device, "1", exchangePartitionID);
-                        PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
-                                "--id", device, "2", "ef");
-                    } else {
-                        //  1) efi (EFI)
-                        //  2) exchange (exFAT, FAT32 or NTFS)
-                        PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
-                                "--id", device, "1", "ef");
-                        PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
-                                "--id", device, "2", exchangePartitionID);
-                    }
+                    //  1) efi (EFI)
+                    //  2) exchange (exFAT, FAT32 or NTFS)
+                    PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
+                            "--id", device, "1", "ef");
+                    PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
+                            "--id", device, "2", exchangePartitionID);
 
                     if (persistenceMB == 0) {
                         //  3) system (Linux)
@@ -1436,32 +1394,6 @@ public class DLCopy {
         CopyJob efiFilesCopyJob = copyJobsInfo.getExchangeEfiCopyJob();
         fileCopier.copy(checkCopies, exchangeCopyJob, efiFilesCopyJob,
                 copyJobsInfo.getEfiCopyJob(), copyJobsInfo.getSystemCopyJob());
-
-        if (efiFilesCopyJob != null) {
-            // The exchange partition is FAT32 on a removable media and
-            // therefore we have to copy the efi files not only to the efi
-            // partition but also to the exchange partition.
-
-            if (destinationExchangePath == null) {
-                // The user did not select to copy the exchange partition but it
-                // was already mounted in prepareBootAndSystemCopyJobs().
-                // Just get the reference here...
-                destinationExchangePath
-                        = destinationExchangePartition.getMountPath();
-            }
-
-            // hide boot files
-            hideBootFiles(efiFilesCopyJob, destinationExchangePath);
-
-            // change data partition mode (if needed)
-            if (installerOrUpgrader instanceof Installer) {
-                Installer installer = (Installer) installerOrUpgrader;
-                DataPartitionMode dataPartitionMode
-                        = installer.getDataPartitionMode();
-                setDataPartitionMode(source, dataPartitionMode,
-                        destinationExchangePath);
-            }
-        }
 
         // update GUI
         installerOrUpgrader.showUnmounting();
