@@ -1849,6 +1849,17 @@ public class DLCopySwingGUI extends JFrame
         dataPartitionFileSystemLabel = new javax.swing.JLabel();
         dataPartitionFileSystemComboBox = new javax.swing.JComboBox();
         checkCopiesCheckBox = new javax.swing.JCheckBox();
+        installTransferPanel = new javax.swing.JPanel();
+        transferLabel = new javax.swing.JLabel();
+        installTransferScrollPane = new javax.swing.JScrollPane();
+        installTransferStorageDeviceList = new javax.swing.JList<>();
+        transferCheckboxPanel = new javax.swing.JPanel();
+        transferExchangeCheckBox = new javax.swing.JCheckBox();
+        transferHomeCheckBox = new javax.swing.JCheckBox();
+        transferNetworkCheckBox = new javax.swing.JCheckBox();
+        transferPrinterCheckBox = new javax.swing.JCheckBox();
+        transferFirewallCheckBox = new javax.swing.JCheckBox();
+        transferUserSettingsCheckBox = new javax.swing.JCheckBox();
         installNoMediaPanel = new javax.swing.JPanel();
         installNoMediaLabel = new javax.swing.JLabel();
         installNoSourcePanel = new javax.swing.JPanel();
@@ -2729,6 +2740,74 @@ public class DLCopySwingGUI extends JFrame
         installDetailsPanel.add(checkCopiesCheckBox, gridBagConstraints);
 
         installSelectionTabbedPane.addTab(bundle.getString("Details"), installDetailsPanel); // NOI18N
+
+        installTransferPanel.setLayout(new java.awt.GridBagLayout());
+
+        transferLabel.setText(bundle.getString("DLCopySwingGUI.transferLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
+        installTransferPanel.add(transferLabel, gridBagConstraints);
+
+        installTransferStorageDeviceList.setModel(new javax.swing.AbstractListModel<String>() {
+            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
+            public int getSize() { return strings.length; }
+            public String getElementAt(int i) { return strings[i]; }
+        });
+        installTransferScrollPane.setViewportView(installTransferStorageDeviceList);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 0);
+        installTransferPanel.add(installTransferScrollPane, gridBagConstraints);
+
+        transferCheckboxPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.transferCheckboxPanel.border.title"))); // NOI18N
+        transferCheckboxPanel.setLayout(new java.awt.GridBagLayout());
+
+        transferExchangeCheckBox.setText(bundle.getString("Exchange_Partition")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        transferCheckboxPanel.add(transferExchangeCheckBox, gridBagConstraints);
+
+        transferHomeCheckBox.setSelected(true);
+        transferHomeCheckBox.setText(bundle.getString("DLCopySwingGUI.transferHomeCheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        transferCheckboxPanel.add(transferHomeCheckBox, gridBagConstraints);
+
+        transferNetworkCheckBox.setText(bundle.getString("DLCopySwingGUI.transferNetworkCheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        transferCheckboxPanel.add(transferNetworkCheckBox, gridBagConstraints);
+
+        transferPrinterCheckBox.setText(bundle.getString("DLCopySwingGUI.transferPrinterCheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        transferCheckboxPanel.add(transferPrinterCheckBox, gridBagConstraints);
+
+        transferFirewallCheckBox.setText(bundle.getString("DLCopySwingGUI.transferFirewallCheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        transferCheckboxPanel.add(transferFirewallCheckBox, gridBagConstraints);
+
+        transferUserSettingsCheckBox.setText(bundle.getString("DLCopySwingGUI.transferUserSettingsCheckBox.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        transferCheckboxPanel.add(transferUserSettingsCheckBox, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        installTransferPanel.add(transferCheckboxPanel, gridBagConstraints);
+
+        installSelectionTabbedPane.addTab(bundle.getString("DLCopySwingGUI.installTransferPanel.TabConstraints.tabTitle"), installTransferPanel); // NOI18N
 
         installSelectionCardPanel.add(installSelectionTabbedPane, "installSelectionTabbedPane");
 
@@ -6897,6 +6976,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JTabbedPane installTabbedPane;
     private javax.swing.JPanel installTargetCardPanel;
     private javax.swing.JPanel installTargetPanel;
+    private javax.swing.JPanel installTransferPanel;
+    private javax.swing.JScrollPane installTransferScrollPane;
+    private javax.swing.JList<String> installTransferStorageDeviceList;
     private javax.swing.JScrollPane installationResultsScrollPane;
     private javax.swing.JTable installationResultsTable;
     private javax.swing.ButtonGroup isoButtonGroup;
@@ -7050,6 +7132,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JPanel toISOProgressPanel;
     private javax.swing.JPanel toISOSelectionPanel;
     private javax.swing.JPanel toIsoGridBagPanel;
+    private javax.swing.JPanel transferCheckboxPanel;
+    private javax.swing.JCheckBox transferExchangeCheckBox;
+    private javax.swing.JCheckBox transferFirewallCheckBox;
+    private javax.swing.JCheckBox transferHomeCheckBox;
+    private javax.swing.JLabel transferLabel;
+    private javax.swing.JCheckBox transferNetworkCheckBox;
+    private javax.swing.JCheckBox transferPrinterCheckBox;
+    private javax.swing.JCheckBox transferUserSettingsCheckBox;
     private javax.swing.JRadioButton upgradeAutomaticRadioButton;
     private javax.swing.JLabel upgradeBackupDurationLabel;
     private javax.swing.JLabel upgradeBackupFilenameLabel;
