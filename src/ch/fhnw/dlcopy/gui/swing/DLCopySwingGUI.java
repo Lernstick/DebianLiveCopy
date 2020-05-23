@@ -246,6 +246,12 @@ public class DLCopySwingGUI extends JFrame
     private final static String RESET_REMOVE_HOME_DIRECTORY = "resetRemoveHomeDirectory";
     private final static String RESET_RESTORE_ENABLED = "resetRestoreEnabled";
     private final static String RESET_RESTORE_DATA = "resetRestoreData";
+    private final static String TRANSFER_EXCHANGE = "transferExchange";
+    private final static String TRANSFER_HOME = "transferHome";
+    private final static String TRANSFER_NETWORK = "transferNetwork";
+    private final static String TRANSFER_PRINTER = "transferPrinter";
+    private final static String TRANSFER_FIREWALL = "transferFirewall";
+    private final static String TRANSFER_USER_SETTINGS = "transferUserSettings";
 
     private final ResultsTableModel installationResultsTableModel;
     private final ResultsTableModel upgradeResultsTableModel;
@@ -452,6 +458,19 @@ public class DLCopySwingGUI extends JFrame
                 = new InstallTransferStorageDeviceRenderer(systemSource);
         installTransferStorageDeviceList.setCellRenderer(
                 installTransferStorageDeviceRenderer);
+        
+        transferExchangeCheckBox.setSelected(
+                preferences.getBoolean(TRANSFER_EXCHANGE, false));
+        transferHomeCheckBox.setSelected(
+                preferences.getBoolean(TRANSFER_HOME, true));
+        transferNetworkCheckBox.setSelected(
+                preferences.getBoolean(TRANSFER_NETWORK, false));
+        transferPrinterCheckBox.setSelected(
+                preferences.getBoolean(TRANSFER_PRINTER, false));
+        transferFirewallCheckBox.setSelected(
+                preferences.getBoolean(TRANSFER_FIREWALL, false));
+        transferUserSettingsCheckBox.setSelected(
+                preferences.getBoolean(TRANSFER_USER_SETTINGS, false));
 
         upgradeStorageDeviceListModel.addListDataListener(this);
         upgradeStorageDeviceList.setModel(upgradeStorageDeviceListModel);
@@ -6015,6 +6034,19 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 resetRestoreDataCheckBox.isSelected());
         preferences.put(RESET_RESTORE_DATA,
                 resetRestoreConfigurationPanel.getXML());
+        
+        preferences.putBoolean(TRANSFER_EXCHANGE,
+                transferExchangeCheckBox.isSelected());
+        preferences.putBoolean(TRANSFER_HOME,
+                transferHomeCheckBox.isSelected());
+        preferences.putBoolean(TRANSFER_NETWORK,
+                transferNetworkCheckBox.isSelected());
+        preferences.putBoolean(TRANSFER_PRINTER,
+                transferPrinterCheckBox.isSelected());
+        preferences.putBoolean(TRANSFER_FIREWALL,
+                transferFirewallCheckBox.isSelected());
+        preferences.putBoolean(TRANSFER_USER_SETTINGS,
+                transferUserSettingsCheckBox.isSelected());
 
         try {
             preferences.flush();
