@@ -2,7 +2,6 @@ package ch.fhnw.dlcopy.gui.swing;
 
 import ch.fhnw.dlcopy.DLCopy;
 import ch.fhnw.dlcopy.SystemSource;
-import ch.fhnw.util.Partition;
 import ch.fhnw.util.StorageDevice;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -41,10 +40,12 @@ public class UpgradeStorageDeviceAdder extends StorageDeviceAdder {
     public UpgradeStorageDeviceAdder(SystemSource source,
             String addedPath, boolean showHarddisks,
             StorageDeviceListUpdateDialogHandler dialogHandler,
-            DefaultListModel<StorageDevice> listModel, JList list,
-            DLCopySwingGUI swingGUI, Lock lock) {
+            DefaultListModel<StorageDevice> listModel,
+            JList<StorageDevice> list, DLCopySwingGUI swingGUI, Lock lock) {
+        
         super(addedPath, showHarddisks, dialogHandler,
                 listModel, list, swingGUI, lock);
+        
         this.source = source;
     }
 
@@ -54,7 +55,7 @@ public class UpgradeStorageDeviceAdder extends StorageDeviceAdder {
             TimeUnit.SECONDS.sleep(7);
             addedDevice.getSystemUpgradeVariant(
                     DLCopy.getEnlargedSystemSize(source.getSystemSize()));
-            for (Partition partition : addedDevice.getPartitions()) {
+            addedDevice.getPartitions().forEach((partition) -> {
                 try {
                     if (partition.isPersistencePartition()) {
                         partition.getUsedSpace(true);
@@ -63,7 +64,7 @@ public class UpgradeStorageDeviceAdder extends StorageDeviceAdder {
                     }
                 } catch (Exception ignored) {
                 }
-            }
+            });
         } catch (DBusException | IOException | InterruptedException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
         }

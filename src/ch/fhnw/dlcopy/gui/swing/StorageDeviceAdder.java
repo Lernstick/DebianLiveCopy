@@ -31,11 +31,12 @@ public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
      */
     protected StorageDevice addedDevice;
 
+    protected final JList<StorageDevice> list;
+
     private final String addedPath;
     private final boolean showHarddisks;
     private final StorageDeviceListUpdateDialogHandler dialogHandler;
     private final DefaultListModel<StorageDevice> listModel;
-    private final JList<StorageDevice> list;
     private final Lock lock;
 
     /**
@@ -52,8 +53,9 @@ public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
      */
     public StorageDeviceAdder(String addedPath, boolean showHarddisks,
             StorageDeviceListUpdateDialogHandler dialogHandler,
-            DefaultListModel<StorageDevice> listModel, JList list,
-            DLCopySwingGUI swingGUI, Lock lock) {
+            DefaultListModel<StorageDevice> listModel,
+            JList<StorageDevice> list, DLCopySwingGUI swingGUI, Lock lock) {
+
         this.addedPath = addedPath;
         this.showHarddisks = showHarddisks;
         this.dialogHandler = dialogHandler;
@@ -61,6 +63,7 @@ public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
         this.list = list;
         this.swingGUI = swingGUI;
         this.lock = lock;
+
         dialogHandler.addPath(addedPath);
     }
 

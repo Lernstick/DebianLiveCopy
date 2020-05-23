@@ -2,6 +2,7 @@ package ch.fhnw.dlcopy.gui.swing;
 
 import ch.fhnw.util.StorageDevice;
 import java.util.concurrent.locks.Lock;
+import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
@@ -11,7 +12,10 @@ import javax.swing.JList;
  *
  * @author Ronny Standtke <ronny.standtke@gmx.net>
  */
-public class InstallStorageDeviceAdder extends StorageDeviceAdder {
+public class InstallTransferStorageDeviceAdder extends StorageDeviceAdder {
+
+    private static final Logger LOGGER = Logger.getLogger(
+            InstallTransferStorageDeviceAdder.class.getName());
 
     /**
      * creates a new InstallStorageDeviceAdder
@@ -25,23 +29,25 @@ public class InstallStorageDeviceAdder extends StorageDeviceAdder {
      * @param swingGUI the DLCopySwingGUI
      * @param lock the lock to aquire before adding the device to the listModel
      */
-    public InstallStorageDeviceAdder(String addedPath, boolean showHarddisks,
+    public InstallTransferStorageDeviceAdder(String addedPath,
+            boolean showHarddisks,
             StorageDeviceListUpdateDialogHandler dialogHandler,
             DefaultListModel<StorageDevice> listModel,
             JList<StorageDevice> list, DLCopySwingGUI swingGUI, Lock lock) {
-        
+
         super(addedPath, showHarddisks, dialogHandler,
                 listModel, list, swingGUI, lock);
     }
 
     @Override
     public void initDevice() {
-        // we don't need to do here anything...
+        addedDevice.getPartitions().forEach((partition) -> {
+            partition.getUsedSpace(false);
+        });
     }
 
     @Override
     public void updateGUI() {
-        swingGUI.installStorageDeviceListChanged();
-        swingGUI.updateInstallSelectionCountAndExchangeInfo();
+        swingGUI.installTransferStorageDeviceListChanged();
     }
 }

@@ -145,13 +145,14 @@ public class DLCopySwingGUI extends JFrame
     private final static String UDISKS_REMOVED = "removed:";
     private final DefaultListModel<StorageDevice> installStorageDeviceListModel
             = new DefaultListModel<>();
-    private final DefaultListModel<StorageDevice> transferStorageDeviceListModel
+    private final DefaultListModel<StorageDevice> installTransferStorageDeviceListModel
             = new DefaultListModel<>();
     private final DefaultListModel<StorageDevice> upgradeStorageDeviceListModel
             = new DefaultListModel<>();
     private final DefaultListModel<StorageDevice> resetStorageDeviceListModel
             = new DefaultListModel<>();
     private final InstallStorageDeviceRenderer installStorageDeviceRenderer;
+    private final InstallTransferStorageDeviceRenderer installTransferStorageDeviceRenderer;
     private final UpgradeStorageDeviceRenderer upgradeStorageDeviceRenderer;
     private final ResetStorageDeviceRenderer resetStorageDeviceRenderer;
     private final DateFormat timeFormat;
@@ -439,7 +440,18 @@ public class DLCopySwingGUI extends JFrame
         installStorageDeviceRenderer = new InstallStorageDeviceRenderer(this);
         installStorageDeviceList.setCellRenderer(installStorageDeviceRenderer);
 
-        installTransferStorageDeviceList.setModel(transferStorageDeviceListModel);
+        // because of its HTML content, the transfer label tends to resize
+        // therefore we fix its size here
+        Dimension preferredSize = transferLabel.getPreferredSize();
+        transferLabel.setMinimumSize(preferredSize);
+        transferLabel.setMaximumSize(preferredSize);
+
+        installTransferStorageDeviceList.setModel(
+                installTransferStorageDeviceListModel);
+        installTransferStorageDeviceRenderer
+                = new InstallTransferStorageDeviceRenderer(systemSource);
+        installTransferStorageDeviceList.setCellRenderer(
+                installTransferStorageDeviceRenderer);
 
         upgradeStorageDeviceListModel.addListDataListener(this);
         upgradeStorageDeviceList.setModel(upgradeStorageDeviceListModel);
@@ -767,8 +779,7 @@ public class DLCopySwingGUI extends JFrame
 
         // The preferred heigth of our device lists is much too small. Therefore
         // we hardcode it here.
-        Dimension preferredSize
-                = installStorageDeviceListScrollPane.getPreferredSize();
+        preferredSize = installStorageDeviceListScrollPane.getPreferredSize();
         preferredSize.height = 200;
         installStorageDeviceListScrollPane.setPreferredSize(preferredSize);
         pack();
@@ -902,6 +913,12 @@ public class DLCopySwingGUI extends JFrame
                             storageDeviceListUpdateDialogHandler,
                             installStorageDeviceListModel,
                             installStorageDeviceList, this, installLock)
+                            .execute();
+                    new InstallTransferStorageDeviceAdder(addedPath,
+                            installShowHarddisksCheckBox.isSelected(),
+                            storageDeviceListUpdateDialogHandler,
+                            installTransferStorageDeviceListModel,
+                            installTransferStorageDeviceList, this, installLock)
                             .execute();
                     break;
 
@@ -1523,6 +1540,15 @@ public class DLCopySwingGUI extends JFrame
         }
     }
 
+    public void installTransferStorageDeviceListChanged() {
+        if (installTransferStorageDeviceListModel.size() == 0) {
+            return;
+        }
+        installTransferStorageDeviceRenderer.setMaxSize(
+                getMaxStorageDeviceSize(installTransferStorageDeviceListModel));
+        installTransferStorageDeviceList.repaint();
+    }
+
     /**
      * must be called whenever the upgrade storage device list changes to
      * execute some updates (e.g. maximum storage device size) and some sanity
@@ -1854,8 +1880,6 @@ public class DLCopySwingGUI extends JFrame
         checkCopiesCheckBox = new javax.swing.JCheckBox();
         installTransferPanel = new javax.swing.JPanel();
         transferLabel = new javax.swing.JLabel();
-        installTransferScrollPane = new javax.swing.JScrollPane();
-        installTransferStorageDeviceList = new javax.swing.JList<>();
         transferCheckboxPanel = new javax.swing.JPanel();
         transferExchangeCheckBox = new javax.swing.JCheckBox();
         transferHomeCheckBox = new javax.swing.JCheckBox();
@@ -1863,6 +1887,8 @@ public class DLCopySwingGUI extends JFrame
         transferPrinterCheckBox = new javax.swing.JCheckBox();
         transferFirewallCheckBox = new javax.swing.JCheckBox();
         transferUserSettingsCheckBox = new javax.swing.JCheckBox();
+        installTransferScrollPane = new javax.swing.JScrollPane();
+        installTransferStorageDeviceList = new javax.swing.JList<>();
         installNoMediaPanel = new javax.swing.JPanel();
         installNoMediaLabel = new javax.swing.JLabel();
         installNoSourcePanel = new javax.swing.JPanel();
@@ -2748,26 +2774,14 @@ public class DLCopySwingGUI extends JFrame
 
         transferLabel.setText(bundle.getString("DLCopySwingGUI.transferLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
         installTransferPanel.add(transferLabel, gridBagConstraints);
-
-        installTransferScrollPane.setViewportView(installTransferStorageDeviceList);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 0);
-        installTransferPanel.add(installTransferScrollPane, gridBagConstraints);
 
         transferCheckboxPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.transferCheckboxPanel.border.title"))); // NOI18N
         transferCheckboxPanel.setLayout(new java.awt.GridBagLayout());
 
         transferExchangeCheckBox.setText(bundle.getString("Exchange_Partition")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         transferCheckboxPanel.add(transferExchangeCheckBox, gridBagConstraints);
 
@@ -2780,7 +2794,6 @@ public class DLCopySwingGUI extends JFrame
 
         transferNetworkCheckBox.setText(bundle.getString("DLCopySwingGUI.transferNetworkCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         transferCheckboxPanel.add(transferNetworkCheckBox, gridBagConstraints);
 
@@ -2792,18 +2805,30 @@ public class DLCopySwingGUI extends JFrame
 
         transferFirewallCheckBox.setText(bundle.getString("DLCopySwingGUI.transferFirewallCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         transferCheckboxPanel.add(transferFirewallCheckBox, gridBagConstraints);
 
         transferUserSettingsCheckBox.setText(bundle.getString("DLCopySwingGUI.transferUserSettingsCheckBox.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         transferCheckboxPanel.add(transferUserSettingsCheckBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
         installTransferPanel.add(transferCheckboxPanel, gridBagConstraints);
+
+        installTransferStorageDeviceList.setSelectionMode(javax.swing.ListSelectionModel.SINGLE_SELECTION);
+        installTransferScrollPane.setViewportView(installTransferStorageDeviceList);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 5);
+        installTransferPanel.add(installTransferScrollPane, gridBagConstraints);
 
         installSelectionTabbedPane.addTab(bundle.getString("DLCopySwingGUI.installTransferPanel.TabConstraints.tabTitle"), installTransferPanel); // NOI18N
 
@@ -5651,8 +5676,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private void sortList(boolean ascending) {
         // remember selection before sorting
-        List<String> selectedValues = 
-                upgradeOverwriteList.getSelectedValuesList();
+        List<String> selectedValues
+                = upgradeOverwriteList.getSelectedValuesList();
 
         // sort
         List<String> list = new ArrayList<>();
@@ -5774,50 +5799,65 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         String[] tokens = udisksLine.split("/");
         final String device = tokens[tokens.length - 1];
         LOGGER.log(Level.INFO, "removed device: {0}", device);
+
+        // the list of listmodels where the device must be removed
+        List<DefaultListModel<StorageDevice>> listModels = new ArrayList<>();
+
         SwingUtilities.invokeLater(() -> {
-            DefaultListModel listModel;
+
             switch (state) {
                 case INSTALL_SELECTION:
-                    listModel = installStorageDeviceListModel;
+                    listModels.add(installStorageDeviceListModel);
+                    listModels.add(installTransferStorageDeviceListModel);
                     break;
+
                 case UPGRADE_SELECTION:
                     if (isolatedAutoUpgrade) {
                         upgradeNoMediaPanel.setBackground(Color.YELLOW);
                         upgradeNoMediaLabel.setText(
                                 STRINGS.getString("Insert_Media_Isolated"));
                     }
-                    listModel = upgradeStorageDeviceListModel;
+                    listModels.add(upgradeStorageDeviceListModel);
                     break;
+
                 case RESET_SELECTION:
-                    listModel = resetStorageDeviceListModel;
+                    listModels.add(resetStorageDeviceListModel);
                     break;
+
                 default:
                     LOGGER.log(Level.WARNING,
                             "Unsupported state: {0}", state);
                     return;
             }
 
-            for (int i = 0, size = listModel.getSize(); i < size; i++) {
-                StorageDevice storageDevice
-                        = (StorageDevice) listModel.get(i);
-                if (storageDevice.getDevice().equals(device)) {
-                    listModel.remove(i);
-                    LOGGER.log(Level.INFO,
-                            "removed from storage device list: {0}",
-                            device);
-                    switch (state) {
-                        case INSTALL_SELECTION:
-                            installStorageDeviceListChanged();
-                            break;
-                        case UPGRADE_SELECTION:
-                            upgradeStorageDeviceListChanged();
-                            break;
-                        case RESET_SELECTION:
-                            resetStorageDeviceListChanged();
+            listModels.forEach(listModel -> {
+                for (int i = 0, size = listModel.getSize(); i < size; i++) {
+                    StorageDevice storageDevice = listModel.get(i);
+                    if (storageDevice.getDevice().equals(device)) {
+                        
+                        listModel.remove(i);
+                        LOGGER.log(Level.INFO,
+                                "removed from storage device list: {0}",
+                                device);
+                        
+                        switch (state) {
+                            case INSTALL_SELECTION:
+                                installStorageDeviceListChanged();
+                                installTransferStorageDeviceListChanged();
+                                break;
+                                
+                            case UPGRADE_SELECTION:
+                                upgradeStorageDeviceListChanged();
+                                break;
+                                
+                            case RESET_SELECTION:
+                                resetStorageDeviceListChanged();
+                        }
+                        
+                        break; // for
                     }
-                    break; // for
                 }
-            }
+            });
         });
     }
 
@@ -6063,6 +6103,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         // update storage device list
         new InstallStorageDeviceListUpdater(this, installStorageDeviceList,
                 installStorageDeviceListModel,
+                installShowHarddisksCheckBox.isSelected(),
+                runningSystemSource.getDeviceName()).execute();
+
+        // update transfer storage device list
+        new InstallTransferStorageDeviceListUpdater(this,
+                installTransferStorageDeviceList,
+                installTransferStorageDeviceListModel,
                 installShowHarddisksCheckBox.isSelected(),
                 runningSystemSource.getDeviceName()).execute();
 
@@ -6822,7 +6869,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private void storageDeviceListChanged(DefaultListModel<StorageDevice> model,
             JPanel panel, String noMediaPanelName, String selectionPanelName,
-            StorageDeviceRenderer renderer, JList list) {
+            StorageDeviceRenderer renderer, JList<StorageDevice> list) {
 
         int deviceCount = model.size();
         if (deviceCount == 0) {

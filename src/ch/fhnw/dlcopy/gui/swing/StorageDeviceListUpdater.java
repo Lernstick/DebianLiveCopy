@@ -29,17 +29,18 @@ public abstract class StorageDeviceListUpdater extends SwingWorker<Void, Void> {
      * the list of all detected storage devices
      */
     protected List<StorageDevice> storageDevices;
+    
+    protected final JList list;
 
     private static final Logger LOGGER
             = Logger.getLogger(StorageDeviceListUpdater.class.getName());
 
-    private final JList list;
     private final DefaultListModel<StorageDevice> listModel;
     private final boolean showHardDisks;
     private final boolean showBootDevice;
     private final String bootDeviceName;
     private final ModalDialogHandler dialogHandler;
-    private final List selectedValues;
+    private final List<StorageDevice> selectedValues;
 
     /**
      * creates a new InstallStorageDeviceListUpdater
@@ -52,9 +53,9 @@ public abstract class StorageDeviceListUpdater extends SwingWorker<Void, Void> {
      * @param bootDeviceName the name of the boot device
      */
     public StorageDeviceListUpdater(DLCopySwingGUI swingGUI,
-            JList list, DefaultListModel<StorageDevice> listModel,
-            boolean showHardDisks, boolean showBootDevice,
-            String bootDeviceName) {
+            JList<StorageDevice> list,
+            DefaultListModel<StorageDevice> listModel, boolean showHardDisks,
+            boolean showBootDevice, String bootDeviceName) {
 
         this.swingGUI = swingGUI;
         this.list = list;
@@ -94,12 +95,12 @@ public abstract class StorageDeviceListUpdater extends SwingWorker<Void, Void> {
     @Override
     protected void done() {
         // manipulate list model on Swing Event Thread
-        for (StorageDevice device : storageDevices) {
+        storageDevices.forEach((device) -> {
             listModel.addElement(device);
-        }
+        });
 
         // try to restore the previous selection
-        for (Object selectedValue : selectedValues) {
+        for (StorageDevice selectedValue : selectedValues) {
             int index = storageDevices.indexOf(selectedValue);
             if (index != -1) {
                 list.addSelectionInterval(index, index);
