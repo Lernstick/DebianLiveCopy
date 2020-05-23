@@ -145,6 +145,8 @@ public class DLCopySwingGUI extends JFrame
     private final static String UDISKS_REMOVED = "removed:";
     private final DefaultListModel<StorageDevice> installStorageDeviceListModel
             = new DefaultListModel<>();
+    private final DefaultListModel<StorageDevice> transferStorageDeviceListModel
+            = new DefaultListModel<>();
     private final DefaultListModel<StorageDevice> upgradeStorageDeviceListModel
             = new DefaultListModel<>();
     private final DefaultListModel<StorageDevice> resetStorageDeviceListModel
@@ -310,26 +312,26 @@ public class DLCopySwingGUI extends JFrame
         ConsoleHandler consoleHandler = new ConsoleHandler();
         consoleHandler.setFormatter(new SimpleFormatter());
         consoleHandler.setLevel(Level.ALL);
-        for (Logger logger : loggers) {
+        loggers.forEach(logger -> {
             logger.addHandler(consoleHandler);
-        }
+        });
         // also log into a rotating temporaty file of max 50 MB
         try {
             FileHandler fileHandler = new FileHandler(""
                     + "%t/DebianLiveCopy", 50 * DLCopy.MEGA, 2, true);
             fileHandler.setFormatter(new SimpleFormatter());
             fileHandler.setLevel(Level.ALL);
-            for (Logger logger : loggers) {
+            loggers.forEach(logger -> {
                 logger.addHandler(fileHandler);
-            }
+            });
 
         } catch (IOException | SecurityException ex) {
             LOGGER.log(Level.SEVERE, "can not create log file", ex);
         }
         // prevent double logs in console
-        for (Logger logger : loggers) {
+        loggers.forEach(logger -> {
             logger.setUseParentHandlers(false);
-        }
+        });
         LOGGER.info("*********** Starting dlcopy ***********");
 
         // prepare processExecutor to always use the POSIX locale
@@ -398,7 +400,7 @@ public class DLCopySwingGUI extends JFrame
             toISOButton.getText(),
             resetButton.getText()
         };
-        jumpComboBox.setModel(new DefaultComboBoxModel(jumpTargets));
+        jumpComboBox.setModel(new DefaultComboBoxModel<>(jumpTargets));
         jumpComboBox.setSelectedIndex(preferences.getInt(JUMP_TO, 0));
 
         // do not show initial "{0}" placeholder
@@ -436,6 +438,8 @@ public class DLCopySwingGUI extends JFrame
         installStorageDeviceList.setModel(installStorageDeviceListModel);
         installStorageDeviceRenderer = new InstallStorageDeviceRenderer(this);
         installStorageDeviceList.setCellRenderer(installStorageDeviceRenderer);
+
+        installTransferStorageDeviceList.setModel(transferStorageDeviceListModel);
 
         upgradeStorageDeviceListModel.addListDataListener(this);
         upgradeStorageDeviceList.setModel(upgradeStorageDeviceListModel);
@@ -615,16 +619,15 @@ public class DLCopySwingGUI extends JFrame
 
         resetFormatExchangePartitionCheckBox.setSelected(
                 preferences.getBoolean(RESET_FORMAT_EXCHANGE_PARTITION, false));
-        ComboBoxModel exchangePartitionFileSystemsModel
-                = new DefaultComboBoxModel(exchangePartitionFileSystemItems);
+        ComboBoxModel<String> exchangePartitionFileSystemsModel
+                = new DefaultComboBoxModel<>(exchangePartitionFileSystemItems);
         exchangePartitionFileSystemComboBox.setModel(
                 exchangePartitionFileSystemsModel);
         resetFormatExchangePartitionFileSystemComboBox.setModel(
                 exchangePartitionFileSystemsModel);
         resetFormatExchangePartitionFileSystemComboBox.setSelectedItem(
                 preferences.get(RESET_FORMAT_EXCHANGE_PARTITION_FILE_SYSTEM,
-                        exchangePartitionFileSystemsModel.getElementAt(0)
-                                .toString()));
+                        exchangePartitionFileSystemsModel.getElementAt(0)));
         if (preferences.getBoolean(
                 RESET_FORMAT_EXCHANGE_PARTITION_KEEP_LABEL, true)) {
             resetFormatExchangePartitionKeepLabelRadioButton.setSelected(true);
@@ -684,7 +687,7 @@ public class DLCopySwingGUI extends JFrame
         udisksMonitorThread = new UdisksMonitorThread();
         udisksMonitorThread.start();
 
-        upgradeOverwriteListModel = new DefaultListModel();
+        upgradeOverwriteListModel = new DefaultListModel<>();
         upgradeOverwriteListModel.addListDataListener(this);
         upgradeOverwriteList.setModel(upgradeOverwriteListModel);
 
@@ -729,12 +732,12 @@ public class DLCopySwingGUI extends JFrame
             STRINGS.getString("Not_Used")
         };
         dataPartitionModeComboBox.setModel(
-                new DefaultComboBoxModel(dataPartitionModes));
+                new DefaultComboBoxModel<>(dataPartitionModes));
         dataPartitionModeComboBox.setSelectedIndex(
                 preferences.getInt(DATA_PARTITION_MODE, 0));
 
         isoDataPartitionModeComboBox.setModel(
-                new DefaultComboBoxModel(dataPartitionModes));
+                new DefaultComboBoxModel<>(dataPartitionModes));
 
         installationResultsTableModel = new ResultsTableModel(
                 installationResultsTable);
@@ -1811,7 +1814,7 @@ public class DLCopySwingGUI extends JFrame
         installBasicsPanel = new javax.swing.JPanel();
         installSelectionCountLabel = new javax.swing.JLabel();
         installStorageDeviceListScrollPane = new javax.swing.JScrollPane();
-        installStorageDeviceList = new javax.swing.JList();
+        installStorageDeviceList = new javax.swing.JList<>();
         exchangeDefinitionLabel = new javax.swing.JLabel();
         dataDefinitionLabel = new javax.swing.JLabel();
         bootDefinitionLabel = new javax.swing.JLabel();
@@ -1827,12 +1830,12 @@ public class DLCopySwingGUI extends JFrame
         copyDataPartitionCheckBox = new javax.swing.JCheckBox();
         dataPartitionSeparator = new javax.swing.JSeparator();
         dataPartitionModeLabel = new javax.swing.JLabel();
-        dataPartitionModeComboBox = new javax.swing.JComboBox();
+        dataPartitionModeComboBox = new javax.swing.JComboBox<>();
         installDetailsPanel = new javax.swing.JPanel();
         exchangePartitionDetailsPanel = new javax.swing.JPanel();
         exchangePartitionFileSystemPanel = new javax.swing.JPanel();
         exchangePartitionFileSystemLabel = new javax.swing.JLabel();
-        exchangePartitionFileSystemComboBox = new javax.swing.JComboBox();
+        exchangePartitionFileSystemComboBox = new javax.swing.JComboBox<>();
         exchangePartitionLabelPanel = new javax.swing.JPanel();
         exchangePartitionLabel = new javax.swing.JLabel();
         exchangePartitionTextField = new javax.swing.JTextField();
@@ -1847,7 +1850,7 @@ public class DLCopySwingGUI extends JFrame
         autoNumberMinDigitsSpinner = new javax.swing.JSpinner();
         dataPartitionDetailsPanel = new javax.swing.JPanel();
         dataPartitionFileSystemLabel = new javax.swing.JLabel();
-        dataPartitionFileSystemComboBox = new javax.swing.JComboBox();
+        dataPartitionFileSystemComboBox = new javax.swing.JComboBox<>();
         checkCopiesCheckBox = new javax.swing.JCheckBox();
         installTransferPanel = new javax.swing.JPanel();
         transferLabel = new javax.swing.JLabel();
@@ -1902,7 +1905,7 @@ public class DLCopySwingGUI extends JFrame
         upgradeSelectionHeaderLabel = new javax.swing.JLabel();
         upgradeSelectionCountLabel = new javax.swing.JLabel();
         upgradeStorageDeviceListScrollPane = new javax.swing.JScrollPane();
-        upgradeStorageDeviceList = new javax.swing.JList();
+        upgradeStorageDeviceList = new javax.swing.JList<>();
         upgradeExchangeDefinitionLabel = new javax.swing.JLabel();
         upgradeDataDefinitionLabel = new javax.swing.JLabel();
         upgradeBootDefinitionLabel = new javax.swing.JLabel();
@@ -1937,7 +1940,7 @@ public class DLCopySwingGUI extends JFrame
         sortAscendingButton = new javax.swing.JButton();
         sortDescendingButton = new javax.swing.JButton();
         upgradeOverwriteScrollPane = new javax.swing.JScrollPane();
-        upgradeOverwriteList = new javax.swing.JList();
+        upgradeOverwriteList = new javax.swing.JList<>();
         upgradeOverwriteAddButton = new javax.swing.JButton();
         upgradeOverwriteEditButton = new javax.swing.JButton();
         upgradeOverwriteRemoveButton = new javax.swing.JButton();
@@ -2068,7 +2071,7 @@ public class DLCopySwingGUI extends JFrame
         systemMediumRadioButton = new javax.swing.JRadioButton();
         isoOptionsPanel = new javax.swing.JPanel();
         isoDataPartitionModeLabel = new javax.swing.JLabel();
-        isoDataPartitionModeComboBox = new javax.swing.JComboBox();
+        isoDataPartitionModeComboBox = new javax.swing.JComboBox<>();
         isoOptionsCardPanel = new javax.swing.JPanel();
         systemMediumPanel = new javax.swing.JPanel();
         showNotUsedDialogCheckBox = new javax.swing.JCheckBox();
@@ -2583,7 +2586,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         exchangePartitionFileSystemPanel.add(exchangePartitionFileSystemLabel, gridBagConstraints);
 
-        exchangePartitionFileSystemComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "exFAT", "FAT32", "NTFS" }));
+        exchangePartitionFileSystemComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "exFAT", "FAT32", "NTFS" }));
         exchangePartitionFileSystemComboBox.setToolTipText(bundle.getString("ExchangePartitionFileSystemComboBoxToolTipText")); // NOI18N
         exchangePartitionFileSystemComboBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -2714,7 +2717,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
         dataPartitionDetailsPanel.add(dataPartitionFileSystemLabel, gridBagConstraints);
 
-        dataPartitionFileSystemComboBox.setModel(new javax.swing.DefaultComboBoxModel(new String[] { "ext2", "ext3", "ext4" }));
+        dataPartitionFileSystemComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ext2", "ext3", "ext4" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -2750,11 +2753,6 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
         installTransferPanel.add(transferLabel, gridBagConstraints);
 
-        installTransferStorageDeviceList.setModel(new javax.swing.AbstractListModel<String>() {
-            String[] strings = { "Item 1", "Item 2", "Item 3", "Item 4", "Item 5" };
-            public int getSize() { return strings.length; }
-            public String getElementAt(int i) { return strings[i]; }
-        });
         installTransferScrollPane.setViewportView(installTransferStorageDeviceList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -5653,7 +5651,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
     private void sortList(boolean ascending) {
         // remember selection before sorting
-        List selectedValues = upgradeOverwriteList.getSelectedValuesList();
+        List<String> selectedValues = 
+                upgradeOverwriteList.getSelectedValuesList();
 
         // sort
         List<String> list = new ArrayList<>();
@@ -5669,12 +5668,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         // refill list with sorted values
         upgradeOverwriteListModel.removeAllElements();
-        for (String string : list) {
+        list.forEach((string) -> {
             upgradeOverwriteListModel.addElement(string);
-        }
+        });
 
         // restore original selection
-        for (Object selectedValue : selectedValues) {
+        for (String selectedValue : selectedValues) {
             int selectedIndex
                     = upgradeOverwriteListModel.indexOf(selectedValue);
             upgradeOverwriteList.addSelectionInterval(
@@ -5760,16 +5759,10 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }
 
     private void addHiddenFilesFilter(final JFileChooser fileChooser) {
-        fileChooser.addPropertyChangeListener(
-                new java.beans.PropertyChangeListener() {
-            @Override
-            public void propertyChange(
-                    java.beans.PropertyChangeEvent evt) {
-                fileChooser.setFileHidingEnabled(
-                        fileChooser.getFileFilter()
-                        == NO_HIDDEN_FILES_FILTER);
-                fileChooser.rescanCurrentDirectory();
-            }
+        fileChooser.addPropertyChangeListener(e -> {
+            fileChooser.setFileHidingEnabled(
+                    fileChooser.getFileFilter() == NO_HIDDEN_FILES_FILTER);
+            fileChooser.rescanCurrentDirectory();
         });
         fileChooser.addChoosableFileFilter(NO_HIDDEN_FILES_FILTER);
         fileChooser.setFileFilter(NO_HIDDEN_FILES_FILTER);
@@ -5842,7 +5835,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         return maxSize;
     }
 
-    private void editPathListEntry(JList list, int selectionMode) {
+    private void editPathListEntry(JList<String> list, int selectionMode) {
         Object selectedValue = list.getSelectedValue();
         if (selectedValue == null) {
             // happens when double clicking in an empty list...
@@ -5857,7 +5850,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         addHiddenFilesFilter(fileChooser);
         if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
             String newPath = fileChooser.getSelectedFile().getPath();
-            DefaultListModel model = (DefaultListModel) list.getModel();
+            DefaultListModel<String> model
+                    = (DefaultListModel<String>) list.getModel();
             model.set(list.getSelectedIndex(), newPath);
         }
     }
@@ -6541,11 +6535,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             return;
         }
 
-        List selectedDevices = upgradeStorageDeviceList.getSelectedValuesList();
+        List<StorageDevice> selectedDevices
+                = upgradeStorageDeviceList.getSelectedValuesList();
         int noDataPartitionCounter = 0;
-        for (Object object : selectedDevices) {
-            StorageDevice storageDevice = (StorageDevice) object;
-            if (storageDevice.getDataPartition() == null) {
+        for (StorageDevice selectedDevice : selectedDevices) {
+            if (selectedDevice.getDataPartition() == null) {
                 noDataPartitionCounter++;
             }
         }
@@ -6914,9 +6908,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel currentlyUpgradedDeviceLabel;
     private javax.swing.JLabel dataDefinitionLabel;
     private javax.swing.JPanel dataPartitionDetailsPanel;
-    private javax.swing.JComboBox dataPartitionFileSystemComboBox;
+    private javax.swing.JComboBox<String> dataPartitionFileSystemComboBox;
     private javax.swing.JLabel dataPartitionFileSystemLabel;
-    private javax.swing.JComboBox dataPartitionModeComboBox;
+    private javax.swing.JComboBox<String> dataPartitionModeComboBox;
     private javax.swing.JLabel dataPartitionModeLabel;
     private javax.swing.JRadioButton dataPartitionRadioButton;
     private javax.swing.JSeparator dataPartitionSeparator;
@@ -6926,7 +6920,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.ButtonGroup exchangeButtonGroup;
     private javax.swing.JLabel exchangeDefinitionLabel;
     private javax.swing.JPanel exchangePartitionDetailsPanel;
-    private javax.swing.JComboBox exchangePartitionFileSystemComboBox;
+    private javax.swing.JComboBox<String> exchangePartitionFileSystemComboBox;
     private javax.swing.JLabel exchangePartitionFileSystemLabel;
     private javax.swing.JPanel exchangePartitionFileSystemPanel;
     private javax.swing.JLabel exchangePartitionLabel;
@@ -6971,18 +6965,18 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JCheckBox installShowHarddisksCheckBox;
     private javax.swing.ButtonGroup installSourceButtonGroup;
     private javax.swing.JPanel installSourcePanel;
-    private javax.swing.JList installStorageDeviceList;
+    private javax.swing.JList<StorageDevice> installStorageDeviceList;
     private javax.swing.JScrollPane installStorageDeviceListScrollPane;
     private javax.swing.JTabbedPane installTabbedPane;
     private javax.swing.JPanel installTargetCardPanel;
     private javax.swing.JPanel installTargetPanel;
     private javax.swing.JPanel installTransferPanel;
     private javax.swing.JScrollPane installTransferScrollPane;
-    private javax.swing.JList<String> installTransferStorageDeviceList;
+    private javax.swing.JList<StorageDevice> installTransferStorageDeviceList;
     private javax.swing.JScrollPane installationResultsScrollPane;
     private javax.swing.JTable installationResultsTable;
     private javax.swing.ButtonGroup isoButtonGroup;
-    private javax.swing.JComboBox isoDataPartitionModeComboBox;
+    private javax.swing.JComboBox<String> isoDataPartitionModeComboBox;
     private javax.swing.JLabel isoDataPartitionModeLabel;
     private javax.swing.JLabel isoDoneLabel;
     private javax.swing.JLabel isoLabelLabel;
@@ -7172,7 +7166,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JButton upgradeOverwriteEditButton;
     private javax.swing.JButton upgradeOverwriteExportButton;
     private javax.swing.JButton upgradeOverwriteImportButton;
-    private javax.swing.JList upgradeOverwriteList;
+    private javax.swing.JList<String> upgradeOverwriteList;
     private javax.swing.JPanel upgradeOverwritePanel;
     private javax.swing.JButton upgradeOverwriteRemoveButton;
     private javax.swing.JScrollPane upgradeOverwriteScrollPane;
@@ -7190,7 +7184,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JSeparator upgradeSelectionSeparator;
     private javax.swing.JTabbedPane upgradeSelectionTabbedPane;
     private javax.swing.JCheckBox upgradeShowHarddisksCheckBox;
-    private javax.swing.JList upgradeStorageDeviceList;
+    private javax.swing.JList<StorageDevice> upgradeStorageDeviceList;
     private javax.swing.JScrollPane upgradeStorageDeviceListScrollPane;
     private javax.swing.JCheckBox upgradeSystemPartitionCheckBox;
     private javax.swing.JTabbedPane upgradeTabbedPane;

@@ -26,7 +26,7 @@ import org.freedesktop.dbus.exceptions.DBusExecutionException;
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
 public class UpgradeStorageDeviceRenderer extends JPanel
-        implements ListCellRenderer, StorageDeviceRenderer {
+        implements ListCellRenderer<StorageDevice>, StorageDeviceRenderer {
 
     private final static Logger LOGGER
             = Logger.getLogger(UpgradeStorageDeviceRenderer.class.getName());
@@ -74,14 +74,11 @@ public class UpgradeStorageDeviceRenderer extends JPanel
     }
 
     @Override
-    public Component getListCellRendererComponent(JList list, Object value,
-            int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList list,
+            StorageDevice storageDevice, int index, boolean isSelected,
+            boolean cellHasFocus) {
 
-        if (!(value instanceof StorageDevice)) {
-            return null;
-        }
-
-        storageDevice = (StorageDevice) value;
+        this.storageDevice = storageDevice;
 
         // set icon based on storage type
         StorageDevice.Type deviceType = storageDevice.getType();

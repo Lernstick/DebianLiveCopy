@@ -23,7 +23,7 @@ import org.freedesktop.dbus.exceptions.DBusExecutionException;
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
 public class ResetStorageDeviceRenderer extends JPanel
-        implements ListCellRenderer, StorageDeviceRenderer {
+        implements ListCellRenderer<StorageDevice>, StorageDeviceRenderer {
 
     private final static Logger LOGGER
             = Logger.getLogger(DLCopySwingGUI.class.getName());
@@ -60,11 +60,11 @@ public class ResetStorageDeviceRenderer extends JPanel
     }
 
     @Override
-    public Component getListCellRendererComponent(JList list, Object value,
-            int index, boolean isSelected, boolean cellHasFocus) {
+    public Component getListCellRendererComponent(JList list,
+            StorageDevice storageDevice, int index, boolean isSelected,
+            boolean cellHasFocus) {
 
-        if (value instanceof StorageDevice) {
-            storageDevice = (StorageDevice) value;
+            this.storageDevice = storageDevice;
 
             // set icon based on storage type
             StorageDevice.Type deviceType = storageDevice.getType();
@@ -196,10 +196,6 @@ public class ResetStorageDeviceRenderer extends JPanel
             } else {
                 setBackground(list.getBackground());
             }
-
-        } else {
-            LOGGER.log(Level.WARNING, "{0} is no StorageDevice", value);
-        }
 
         return this;
     }

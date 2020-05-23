@@ -23,7 +23,7 @@ import javax.swing.*;
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
 public class InstallStorageDeviceRenderer extends JPanel
-        implements ListCellRenderer, StorageDeviceRenderer {
+        implements ListCellRenderer<StorageDevice>, StorageDeviceRenderer {
 
     private final static Logger LOGGER
             = Logger.getLogger(DLCopySwingGUI.class.getName());
@@ -57,17 +57,18 @@ public class InstallStorageDeviceRenderer extends JPanel
     }
 
     @Override
-    public Component getListCellRendererComponent(JList list, Object value,
-            int index, boolean isSelected, boolean cellHasFocus) {
-        if (value instanceof StorageDevice) {
-            this.storageDevice = (StorageDevice) value;
-            if (isSelected) {
-                setBackground(list.getSelectionBackground());
-            } else {
-                setBackground(list.getBackground());
-            }
+    public Component getListCellRendererComponent(JList list,
+            StorageDevice storageDevice, int index, boolean isSelected,
+            boolean cellHasFocus) {
+
+        this.storageDevice = storageDevice;
+        if (isSelected) {
+            setBackground(list.getSelectionBackground());
+        } else {
+            setBackground(list.getBackground());
         }
         this.isSelected = isSelected;
+
         return this;
     }
 
