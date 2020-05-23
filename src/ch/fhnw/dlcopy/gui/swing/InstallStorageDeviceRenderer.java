@@ -83,45 +83,6 @@ public class InstallStorageDeviceRenderer extends JPanel
         LOGGER.log(Level.FINEST,
                 "maxStorageDeviceSize = {0}", maxStorageDeviceSize);
 
-        // set device text and icon based on storage type
-        StringBuilder stringBuilder = new StringBuilder();
-
-        if (storageDevice.isRaid()) {
-            stringBuilder.append("RAID (");
-            stringBuilder.append(storageDevice.getRaidLevel());
-            stringBuilder.append(", ");
-            stringBuilder.append(storageDevice.getRaidDeviceCount());
-            stringBuilder.append(" ");
-            stringBuilder.append(STRINGS.getString("Devices"));
-            stringBuilder.append(") ");
-        } else {
-            // the vendor string is sometimes empty
-            String vendor = storageDevice.getVendor();
-            if ((vendor != null) && !vendor.isEmpty()) {
-                stringBuilder.append(vendor);
-                stringBuilder.append(" ");
-            }
-
-            String model = storageDevice.getModel();
-            if ((model != null) && !model.isEmpty()) {
-                stringBuilder.append(model);
-            }
-
-            if (stringBuilder.length() != 0) {
-                stringBuilder.append(", ");
-            }
-        }
-
-        long storageSize = storageDevice.getSize();
-        String sizeString
-                = LernstickFileTools.getDataVolumeString(storageSize, 1);
-        stringBuilder.append(sizeString);
-
-        stringBuilder.append(" (/dev/");
-        stringBuilder.append(storageDevice.getDevice());
-        stringBuilder.append(")");
-        String deviceText = stringBuilder.toString();
-
         StorageDevice.Type deviceType = storageDevice.getType();
         switch (deviceType) {
             case HardDrive:
@@ -143,6 +104,8 @@ public class InstallStorageDeviceRenderer extends JPanel
                         "unsupported deviceType:{0}", deviceType);
         }
 
+        long storageSize = storageDevice.getSize();
+
         iconGap = iconLabel.getWidth() + iconInsets;
         Graphics2D graphics2D = (Graphics2D) g;
         int componentWidth = getWidth();
@@ -154,6 +117,7 @@ public class InstallStorageDeviceRenderer extends JPanel
                 = DLCopy.getPartitionState(storageSize, systemSize);
 
         // draw top text
+        String deviceText = getDeviceString(storageDevice);
         graphics2D.setPaint(Color.BLACK);
         graphics2D.setRenderingHint(RenderingHints.KEY_ANTIALIASING,
                 RenderingHints.VALUE_ANTIALIAS_ON);
@@ -346,6 +310,50 @@ public class InstallStorageDeviceRenderer extends JPanel
     @Override
     public void setMaxSize(long maxSize) {
         this.maxStorageDeviceSize = maxSize;
+    }
+
+    public static String getDeviceString(StorageDevice storageDevice) {
+
+        StringBuilder stringBuilder = new StringBuilder();
+
+        if (storageDevice.isRaid()) {
+
+            stringBuilder.append("RAID (");
+            stringBuilder.append(storageDevice.getRaidLevel());
+            stringBuilder.append(", ");
+            stringBuilder.append(storageDevice.getRaidDeviceCount());
+            stringBuilder.append(" ");
+            stringBuilder.append(STRINGS.getString("Devices"));
+            stringBuilder.append(") ");
+
+        } else {
+            // the vendor string is sometimes empty
+            String vendor = storageDevice.getVendor();
+            if ((vendor != null) && !vendor.isEmpty()) {
+                stringBuilder.append(vendor);
+                stringBuilder.append(" ");
+            }
+
+            String model = storageDevice.getModel();
+            if ((model != null) && !model.isEmpty()) {
+                stringBuilder.append(model);
+            }
+
+            if (stringBuilder.length() != 0) {
+                stringBuilder.append(", ");
+            }
+        }
+
+        long storageSize = storageDevice.getSize();
+        String sizeString
+                = LernstickFileTools.getDataVolumeString(storageSize, 1);
+        stringBuilder.append(sizeString);
+
+        stringBuilder.append(" (/dev/");
+        stringBuilder.append(storageDevice.getDevice());
+        stringBuilder.append(")");
+
+        return stringBuilder.toString();
     }
 
     /**

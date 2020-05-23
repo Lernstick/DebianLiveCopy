@@ -2816,6 +2816,7 @@ public class DLCopySwingGUI extends JFrame
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
         installTransferPanel.add(transferCheckboxPanel, gridBagConstraints);
 
@@ -5834,26 +5835,26 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 for (int i = 0, size = listModel.getSize(); i < size; i++) {
                     StorageDevice storageDevice = listModel.get(i);
                     if (storageDevice.getDevice().equals(device)) {
-                        
+
                         listModel.remove(i);
                         LOGGER.log(Level.INFO,
                                 "removed from storage device list: {0}",
                                 device);
-                        
+
                         switch (state) {
                             case INSTALL_SELECTION:
                                 installStorageDeviceListChanged();
                                 installTransferStorageDeviceListChanged();
                                 break;
-                                
+
                             case UPGRADE_SELECTION:
                                 upgradeStorageDeviceListChanged();
                                 break;
-                                
+
                             case RESET_SELECTION:
                                 resetStorageDeviceListChanged();
                         }
-                        
+
                         break; // for
                     }
                 }
@@ -6350,6 +6351,19 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             if (!checkExchange(partitionSizes)) {
                 return;
             }
+            if (!checkTransfer(storageDevice, partitionSizes)) {
+                return;
+            }
+        }
+
+        // exchange copy and exchange transfer are mutually exclusive
+        if (!installTransferStorageDeviceList.isSelectionEmpty()
+                && copyExchangePartitionCheckBox.isSelected()
+                && transferExchangeCheckBox.isSelected()) {
+            JOptionPane.showMessageDialog(this,
+                    STRINGS.getString("Error_Exchange_Copy_And_Transfer"),
+                    STRINGS.getString("Error"), JOptionPane.ERROR_MESSAGE);
+            return;
         }
 
         // show big fat warning dialog
@@ -6628,23 +6642,88 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         // check if the target storage device actually has an exchange partition
+        return checkExchangePartition(systemSource.getExchangePartition(),
+                partitionSizes, "Error_No_Exchange_At_Target",
+                "Error_Target_Exchange_Too_Small");
+    }
+
+    private boolean checkTransfer(StorageDevice storageDevice,
+            PartitionSizes partitionSizes) {
+
+        StorageDevice transferSourceDevice
+                = installTransferStorageDeviceList.getSelectedValue();
+
+        if (transferSourceDevice == null) {
+            return true;
+        }
+
+        // check that storage device is not selected as transfer source
+        if (transferSourceDevice.equals(storageDevice)) {
+            String errorMessage = STRINGS.getString(
+                    "Error_Device_Is_Transfer_Source");
+            errorMessage = MessageFormat.format(errorMessage,
+                    InstallStorageDeviceRenderer.getDeviceString(
+                            storageDevice));
+            JOptionPane.showMessageDialog(this, errorMessage,
+                    STRINGS.getString("Error"), JOptionPane.ERROR_MESSAGE);
+            return false;
+        }
+
+        // check that (if exchange partition is transferred) the target
+        // exchange partition is large enough
+        if (transferExchangeCheckBox.isSelected()
+                && !checkExchangePartition(
+                        transferSourceDevice.getExchangePartition(),
+                        partitionSizes, "Error_Transfer_No_Exchange_At_Target",
+                        "Error_Transfer_Target_Exchange_Too_Small")) {
+            return false;
+        }
+
+        // check that if data is transferred the target persistence partition is
+        // large enough
+        long sourceSize = 0;
+        if (transferHomeCheckBox.isSelected()) {
+            sourceSize += transferSourceDevice.getDataPartition().getUsedSpace(
+                    "/rw/home/user/");
+        }
+        if (transferNetworkCheckBox.isSelected()) {
+            sourceSize += transferSourceDevice.getDataPartition().getUsedSpace(
+                    "/rw/etc/NetworkManager/");
+        }
+        if (transferPrinterCheckBox.isSelected()) {
+            sourceSize += transferSourceDevice.getDataPartition().getUsedSpace(
+                    "/rw/etc/cups/");
+        }
+        if (transferFirewallCheckBox.isSelected()) {
+            sourceSize += transferSourceDevice.getDataPartition().getUsedSpace(
+                    "/rw/etc/lernstick-firewall/");
+        }
+
+        return checkPersistencePartition(sourceSize, partitionSizes,
+                "Error_Transfer_No_Persistence_At_Target",
+                "Error_Transfer_Target_Persistence_Too_Small");
+    }
+
+    private boolean checkExchangePartition(
+            Partition exchangePartition, PartitionSizes partitionSizes,
+            String noExchangeErrorMessage, String tooSmallErrorMessage) {
+
         if (partitionSizes.getExchangeMB() == 0) {
             JOptionPane.showMessageDialog(this,
-                    STRINGS.getString("Error_No_Exchange_At_Target"),
+                    STRINGS.getString(noExchangeErrorMessage),
                     STRINGS.getString("Error"),
                     JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         // check that target partition is large enough
-        Partition exchangePartition = systemSource.getExchangePartition();
         if (exchangePartition != null) {
             long sourceExchangeSize = exchangePartition.getUsedSpace(false);
             long targetExchangeSize = (long) partitionSizes.getExchangeMB()
                     * (long) DLCopy.MEGA;
             if (sourceExchangeSize > targetExchangeSize) {
                 JOptionPane.showMessageDialog(this,
-                        STRINGS.getString("Error_Target_Exchange_Too_Small"),
+                        STRINGS.getString(tooSmallErrorMessage),
                         STRINGS.getString("Error"),
                         JOptionPane.ERROR_MESSAGE);
                 return false;
@@ -6728,24 +6807,31 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             return false;
         }
 
+        return checkPersistencePartition(
+                systemSource.getDataPartition().getUsedSpace(false),
+                partitionSizes, "Error_No_Persistence_At_Target",
+                "Error_Target_Persistence_Too_Small");
+    }
+
+    private boolean checkPersistencePartition(
+            long dataSize, PartitionSizes partitionSizes,
+            String noPersistenceErrorMessage, String tooSmallErrorMessage) {
+
         // check if the target medium actually has a persistence partition
         if (partitionSizes.getPersistenceMB() == 0) {
             JOptionPane.showMessageDialog(this,
-                    STRINGS.getString("Error_No_Persistence_At_Target"),
+                    STRINGS.getString(noPersistenceErrorMessage),
                     STRINGS.getString("Error"), JOptionPane.ERROR_MESSAGE);
             return false;
         }
 
         // check that target partition is large enough
-        long persistenceSize = systemSource.getDataPartition()
-                .getUsedSpace(false);
         long targetPersistenceSize
                 = (long) partitionSizes.getPersistenceMB() * (long) DLCopy.MEGA;
-        if (persistenceSize > targetPersistenceSize) {
-            String errorMessage
-                    = STRINGS.getString("Error_Target_Persistence_Too_Small");
+        if (dataSize > targetPersistenceSize) {
+            String errorMessage = STRINGS.getString(tooSmallErrorMessage);
             errorMessage = MessageFormat.format(errorMessage,
-                    LernstickFileTools.getDataVolumeString(persistenceSize, 1),
+                    LernstickFileTools.getDataVolumeString(dataSize, 1),
                     LernstickFileTools.getDataVolumeString(
                             targetPersistenceSize, 1));
             JOptionPane.showMessageDialog(this, errorMessage,
