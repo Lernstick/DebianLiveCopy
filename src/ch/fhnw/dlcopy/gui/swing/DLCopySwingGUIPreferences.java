@@ -318,45 +318,13 @@ public class DLCopySwingGUIPreferences {
         timestampSubdirectory = getSubdirectory(
                 RESET_BACKUP_SUBDIR_TIMESTAMP,
                 "Timestamp");
-        orderedSubdirectoriesEntries = getOrderedSubdirectoriesEntries();
+        orderedSubdirectoriesEntries = parseOrderedSubdirectoriesEntries();
 
         loadPreferences(exchangePartitionFileSystemsModel);
     }
 
     public final List<Subdirectory> getOrderedSubdirectoriesEntries() {
-
-        List<Subdirectory> subdirectoriesEntries = new ArrayList<>();
-        subdirectoriesEntries.add(exchangePartitionLabelSubdirectory);
-        subdirectoriesEntries.add(storageMediaSerialnumberSubdirectory);
-        subdirectoriesEntries.add(timestampSubdirectory);
-
-        List<Subdirectory> orderedEntries = new ArrayList<>();
-        String resetBackupSubdirOrder = preferences.get(
-                RESET_BACKUP_SUBDIR_ORDER,
-                RESET_BACKUP_SUBDIR_ORDER_LABEL + ','
-                + RESET_BACKUP_SUBDIR_ORDER_SERIAL);
-        String[] resetBackupSubdirOrderToken
-                = resetBackupSubdirOrder.split(",");
-        for (String token : resetBackupSubdirOrderToken) {
-            if (token.equals(RESET_BACKUP_SUBDIR_ORDER_LABEL)) {
-                subdirectoriesEntries.remove(
-                        exchangePartitionLabelSubdirectory);
-                orderedEntries.add(exchangePartitionLabelSubdirectory);
-            } else if (token.equals(RESET_BACKUP_SUBDIR_ORDER_SERIAL)) {
-                subdirectoriesEntries.remove(
-                        storageMediaSerialnumberSubdirectory);
-                orderedEntries.add(storageMediaSerialnumberSubdirectory);
-            } else if (token.equals(RESET_BACKUP_SUBDIR_ORDER_TIMESTAMP)) {
-                subdirectoriesEntries.remove(
-                        timestampSubdirectory);
-                orderedEntries.add(timestampSubdirectory);
-            }
-        }
-        // After introducing new subdir entries they are not yet in the
-        // preferences. Therefore we have to add all remaining entries here.
-        orderedEntries.addAll(subdirectoriesEntries);
-
-        return orderedEntries;
+        return orderedSubdirectoriesEntries;
     }
 
     public Resetter.AutoPrintMode getAutoPrintMode() {
@@ -758,5 +726,41 @@ public class DLCopySwingGUIPreferences {
                 upgradeOverwriteListModel.addElement(upgradeOverWriteToken);
             }
         }
+    }
+
+    private List<Subdirectory> parseOrderedSubdirectoriesEntries() {
+
+        List<Subdirectory> subdirectoriesEntries = new ArrayList<>();
+        subdirectoriesEntries.add(exchangePartitionLabelSubdirectory);
+        subdirectoriesEntries.add(storageMediaSerialnumberSubdirectory);
+        subdirectoriesEntries.add(timestampSubdirectory);
+
+        List<Subdirectory> orderedEntries = new ArrayList<>();
+        String resetBackupSubdirOrder = preferences.get(
+                RESET_BACKUP_SUBDIR_ORDER,
+                RESET_BACKUP_SUBDIR_ORDER_LABEL + ','
+                + RESET_BACKUP_SUBDIR_ORDER_SERIAL);
+        String[] resetBackupSubdirOrderToken
+                = resetBackupSubdirOrder.split(",");
+        for (String token : resetBackupSubdirOrderToken) {
+            if (token.equals(RESET_BACKUP_SUBDIR_ORDER_LABEL)) {
+                subdirectoriesEntries.remove(
+                        exchangePartitionLabelSubdirectory);
+                orderedEntries.add(exchangePartitionLabelSubdirectory);
+            } else if (token.equals(RESET_BACKUP_SUBDIR_ORDER_SERIAL)) {
+                subdirectoriesEntries.remove(
+                        storageMediaSerialnumberSubdirectory);
+                orderedEntries.add(storageMediaSerialnumberSubdirectory);
+            } else if (token.equals(RESET_BACKUP_SUBDIR_ORDER_TIMESTAMP)) {
+                subdirectoriesEntries.remove(
+                        timestampSubdirectory);
+                orderedEntries.add(timestampSubdirectory);
+            }
+        }
+        // After introducing new subdir entries they are not yet in the
+        // preferences. Therefore we have to add all remaining entries here.
+        orderedEntries.addAll(subdirectoriesEntries);
+
+        return orderedEntries;
     }
 }
