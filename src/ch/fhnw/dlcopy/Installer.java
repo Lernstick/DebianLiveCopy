@@ -33,6 +33,13 @@ public class Installer extends InstallerOrUpgrader
     private final int autoNumberMinDigits;
     private final boolean copyDataPartition;
     private final DataPartitionMode dataPartitionMode;
+    private final StorageDevice transferDevice;
+    private final boolean transferExchange;
+    private final boolean transferHome;
+    private final boolean transferNetwork;
+    private final boolean transferPrinter;
+    private final boolean transferFirewall;
+    private final boolean transferUserSettings;
     private final boolean checkCopies;
 
     /**
@@ -58,6 +65,14 @@ public class Installer extends InstallerOrUpgrader
      * @param dataPartitionMode the mode of the data partition to set in the
      * bootloaders config
      * @param checkCopies if copies should be checked for errors
+     * @param transferDevice the device to transfer data from or null, if no
+     * data should be transferred
+     * @param transferExchange if the exchange partition should be transferred
+     * @param transferHome if the home folder should be transferred
+     * @param transferNetwork if the network settings should be transferred
+     * @param transferPrinter if the printer settings should be transferred
+     * @param transferFirewall if the firewall settings should be transferred
+     * @param transferUserSettings if the user settings should be transferred
      * @param lock the lock to aquire before executing in background
      */
     public Installer(SystemSource source, List<StorageDevice> deviceList,
@@ -67,8 +82,11 @@ public class Installer extends InstallerOrUpgrader
             boolean copyExchangePartition, String autoNumberPattern,
             int autoNumberStart, int autoNumberIncrement,
             int autoNumberMinDigits, boolean copyDataPartition,
-            DataPartitionMode dataPartitionMode, boolean checkCopies,
-            Lock lock) {
+            DataPartitionMode dataPartitionMode, StorageDevice transferDevice,
+            boolean transferExchange, boolean transferHome, 
+            boolean transferNetwork, boolean transferPrinter, 
+            boolean transferFirewall, boolean transferUserSettings, 
+            boolean checkCopies, Lock lock) {
 
         super(source, deviceList, exchangePartitionLabel,
                 exchangePartitionFileSystem, dataPartitionFileSystem,
@@ -83,6 +101,13 @@ public class Installer extends InstallerOrUpgrader
         this.copyDataPartition = copyDataPartition;
         this.dataPartitionMode = dataPartitionMode;
         this.checkCopies = checkCopies;
+        this.transferDevice = transferDevice;
+        this.transferExchange = transferExchange;
+        this.transferHome = transferHome;
+        this.transferNetwork = transferNetwork;
+        this.transferPrinter = transferPrinter;
+        this.transferFirewall = transferFirewall;
+        this.transferUserSettings = transferUserSettings;
     }
 
     @Override
@@ -124,6 +149,11 @@ public class Installer extends InstallerOrUpgrader
                     LOGGER.log(Level.WARNING, "", exception);
                     errorMessage = exception.getMessage();
                 }
+
+                // TODO: GUI updates
+                DLCopy.transfer(transferDevice, storageDevice, transferExchange,
+                        transferHome, transferNetwork, transferPrinter,
+                        transferFirewall, transferUserSettings, checkCopies);
 
                 dlCopyGUI.installingDeviceFinished(errorMessage, autoNumber);
             }

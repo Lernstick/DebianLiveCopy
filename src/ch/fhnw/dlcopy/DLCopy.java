@@ -1678,6 +1678,35 @@ public class DLCopy {
         }
     }
 
+    public static boolean transfer(StorageDevice source,
+            StorageDevice destination, boolean transferExchange,
+            boolean transferHome, boolean transferNetwork,
+            boolean transferPrinter, boolean transferFirewall,
+            boolean transferUserSettings, boolean checkCopies) {
+
+        // TODO:
+        if (transferExchange) {
+
+        }
+        if (transferHome) {
+
+        }
+        if (transferNetwork) {
+
+        }
+        if (transferPrinter) {
+
+        }
+        if (transferFirewall) {
+
+        }
+        if (transferUserSettings) {
+
+        }
+
+        return true;
+    }
+
     private static void copyPersistenceCp(Installer installer,
             String persistenceSourcePath, String persistenceDestinationPath,
             DLCopyGUI dlCopyGUI)
