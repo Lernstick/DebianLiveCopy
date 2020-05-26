@@ -88,11 +88,10 @@ public class DLCopy {
      * @param args the command line arguments
      */
     public static void main(final String args[]) {
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            @Override
-            public void run() {
-                new DLCopySwingGUI(args).setVisible(true);
-            }
+        java.awt.EventQueue.invokeLater(() -> {
+            DLCopySwingGUI gui = new DLCopySwingGUI(args);
+            gui.init();
+            gui.setVisible(true);
         });
     }
 

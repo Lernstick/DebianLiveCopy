@@ -5,8 +5,8 @@
  */
 package ch.fhnw.dlcopy.gui.swing;
 
-import ch.fhnw.dlcopy.DLCopy;
 import static ch.fhnw.dlcopy.DLCopy.STRINGS;
+import ch.fhnw.dlcopy.DLCopy;
 import ch.fhnw.dlcopy.DataPartitionMode;
 import ch.fhnw.dlcopy.DebianLiveDistribution;
 import ch.fhnw.dlcopy.Installer;
@@ -25,6 +25,18 @@ import ch.fhnw.dlcopy.Upgrader;
 import ch.fhnw.dlcopy.exceptions.NoExecutableExtLinuxException;
 import ch.fhnw.dlcopy.exceptions.NoExtLinuxException;
 import ch.fhnw.dlcopy.gui.DLCopyGUI;
+import ch.fhnw.dlcopy.gui.swing.preferences.DLCopySwingGUIPreferencesHandler;
+import ch.fhnw.dlcopy.gui.swing.preferences.InstallationDestinationDetailsPreferences;
+import ch.fhnw.dlcopy.gui.swing.preferences.InstallationDestinationSelectionPreferences;
+import ch.fhnw.dlcopy.gui.swing.preferences.InstallationDestinationTransferPreferences;
+import ch.fhnw.dlcopy.gui.swing.preferences.InstallationSourcePreferences;
+import ch.fhnw.dlcopy.gui.swing.preferences.MainMenuPreferences;
+import ch.fhnw.dlcopy.gui.swing.preferences.ResetBackupPreferences;
+import ch.fhnw.dlcopy.gui.swing.preferences.ResetDeletePreferences;
+import ch.fhnw.dlcopy.gui.swing.preferences.ResetPrintPreferences;
+import ch.fhnw.dlcopy.gui.swing.preferences.ResetRestorePreferences;
+import ch.fhnw.dlcopy.gui.swing.preferences.ResetSelectionPreferences;
+import ch.fhnw.dlcopy.gui.swing.preferences.UpgradePreferences;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.filecopier.FileCopierPanel;
 import ch.fhnw.jbackpack.JSqueezedLabel;
@@ -149,7 +161,7 @@ public class DLCopySwingGUI extends JFrame
             = new DefaultListModel<>();
     private final DefaultListModel<StorageDevice> resetStorageDeviceListModel
             = new DefaultListModel<>();
-    private final InstallStorageDeviceRenderer installStorageDeviceRenderer;
+    private InstallStorageDeviceRenderer installStorageDeviceRenderer;
     private final InstallTransferStorageDeviceRenderer installTransferStorageDeviceRenderer;
     private final UpgradeStorageDeviceRenderer upgradeStorageDeviceRenderer;
     private final ResetStorageDeviceRenderer resetStorageDeviceRenderer;
@@ -219,7 +231,9 @@ public class DLCopySwingGUI extends JFrame
     // global cache for file digests to speed up repeated file copy checks
     private final HashMap<String, byte[]> digestCache = new HashMap<>();
 
-    private final DLCopySwingGUIPreferences dlCopySwingGUIPreferences;
+    private final InstallationDestinationSelectionPreferences installationDestinationSelectionPreferences;
+    private final ResetPrintPreferences resetPrintPreferences;
+    private final DLCopySwingGUIPreferencesHandler preferencesHandler;
 
     /**
      * Creates new form DLCopy
@@ -324,8 +338,6 @@ public class DLCopySwingGUI extends JFrame
         initComponents();
 
         upgradeOverwriteListModel = new DefaultListModel<>();
-        upgradeOverwriteListModel.addListDataListener(this);
-        upgradeOverwriteList.setModel(upgradeOverwriteListModel);
 
         // init jump targets
         String[] jumpTargets = new String[]{
@@ -336,6 +348,16 @@ public class DLCopySwingGUI extends JFrame
             resetButton.getText()
         };
         jumpComboBox.setModel(new DefaultComboBoxModel<>(jumpTargets));
+
+        String[] dataPartitionModes = new String[]{
+            STRINGS.getString("Read_Write"),
+            STRINGS.getString("Read_Only"),
+            STRINGS.getString("Not_Used")
+        };
+        dataPartitionModeComboBox.setModel(
+                new DefaultComboBoxModel<>(dataPartitionModes));
+        isoDataPartitionModeComboBox.setModel(
+                new DefaultComboBoxModel<>(dataPartitionModes));
 
         String[] exchangePartitionFileSystemItems;
         if (debianLiveDistribution == DebianLiveDistribution.LERNSTICK_EXAM) {
@@ -361,47 +383,79 @@ public class DLCopySwingGUI extends JFrame
         resetFormatExchangePartitionFileSystemComboBox.setModel(
                 exchangePartitionFileSystemsModel);
 
-        dlCopySwingGUIPreferences = new DLCopySwingGUIPreferences(jumpComboBox,
-                isoSourceRadioButton, isoSourceTextField,
-                exchangePartitionSizeSlider, exchangePartitionTextField,
-                autoNumberPatternTextField, autoNumberStartSpinner,
-                autoNumberIncrementSpinner, autoNumberMinDigitsSpinner,
-                exchangePartitionFileSystemComboBox,
-                copyExchangePartitionCheckBox, dataPartitionFileSystemComboBox,
-                checkCopiesCheckBox, dataPartitionModeComboBox,
-                copyDataPartitionCheckBox, upgradeSystemPartitionCheckBox,
-                resetDataPartitionCheckBox, reactivateWelcomeCheckBox,
+        preferencesHandler = new DLCopySwingGUIPreferencesHandler();
+
+        preferencesHandler.addPreference(new MainMenuPreferences(jumpComboBox));
+
+        preferencesHandler.addPreference(new InstallationSourcePreferences(
+                isoSourceRadioButton, isoSourceTextField));
+
+        installationDestinationSelectionPreferences
+                = new InstallationDestinationSelectionPreferences(
+                        copyExchangePartitionCheckBox,
+                        exchangePartitionSizeSlider, copyDataPartitionCheckBox,
+                        dataPartitionModeComboBox);
+        preferencesHandler.addPreference(
+                installationDestinationSelectionPreferences);
+
+        preferencesHandler.addPreference(
+                new InstallationDestinationDetailsPreferences(
+                        exchangePartitionFileSystemComboBox,
+                        exchangePartitionTextField, autoNumberPatternTextField,
+                        autoNumberStartSpinner, autoNumberIncrementSpinner,
+                        autoNumberMinDigitsSpinner,
+                        dataPartitionFileSystemComboBox, checkCopiesCheckBox));
+
+        preferencesHandler.addPreference(
+                new InstallationDestinationTransferPreferences(
+                        transferExchangeCheckBox, transferHomeCheckBox,
+                        transferNetworkCheckBox, transferPrinterCheckBox,
+                        transferFirewallCheckBox, transferUserSettingsCheckBox));
+
+        preferencesHandler.addPreference(new UpgradePreferences(
+                upgradeSystemPartitionCheckBox, resetDataPartitionCheckBox,
                 keepPrinterSettingsCheckBox, keepNetworkSettingsCheckBox,
                 keepFirewallSettingsCheckBox, keepUserSettingsCheckBox,
-                automaticBackupCheckBox, automaticBackupCheckBox,
-                removeHiddenFilesCheckBox, automaticBackupRemoveCheckBox,
-                upgradeOverwriteListModel, resetAutomaticModeRadioButton,
-                resetListModeRadioButton, isoDataPartitionModeComboBox,
+                reactivateWelcomeCheckBox, removeHiddenFilesCheckBox,
+                automaticBackupCheckBox, automaticBackupTextField,
+                automaticBackupRemoveCheckBox, upgradeOverwriteListModel));
+
+        preferencesHandler.addPreference(new ResetSelectionPreferences(
+                resetAutomaticModeRadioButton, resetListModeRadioButton));
+
+        resetPrintPreferences = new ResetPrintPreferences(
                 printDocumentsCheckBox, printingDirectoriesTextArea,
-                scanDirectoriesRecursivelyCheckBox,
-                printOdtCheckBox, printOdsCheckBox, printOdpCheckBox,
-                printPdfCheckBox, printDocCheckBox, printDocxCheckBox,
-                printXlsCheckBox, printXlsxCheckBox, printPptCheckBox,
-                printPptxCheckBox, autoPrintAllDocumentsRadioButton,
+                scanDirectoriesRecursivelyCheckBox, printOdtCheckBox,
+                printOdsCheckBox, printOdpCheckBox, printPdfCheckBox,
+                printDocCheckBox, printDocxCheckBox, printXlsCheckBox,
+                printXlsxCheckBox, printPptCheckBox, printPptxCheckBox,
+                autoPrintAllDocumentsRadioButton,
                 autoPrintSingleDocumentsRadioButton, autoPrintNoneRadioButton,
-                printCopiesSpinner, printDuplexCheckBox, resetBackupCheckBox,
-                resetBackupSourceTextField, resetBackupDestinationTextField,
+                printCopiesSpinner, printDuplexCheckBox);
+        preferencesHandler.addPreference(resetPrintPreferences);
+
+        ResetBackupPreferences resetBackupPreferences
+                = new ResetBackupPreferences(resetBackupCheckBox,
+                        resetBackupSourceTextField,
+                        resetBackupDestinationTextField);
+        preferencesHandler.addPreference(resetBackupPreferences);
+        orderedSubdirectoriesEntries = resetBackupPreferences.
+                getOrderedSubdirectoriesEntries();
+
+        preferencesHandler.addPreference(new ResetDeletePreferences(
                 resetFormatExchangePartitionCheckBox,
                 resetFormatExchangePartitionFileSystemComboBox,
-                exchangePartitionFileSystemsModel,
                 resetFormatExchangePartitionKeepLabelRadioButton,
                 resetFormatExchangePartitionNewLabelRadioButton,
                 resetFormatExchangePartitionNewLabelTextField,
-                deleteOnDataPartitionCheckBox, formatDataPartitionRadioButton,
-                removeFilesRadioButton, systemFilesCheckBox,
-                homeDirectoryCheckBox, resetRestoreDataCheckBox,
-                resetRestoreConfigurationPanel, transferExchangeCheckBox,
-                transferHomeCheckBox, transferNetworkCheckBox,
-                transferPrinterCheckBox, transferFirewallCheckBox,
-                transferUserSettingsCheckBox);
+                deleteOnDataPartitionCheckBox,
+                formatDataPartitionRadioButton, removeFilesRadioButton,
+                systemFilesCheckBox, homeDirectoryCheckBox));
 
-        orderedSubdirectoriesEntries = dlCopySwingGUIPreferences.
-                getOrderedSubdirectoriesEntries();
+        preferencesHandler.addPreference(new ResetRestorePreferences(
+                resetRestoreDataCheckBox, resetRestoreConfigurationPanel));
+
+        preferencesHandler.load();
 
         // do not show initial "{0}" placeholder
         String countString = STRINGS.getString("Selection_Count");
@@ -409,14 +463,6 @@ public class DLCopySwingGUI extends JFrame
         installSelectionCountLabel.setText(countString);
         upgradeSelectionCountLabel.setText(countString);
         resetSelectionCountLabel.setText(countString);
-
-        tmpDirTextField.getDocument().addDocumentListener(this);
-        getRootPane().setDefaultButton(installButton);
-        installButton.requestFocusInWindow();
-
-        URL imageURL = getClass().getResource(
-                "/ch/fhnw/dlcopy/icons/usbpendrive_unmount.png");
-        setIconImage(new ImageIcon(imageURL).getImage());
 
         String text = STRINGS.getString("Boot_Definition");
         String bootSize = LernstickFileTools.getDataVolumeString(
@@ -434,10 +480,6 @@ public class DLCopySwingGUI extends JFrame
                 ? isoSystemSource
                 : runningSystemSource;
 
-        installStorageDeviceList.setModel(installStorageDeviceListModel);
-        installStorageDeviceRenderer = new InstallStorageDeviceRenderer(this);
-        installStorageDeviceList.setCellRenderer(installStorageDeviceRenderer);
-
         // because of its HTML content, the transfer label tends to resize
         // therefore we fix its size here
         Dimension preferredSize = transferLabel.getPreferredSize();
@@ -451,31 +493,12 @@ public class DLCopySwingGUI extends JFrame
         installTransferStorageDeviceList.setCellRenderer(
                 installTransferStorageDeviceRenderer);
 
-        upgradeStorageDeviceListModel.addListDataListener(this);
-        upgradeStorageDeviceList.setModel(upgradeStorageDeviceListModel);
         upgradeStorageDeviceRenderer
                 = new UpgradeStorageDeviceRenderer(runningSystemSource);
         upgradeStorageDeviceList.setCellRenderer(upgradeStorageDeviceRenderer);
 
-        resetStorageDeviceListModel.addListDataListener(this);
-        resetStorageDeviceList.setModel(resetStorageDeviceListModel);
         resetStorageDeviceRenderer = new ResetStorageDeviceRenderer();
         resetStorageDeviceList.setCellRenderer(resetStorageDeviceRenderer);
-
-        // the following block must be called after creating
-        // installStorageDeviceRenderer! (otherwise we get an NPE)
-        // -----------------------------
-        String isoSource = isoSourceTextField.getText();
-        if (!isoSource.isEmpty()) {
-            setISOInstallationSourcePath(isoSource);
-        }
-        updateInstallSourceGUI();
-        // -----------------------------
-
-        AbstractDocument exchangePartitionDocument
-                = (AbstractDocument) exchangePartitionTextField.getDocument();
-        exchangePartitionDocument.setDocumentFilter(new DocumentSizeFilter());
-        exchangePartitionSizeTextField.getDocument().addDocumentListener(this);
 
         setSpinnerColums(autoNumberStartSpinner, 2);
         setSpinnerColums(autoNumberIncrementSpinner, 2);
@@ -484,11 +507,7 @@ public class DLCopySwingGUI extends JFrame
 
         subdirectoryTableModel = new SubdirectoryTableModel(
                 resetBackupSubdirectoryTable, orderedSubdirectoriesEntries);
-        resetBackupSubdirectoryTable.setModel(subdirectoryTableModel);
-        resetBackupSubdirectoryTable.setSelectionMode(
-                ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        resetBackupSubdirectoryTable.getSelectionModel().
-                addListSelectionListener(this);
+
         // set renderer that respects the "enabled" state of the table
         setEnabledRespectingDefaultRenderer(
                 resetBackupSubdirectoryTable, Boolean.class);
@@ -505,7 +524,6 @@ public class DLCopySwingGUI extends JFrame
 
         // monitor udisks changes
         udisksMonitorThread = new UdisksMonitorThread();
-        udisksMonitorThread.start();
 
         explicitExchangeSize = exchangePartitionSizeSlider.getValue();
         if (commandLineExchangePartitionSize != null) {
@@ -546,16 +564,6 @@ public class DLCopySwingGUI extends JFrame
         preferredSize = installStorageDeviceListScrollPane.getPreferredSize();
         preferredSize.height = 200;
         installStorageDeviceListScrollPane.setPreferredSize(preferredSize);
-        pack();
-
-        // The preferred width of the labels with HTML text is much too wide.
-        // Therefore we reset the width to a sane size.
-        Dimension size = getSize();
-        size.width = 1060;
-        setSize(size);
-
-        // center on screen
-        setLocationRelativeTo(null);
 
         switch (jumpComboBox.getSelectedIndex()) {
             case 1:
@@ -574,6 +582,52 @@ public class DLCopySwingGUI extends JFrame
                 globalShow("executionPanel");
                 switchToResetSelection();
         }
+    }
+
+    // post-constructor initialization
+    public void init() {
+        upgradeOverwriteListModel.addListDataListener(this);
+        upgradeOverwriteList.setModel(upgradeOverwriteListModel);
+
+        tmpDirTextField.getDocument().addDocumentListener(this);
+
+        getRootPane().setDefaultButton(installButton);
+        installButton.requestFocusInWindow();
+
+        URL imageURL = getClass().getResource(
+                "/ch/fhnw/dlcopy/icons/usbpendrive_unmount.png");
+        setIconImage(new ImageIcon(imageURL).getImage());
+
+        installStorageDeviceList.setModel(installStorageDeviceListModel);
+        installStorageDeviceRenderer = new InstallStorageDeviceRenderer(this);
+        installStorageDeviceList.setCellRenderer(installStorageDeviceRenderer);
+
+        upgradeStorageDeviceListModel.addListDataListener(this);
+        upgradeStorageDeviceList.setModel(upgradeStorageDeviceListModel);
+
+        resetStorageDeviceListModel.addListDataListener(this);
+        resetStorageDeviceList.setModel(resetStorageDeviceListModel);
+
+        // the following block must be called after creating
+        // installStorageDeviceRenderer! (otherwise we get an NPE)
+        // -----------------------------
+        String isoSource = isoSourceTextField.getText();
+        if (!isoSource.isEmpty()) {
+            setISOInstallationSourcePath(isoSource);
+        }
+        updateInstallSourceGUI();
+        // -----------------------------
+
+        AbstractDocument exchangePartitionDocument
+                = (AbstractDocument) exchangePartitionTextField.getDocument();
+        exchangePartitionDocument.setDocumentFilter(new DocumentSizeFilter());
+        exchangePartitionSizeTextField.getDocument().addDocumentListener(this);
+
+        resetBackupSubdirectoryTable.setModel(subdirectoryTableModel);
+        resetBackupSubdirectoryTable.setSelectionMode(
+                ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        resetBackupSubdirectoryTable.getSelectionModel().
+                addListSelectionListener(this);
 
         if (autoUpgrade) {
             globalShow("executionPanel");
@@ -623,6 +677,19 @@ public class DLCopySwingGUI extends JFrame
             globalShow("executionPanel");
             switchToUpgradeSelection();
         }
+
+        pack();
+
+        // The preferred width of the labels with HTML text is much too wide.
+        // Therefore we reset the width to a sane size.
+        Dimension size = getSize();
+        size.width = 1060;
+        setSize(size);
+
+        // center on screen
+        setLocationRelativeTo(null);
+
+        udisksMonitorThread.start();
     }
 
     @Override
@@ -5419,7 +5486,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 printDocCheckBox.isSelected(), printDocxCheckBox.isSelected(),
                 printXlsCheckBox.isSelected(), printXlsxCheckBox.isSelected(),
                 printPptCheckBox.isSelected(), printPptxCheckBox.isSelected(),
-                dlCopySwingGUIPreferences.getAutoPrintMode(),
+                resetPrintPreferences.getAutoPrintMode(),
                 ((Number) printCopiesSpinner.getValue()).intValue(),
                 printDuplexCheckBox.isSelected(),
                 resetBackupCheckBox.isSelected(),
@@ -5672,7 +5739,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }
 
     private void exitProgram() {
-        dlCopySwingGUIPreferences.savePreferences(explicitExchangeSize);
+        installationDestinationSelectionPreferences.
+                saveExplicitExchangeSize(explicitExchangeSize);
+        preferencesHandler.save();
 
         runningSystemSource.unmountTmpPartitions();
         if (isoSystemSource != null) {
@@ -6007,7 +6076,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             }
         }
 
-        dlCopySwingGUIPreferences.savePreferences(explicitExchangeSize);
+        installationDestinationSelectionPreferences.
+                saveExplicitExchangeSize(explicitExchangeSize);
+        preferencesHandler.save();
 
         setLabelHighlighted(selectionLabel, false);
         setLabelHighlighted(executionLabel, true);
