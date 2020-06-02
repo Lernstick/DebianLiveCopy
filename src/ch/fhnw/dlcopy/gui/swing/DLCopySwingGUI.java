@@ -95,13 +95,9 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
-import javax.sound.sampled.DataLine;
 import javax.sound.sampled.LineEvent;
-import javax.sound.sampled.LineListener;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.BorderFactory;
@@ -5400,16 +5396,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private void playNotifySound() {
         try {
             Clip clip = AudioSystem.getClip();
-            clip.addLineListener(new LineListener() {
-                @Override
-                public void update(LineEvent event) {
-                    if (event.getType() == LineEvent.Type.STOP) {
-                        clip.close();
-                    }
+            clip.addLineListener(event -> {
+                if (event.getType() == LineEvent.Type.STOP) {
+                    clip.close();
                 }
             });
-            clip.open(AudioSystem.getAudioInputStream(getClass().
-                    getResourceAsStream("/ch/fhnw/dlcopy/KDE_Notify.wav")));
+            clip.open(AudioSystem.getAudioInputStream(
+                    getClass().getResource("/ch/fhnw/dlcopy/KDE_Notify.wav")));
             clip.start();
         } catch (UnsupportedAudioFileException | IOException
                 | LineUnavailableException ex) {
