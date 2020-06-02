@@ -4,6 +4,7 @@ import ch.fhnw.dlcopy.gui.DLCopyGUI;
 import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.MountInfo;
 import ch.fhnw.util.Partition;
+import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
 import java.io.File;
 import java.io.IOException;
@@ -53,6 +54,9 @@ public class FileTransferrer extends Transferrer {
 
         if (transferHome) {
             transferDirectory("/home/user/");
+            ProcessExecutor executor = new ProcessExecutor();
+            executor.executeProcess("chown", "user.user",
+                    destinationMountInfo.getMountPath() + "/rw/home/user");
         }
         if (transferNetwork) {
             transferDirectory("/etc/NetworkManager/");
