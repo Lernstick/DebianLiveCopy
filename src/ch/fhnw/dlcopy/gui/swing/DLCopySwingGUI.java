@@ -410,7 +410,7 @@ public class DLCopySwingGUI extends JFrame
                 new InstallationDestinationTransferPreferences(
                         transferExchangeCheckBox, transferHomeCheckBox,
                         transferNetworkCheckBox, transferPrinterCheckBox,
-                        transferFirewallCheckBox, transferUserSettingsCheckBox));
+                        transferFirewallCheckBox));
 
         preferencesHandler.addPreference(new UpgradePreferences(
                 upgradeSystemPartitionCheckBox, resetDataPartitionCheckBox,
@@ -862,11 +862,14 @@ public class DLCopySwingGUI extends JFrame
     @Override
     public void showInstallPersistencyCopy(
             Installer installer, String copyScript, String sourcePath) {
+
         cpActionListener = new CpActionListener(
                 cpFilenameLabel, cpTimeLabel, sourcePath);
+
         Timer cpTimer = new Timer(1000, cpActionListener);
         cpTimer.setInitialDelay(0);
         cpTimer.start();
+
         SwingUtilities.invokeLater(() -> {
             cpFilenameLabel.setText(" ");
             cpPogressBar.setValue(0);
@@ -1717,7 +1720,6 @@ public class DLCopySwingGUI extends JFrame
         transferNetworkCheckBox = new javax.swing.JCheckBox();
         transferPrinterCheckBox = new javax.swing.JCheckBox();
         transferFirewallCheckBox = new javax.swing.JCheckBox();
-        transferUserSettingsCheckBox = new javax.swing.JCheckBox();
         installTransferScrollPane = new javax.swing.JScrollPane();
         installTransferStorageDeviceList = new javax.swing.JList<>();
         installNoMediaPanel = new javax.swing.JPanel();
@@ -2638,12 +2640,6 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         transferCheckboxPanel.add(transferFirewallCheckBox, gridBagConstraints);
-
-        transferUserSettingsCheckBox.setText(bundle.getString("DLCopySwingGUI.transferUserSettingsCheckBox.text")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        transferCheckboxPanel.add(transferUserSettingsCheckBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -6125,7 +6121,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 transferNetworkCheckBox.isSelected(),
                 transferPrinterCheckBox.isSelected(),
                 transferFirewallCheckBox.isSelected(),
-                transferUserSettingsCheckBox.isSelected(),
                 checkCopiesCheckBox.isSelected(),
                 installLock).execute();
 
@@ -6954,7 +6949,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel transferLabel;
     private javax.swing.JCheckBox transferNetworkCheckBox;
     private javax.swing.JCheckBox transferPrinterCheckBox;
-    private javax.swing.JCheckBox transferUserSettingsCheckBox;
     private javax.swing.JRadioButton upgradeAutomaticRadioButton;
     private javax.swing.JLabel upgradeBackupDurationLabel;
     private javax.swing.JLabel upgradeBackupFilenameLabel;

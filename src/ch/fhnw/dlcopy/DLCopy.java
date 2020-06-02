@@ -1677,32 +1677,31 @@ public class DLCopy {
         }
     }
 
-    public static boolean transfer(StorageDevice source,
-            StorageDevice destination, boolean transferExchange,
+    public static boolean transfer(StorageDevice sourceDevice,
+            StorageDevice destinationDevice, boolean transferExchange,
             boolean transferHome, boolean transferNetwork,
             boolean transferPrinter, boolean transferFirewall,
-            boolean transferUserSettings, boolean checkCopies) {
+            boolean checkCopies, Installer installer, DLCopyGUI gui)
+            throws IOException, DBusException, NoSuchAlgorithmException {
 
-        // TODO:
         if (transferExchange) {
 
-        }
-        if (transferHome) {
+            ExchangeTransferrer transferrer = new ExchangeTransferrer(gui,
+                    sourceDevice.getExchangePartition(),
+                    destinationDevice.getExchangePartition());
 
-        }
-        if (transferNetwork) {
-
-        }
-        if (transferPrinter) {
-
-        }
-        if (transferFirewall) {
-
-        }
-        if (transferUserSettings) {
-
+            transferrer.transfer(checkCopies);
         }
 
+        if (transferHome || transferNetwork || transferPrinter
+                || transferFirewall) {
+
+            FileTransferrer transferrer = new FileTransferrer(gui, installer,
+                    sourceDevice, destinationDevice.getDataPartition());
+
+            transferrer.transfer(transferHome, transferNetwork,
+                    transferPrinter, transferFirewall);
+        }
         return true;
     }
 

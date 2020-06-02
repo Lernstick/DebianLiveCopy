@@ -39,7 +39,6 @@ public class Installer extends InstallerOrUpgrader
     private final boolean transferNetwork;
     private final boolean transferPrinter;
     private final boolean transferFirewall;
-    private final boolean transferUserSettings;
     private final boolean checkCopies;
 
     /**
@@ -72,7 +71,6 @@ public class Installer extends InstallerOrUpgrader
      * @param transferNetwork if the network settings should be transferred
      * @param transferPrinter if the printer settings should be transferred
      * @param transferFirewall if the firewall settings should be transferred
-     * @param transferUserSettings if the user settings should be transferred
      * @param lock the lock to aquire before executing in background
      */
     public Installer(SystemSource source, List<StorageDevice> deviceList,
@@ -83,10 +81,9 @@ public class Installer extends InstallerOrUpgrader
             int autoNumberStart, int autoNumberIncrement,
             int autoNumberMinDigits, boolean copyDataPartition,
             DataPartitionMode dataPartitionMode, StorageDevice transferDevice,
-            boolean transferExchange, boolean transferHome, 
-            boolean transferNetwork, boolean transferPrinter, 
-            boolean transferFirewall, boolean transferUserSettings, 
-            boolean checkCopies, Lock lock) {
+            boolean transferExchange, boolean transferHome,
+            boolean transferNetwork, boolean transferPrinter,
+            boolean transferFirewall, boolean checkCopies, Lock lock) {
 
         super(source, deviceList, exchangePartitionLabel,
                 exchangePartitionFileSystem, dataPartitionFileSystem,
@@ -107,7 +104,6 @@ public class Installer extends InstallerOrUpgrader
         this.transferNetwork = transferNetwork;
         this.transferPrinter = transferPrinter;
         this.transferFirewall = transferFirewall;
-        this.transferUserSettings = transferUserSettings;
     }
 
     @Override
@@ -150,10 +146,9 @@ public class Installer extends InstallerOrUpgrader
                     errorMessage = exception.getMessage();
                 }
 
-                // TODO: GUI updates
                 DLCopy.transfer(transferDevice, storageDevice, transferExchange,
                         transferHome, transferNetwork, transferPrinter,
-                        transferFirewall, transferUserSettings, checkCopies);
+                        transferFirewall, checkCopies, this, dlCopyGUI);
 
                 dlCopyGUI.installingDeviceFinished(errorMessage, autoNumber);
             }
@@ -170,6 +165,15 @@ public class Installer extends InstallerOrUpgrader
         if (inhibit != null) {
             inhibit.delete();
         }
+
+        // the following try-catch block is needed to log otherwise invisible
+        // runtime exceptions
+        try {
+            get();
+        } catch (Exception ex) {
+            LOGGER.log(Level.WARNING, "", ex);
+        }
+
         dlCopyGUI.installingListFinished();
     }
 
