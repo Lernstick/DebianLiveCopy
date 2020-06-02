@@ -47,8 +47,6 @@ import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
-import java.applet.Applet;
-import java.applet.AudioClip;
 import java.awt.CardLayout;
 import java.awt.Color;
 import java.awt.Component;
@@ -97,6 +95,15 @@ import java.util.logging.Logger;
 import java.util.logging.SimpleFormatter;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import javax.sound.sampled.AudioFormat;
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.DataLine;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineListener;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.BorderFactory;
 import javax.swing.ComboBoxModel;
 import javax.swing.DefaultComboBoxModel;
@@ -5391,9 +5398,23 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     }
 
     private void playNotifySound() {
-        URL url = getClass().getResource("/ch/fhnw/dlcopy/KDE_Notify.wav");
-        AudioClip clip = Applet.newAudioClip(url);
-        clip.play();
+        try {
+            Clip clip = AudioSystem.getClip();
+            clip.addLineListener(new LineListener() {
+                @Override
+                public void update(LineEvent event) {
+                    if (event.getType() == LineEvent.Type.STOP) {
+                        clip.close();
+                    }
+                }
+            });
+            clip.open(AudioSystem.getAudioInputStream(getClass().
+                    getResourceAsStream("/ch/fhnw/dlcopy/KDE_Notify.wav")));
+            clip.start();
+        } catch (UnsupportedAudioFileException | IOException
+                | LineUnavailableException ex) {
+            LOGGER.log(Level.INFO, "", ex);
+        }
     }
 
     private void switchToUpgradeSelection() {

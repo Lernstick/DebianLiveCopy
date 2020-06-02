@@ -21,8 +21,9 @@ public class InstallStorageDeviceListUpdater extends StorageDeviceListUpdater {
      * @param bootDeviceName the name of the boot device
      */
     public InstallStorageDeviceListUpdater(DLCopySwingGUI swingGUI,
-            JList list, DefaultListModel<StorageDevice> listModel,
-            boolean showHardDisks, String bootDeviceName) {
+            JList<StorageDevice> list,
+            DefaultListModel<StorageDevice> listModel, boolean showHardDisks,
+            String bootDeviceName) {
         super(swingGUI, list, listModel, showHardDisks, false, bootDeviceName);
     }
 

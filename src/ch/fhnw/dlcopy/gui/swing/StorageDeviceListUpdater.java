@@ -29,8 +29,8 @@ public abstract class StorageDeviceListUpdater extends SwingWorker<Void, Void> {
      * the list of all detected storage devices
      */
     protected List<StorageDevice> storageDevices;
-    
-    protected final JList list;
+
+    protected final JList<StorageDevice> list;
 
     private static final Logger LOGGER
             = Logger.getLogger(StorageDeviceListUpdater.class.getName());

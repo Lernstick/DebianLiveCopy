@@ -38,8 +38,9 @@ public class ResetStorageDeviceAdder extends StorageDeviceAdder {
      */
     public ResetStorageDeviceAdder(String addedPath, boolean showHarddisks,
             StorageDeviceListUpdateDialogHandler dialogHandler,
-            DefaultListModel<StorageDevice> listModel, JList list,
-            DLCopySwingGUI swingGUI, Lock lock, boolean mustInit) {
+            DefaultListModel<StorageDevice> listModel,
+            JList<StorageDevice> list, DLCopySwingGUI swingGUI, Lock lock,
+            boolean mustInit) {
 
         super(addedPath, showHarddisks, dialogHandler,
                 listModel, list, swingGUI, lock);

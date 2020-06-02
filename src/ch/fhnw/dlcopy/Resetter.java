@@ -17,6 +17,7 @@ import java.nio.file.Files;
 import java.nio.file.NoSuchFileException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.time.LocalDateTime;
@@ -494,7 +495,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         List<Path> documents = new ArrayList<>();
 
         if (scanDirectoriesRecursively) {
-            BiPredicate predicate = (path, attributes)
+            BiPredicate<Path, BasicFileAttributes> predicate = (path, attributes)
                     -> path.toString().toLowerCase().endsWith(
                             suffix.toLowerCase());
             try (Stream<Path> stream

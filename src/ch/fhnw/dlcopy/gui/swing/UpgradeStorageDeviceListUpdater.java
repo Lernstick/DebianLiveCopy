@@ -32,7 +32,7 @@ public class UpgradeStorageDeviceListUpdater extends StorageDeviceListUpdater {
      * @param showHardDisks if true, hard disks are added, otherwise ignored
      */
     public UpgradeStorageDeviceListUpdater(SystemSource source,
-            DLCopySwingGUI swingGUI, JList list,
+            DLCopySwingGUI swingGUI, JList<StorageDevice> list,
             DefaultListModel<StorageDevice> listModel, boolean showHardDisks) {
         super(swingGUI, list, listModel, showHardDisks,
                 false, source.getDeviceName());
