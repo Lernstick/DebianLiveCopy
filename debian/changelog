@@ -1,3 +1,19 @@
+dlcopy (202006022107-1) lernstick-10; urgency=medium
+
+  * [c3f1a3] added prototype of transfer GUI (still incomplete)
+  * [75ccf9] code cleanup (mostly generics for Java 11)
+  * [bccc94] completed transfer GUI
+  * [82f8e1] added transfer sanity checks
+  * [897a23] made transfer settings persistent
+  * [8d4b47] moved preferences handling into separate class
+  * [8ec62b] fixed preference handling of backup subdirectories
+  * [3e6e7b] created package for preferences handling
+  * [209eee] code cleanup
+  * [c63f25] implemented data transfer during installation
+  * [c0fd3b] code cleanup (Java 11 compatibility)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Tue, 02 Jun 2020 21:07:37 +0200
+
 dlcopy (202003031449-1) lernstick-10; urgency=medium
 
   * [1e4385] Current Lenovo laptops only boot if the EFI partition is the first
