@@ -521,8 +521,8 @@ public class Upgrader extends InstallerOrUpgrader {
          * system partition. The finalizeDataPartition() later also needs
          * persistent write operations.
          */
-        cowPath = mountDataPartition(dataMountPoint, readOnlyMountPoints,
-                mountAufs, false /*temporaryUpperDir*/);
+        cowPath = mountDataPartition(
+                dataMountPoint, readOnlyMountPoints, mountAufs);
 
         // backup
         if (automaticBackup) {
@@ -564,8 +564,8 @@ public class Upgrader extends InstallerOrUpgrader {
                     majorDebianVersion, upgradeFromAufsToOverlay);
             // the data partition gets unmounted by resetDataPartition
             // therefore we have to remount it here
-            cowPath = mountDataPartition(dataMountPoint, readOnlyMountPoints,
-                    mountAufs, false /*temporaryUpperDir*/);
+            cowPath = mountDataPartition(
+                    dataMountPoint, readOnlyMountPoints, mountAufs);
         }
 
         if (upgradeSystemPartition) {
@@ -606,8 +606,8 @@ public class Upgrader extends InstallerOrUpgrader {
             // We also set temporaryUpperDir to false because we want to
             // finalize the data partition in the next step and therefore want
             // all write operations to be persistent.
-            cowPath = mountDataPartition(dataMountPoint, readOnlyMountPoints,
-                    mountAufs, false/*temporaryUpperDir*/);
+            cowPath = mountDataPartition(
+                    dataMountPoint, readOnlyMountPoints, mountAufs);
         }
 
         finalizeDataPartition(cowPath);
@@ -754,8 +754,8 @@ public class Upgrader extends InstallerOrUpgrader {
     }
 
     private String mountDataPartition(String dataMountPoint,
-            List<String> readOnlyMountPoints, boolean mountAufs,
-            boolean temporaryUpperDir) throws IOException {
+            List<String> readOnlyMountPoints, boolean mountAufs)
+            throws IOException {
 
         if (mountAufs) {
             return LernstickFileTools.mountAufs(
@@ -764,8 +764,8 @@ public class Upgrader extends InstallerOrUpgrader {
             // !!! DON'T use a temporary upper dir here !!!
             // Otherwise we will most probably run out of memory during
             // the copyup operation below.
-            File overlayDir = LernstickFileTools.mountOverlay(
-                    dataMountPoint, readOnlyMountPoints, temporaryUpperDir);
+            File overlayDir = LernstickFileTools.mountOverlay(dataMountPoint,
+                    readOnlyMountPoints, false /*temporaryUpperDir*/);
             return new File(overlayDir, "merged").getPath();
         }
     }
@@ -775,9 +775,9 @@ public class Upgrader extends InstallerOrUpgrader {
         commandList.add("find");
         commandList.add(root);
         addExclude(commandList, root);
-        for (String exclude : excludes) {
+        excludes.forEach((exclude) -> {
             addExclude(commandList, root + exclude);
-        }
+        });
         commandList.addAll(Arrays.asList("-exec", "rm", "-rf", "{}", ";"));
         String[] command = commandList.toArray(new String[commandList.size()]);
         ProcessExecutor processExecutor = new ProcessExecutor();
@@ -1225,8 +1225,8 @@ public class Upgrader extends InstallerOrUpgrader {
             List<String> readOnlyMountPoints
                     = LernstickFileTools.mountAllSquashFS(
                             systemMountInfo.getMountPath());
-            String cowPath = mountDataPartition(dataMountPoint,
-                    readOnlyMountPoints, false, false /*temporaryUpperDir*/);
+            String cowPath = mountDataPartition(
+                    dataMountPoint, readOnlyMountPoints, false);
 
             appendLine(Paths.get(cowPath, "/etc/passwd"), passwdLine);
             appendLine(Paths.get(cowPath, "/etc/shadow"), shadowLine);
