@@ -1,3 +1,11 @@
+dlcopy (202006030938-1) lernstick-10; urgency=medium
+
+  * [6d6010] spelling fix in German translation
+  * [bc48e6] fixed permission problem in FileTransferrer
+  * [a6022d] fixed notify sound playing from jar file
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Wed, 03 Jun 2020 09:38:51 +0200
+
 dlcopy (202006022107-1) lernstick-10; urgency=medium
 
   * [c3f1a3] added prototype of transfer GUI (still incomplete)
