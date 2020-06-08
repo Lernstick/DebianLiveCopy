@@ -61,6 +61,12 @@ public class DLCopy {
      */
     public static final long EFI_PARTITION_SIZE = 150;
 
+    public static final String[] DATA_PARTITION_MODES = new String[]{
+        STRINGS.getString("Read_Write"),
+        STRINGS.getString("Read_Only"),
+        STRINGS.getString("Not_Used")
+    };
+
     /**
      * the label to use for the system partition
      */
