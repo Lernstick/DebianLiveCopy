@@ -146,9 +146,12 @@ public class Installer extends InstallerOrUpgrader
                     errorMessage = exception.getMessage();
                 }
 
-                DLCopy.transfer(transferDevice, storageDevice, transferExchange,
-                        transferHome, transferNetwork, transferPrinter,
-                        transferFirewall, checkCopies, this, dlCopyGUI);
+                if (transferDevice != null) {
+                    DLCopy.transfer(transferDevice, storageDevice,
+                            transferExchange, transferHome, transferNetwork,
+                            transferPrinter, transferFirewall, checkCopies,
+                            this, dlCopyGUI);
+                }
 
                 dlCopyGUI.installingDeviceFinished(errorMessage, autoNumber);
             }
