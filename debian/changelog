@@ -1,3 +1,9 @@
+dlcopy (202006121400-1) lernstick-10; urgency=medium
+
+  * [9101d3] fixed handling of explicit exchange size
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 12 Jun 2020 14:00:00 +0200
+
 dlcopy (202006090006-1) lernstick-10; urgency=medium
 
   * [527352] moved panels for ISO creation into it's own class
