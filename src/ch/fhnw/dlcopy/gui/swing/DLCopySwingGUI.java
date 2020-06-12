@@ -519,7 +519,8 @@ public class DLCopySwingGUI extends JFrame
         // monitor udisks changes
         udisksMonitorThread = new UdisksMonitorThread();
 
-        explicitExchangeSize = exchangePartitionSizeSlider.getValue();
+        explicitExchangeSize = installationDestinationSelectionPreferences
+                .getExplicitExchangeSize();
         if (commandLineExchangePartitionSize != null) {
             explicitExchangeSize = commandLineExchangePartitionSize;
         }

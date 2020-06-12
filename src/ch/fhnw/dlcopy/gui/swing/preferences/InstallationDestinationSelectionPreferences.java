@@ -56,6 +56,10 @@ public class InstallationDestinationSelectionPreferences
                 dataPartitionModeComboBox.getSelectedIndex());
     }
 
+    public int getExplicitExchangeSize() {
+        return preferences.getInt(EXPLICIT_EXCHANGE_SIZE, 0);
+    }
+
     public void saveExplicitExchangeSize(int explicitExchangeSize) {
         preferences.putInt(EXPLICIT_EXCHANGE_SIZE, explicitExchangeSize);
     }
