@@ -1,6 +1,5 @@
 package ch.fhnw.dlcopy.gui.swing;
 
-import ch.fhnw.util.Partition;
 import ch.fhnw.util.StorageDevice;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
@@ -25,19 +24,20 @@ public class ResetStorageDeviceListUpdater extends StorageDeviceListUpdater {
             JList<StorageDevice> list,
             DefaultListModel<StorageDevice> listModel, boolean showHardDisks,
             String bootDeviceName) {
+
         super(swingGUI, list, listModel, showHardDisks, true, bootDeviceName);
     }
 
     @Override
     public void initDevices() {
-        for (StorageDevice device : storageDevices) {
-            for (Partition partition : device.getPartitions()) {
+        storageDevices.forEach(device -> {
+            device.getPartitions().forEach(partition -> {
                 try {
                     partition.getUsedSpace(false);
                 } catch (Exception ignored) {
                 }
-            }
-        }
+            });
+        });
     }
 
     @Override

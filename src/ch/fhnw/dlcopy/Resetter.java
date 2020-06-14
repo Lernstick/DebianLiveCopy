@@ -351,12 +351,14 @@ public class Resetter extends SwingWorker<Boolean, Void> {
 
             case NONE:
                 List<Path> documents = getAllDocuments(mountInfo, printDirs);
-                List<Path> selectedDocuments = dlCopyGUI.selectDocumentsToPrint(
-                        null/*no type*/, mountInfo.getMountPath(), documents);
-                if (selectedDocuments != null) {
-                    for (Path selectedDocument : selectedDocuments) {
-                        PrintingHelper.print(
-                                selectedDocument, printCopies, printDuplex);
+                if (!documents.isEmpty()) {
+                    List<Path> selectedDocuments =
+                            dlCopyGUI.selectDocumentsToPrint(null/*no type*/,
+                                    mountInfo.getMountPath(), documents);
+                    if (selectedDocuments != null) {
+                        selectedDocuments.forEach(document ->
+                                PrintingHelper.print(document,
+                                        printCopies, printDuplex));
                     }
                 }
                 break;
@@ -386,10 +388,8 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                         DLCopy.STRINGS.getString(type),
                         mountInfo.getMountPath(), documents);
                 if (selectedDocuments != null) {
-                    for (Path selectedDocument : selectedDocuments) {
-                        PrintingHelper.print(
-                                selectedDocument, printCopies, printDuplex);
-                    }
+                    selectedDocuments.forEach(document -> PrintingHelper.print(
+                            document, printCopies, printDuplex));
                 }
         }
     }
@@ -528,7 +528,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
     }
 
     private void backup(StorageDevice storageDevice,
-            Partition exchangePartition) 
+            Partition exchangePartition)
             throws DBusException, IOException, NoSuchAlgorithmException {
 
         if (!backupData) {

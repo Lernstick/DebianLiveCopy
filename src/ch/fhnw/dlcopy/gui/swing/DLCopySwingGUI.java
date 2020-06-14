@@ -19,7 +19,6 @@ import ch.fhnw.dlcopy.Resetter;
 import ch.fhnw.dlcopy.RunningSystemSource;
 import ch.fhnw.dlcopy.SquashFSCreator;
 import ch.fhnw.dlcopy.StorageDeviceResult;
-import ch.fhnw.dlcopy.Subdirectory;
 import ch.fhnw.dlcopy.SystemSource;
 import ch.fhnw.dlcopy.Upgrader;
 import ch.fhnw.dlcopy.exceptions.NoExecutableExtLinuxException;
@@ -31,11 +30,6 @@ import ch.fhnw.dlcopy.gui.swing.preferences.InstallationDestinationSelectionPref
 import ch.fhnw.dlcopy.gui.swing.preferences.InstallationDestinationTransferPreferences;
 import ch.fhnw.dlcopy.gui.swing.preferences.InstallationSourcePreferences;
 import ch.fhnw.dlcopy.gui.swing.preferences.MainMenuPreferences;
-import ch.fhnw.dlcopy.gui.swing.preferences.ResetBackupPreferences;
-import ch.fhnw.dlcopy.gui.swing.preferences.ResetDeletePreferences;
-import ch.fhnw.dlcopy.gui.swing.preferences.ResetPrintPreferences;
-import ch.fhnw.dlcopy.gui.swing.preferences.ResetRestorePreferences;
-import ch.fhnw.dlcopy.gui.swing.preferences.ResetSelectionPreferences;
 import ch.fhnw.dlcopy.gui.swing.preferences.UpgradePreferences;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.filecopier.FileCopierPanel;
@@ -49,7 +43,6 @@ import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
 import java.awt.CardLayout;
 import java.awt.Color;
-import java.awt.Component;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Font;
@@ -118,10 +111,8 @@ import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSlider;
 import javax.swing.JSpinner;
-import javax.swing.JTable;
 import javax.swing.JTextField;
 import javax.swing.ListModel;
-import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.ToolTipManager;
@@ -129,11 +120,7 @@ import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
-import javax.swing.event.ListSelectionEvent;
-import javax.swing.event.ListSelectionListener;
 import javax.swing.filechooser.FileFilter;
-import javax.swing.table.DefaultTableCellRenderer;
-import javax.swing.table.TableCellRenderer;
 import javax.swing.table.TableColumn;
 import javax.swing.text.AbstractDocument;
 import javax.swing.text.Document;
@@ -145,8 +132,8 @@ import org.freedesktop.dbus.exceptions.DBusException;
  * @author Ronny Standtke <Ronny.Standtke@gmx.net>
  */
 public class DLCopySwingGUI extends JFrame
-        implements DLCopyGUI, DocumentListener, PropertyChangeListener,
-        ListDataListener, ListSelectionListener {
+        implements DLCopyGUI, DocumentListener,
+        PropertyChangeListener, ListDataListener {
 
     private final static Logger LOGGER
             = Logger.getLogger(DLCopySwingGUI.class.getName());
@@ -162,12 +149,10 @@ public class DLCopySwingGUI extends JFrame
             = new DefaultListModel<>();
     private final DefaultListModel<StorageDevice> upgradeStorageDeviceListModel
             = new DefaultListModel<>();
-    private final DefaultListModel<StorageDevice> resetStorageDeviceListModel
-            = new DefaultListModel<>();
     private InstallStorageDeviceRenderer installStorageDeviceRenderer;
     private final InstallTransferStorageDeviceRenderer installTransferStorageDeviceRenderer;
     private final UpgradeStorageDeviceRenderer upgradeStorageDeviceRenderer;
-    private final ResetStorageDeviceRenderer resetStorageDeviceRenderer;
+
     private final DateFormat timeFormat;
 
     private enum State {
@@ -198,8 +183,6 @@ public class DLCopySwingGUI extends JFrame
     private final ResultsTableModel installationResultsTableModel;
     private final ResultsTableModel upgradeResultsTableModel;
     private final ResultsTableModel resultsTableModel;
-    private final SubdirectoryTableModel subdirectoryTableModel;
-    private final List<Subdirectory> orderedSubdirectoriesEntries;
     private CpActionListener cpActionListener;
     private UpdateChangingDurationsTableActionListener updateTableActionListener;
     private Timer tableUpdateTimer;
@@ -235,7 +218,6 @@ public class DLCopySwingGUI extends JFrame
     private final HashMap<String, byte[]> digestCache = new HashMap<>();
 
     private final InstallationDestinationSelectionPreferences installationDestinationSelectionPreferences;
-    private final ResetPrintPreferences resetPrintPreferences;
     private final DLCopySwingGUIPreferencesHandler preferencesHandler;
 
     /**
@@ -376,8 +358,6 @@ public class DLCopySwingGUI extends JFrame
                 = new DefaultComboBoxModel<>(exchangePartitionFileSystemItems);
         exchangePartitionFileSystemComboBox.setModel(
                 exchangePartitionFileSystemsModel);
-        resetFormatExchangePartitionFileSystemComboBox.setModel(
-                exchangePartitionFileSystemsModel);
 
         preferencesHandler = new DLCopySwingGUIPreferencesHandler();
 
@@ -416,40 +396,14 @@ public class DLCopySwingGUI extends JFrame
                 automaticBackupCheckBox, automaticBackupTextField,
                 automaticBackupRemoveCheckBox, upgradeOverwriteListModel));
 
-        preferencesHandler.addPreference(new ResetSelectionPreferences(
-                resetAutomaticModeRadioButton, resetListModeRadioButton));
+        try {
+            runningSystemSource = new RunningSystemSource(PROCESS_EXECUTOR);
+        } catch (IOException | DBusException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+        }
 
-        resetPrintPreferences = new ResetPrintPreferences(
-                printDocumentsCheckBox, printingDirectoriesTextArea,
-                scanDirectoriesRecursivelyCheckBox, printOdtCheckBox,
-                printOdsCheckBox, printOdpCheckBox, printPdfCheckBox,
-                printDocCheckBox, printDocxCheckBox, printXlsCheckBox,
-                printXlsxCheckBox, printPptCheckBox, printPptxCheckBox,
-                autoPrintAllDocumentsRadioButton,
-                autoPrintSingleDocumentsRadioButton, autoPrintNoneRadioButton,
-                printCopiesSpinner, printDuplexCheckBox);
-        preferencesHandler.addPreference(resetPrintPreferences);
-
-        ResetBackupPreferences resetBackupPreferences
-                = new ResetBackupPreferences(resetBackupCheckBox,
-                        resetBackupSourceTextField,
-                        resetBackupDestinationTextField);
-        preferencesHandler.addPreference(resetBackupPreferences);
-        orderedSubdirectoriesEntries = resetBackupPreferences.
-                getOrderedSubdirectoriesEntries();
-
-        preferencesHandler.addPreference(new ResetDeletePreferences(
-                resetFormatExchangePartitionCheckBox,
-                resetFormatExchangePartitionFileSystemComboBox,
-                resetFormatExchangePartitionKeepLabelRadioButton,
-                resetFormatExchangePartitionNewLabelRadioButton,
-                resetFormatExchangePartitionNewLabelTextField,
-                deleteOnDataPartitionCheckBox,
-                formatDataPartitionRadioButton, removeFilesRadioButton,
-                systemFilesCheckBox, homeDirectoryCheckBox));
-
-        preferencesHandler.addPreference(new ResetRestorePreferences(
-                resetRestoreDataCheckBox, resetRestoreConfigurationPanel));
+        resetterPanels.init(this, runningSystemSource.getDeviceName(),
+                preferencesHandler, exchangePartitionFileSystemsModel);
 
         preferencesHandler.load();
 
@@ -458,19 +412,12 @@ public class DLCopySwingGUI extends JFrame
         countString = MessageFormat.format(countString, 0, 0);
         installSelectionCountLabel.setText(countString);
         upgradeSelectionCountLabel.setText(countString);
-        resetSelectionCountLabel.setText(countString);
 
         String text = STRINGS.getString("Boot_Definition");
         String bootSize = LernstickFileTools.getDataVolumeString(
                 DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA, 1);
         text = MessageFormat.format(text, bootSize);
         bootDefinitionLabel.setText(text);
-
-        try {
-            runningSystemSource = new RunningSystemSource(PROCESS_EXECUTOR);
-        } catch (IOException | DBusException ex) {
-            LOGGER.log(Level.SEVERE, "", ex);
-        }
 
         systemSource = isoSourceRadioButton.isSelected()
                 ? isoSystemSource
@@ -493,20 +440,8 @@ public class DLCopySwingGUI extends JFrame
                 = new UpgradeStorageDeviceRenderer(runningSystemSource);
         upgradeStorageDeviceList.setCellRenderer(upgradeStorageDeviceRenderer);
 
-        resetStorageDeviceRenderer = new ResetStorageDeviceRenderer();
-        resetStorageDeviceList.setCellRenderer(resetStorageDeviceRenderer);
-
         setSpinnerColums(autoNumberStartSpinner, 2);
         setSpinnerColums(autoNumberIncrementSpinner, 2);
-
-        subdirectoryTableModel = new SubdirectoryTableModel(
-                resetBackupSubdirectoryTable, orderedSubdirectoriesEntries);
-
-        // set renderer that respects the "enabled" state of the table
-        setEnabledRespectingDefaultRenderer(
-                resetBackupSubdirectoryTable, Boolean.class);
-        setEnabledRespectingDefaultRenderer(
-                resetBackupSubdirectoryTable, String.class);
 
         if (commandLineExchangePartitionFileSystem != null) {
             exchangePartitionFileSystemComboBox.setSelectedItem(
@@ -598,9 +533,6 @@ public class DLCopySwingGUI extends JFrame
         upgradeStorageDeviceListModel.addListDataListener(this);
         upgradeStorageDeviceList.setModel(upgradeStorageDeviceListModel);
 
-        resetStorageDeviceListModel.addListDataListener(this);
-        resetStorageDeviceList.setModel(resetStorageDeviceListModel);
-
         // the following block must be called after creating
         // installStorageDeviceRenderer! (otherwise we get an NPE)
         // -----------------------------
@@ -615,12 +547,6 @@ public class DLCopySwingGUI extends JFrame
                 = (AbstractDocument) exchangePartitionTextField.getDocument();
         exchangePartitionDocument.setDocumentFilter(new DocumentSizeFilter());
         exchangePartitionSizeTextField.getDocument().addDocumentListener(this);
-
-        resetBackupSubdirectoryTable.setModel(subdirectoryTableModel);
-        resetBackupSubdirectoryTable.setSelectionMode(
-                ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
-        resetBackupSubdirectoryTable.getSelectionModel().
-                addListSelectionListener(this);
 
         isoCreatorPanels.init(this);
 
@@ -641,7 +567,7 @@ public class DLCopySwingGUI extends JFrame
 
             // reduce the upgrade parts
             upgradeSelectionHeaderLabel.setVisible(false);
-            upgradeShowHarddisksCheckBox.setVisible(false);
+            upgradeShowHardDisksCheckBox.setVisible(false);
             upgradeListModeRadioButton.setVisible(false);
             upgradeAutomaticRadioButton.setVisible(false);
             upgradeSelectionTabbedPane.remove(upgradeDetailsTabbedPane);
@@ -735,13 +661,13 @@ public class DLCopySwingGUI extends JFrame
             switch (state) {
                 case INSTALL_SELECTION:
                     new InstallStorageDeviceAdder(addedPath,
-                            installShowHarddisksCheckBox.isSelected(),
+                            installShowHardDisksCheckBox.isSelected(),
                             storageDeviceListUpdateDialogHandler,
                             installStorageDeviceListModel,
                             installStorageDeviceList, this, installLock)
                             .execute();
                     new InstallTransferStorageDeviceAdder(addedPath,
-                            installShowHarddisksCheckBox.isSelected(),
+                            installShowHardDisksCheckBox.isSelected(),
                             storageDeviceListUpdateDialogHandler,
                             installTransferStorageDeviceListModel,
                             installTransferStorageDeviceList, this, installLock)
@@ -751,7 +677,7 @@ public class DLCopySwingGUI extends JFrame
                 case UPGRADE_SELECTION:
                     new UpgradeStorageDeviceAdder(runningSystemSource,
                             addedPath,
-                            upgradeShowHarddisksCheckBox.isSelected(),
+                            upgradeShowHardDisksCheckBox.isSelected(),
                             storageDeviceListUpdateDialogHandler,
                             upgradeStorageDeviceListModel,
                             upgradeStorageDeviceList, this, upgradeLock)
@@ -760,11 +686,11 @@ public class DLCopySwingGUI extends JFrame
 
                 case RESET_SELECTION:
                     new ResetStorageDeviceAdder(addedPath,
-                            resetShowHarddisksCheckBox.isSelected(),
+                            resetterPanels.isShowHardDiskSelected(),
                             storageDeviceListUpdateDialogHandler,
-                            resetStorageDeviceListModel,
-                            resetStorageDeviceList, this, resetLock,
-                            resetListModeRadioButton.isSelected()).execute();
+                            resetterPanels.getDeviceListModel(),
+                            resetterPanels.getDeviceList(), this, resetLock,
+                            resetterPanels.isListSelectionSelected()).execute();
                     break;
 
                 default:
@@ -801,22 +727,6 @@ public class DLCopySwingGUI extends JFrame
     @Override
     public void changedUpdate(DocumentEvent e) {
         documentChanged(e);
-    }
-
-    @Override
-    public void valueChanged(ListSelectionEvent e) {
-        if (e.getSource() == resetBackupSubdirectoryTable.getSelectionModel()) {
-            int[] selectedRows = resetBackupSubdirectoryTable.getSelectedRows();
-            if (selectedRows.length == 0) {
-                resetMoveUpButton.setEnabled(false);
-                resetMoveDownButton.setEnabled(false);
-            } else {
-                resetMoveUpButton.setEnabled(selectedRows[0] != 0);
-                resetMoveDownButton.setEnabled(
-                        selectedRows[selectedRows.length - 1]
-                        != subdirectoryTableModel.getRowCount() - 1);
-            }
-        }
     }
 
     @Override
@@ -1129,12 +1039,12 @@ public class DLCopySwingGUI extends JFrame
     @Override
     public void showResetProgress() {
         // DON'T (!) use invokeLater here or we might run into a timing issue so
-        // that after a very quick reset the resetProgressPanel is still shown
+        // that after a very quick reset the reset progress panel is still shown
         // because the code below code gets executed much later.
         try {
             SwingUtilities.invokeAndWait(() -> {
-                showCard(cardPanel, "resetPanel");
-                showCard(resetCardPanel, "resetProgressPanel");
+                showCard(cardPanel, "resetterPanels");
+                resetterPanels.showProgressPanel();
             });
         } catch (InterruptedException | InvocationTargetException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
@@ -1144,26 +1054,12 @@ public class DLCopySwingGUI extends JFrame
     @Override
     public void resettingDeviceStarted(StorageDevice storageDevice) {
         deviceStarted(storageDevice);
-
-        String pattern = STRINGS.getString("Reset_Device_Info");
-        String message = MessageFormat.format(pattern, batchCounter,
-                resetStorageDeviceList.getSelectedIndices().length,
-                storageDevice.getVendor() + " " + storageDevice.getModel(),
-                " (" + STRINGS.getString("Size") + ": "
-                + LernstickFileTools.getDataVolumeString(
-                        storageDevice.getSize(), 1) + ", "
-                + STRINGS.getString("Revision") + ": "
-                + storageDevice.getRevision() + ", "
-                + STRINGS.getString("Serial") + ": "
-                + storageDevice.getSerial() + ", " + "&#47;dev&#47;"
-                + storageDevice.getDevice() + ")");
-        setLabelTextonEDT(currentlyResettingDeviceLabel, message);
+        resetterPanels.startedResetOnDevice(batchCounter, storageDevice);
     }
 
     @Override
     public void showPrintingDocuments() {
-        setProgressBarStringOnEDT(resetProgressBar,
-                STRINGS.getString("Printing_Documents"));
+        resetterPanels.showPrintingDocuments();
     }
 
     @Override
@@ -1188,9 +1084,7 @@ public class DLCopySwingGUI extends JFrame
 
     @Override
     public void showResetBackup(FileCopier fileCopier) {
-        SwingUtilities.invokeLater(
-                () -> showCard(resetCardPanel, "resetBackupPanel"));
-        resetBackupFileCopierPanel.setFileCopier(fileCopier);
+        resetterPanels.showBackup(fileCopier);
     }
 
     @Override
@@ -1201,42 +1095,36 @@ public class DLCopySwingGUI extends JFrame
 
     @Override
     public void showResetFormattingExchangePartition() {
-        SwingUtilities.invokeLater(
-                () -> showCard(resetCardPanel, "resetProgressPanel"));
-        setProgressBarStringOnEDT(resetProgressBar,
-                STRINGS.getString("Formatting_Exchange_Partition"));
+        resetterPanels.showFormattingExchangePartition();
     }
 
     @Override
     public void showResetFormattingDataPartition() {
-        SwingUtilities.invokeLater(
-                () -> showCard(resetCardPanel, "resetProgressPanel"));
-        setProgressBarStringOnEDT(resetProgressBar,
-                STRINGS.getString("Formatting_Data_Partition"));
+        resetterPanels.showResetFormattingDataPartition();
     }
 
     @Override
     public void showResetRemovingFiles() {
-        SwingUtilities.invokeLater(
-                () -> showCard(resetCardPanel, "resetProgressPanel"));
-        setProgressBarStringOnEDT(resetProgressBar,
-                STRINGS.getString("Removing_Selected_Files"));
+        resetterPanels.showResetRemovingFiles();
     }
 
     @Override
     public void resettingFinished(boolean success) {
+
         setTitle(STRINGS.getString("DLCopySwingGUI.title"));
-        if (resetListModeRadioButton.isSelected()) {
+
+        if (resetterPanels.isListSelectionSelected()) {
             if (success) {
                 doneLabel.setText(STRINGS.getString("Reset_Done"));
                 showCard(cardPanel, "donePanel");
                 processDone();
             } else {
+                previousButton.setEnabled(true);
                 switchToResetSelection();
             }
+
         } else {
-            showCard(resetSelectionCardPanel, "resetNoMediaPanel");
-            showCard(cardPanel, "resetSelectionTabbedPane");
+            resetterPanels.showNoMediaPanel();
             previousButton.setEnabled(true);
             previousButton.requestFocusInWindow();
             getRootPane().setDefaultButton(previousButton);
@@ -1390,12 +1278,7 @@ public class DLCopySwingGUI extends JFrame
      * some updates
      */
     public void resetStorageDeviceListChanged() {
-        if (resetListModeRadioButton.isSelected()) {
-            storageDeviceListChanged(
-                    resetStorageDeviceListModel, resetSelectionCardPanel,
-                    "resetNoMediaPanel", "resetSelectionDeviceListPanel",
-                    resetStorageDeviceRenderer, resetStorageDeviceList);
-        }
+        resetterPanels.storageDeviceListChanged();
     }
 
     /**
@@ -1565,37 +1448,7 @@ public class DLCopySwingGUI extends JFrame
             return;
         }
 
-        // check all selected storage devices
-        boolean canReset = true;
-        List<StorageDevice> selectedStorageDevices
-                = resetStorageDeviceList.getSelectedValuesList();
-        for (StorageDevice storageDevice : selectedStorageDevices) {
-            Partition dataPartition = storageDevice.getDataPartition();
-            try {
-                if ((dataPartition != null)
-                        && dataPartition.isActivePersistencePartition()) {
-                    canReset = false;
-                    break;
-                }
-            } catch (DBusException ex) {
-                LOGGER.log(Level.SEVERE, "", ex);
-                canReset = false;
-                break;
-            }
-        }
-
-        int selectionCount = selectedStorageDevices.size();
-        String countString = STRINGS.getString("Selection_Count");
-        countString = MessageFormat.format(countString,
-                selectionCount, resetStorageDeviceListModel.size());
-        resetSelectionCountLabel.setText(countString);
-
-        // update nextButton state
-        if ((selectionCount > 0) && canReset) {
-            enableNextButton();
-        } else {
-            disableNextButton();
-        }
+        resetterPanels.updateSelectionCountAndNextButton();
     }
 
     public void enableNextButton() {
@@ -1643,6 +1496,77 @@ public class DLCopySwingGUI extends JFrame
         return dataPartitionMode;
     }
 
+    public void resetStorageDevices(List<StorageDevice> deviceList) {
+        setLabelHighlighted(selectionLabel, false);
+        setLabelHighlighted(executionLabel, true);
+        previousButton.setEnabled(false);
+        nextButton.setEnabled(false);
+        state = State.RESET;
+
+        batchCounter = 0;
+        resultsList = new ArrayList<>();
+
+        String exchangePartitionFileSystem
+                = resetterPanels.getExchangePartitionFileSystem();
+        // TODO: using dataPartitionFileSystemComboBox.getSelectedItem() here is
+        // ugly because the input field it is not visible when upgrading
+        String dataPartitionFileSystem
+                = dataPartitionFileSystemComboBox.getSelectedItem().toString();
+
+        new Resetter(this, deviceList, runningSystemSource.getDeviceName(),
+                resetterPanels.isPrintDocumentsSelected(),
+                resetterPanels.getPrintingDirectories(),
+                resetterPanels.isRecursiveDirectoryScanningEnabled(),
+                resetterPanels.isPrintOdtSelected(),
+                resetterPanels.isPrintOdsSelected(),
+                resetterPanels.isPrintOdpSelected(),
+                resetterPanels.isPrintPdfSelected(),
+                resetterPanels.isPrintDocSelected(),
+                resetterPanels.isPrintDocxSelected(),
+                resetterPanels.isPrintXlsSelected(),
+                resetterPanels.isPrintXlsxSelected(),
+                resetterPanels.isPrintPptSelected(),
+                resetterPanels.isPrintPptxSelected(),
+                resetterPanels.getAutoPrintMode(),
+                resetterPanels.getNumberOfPrintCopies(),
+                resetterPanels.isDuplexPrintingSelected(),
+                resetterPanels.isBackupSelected(),
+                resetterPanels.getBackupSource(),
+                resetterPanels.getBackupDestination(),
+                resetterPanels.getBackupDestinationSubdirectoryEntries(),
+                resetterPanels.isFormatExchangePartitionSelected(),
+                exchangePartitionFileSystem,
+                resetterPanels.isKeepExchangePartitionLabelSelected(),
+                resetterPanels.getNewExchangePartitionLabel(),
+                resetterPanels.isDeleteFromDataPartitionSelected(),
+                resetterPanels.isFormatDataPartitionSelected(),
+                dataPartitionFileSystem,
+                resetterPanels.isDeleteHomeDirectorySelected(),
+                resetterPanels.isDeleteSystemFilesSelected(),
+                resetterPanels.isRestoreDataSelected(),
+                resetterPanels.getRestoreEntries(), resetLock)
+                .execute();
+    }
+
+    public void storageDeviceListChanged(DefaultListModel<StorageDevice> model,
+            JPanel panel, String noMediaPanelName, String selectionPanelName,
+            StorageDeviceRenderer renderer, JList<StorageDevice> list) {
+
+        int deviceCount = model.size();
+        if (deviceCount == 0) {
+            showCard(panel, noMediaPanelName);
+            disableNextButton();
+        } else {
+            renderer.setMaxSize(getMaxStorageDeviceSize(model));
+            showCard(panel, selectionPanelName);
+            // auto-select single entry
+            if (deviceCount == 1) {
+                list.setSelectedIndex(0);
+            }
+            list.repaint();
+        }
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -1652,14 +1576,9 @@ public class DLCopySwingGUI extends JFrame
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        resetExchangePartitionButtonGroup = new javax.swing.ButtonGroup();
-        resetDataPartitionButtonGroup = new javax.swing.ButtonGroup();
-        isoButtonGroup = new javax.swing.ButtonGroup();
         exchangeButtonGroup = new javax.swing.ButtonGroup();
         installSourceButtonGroup = new javax.swing.ButtonGroup();
         upgradeSelectionModeButtonGroup = new javax.swing.ButtonGroup();
-        resetSelectionModeButtonGroup = new javax.swing.ButtonGroup();
-        automaticPrintingButtonGroup = new javax.swing.ButtonGroup();
         choicePanel = new javax.swing.JPanel();
         choiceLabel = new javax.swing.JLabel();
         buttonGridPanel = new javax.swing.JPanel();
@@ -1693,7 +1612,7 @@ public class DLCopySwingGUI extends JFrame
         installTargetCardPanel = new javax.swing.JPanel();
         installTargetPanel = new javax.swing.JPanel();
         installSelectionHeaderLabel = new javax.swing.JLabel();
-        installShowHarddisksCheckBox = new javax.swing.JCheckBox();
+        installShowHardDisksCheckBox = new javax.swing.JCheckBox();
         installSelectionCardPanel = new javax.swing.JPanel();
         installSelectionTabbedPane = new javax.swing.JTabbedPane();
         installBasicsPanel = new javax.swing.JPanel();
@@ -1780,7 +1699,7 @@ public class DLCopySwingGUI extends JFrame
         upgradeSelectionTabbedPane = new javax.swing.JTabbedPane();
         upgradeSelectionPanel = new javax.swing.JPanel();
         upgradeListModeRadioButton = new javax.swing.JRadioButton();
-        upgradeShowHarddisksCheckBox = new javax.swing.JCheckBox();
+        upgradeShowHardDisksCheckBox = new javax.swing.JCheckBox();
         upgradeAutomaticRadioButton = new javax.swing.JRadioButton();
         upgradeSelectionSeparator = new javax.swing.JSeparator();
         upgradeSelectionCardPanel = new javax.swing.JPanel();
@@ -1849,97 +1768,12 @@ public class DLCopySwingGUI extends JFrame
         upgradeReportPanel = new javax.swing.JPanel();
         upgradeResultsScrollPane = new javax.swing.JScrollPane();
         upgradeResultsTable = new javax.swing.JTable();
-        resetInfoPanel = new javax.swing.JPanel();
-        resetInfoLabel = new javax.swing.JLabel();
-        resetSelectionTabbedPane = new javax.swing.JTabbedPane();
-        resetSelectionPanel = new javax.swing.JPanel();
-        resetListModeRadioButton = new javax.swing.JRadioButton();
-        resetShowHarddisksCheckBox = new javax.swing.JCheckBox();
-        resetAutomaticModeRadioButton = new javax.swing.JRadioButton();
-        jSeparator2 = new javax.swing.JSeparator();
-        resetSelectionCardPanel = new javax.swing.JPanel();
-        resetNoMediaPanel = new javax.swing.JPanel();
-        resetNoMediaLabel = new javax.swing.JLabel();
-        resetSelectionDeviceListPanel = new javax.swing.JPanel();
-        resetSelectionInfoPanel = new javax.swing.JPanel();
-        resetSelectionHeaderLabel = new javax.swing.JLabel();
-        resetSelectionCountLabel = new javax.swing.JLabel();
-        resetStorageDeviceListScrollPane = new javax.swing.JScrollPane();
-        resetStorageDeviceList = new javax.swing.JList<>();
-        resetExchangeDefinitionLabel = new javax.swing.JLabel();
-        resetDataDefinitionLabel = new javax.swing.JLabel();
-        resetOsDefinitionLabel = new javax.swing.JLabel();
-        resetPrintingDetailsPanel = new javax.swing.JPanel();
-        printDocumentsCheckBox = new javax.swing.JCheckBox();
-        printingDirectoryPanel = new javax.swing.JPanel();
-        printingDirectoriesScrollPane = new javax.swing.JScrollPane();
-        printingDirectoriesTextArea = new javax.swing.JTextArea();
-        scanDirectoriesRecursivelyCheckBox = new javax.swing.JCheckBox();
-        printFileFormatsPanel = new javax.swing.JPanel();
-        printOdtCheckBox = new javax.swing.JCheckBox();
-        printOdsCheckBox = new javax.swing.JCheckBox();
-        printOdpCheckBox = new javax.swing.JCheckBox();
-        printPdfCheckBox = new javax.swing.JCheckBox();
-        printDocCheckBox = new javax.swing.JCheckBox();
-        printDocxCheckBox = new javax.swing.JCheckBox();
-        printXlsCheckBox = new javax.swing.JCheckBox();
-        printXlsxCheckBox = new javax.swing.JCheckBox();
-        printPptCheckBox = new javax.swing.JCheckBox();
-        printPptxCheckBox = new javax.swing.JCheckBox();
-        rightPrintingPanel = new javax.swing.JPanel();
-        automaticPrintingPanel = new javax.swing.JPanel();
-        autoPrintAllDocumentsRadioButton = new javax.swing.JRadioButton();
-        autoPrintSingleDocumentsRadioButton = new javax.swing.JRadioButton();
-        autoPrintNoneRadioButton = new javax.swing.JRadioButton();
-        printCopiesPanel = new javax.swing.JPanel();
-        printCopiesLabel = new javax.swing.JLabel();
-        printCopiesSpinner = new javax.swing.JSpinner();
-        printDuplexCheckBox = new javax.swing.JCheckBox();
-        resetBackupDetailsPanel = new javax.swing.JPanel();
-        resetBackupCheckBox = new javax.swing.JCheckBox();
-        resetBackupSourcePanel = new javax.swing.JPanel();
-        resetBackupSourceTextField = new javax.swing.JTextField();
-        resetBackupDestinationPanel = new javax.swing.JPanel();
-        resetBackupDestinationTextField = new javax.swing.JTextField();
-        resetBackupDestinationButton = new javax.swing.JButton();
-        resetBackupSubdirectoryPanel = new javax.swing.JPanel();
-        resetMoveUpButton = new javax.swing.JButton();
-        resetMoveDownButton = new javax.swing.JButton();
-        resetBackupSubdirectoryScrollPane = new javax.swing.JScrollPane();
-        resetBackupSubdirectoryTable = new javax.swing.JTable();
-        resetBackupSpacerPanel = new javax.swing.JPanel();
-        resetDeletePanel = new javax.swing.JPanel();
-        resetExchangePartitionDetailsPanel = new javax.swing.JPanel();
-        resetFormatExchangePartitionCheckBox = new javax.swing.JCheckBox();
-        resetFormatExchangePartitionFileSystemLabel = new javax.swing.JLabel();
-        resetFormatExchangePartitionFileSystemComboBox = new javax.swing.JComboBox<>();
-        resetFormatExchangePartitionKeepLabelRadioButton = new javax.swing.JRadioButton();
-        resetFormatExchangePartitionNewLabelRadioButton = new javax.swing.JRadioButton();
-        resetFormatExchangePartitionNewLabelTextField = new javax.swing.JTextField();
-        resetExchangespacer = new javax.swing.JPanel();
-        resetDataPartitionDetailsPanel = new javax.swing.JPanel();
-        deleteOnDataPartitionCheckBox = new javax.swing.JCheckBox();
-        formatDataPartitionRadioButton = new javax.swing.JRadioButton();
-        removeFilesRadioButton = new javax.swing.JRadioButton();
-        systemFilesCheckBox = new javax.swing.JCheckBox();
-        homeDirectoryCheckBox = new javax.swing.JCheckBox();
-        resetRestorePanel = new javax.swing.JPanel();
-        resetRestoreDataCheckBox = new javax.swing.JCheckBox();
-        resetRestoreConfigurationPanel = new ch.fhnw.dlcopy.gui.swing.OverwriteConfigurationPanel();
-        resetPanel = new javax.swing.JPanel();
-        currentlyResettingDeviceLabel = new javax.swing.JLabel();
-        jSeparator5 = new javax.swing.JSeparator();
-        resetCardPanel = new javax.swing.JPanel();
-        resetProgressPanel = new javax.swing.JPanel();
-        resetProgressBar = new javax.swing.JProgressBar();
-        resetBackupPanel = new javax.swing.JPanel();
-        resetBackupCopyLabel = new javax.swing.JLabel();
-        resetBackupFileCopierPanel = new ch.fhnw.filecopier.FileCopierPanel();
         resultsPanel = new javax.swing.JPanel();
         resultsInfoLabel = new javax.swing.JLabel();
         resultsTitledPanel = new javax.swing.JPanel();
         resultsScrollPane = new javax.swing.JScrollPane();
         resultsTable = new javax.swing.JTable();
+        resetterPanels = new ch.fhnw.dlcopy.gui.swing.ResetterPanels();
         isoCreatorPanels = new ch.fhnw.dlcopy.gui.swing.IsoCreatorPanels();
         executionPanelSeparator = new javax.swing.JSeparator();
         prevNextButtonPanel = new javax.swing.JPanel();
@@ -2079,14 +1913,14 @@ public class DLCopySwingGUI extends JFrame
         resetButton.setText(bundle.getString("DLCopySwingGUI.resetButton.text")); // NOI18N
         resetButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         resetButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        resetButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetButtonActionPerformed(evt);
-            }
-        });
         resetButton.addFocusListener(new java.awt.event.FocusAdapter() {
             public void focusGained(java.awt.event.FocusEvent evt) {
                 resetButtonFocusGained(evt);
+            }
+        });
+        resetButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                resetButtonActionPerformed(evt);
             }
         });
         resetButton.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -2255,16 +2089,16 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.weightx = 1.0;
         installTargetPanel.add(installSelectionHeaderLabel, gridBagConstraints);
 
-        installShowHarddisksCheckBox.setFont(installShowHarddisksCheckBox.getFont().deriveFont(installShowHarddisksCheckBox.getFont().getStyle() & ~java.awt.Font.BOLD, installShowHarddisksCheckBox.getFont().getSize()-1));
-        installShowHarddisksCheckBox.setText(bundle.getString("DLCopySwingGUI.installShowHarddisksCheckBox.text")); // NOI18N
-        installShowHarddisksCheckBox.addItemListener(new java.awt.event.ItemListener() {
+        installShowHardDisksCheckBox.setFont(installShowHardDisksCheckBox.getFont().deriveFont(installShowHardDisksCheckBox.getFont().getStyle() & ~java.awt.Font.BOLD, installShowHardDisksCheckBox.getFont().getSize()-1));
+        installShowHardDisksCheckBox.setText(bundle.getString("DLCopySwingGUI.installShowHardDisksCheckBox.text")); // NOI18N
+        installShowHardDisksCheckBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                installShowHarddisksCheckBoxItemStateChanged(evt);
+                installShowHardDisksCheckBoxItemStateChanged(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        installTargetPanel.add(installShowHarddisksCheckBox, gridBagConstraints);
+        installTargetPanel.add(installShowHardDisksCheckBox, gridBagConstraints);
 
         installSelectionCardPanel.setName("installSelectionCardPanel"); // NOI18N
         installSelectionCardPanel.setLayout(new java.awt.CardLayout());
@@ -2863,18 +2697,18 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         upgradeSelectionPanel.add(upgradeListModeRadioButton, gridBagConstraints);
 
-        upgradeShowHarddisksCheckBox.setFont(upgradeShowHarddisksCheckBox.getFont().deriveFont(upgradeShowHarddisksCheckBox.getFont().getStyle() & ~java.awt.Font.BOLD, upgradeShowHarddisksCheckBox.getFont().getSize()-1));
-        upgradeShowHarddisksCheckBox.setText(bundle.getString("DLCopySwingGUI.upgradeShowHarddisksCheckBox.text")); // NOI18N
-        upgradeShowHarddisksCheckBox.addItemListener(new java.awt.event.ItemListener() {
+        upgradeShowHardDisksCheckBox.setFont(upgradeShowHardDisksCheckBox.getFont().deriveFont(upgradeShowHardDisksCheckBox.getFont().getStyle() & ~java.awt.Font.BOLD, upgradeShowHardDisksCheckBox.getFont().getSize()-1));
+        upgradeShowHardDisksCheckBox.setText(bundle.getString("DLCopySwingGUI.upgradeShowHardDisksCheckBox.text")); // NOI18N
+        upgradeShowHardDisksCheckBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                upgradeShowHarddisksCheckBoxItemStateChanged(evt);
+                upgradeShowHardDisksCheckBoxItemStateChanged(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
         gridBagConstraints.insets = new java.awt.Insets(5, 30, 0, 0);
-        upgradeSelectionPanel.add(upgradeShowHarddisksCheckBox, gridBagConstraints);
+        upgradeSelectionPanel.add(upgradeShowHardDisksCheckBox, gridBagConstraints);
 
         upgradeSelectionModeButtonGroup.add(upgradeAutomaticRadioButton);
         upgradeAutomaticRadioButton.setText(bundle.getString("DLCopySwingGUI.upgradeAutomaticRadioButton.text")); // NOI18N
@@ -3433,706 +3267,6 @@ public class DLCopySwingGUI extends JFrame
 
         cardPanel.add(upgradeTabbedPane, "upgradeTabbedPane");
 
-        resetInfoPanel.setLayout(new java.awt.GridBagLayout());
-
-        resetInfoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/lernstick_reset.png"))); // NOI18N
-        resetInfoLabel.setText(bundle.getString("DLCopySwingGUI.resetInfoLabel.text")); // NOI18N
-        resetInfoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        resetInfoLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        resetInfoPanel.add(resetInfoLabel, gridBagConstraints);
-
-        cardPanel.add(resetInfoPanel, "resetInfoPanel");
-
-        resetSelectionTabbedPane.addComponentListener(new java.awt.event.ComponentAdapter() {
-            public void componentShown(java.awt.event.ComponentEvent evt) {
-                resetSelectionTabbedPaneComponentShown(evt);
-            }
-        });
-
-        resetSelectionPanel.setLayout(new java.awt.GridBagLayout());
-
-        resetSelectionModeButtonGroup.add(resetListModeRadioButton);
-        resetListModeRadioButton.setSelected(true);
-        resetListModeRadioButton.setText(bundle.getString("Select_Storage_Media_From_List")); // NOI18N
-        resetListModeRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetListModeRadioButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
-        resetSelectionPanel.add(resetListModeRadioButton, gridBagConstraints);
-
-        resetShowHarddisksCheckBox.setFont(resetShowHarddisksCheckBox.getFont().deriveFont(resetShowHarddisksCheckBox.getFont().getStyle() & ~java.awt.Font.BOLD, resetShowHarddisksCheckBox.getFont().getSize()-1));
-        resetShowHarddisksCheckBox.setText(bundle.getString("DLCopySwingGUI.resetShowHarddisksCheckBox.text")); // NOI18N
-        resetShowHarddisksCheckBox.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                resetShowHarddisksCheckBoxItemStateChanged(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(5, 30, 0, 0);
-        resetSelectionPanel.add(resetShowHarddisksCheckBox, gridBagConstraints);
-
-        resetSelectionModeButtonGroup.add(resetAutomaticModeRadioButton);
-        resetAutomaticModeRadioButton.setText(bundle.getString("DLCopySwingGUI.resetAutomaticModeRadioButton.text")); // NOI18N
-        resetAutomaticModeRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetAutomaticModeRadioButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-        resetSelectionPanel.add(resetAutomaticModeRadioButton, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        resetSelectionPanel.add(jSeparator2, gridBagConstraints);
-
-        resetSelectionCardPanel.setName("resetSelectionCardPanel"); // NOI18N
-        resetSelectionCardPanel.setLayout(new java.awt.CardLayout());
-
-        resetNoMediaPanel.setLayout(new java.awt.GridBagLayout());
-
-        resetNoMediaLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/messagebox_info.png"))); // NOI18N
-        resetNoMediaLabel.setText(bundle.getString("DLCopySwingGUI.resetNoMediaLabel.text")); // NOI18N
-        resetNoMediaLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
-        resetNoMediaLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
-        resetNoMediaPanel.add(resetNoMediaLabel, new java.awt.GridBagConstraints());
-
-        resetSelectionCardPanel.add(resetNoMediaPanel, "resetNoMediaPanel");
-
-        resetSelectionDeviceListPanel.setLayout(new java.awt.GridBagLayout());
-
-        resetSelectionInfoPanel.setLayout(new java.awt.GridBagLayout());
-
-        resetSelectionHeaderLabel.setFont(resetSelectionHeaderLabel.getFont().deriveFont(resetSelectionHeaderLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-        resetSelectionHeaderLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        resetSelectionHeaderLabel.setText(bundle.getString("DLCopySwingGUI.resetSelectionHeaderLabel.text")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        resetSelectionInfoPanel.add(resetSelectionHeaderLabel, gridBagConstraints);
-
-        resetSelectionCountLabel.setText(bundle.getString("DLCopySwingGUI.resetSelectionCountLabel.text")); // NOI18N
-        resetSelectionInfoPanel.add(resetSelectionCountLabel, new java.awt.GridBagConstraints());
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
-        resetSelectionDeviceListPanel.add(resetSelectionInfoPanel, gridBagConstraints);
-
-        resetStorageDeviceList.setName("storageDeviceList"); // NOI18N
-        resetStorageDeviceList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
-            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                resetStorageDeviceListValueChanged(evt);
-            }
-        });
-        resetStorageDeviceListScrollPane.setViewportView(resetStorageDeviceList);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
-        resetSelectionDeviceListPanel.add(resetStorageDeviceListScrollPane, gridBagConstraints);
-
-        resetExchangeDefinitionLabel.setFont(resetExchangeDefinitionLabel.getFont().deriveFont(resetExchangeDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, resetExchangeDefinitionLabel.getFont().getSize()-1));
-        resetExchangeDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/yellow_box.png"))); // NOI18N
-        resetExchangeDefinitionLabel.setText(bundle.getString("ExchangePartitionDefinition")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
-        resetSelectionDeviceListPanel.add(resetExchangeDefinitionLabel, gridBagConstraints);
-
-        resetDataDefinitionLabel.setFont(resetDataDefinitionLabel.getFont().deriveFont(resetDataDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, resetDataDefinitionLabel.getFont().getSize()-1));
-        resetDataDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/green_box.png"))); // NOI18N
-        resetDataDefinitionLabel.setText(bundle.getString("DataPartitionDefinition")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
-        resetSelectionDeviceListPanel.add(resetDataDefinitionLabel, gridBagConstraints);
-
-        resetOsDefinitionLabel.setFont(resetOsDefinitionLabel.getFont().deriveFont(resetOsDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, resetOsDefinitionLabel.getFont().getSize()-1));
-        resetOsDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/blue_box.png"))); // NOI18N
-        resetOsDefinitionLabel.setText(bundle.getString("DLCopySwingGUI.resetOsDefinitionLabel.text")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(5, 10, 10, 10);
-        resetSelectionDeviceListPanel.add(resetOsDefinitionLabel, gridBagConstraints);
-
-        resetSelectionCardPanel.add(resetSelectionDeviceListPanel, "resetSelectionDeviceListPanel");
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        resetSelectionPanel.add(resetSelectionCardPanel, gridBagConstraints);
-
-        resetSelectionTabbedPane.addTab(bundle.getString("Selection"), resetSelectionPanel); // NOI18N
-
-        resetPrintingDetailsPanel.setLayout(new java.awt.GridBagLayout());
-
-        printDocumentsCheckBox.setText(bundle.getString("DLCopySwingGUI.printDocumentsCheckBox.text")); // NOI18N
-        printDocumentsCheckBox.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                printDocumentsCheckBoxItemStateChanged(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
-        resetPrintingDetailsPanel.add(printDocumentsCheckBox, gridBagConstraints);
-
-        printingDirectoryPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.printingDirectoryPanel.border.title"))); // NOI18N
-        printingDirectoryPanel.setLayout(new java.awt.GridBagLayout());
-
-        printingDirectoriesTextArea.setEnabled(false);
-        printingDirectoriesScrollPane.setViewportView(printingDirectoriesTextArea);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        printingDirectoryPanel.add(printingDirectoriesScrollPane, gridBagConstraints);
-
-        scanDirectoriesRecursivelyCheckBox.setText(bundle.getString("DLCopySwingGUI.scanDirectoriesRecursivelyCheckBox.text")); // NOI18N
-        scanDirectoriesRecursivelyCheckBox.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        printingDirectoryPanel.add(scanDirectoriesRecursivelyCheckBox, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 10);
-        resetPrintingDetailsPanel.add(printingDirectoryPanel, gridBagConstraints);
-
-        printFileFormatsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.printFileFormatsPanel.border.title"))); // NOI18N
-        printFileFormatsPanel.setLayout(new java.awt.GridBagLayout());
-
-        printOdtCheckBox.setText(bundle.getString("DLCopySwingGUI.printOdtCheckBox.text")); // NOI18N
-        printOdtCheckBox.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        printFileFormatsPanel.add(printOdtCheckBox, gridBagConstraints);
-
-        printOdsCheckBox.setText(bundle.getString("DLCopySwingGUI.printOdsCheckBox.text")); // NOI18N
-        printOdsCheckBox.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        printFileFormatsPanel.add(printOdsCheckBox, gridBagConstraints);
-
-        printOdpCheckBox.setText(bundle.getString("DLCopySwingGUI.printOdpCheckBox.text")); // NOI18N
-        printOdpCheckBox.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        printFileFormatsPanel.add(printOdpCheckBox, gridBagConstraints);
-
-        printPdfCheckBox.setText(bundle.getString("DLCopySwingGUI.printPdfCheckBox.text")); // NOI18N
-        printPdfCheckBox.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        printFileFormatsPanel.add(printPdfCheckBox, gridBagConstraints);
-
-        printDocCheckBox.setText(bundle.getString("DLCopySwingGUI.printDocCheckBox.text")); // NOI18N
-        printDocCheckBox.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        printFileFormatsPanel.add(printDocCheckBox, gridBagConstraints);
-
-        printDocxCheckBox.setText(bundle.getString("DLCopySwingGUI.printDocxCheckBox.text")); // NOI18N
-        printDocxCheckBox.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        printFileFormatsPanel.add(printDocxCheckBox, gridBagConstraints);
-
-        printXlsCheckBox.setText(bundle.getString("DLCopySwingGUI.printXlsCheckBox.text")); // NOI18N
-        printXlsCheckBox.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        printFileFormatsPanel.add(printXlsCheckBox, gridBagConstraints);
-
-        printXlsxCheckBox.setText(bundle.getString("DLCopySwingGUI.printXlsxCheckBox.text")); // NOI18N
-        printXlsxCheckBox.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        printFileFormatsPanel.add(printXlsxCheckBox, gridBagConstraints);
-
-        printPptCheckBox.setText(bundle.getString("DLCopySwingGUI.printPptCheckBox.text")); // NOI18N
-        printPptCheckBox.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        printFileFormatsPanel.add(printPptCheckBox, gridBagConstraints);
-
-        printPptxCheckBox.setText(bundle.getString("DLCopySwingGUI.printPptxCheckBox.text")); // NOI18N
-        printPptxCheckBox.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        printFileFormatsPanel.add(printPptxCheckBox, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.insets = new java.awt.Insets(15, 5, 5, 5);
-        resetPrintingDetailsPanel.add(printFileFormatsPanel, gridBagConstraints);
-
-        rightPrintingPanel.setLayout(new java.awt.GridBagLayout());
-
-        automaticPrintingPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.automaticPrintingPanel.border.title"))); // NOI18N
-        automaticPrintingPanel.setLayout(new java.awt.GridBagLayout());
-
-        automaticPrintingButtonGroup.add(autoPrintAllDocumentsRadioButton);
-        autoPrintAllDocumentsRadioButton.setText(bundle.getString("DLCopySwingGUI.autoPrintAllDocumentsRadioButton.text")); // NOI18N
-        autoPrintAllDocumentsRadioButton.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 1.0;
-        automaticPrintingPanel.add(autoPrintAllDocumentsRadioButton, gridBagConstraints);
-
-        automaticPrintingButtonGroup.add(autoPrintSingleDocumentsRadioButton);
-        autoPrintSingleDocumentsRadioButton.setText(bundle.getString("DLCopySwingGUI.autoPrintSingleDocumentsRadioButton.text")); // NOI18N
-        autoPrintSingleDocumentsRadioButton.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 1.0;
-        automaticPrintingPanel.add(autoPrintSingleDocumentsRadioButton, gridBagConstraints);
-
-        automaticPrintingButtonGroup.add(autoPrintNoneRadioButton);
-        autoPrintNoneRadioButton.setSelected(true);
-        autoPrintNoneRadioButton.setText(bundle.getString("DLCopySwingGUI.autoPrintNoneRadioButton.text")); // NOI18N
-        autoPrintNoneRadioButton.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 1.0;
-        automaticPrintingPanel.add(autoPrintNoneRadioButton, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        rightPrintingPanel.add(automaticPrintingPanel, gridBagConstraints);
-
-        printCopiesPanel.setLayout(new java.awt.GridBagLayout());
-
-        printCopiesLabel.setText(bundle.getString("DLCopySwingGUI.printCopiesLabel.text")); // NOI18N
-        printCopiesLabel.setEnabled(false);
-        printCopiesPanel.add(printCopiesLabel, new java.awt.GridBagConstraints());
-
-        printCopiesSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, null, 1));
-        printCopiesSpinner.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
-        printCopiesPanel.add(printCopiesSpinner, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(10, 7, 0, 5);
-        rightPrintingPanel.add(printCopiesPanel, gridBagConstraints);
-
-        printDuplexCheckBox.setSelected(true);
-        printDuplexCheckBox.setText(bundle.getString("DLCopySwingGUI.printDuplexCheckBox.text")); // NOI18N
-        printDuplexCheckBox.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(5, 4, 5, 0);
-        rightPrintingPanel.add(printDuplexCheckBox, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(15, 5, 5, 5);
-        resetPrintingDetailsPanel.add(rightPrintingPanel, gridBagConstraints);
-
-        resetSelectionTabbedPane.addTab(bundle.getString("DLCopySwingGUI.resetPrintingDetailsPanel.TabConstraints.tabTitle"), resetPrintingDetailsPanel); // NOI18N
-
-        resetBackupDetailsPanel.setLayout(new java.awt.GridBagLayout());
-
-        resetBackupCheckBox.setText(bundle.getString("DLCopySwingGUI.resetBackupCheckBox.text")); // NOI18N
-        resetBackupCheckBox.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                resetBackupCheckBoxItemStateChanged(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
-        resetBackupDetailsPanel.add(resetBackupCheckBox, gridBagConstraints);
-
-        resetBackupSourcePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.resetBackupSourcePanel.border.title"))); // NOI18N
-        resetBackupSourcePanel.setLayout(new java.awt.GridBagLayout());
-
-        resetBackupSourceTextField.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
-        resetBackupSourcePanel.add(resetBackupSourceTextField, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 5);
-        resetBackupDetailsPanel.add(resetBackupSourcePanel, gridBagConstraints);
-
-        resetBackupDestinationPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.resetBackupDestinationPanel.border.title"))); // NOI18N
-        resetBackupDestinationPanel.setLayout(new java.awt.GridBagLayout());
-
-        resetBackupDestinationTextField.setEditable(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
-        resetBackupDestinationPanel.add(resetBackupDestinationTextField, gridBagConstraints);
-
-        resetBackupDestinationButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/fileopen.png"))); // NOI18N
-        resetBackupDestinationButton.setEnabled(false);
-        resetBackupDestinationButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        resetBackupDestinationButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetBackupDestinationButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 5);
-        resetBackupDestinationPanel.add(resetBackupDestinationButton, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 5);
-        resetBackupDetailsPanel.add(resetBackupDestinationPanel, gridBagConstraints);
-
-        resetBackupSubdirectoryPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.resetBackupSubdirectoryPanel.border.title"))); // NOI18N
-        resetBackupSubdirectoryPanel.setLayout(new java.awt.GridBagLayout());
-
-        resetMoveUpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/arrow-up.png"))); // NOI18N
-        resetMoveUpButton.setToolTipText(bundle.getString("DLCopySwingGUI.resetMoveUpButton.toolTipText")); // NOI18N
-        resetMoveUpButton.setEnabled(false);
-        resetMoveUpButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        resetMoveUpButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetMoveUpButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
-        resetBackupSubdirectoryPanel.add(resetMoveUpButton, gridBagConstraints);
-
-        resetMoveDownButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/arrow-down.png"))); // NOI18N
-        resetMoveDownButton.setToolTipText(bundle.getString("DLCopySwingGUI.resetMoveDownButton.toolTipText")); // NOI18N
-        resetMoveDownButton.setEnabled(false);
-        resetMoveDownButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
-        resetMoveDownButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                resetMoveDownButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
-        gridBagConstraints.insets = new java.awt.Insets(3, 0, 5, 0);
-        resetBackupSubdirectoryPanel.add(resetMoveDownButton, gridBagConstraints);
-
-        resetBackupSubdirectoryTable.setEnabled(false);
-        resetBackupSubdirectoryScrollPane.setViewportView(resetBackupSubdirectoryTable);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridheight = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        resetBackupSubdirectoryPanel.add(resetBackupSubdirectoryScrollPane, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 5);
-        resetBackupDetailsPanel.add(resetBackupSubdirectoryPanel, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        resetBackupDetailsPanel.add(resetBackupSpacerPanel, gridBagConstraints);
-
-        resetSelectionTabbedPane.addTab(bundle.getString("DLCopySwingGUI.resetBackupDetailsPanel.TabConstraints.tabTitle"), resetBackupDetailsPanel); // NOI18N
-
-        resetDeletePanel.setLayout(new java.awt.GridBagLayout());
-
-        resetExchangePartitionDetailsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), bundle.getString("Exchange_Partition"))); // NOI18N
-        resetExchangePartitionDetailsPanel.setLayout(new java.awt.GridBagLayout());
-
-        resetFormatExchangePartitionCheckBox.setText(bundle.getString("DLCopySwingGUI.resetFormatExchangePartitionCheckBox.text")); // NOI18N
-        resetFormatExchangePartitionCheckBox.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                resetFormatExchangePartitionCheckBoxItemStateChanged(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 10, 0);
-        resetExchangePartitionDetailsPanel.add(resetFormatExchangePartitionCheckBox, gridBagConstraints);
-
-        resetFormatExchangePartitionFileSystemLabel.setText(bundle.getString("DLCopySwingGUI.resetFormatExchangePartitionFileSystemLabel.text")); // NOI18N
-        resetFormatExchangePartitionFileSystemLabel.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 25, 10, 0);
-        resetExchangePartitionDetailsPanel.add(resetFormatExchangePartitionFileSystemLabel, gridBagConstraints);
-
-        resetFormatExchangePartitionFileSystemComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
-        resetFormatExchangePartitionFileSystemComboBox.setToolTipText(bundle.getString("ExchangePartitionFileSystemComboBoxToolTipText")); // NOI18N
-        resetFormatExchangePartitionFileSystemComboBox.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 10, 10);
-        resetExchangePartitionDetailsPanel.add(resetFormatExchangePartitionFileSystemComboBox, gridBagConstraints);
-
-        resetExchangePartitionButtonGroup.add(resetFormatExchangePartitionKeepLabelRadioButton);
-        resetFormatExchangePartitionKeepLabelRadioButton.setSelected(true);
-        resetFormatExchangePartitionKeepLabelRadioButton.setText(bundle.getString("DLCopySwingGUI.resetFormatExchangePartitionKeepLabelRadioButton.text")); // NOI18N
-        resetFormatExchangePartitionKeepLabelRadioButton.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 22, 0, 0);
-        resetExchangePartitionDetailsPanel.add(resetFormatExchangePartitionKeepLabelRadioButton, gridBagConstraints);
-
-        resetExchangePartitionButtonGroup.add(resetFormatExchangePartitionNewLabelRadioButton);
-        resetFormatExchangePartitionNewLabelRadioButton.setText(bundle.getString("DLCopySwingGUI.resetFormatExchangePartitionNewLabelRadioButton.text")); // NOI18N
-        resetFormatExchangePartitionNewLabelRadioButton.setEnabled(false);
-        resetFormatExchangePartitionNewLabelRadioButton.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                resetFormatExchangePartitionNewLabelRadioButtonItemStateChanged(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.insets = new java.awt.Insets(0, 22, 5, 0);
-        resetExchangePartitionDetailsPanel.add(resetFormatExchangePartitionNewLabelRadioButton, gridBagConstraints);
-
-        resetFormatExchangePartitionNewLabelTextField.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 5, 5, 10);
-        resetExchangePartitionDetailsPanel.add(resetFormatExchangePartitionNewLabelTextField, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        resetExchangePartitionDetailsPanel.add(resetExchangespacer, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.PAGE_START;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 5);
-        resetDeletePanel.add(resetExchangePartitionDetailsPanel, gridBagConstraints);
-
-        resetDataPartitionDetailsPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(javax.swing.BorderFactory.createBevelBorder(javax.swing.border.BevelBorder.RAISED), bundle.getString("Data_Partition"))); // NOI18N
-        resetDataPartitionDetailsPanel.setLayout(new java.awt.GridBagLayout());
-
-        deleteOnDataPartitionCheckBox.setText(bundle.getString("DLCopySwingGUI.deleteOnDataPartitionCheckBox.text")); // NOI18N
-        deleteOnDataPartitionCheckBox.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                deleteOnDataPartitionCheckBoxItemStateChanged(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
-        resetDataPartitionDetailsPanel.add(deleteOnDataPartitionCheckBox, gridBagConstraints);
-
-        resetDataPartitionButtonGroup.add(formatDataPartitionRadioButton);
-        formatDataPartitionRadioButton.setText(bundle.getString("DLCopySwingGUI.formatDataPartitionRadioButton.text")); // NOI18N
-        formatDataPartitionRadioButton.setEnabled(false);
-        formatDataPartitionRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                formatDataPartitionRadioButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 20, 0, 10);
-        resetDataPartitionDetailsPanel.add(formatDataPartitionRadioButton, gridBagConstraints);
-
-        resetDataPartitionButtonGroup.add(removeFilesRadioButton);
-        removeFilesRadioButton.setSelected(true);
-        removeFilesRadioButton.setText(bundle.getString("DLCopySwingGUI.removeFilesRadioButton.text")); // NOI18N
-        removeFilesRadioButton.setEnabled(false);
-        removeFilesRadioButton.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                removeFilesRadioButtonActionPerformed(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 20, 0, 10);
-        resetDataPartitionDetailsPanel.add(removeFilesRadioButton, gridBagConstraints);
-
-        systemFilesCheckBox.setText(bundle.getString("DLCopySwingGUI.systemFilesCheckBox.text")); // NOI18N
-        systemFilesCheckBox.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(0, 40, 0, 0);
-        resetDataPartitionDetailsPanel.add(systemFilesCheckBox, gridBagConstraints);
-
-        homeDirectoryCheckBox.setText(bundle.getString("DLCopySwingGUI.homeDirectoryCheckBox.text")); // NOI18N
-        homeDirectoryCheckBox.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 40, 10, 10);
-        resetDataPartitionDetailsPanel.add(homeDirectoryCheckBox, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.FIRST_LINE_START;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 5, 5, 5);
-        resetDeletePanel.add(resetDataPartitionDetailsPanel, gridBagConstraints);
-
-        resetSelectionTabbedPane.addTab(bundle.getString("Delete_Data"), resetDeletePanel); // NOI18N
-
-        resetRestorePanel.setLayout(new java.awt.GridBagLayout());
-
-        resetRestoreDataCheckBox.setText(bundle.getString("DLCopySwingGUI.resetRestoreDataCheckBox.text")); // NOI18N
-        resetRestoreDataCheckBox.addItemListener(new java.awt.event.ItemListener() {
-            public void itemStateChanged(java.awt.event.ItemEvent evt) {
-                resetRestoreDataCheckBoxItemStateChanged(evt);
-            }
-        });
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
-        resetRestorePanel.add(resetRestoreDataCheckBox, gridBagConstraints);
-
-        resetRestoreConfigurationPanel.setEnabled(false);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-        resetRestorePanel.add(resetRestoreConfigurationPanel, gridBagConstraints);
-
-        resetSelectionTabbedPane.addTab(bundle.getString("DLCopySwingGUI.resetRestorePanel.TabConstraints.tabTitle"), resetRestorePanel); // NOI18N
-
-        cardPanel.add(resetSelectionTabbedPane, "resetSelectionTabbedPane");
-
-        resetPanel.setLayout(new java.awt.GridBagLayout());
-
-        currentlyResettingDeviceLabel.setFont(currentlyResettingDeviceLabel.getFont().deriveFont(currentlyResettingDeviceLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
-        currentlyResettingDeviceLabel.setText(bundle.getString("Reset_Device_Info")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        resetPanel.add(currentlyResettingDeviceLabel, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
-        resetPanel.add(jSeparator5, gridBagConstraints);
-
-        resetCardPanel.setName("resetCardPanel"); // NOI18N
-        resetCardPanel.setLayout(new java.awt.CardLayout());
-
-        resetProgressPanel.setLayout(new java.awt.GridBagLayout());
-
-        resetProgressBar.setIndeterminate(true);
-        resetProgressBar.setPreferredSize(new java.awt.Dimension(250, 25));
-        resetProgressBar.setStringPainted(true);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.weighty = 1.0;
-        resetProgressPanel.add(resetProgressBar, gridBagConstraints);
-
-        resetCardPanel.add(resetProgressPanel, "resetProgressPanel");
-
-        resetBackupPanel.setLayout(new java.awt.GridBagLayout());
-
-        resetBackupCopyLabel.setText(bundle.getString("DLCopySwingGUI.resetBackupCopyLabel.text")); // NOI18N
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        resetBackupPanel.add(resetBackupCopyLabel, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
-        resetBackupPanel.add(resetBackupFileCopierPanel, gridBagConstraints);
-
-        resetCardPanel.add(resetBackupPanel, "resetBackupPanel");
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 1.0;
-        resetPanel.add(resetCardPanel, gridBagConstraints);
-
-        cardPanel.add(resetPanel, "resetPanel");
-
         resultsPanel.setLayout(new java.awt.GridBagLayout());
 
         resultsInfoLabel.setText(bundle.getString("Installation_Done_Message_From_Removable_Boot_Device")); // NOI18N
@@ -4164,6 +3298,7 @@ public class DLCopySwingGUI extends JFrame
         resultsPanel.add(resultsTitledPanel, gridBagConstraints);
 
         cardPanel.add(resultsPanel, "resultsPanel");
+        cardPanel.add(resetterPanels, "resetterPanels");
         cardPanel.add(isoCreatorPanels, "isoCreatorPanels");
 
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -4435,12 +3570,12 @@ public class DLCopySwingGUI extends JFrame
         getRootPane().setDefaultButton(toISOButton);
     }//GEN-LAST:event_toISOButtonFocusGained
 
-    private void installShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_installShowHarddisksCheckBoxItemStateChanged
+    private void installShowHardDisksCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_installShowHardDisksCheckBoxItemStateChanged
         new InstallStorageDeviceListUpdater(this, installStorageDeviceList,
                 installStorageDeviceListModel,
-                installShowHarddisksCheckBox.isSelected(),
+                installShowHardDisksCheckBox.isSelected(),
                 runningSystemSource.getDeviceName()).execute();
-    }//GEN-LAST:event_installShowHarddisksCheckBoxItemStateChanged
+    }//GEN-LAST:event_installShowHardDisksCheckBoxItemStateChanged
 
     private void upgradeButtonFocusGained(java.awt.event.FocusEvent evt) {//GEN-FIRST:event_upgradeButtonFocusGained
         getRootPane().setDefaultButton(upgradeButton);
@@ -4501,11 +3636,11 @@ public class DLCopySwingGUI extends JFrame
         updateUpgradeSelectionCountAndNextButton();
     }//GEN-LAST:event_upgradeStorageDeviceListValueChanged
 
-private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_upgradeShowHarddisksCheckBoxItemStateChanged
+private void upgradeShowHardDisksCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_upgradeShowHardDisksCheckBoxItemStateChanged
     new UpgradeStorageDeviceListUpdater(runningSystemSource, this,
             upgradeStorageDeviceList, upgradeStorageDeviceListModel,
-            upgradeShowHarddisksCheckBox.isSelected()).execute();
-}//GEN-LAST:event_upgradeShowHarddisksCheckBoxItemStateChanged
+            upgradeShowHardDisksCheckBox.isSelected()).execute();
+}//GEN-LAST:event_upgradeShowHardDisksCheckBoxItemStateChanged
 
     private void upgradeOverwriteAddButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeOverwriteAddButtonActionPerformed
         addPathToList(JFileChooser.FILES_AND_DIRECTORIES,
@@ -4580,18 +3715,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
     }//GEN-LAST:event_resetButtonKeyPressed
 
-    private void resetStorageDeviceListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_resetStorageDeviceListValueChanged
-        updateResetSelectionCountAndNextButton();
-    }//GEN-LAST:event_resetStorageDeviceListValueChanged
-
-    private void formatDataPartitionRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_formatDataPartitionRadioButtonActionPerformed
-        updateResetDataPartitionButtonState();
-    }//GEN-LAST:event_formatDataPartitionRadioButtonActionPerformed
-
-    private void removeFilesRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeFilesRadioButtonActionPerformed
-        updateResetDataPartitionButtonState();
-    }//GEN-LAST:event_removeFilesRadioButtonActionPerformed
-
     private void upgradeMoveUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeMoveUpButtonActionPerformed
         int selectedIndices[] = upgradeOverwriteList.getSelectedIndices();
         upgradeOverwriteList.clearSelection();
@@ -4629,13 +3752,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private void sortDescendingButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sortDescendingButtonActionPerformed
         sortList(false);
     }//GEN-LAST:event_sortDescendingButtonActionPerformed
-
-    private void resetShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_resetShowHarddisksCheckBoxItemStateChanged
-        new ResetStorageDeviceListUpdater(this, resetStorageDeviceList,
-                resetStorageDeviceListModel,
-                resetShowHarddisksCheckBox.isSelected(),
-                runningSystemSource.getDeviceName()).execute();
-    }//GEN-LAST:event_resetShowHarddisksCheckBoxItemStateChanged
 
     private void upgradeOverwriteExportButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeOverwriteExportButtonActionPerformed
         JFileChooser fileChooser = new JFileChooser();
@@ -4691,35 +3807,19 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         updateInstallSourceGUI();
     }//GEN-LAST:event_isoSourceRadioButtonActionPerformed
 
-    private void resetFormatExchangePartitionCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_resetFormatExchangePartitionCheckBoxItemStateChanged
-        boolean enabled = resetFormatExchangePartitionCheckBox.isSelected();
-        resetFormatExchangePartitionFileSystemLabel.setEnabled(enabled);
-        resetFormatExchangePartitionFileSystemComboBox.setEnabled(enabled);
-        resetFormatExchangePartitionKeepLabelRadioButton.setEnabled(enabled);
-        resetFormatExchangePartitionNewLabelRadioButton.setEnabled(enabled);
-        resetFormatExchangePartitionNewLabelTextField.setEnabled(enabled
-                && resetFormatExchangePartitionNewLabelRadioButton.isSelected());
-    }//GEN-LAST:event_resetFormatExchangePartitionCheckBoxItemStateChanged
-
-    private void resetFormatExchangePartitionNewLabelRadioButtonItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_resetFormatExchangePartitionNewLabelRadioButtonItemStateChanged
-        resetFormatExchangePartitionNewLabelTextField.setEnabled(
-                resetFormatExchangePartitionCheckBox.isSelected()
-                && resetFormatExchangePartitionNewLabelRadioButton.isSelected());
-    }//GEN-LAST:event_resetFormatExchangePartitionNewLabelRadioButtonItemStateChanged
-
     private void upgradeListModeRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeListModeRadioButtonActionPerformed
         showCard(upgradeSelectionCardPanel, "upgradeSelectionDeviceListPanel");
         new UpgradeStorageDeviceListUpdater(runningSystemSource, this,
                 upgradeStorageDeviceList, upgradeStorageDeviceListModel,
-                upgradeShowHarddisksCheckBox.isSelected()).execute();
-        upgradeShowHarddisksCheckBox.setEnabled(
+                upgradeShowHardDisksCheckBox.isSelected()).execute();
+        upgradeShowHardDisksCheckBox.setEnabled(
                 upgradeListModeRadioButton.isSelected());
     }//GEN-LAST:event_upgradeListModeRadioButtonActionPerformed
 
     private void upgradeAutomaticRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_upgradeAutomaticRadioButtonActionPerformed
         showCard(upgradeSelectionCardPanel, "upgradeNoMediaPanel");
         nextButton.setEnabled(false);
-        upgradeShowHarddisksCheckBox.setEnabled(
+        upgradeShowHardDisksCheckBox.setEnabled(
                 !upgradeAutomaticRadioButton.isSelected());
     }//GEN-LAST:event_upgradeAutomaticRadioButtonActionPerformed
 
@@ -4727,105 +3827,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         if (upgradeListModeRadioButton.isSelected()) {
             new UpgradeStorageDeviceListUpdater(runningSystemSource, this,
                     upgradeStorageDeviceList, upgradeStorageDeviceListModel,
-                    upgradeShowHarddisksCheckBox.isSelected()).execute();
+                    upgradeShowHardDisksCheckBox.isSelected()).execute();
         }
     }//GEN-LAST:event_upgradeSelectionTabbedPaneComponentShown
-
-    private void resetSelectionTabbedPaneComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_resetSelectionTabbedPaneComponentShown
-        if (resetListModeRadioButton.isSelected()) {
-            new ResetStorageDeviceListUpdater(this, resetStorageDeviceList,
-                    resetStorageDeviceListModel,
-                    resetShowHarddisksCheckBox.isSelected(),
-                    runningSystemSource.getDeviceName()).execute();
-        }
-    }//GEN-LAST:event_resetSelectionTabbedPaneComponentShown
-
-    private void printDocumentsCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_printDocumentsCheckBoxItemStateChanged
-        boolean enabled = printDocumentsCheckBox.isSelected();
-        printingDirectoriesTextArea.setEnabled(enabled);
-        scanDirectoriesRecursivelyCheckBox.setEnabled(enabled);
-        printOdtCheckBox.setEnabled(enabled);
-        printOdsCheckBox.setEnabled(enabled);
-        printOdpCheckBox.setEnabled(enabled);
-        printPdfCheckBox.setEnabled(enabled);
-        printDocCheckBox.setEnabled(enabled);
-        printDocxCheckBox.setEnabled(enabled);
-        printXlsCheckBox.setEnabled(enabled);
-        printXlsxCheckBox.setEnabled(enabled);
-        printPptCheckBox.setEnabled(enabled);
-        printPptxCheckBox.setEnabled(enabled);
-        autoPrintAllDocumentsRadioButton.setEnabled(enabled);
-        autoPrintSingleDocumentsRadioButton.setEnabled(enabled);
-        autoPrintNoneRadioButton.setEnabled(enabled);
-        printCopiesLabel.setEnabled(enabled);
-        printCopiesSpinner.setEnabled(enabled);
-        printDuplexCheckBox.setEnabled(enabled);
-    }//GEN-LAST:event_printDocumentsCheckBoxItemStateChanged
-
-    private void resetAutomaticModeRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetAutomaticModeRadioButtonActionPerformed
-        showCard(resetSelectionCardPanel, "resetNoMediaPanel");
-        nextButton.setEnabled(false);
-        resetShowHarddisksCheckBox.setEnabled(
-                !resetAutomaticModeRadioButton.isSelected());
-    }//GEN-LAST:event_resetAutomaticModeRadioButtonActionPerformed
-
-    private void resetListModeRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetListModeRadioButtonActionPerformed
-        boolean selected = resetListModeRadioButton.isSelected();
-        resetShowHarddisksCheckBox.setEnabled(selected);
-        if (selected) {
-            showCard(resetSelectionCardPanel, "resetSelectionDeviceListPanel");
-            new ResetStorageDeviceListUpdater(this, resetStorageDeviceList,
-                    resetStorageDeviceListModel,
-                    resetShowHarddisksCheckBox.isSelected(),
-                    runningSystemSource.getDeviceName()).execute();
-        }
-    }//GEN-LAST:event_resetListModeRadioButtonActionPerformed
-
-    private void resetBackupCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_resetBackupCheckBoxItemStateChanged
-        boolean enabled = resetBackupCheckBox.isSelected();
-        resetBackupSourceTextField.setEnabled(enabled);
-        resetBackupDestinationButton.setEnabled(enabled);
-        resetBackupSubdirectoryTable.setEnabled(enabled);
-        resetMoveUpButton.setEnabled(enabled);
-        resetMoveDownButton.setEnabled(enabled);
-    }//GEN-LAST:event_resetBackupCheckBoxItemStateChanged
-
-    private void resetBackupDestinationButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetBackupDestinationButtonActionPerformed
-        JFileChooser fileChooser = new JFileChooser();
-        fileChooser.setDialogTitle(STRINGS.getString("Destination_Directory"));
-        fileChooser.setApproveButtonText(STRINGS.getString("Select"));
-        fileChooser.setFileSelectionMode(JFileChooser.DIRECTORIES_ONLY);
-        File directory = new File(resetBackupDestinationTextField.getText());
-        fileChooser.setSelectedFile(directory);
-        // TODO: still broken? (https://bugs.openjdk.java.net/browse/JDK-6572365)
-        fileChooser.ensureFileIsVisible(directory);
-        if (fileChooser.showOpenDialog(this) == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooser.getSelectedFile();
-            resetBackupDestinationTextField.setText(selectedFile.toString());
-        }
-    }//GEN-LAST:event_resetBackupDestinationButtonActionPerformed
-
-    private void resetMoveUpButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetMoveUpButtonActionPerformed
-        int selectedRows[] = resetBackupSubdirectoryTable.getSelectedRows();
-        subdirectoryTableModel.moveUp(selectedRows);
-        resetBackupSubdirectoryTable.clearSelection();
-        for (int selectedRow : selectedRows) {
-            int previousRow = selectedRow - 1;
-            resetBackupSubdirectoryTable.addRowSelectionInterval(
-                    previousRow, previousRow);
-        }
-    }//GEN-LAST:event_resetMoveUpButtonActionPerformed
-
-    private void resetMoveDownButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_resetMoveDownButtonActionPerformed
-        int selectedRows[] = resetBackupSubdirectoryTable.getSelectedRows();
-        subdirectoryTableModel.moveDown(selectedRows);
-        resetBackupSubdirectoryTable.clearSelection();
-        for (int selectedRow : selectedRows) {
-            int nextRow = selectedRow + 1;
-            resetBackupSubdirectoryTable.addRowSelectionInterval(
-                    nextRow, nextRow);
-        }
-    }//GEN-LAST:event_resetMoveDownButtonActionPerformed
 
     private void resetDataPartitionCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_resetDataPartitionCheckBoxItemStateChanged
         boolean selected = resetDataPartitionCheckBox.isSelected();
@@ -4846,38 +3850,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private void upgradeSystemPartitionCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_upgradeSystemPartitionCheckBoxItemStateChanged
         resetDataPartitionCheckBox.setSelected(true);
     }//GEN-LAST:event_upgradeSystemPartitionCheckBoxItemStateChanged
-
-    private void deleteOnDataPartitionCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_deleteOnDataPartitionCheckBoxItemStateChanged
-        boolean enabled = deleteOnDataPartitionCheckBox.isSelected();
-        formatDataPartitionRadioButton.setEnabled(enabled);
-        removeFilesRadioButton.setEnabled(enabled);
-        systemFilesCheckBox.setEnabled(enabled);
-        homeDirectoryCheckBox.setEnabled(enabled);
-    }//GEN-LAST:event_deleteOnDataPartitionCheckBoxItemStateChanged
-
-    private void resetRestoreDataCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_resetRestoreDataCheckBoxItemStateChanged
-        resetRestoreConfigurationPanel.setEnabled(
-                resetRestoreDataCheckBox.isSelected());
-    }//GEN-LAST:event_resetRestoreDataCheckBoxItemStateChanged
-
-    private void setEnabledRespectingDefaultRenderer(
-            JTable table, Class columnClass) {
-
-        TableCellRenderer renderer = table.getDefaultRenderer(columnClass);
-
-        table.setDefaultRenderer(columnClass, new DefaultTableCellRenderer() {
-            @Override
-            public Component getTableCellRendererComponent(JTable table,
-                    Object value, boolean isSelected, boolean hasFocus,
-                    int row, int column) {
-
-                Component component = renderer.getTableCellRendererComponent(
-                        table, value, isSelected, hasFocus, row, column);
-                component.setEnabled(table.isEnabled());
-                return component;
-            }
-        });
-    }
 
     private void selectBackupDestination(JTextField textField) {
         String selectedPath = textField.getText();
@@ -5177,59 +4149,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             return;
         }
 
-        int[] selectedIndices = resetStorageDeviceList.getSelectedIndices();
+        int[] selectedIndices =
+                resetterPanels.getDeviceList().getSelectedIndices();
         List<StorageDevice> deviceList = new ArrayList<>();
         for (int i : selectedIndices) {
-            deviceList.add(resetStorageDeviceListModel.get(i));
+            deviceList.add(resetterPanels.getDeviceListModel().get(i));
         }
 
         resetStorageDevices(deviceList);
-    }
-
-    private void resetStorageDevices(List<StorageDevice> deviceList) {
-        setLabelHighlighted(selectionLabel, false);
-        setLabelHighlighted(executionLabel, true);
-        previousButton.setEnabled(false);
-        nextButton.setEnabled(false);
-        state = State.RESET;
-
-        batchCounter = 0;
-        resultsList = new ArrayList<>();
-
-        String exchangePartitionFileSystem
-                = resetFormatExchangePartitionFileSystemComboBox.getSelectedItem().toString();
-        // TODO: using dataPartitionFileSystemComboBox.getSelectedItem() here is
-        // ugly because the input field it is not visible when upgrading
-        String dataPartitionFileSystem
-                = dataPartitionFileSystemComboBox.getSelectedItem().toString();
-
-        new Resetter(this, deviceList, runningSystemSource.getDeviceName(),
-                printDocumentsCheckBox.isSelected(),
-                printingDirectoriesTextArea.getText(),
-                scanDirectoriesRecursivelyCheckBox.isSelected(),
-                printOdtCheckBox.isSelected(), printOdsCheckBox.isSelected(),
-                printOdpCheckBox.isSelected(), printPdfCheckBox.isSelected(),
-                printDocCheckBox.isSelected(), printDocxCheckBox.isSelected(),
-                printXlsCheckBox.isSelected(), printXlsxCheckBox.isSelected(),
-                printPptCheckBox.isSelected(), printPptxCheckBox.isSelected(),
-                resetPrintPreferences.getAutoPrintMode(),
-                ((Number) printCopiesSpinner.getValue()).intValue(),
-                printDuplexCheckBox.isSelected(),
-                resetBackupCheckBox.isSelected(),
-                resetBackupSourceTextField.getText(),
-                resetBackupDestinationTextField.getText(),
-                orderedSubdirectoriesEntries,
-                resetFormatExchangePartitionCheckBox.isSelected(),
-                exchangePartitionFileSystem,
-                resetFormatExchangePartitionKeepLabelRadioButton.isSelected(),
-                resetFormatExchangePartitionNewLabelTextField.getText(),
-                deleteOnDataPartitionCheckBox.isSelected(),
-                formatDataPartitionRadioButton.isSelected(),
-                dataPartitionFileSystem, homeDirectoryCheckBox.isSelected(),
-                systemFilesCheckBox.isSelected(),
-                resetRestoreDataCheckBox.isSelected(),
-                resetRestoreConfigurationPanel.getEntries(), resetLock)
-                .execute();
     }
 
     private void sortList(boolean ascending) {
@@ -5289,30 +4216,9 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                 upgradeStorageDevices(deviceList);
             }
 
-        } else if (source == resetStorageDeviceListModel) {
-            LOGGER.info("source == resetStorageDeviceListModel");
-            if ((e.getType() == ListDataEvent.INTERVAL_ADDED)
-                    && resetAutomaticModeRadioButton.isSelected()) {
-
-                List<StorageDevice> deviceList = new ArrayList<>();
-                for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
-                    LOGGER.log(Level.INFO,
-                            "adding index {0} to device list", i);
-                    deviceList.add(resetStorageDeviceListModel.get(i));
-                }
-
-                resetStorageDevices(deviceList);
-            }
-
         } else {
             LOGGER.log(Level.WARNING, "unknown source: {0}", source);
         }
-    }
-
-    private void updateResetDataPartitionButtonState() {
-        boolean selected = removeFilesRadioButton.isSelected();
-        systemFilesCheckBox.setEnabled(selected);
-        homeDirectoryCheckBox.setEnabled(selected);
     }
 
     private void removeSelectedListEntries(JList list) {
@@ -5379,7 +4285,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
                     break;
 
                 case RESET_SELECTION:
-                    listModels.add(resetStorageDeviceListModel);
+                    listModels.add(resetterPanels.getDeviceListModel());
                     break;
 
                 default:
@@ -5498,14 +4404,14 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         // update storage device list
         new InstallStorageDeviceListUpdater(this, installStorageDeviceList,
                 installStorageDeviceListModel,
-                installShowHarddisksCheckBox.isSelected(),
+                installShowHardDisksCheckBox.isSelected(),
                 runningSystemSource.getDeviceName()).execute();
 
         // update transfer storage device list
         new InstallTransferStorageDeviceListUpdater(this,
                 installTransferStorageDeviceList,
                 installTransferStorageDeviceListModel,
-                installShowHarddisksCheckBox.isSelected(),
+                installShowHardDisksCheckBox.isSelected(),
                 runningSystemSource.getDeviceName()).execute();
 
         previousButton.setEnabled(true);
@@ -5700,12 +4606,12 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
 
         // check all selected target USB storage devices
         int[] selectedIndices = installStorageDeviceList.getSelectedIndices();
-        boolean harddiskSelected = false;
+        boolean hardDiskSelected = false;
         for (int i : selectedIndices) {
             StorageDevice storageDevice
                     = installStorageDeviceListModel.getElementAt(i);
             if (storageDevice.getType() == StorageDevice.Type.HardDrive) {
-                harddiskSelected = true;
+                hardDiskSelected = true;
             }
             PartitionSizes partitionSizes = DLCopy.getInstallPartitionSizes(
                     systemSource, storageDevice,
@@ -5732,7 +4638,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         }
 
         // show big fat warning dialog
-        if (harddiskSelected) {
+        if (hardDiskSelected) {
             // show even bigger and fatter dialog when a hard drive was selected
             String expectedInput = STRINGS.getString("Harddisk_Warning_Input");
             String message = STRINGS.getString("Harddisk_Warning");
@@ -6265,7 +5171,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         setLabelHighlighted(selectionLabel, false);
         setLabelHighlighted(executionLabel, false);
         executionLabel.setText(STRINGS.getString("Reset_Label"));
-        showCard(cardPanel, "resetInfoPanel");
+        showCard(cardPanel, "resetterPanels");
+        resetterPanels.showInfo();
         enableNextButton();
         nextButton.requestFocusInWindow();
         state = State.RESET_INFORMATION;
@@ -6276,7 +5183,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
         setLabelHighlighted(selectionLabel, true);
         setLabelHighlighted(executionLabel, false);
         state = State.RESET_SELECTION;
-        showCard(cardPanel, "resetSelectionTabbedPane");
+        showCard(cardPanel, "resetterPanels");
+        resetterPanels.showSelection();
         enableNextButton();
     }
 
@@ -6301,25 +5209,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
             } catch (Exception ex) {
                 // ignore
             }
-        }
-    }
-
-    private void storageDeviceListChanged(DefaultListModel<StorageDevice> model,
-            JPanel panel, String noMediaPanelName, String selectionPanelName,
-            StorageDeviceRenderer renderer, JList<StorageDevice> list) {
-
-        int deviceCount = model.size();
-        if (deviceCount == 0) {
-            showCard(panel, noMediaPanelName);
-            disableNextButton();
-        } else {
-            renderer.setMaxSize(getMaxStorageDeviceSize(model));
-            showCard(panel, selectionPanelName);
-            // auto-select single entry
-            if (deviceCount == 1) {
-                list.setSelectedIndex(0);
-            }
-            list.repaint();
         }
     }
 
@@ -6359,16 +5248,11 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JTextField autoNumberPatternTextField;
     private javax.swing.JLabel autoNumberStartLabel;
     private javax.swing.JSpinner autoNumberStartSpinner;
-    private javax.swing.JRadioButton autoPrintAllDocumentsRadioButton;
-    private javax.swing.JRadioButton autoPrintNoneRadioButton;
-    private javax.swing.JRadioButton autoPrintSingleDocumentsRadioButton;
     private javax.swing.JButton automaticBackupButton;
     private javax.swing.JCheckBox automaticBackupCheckBox;
     private javax.swing.JLabel automaticBackupLabel;
     private javax.swing.JCheckBox automaticBackupRemoveCheckBox;
     private javax.swing.JTextField automaticBackupTextField;
-    private javax.swing.ButtonGroup automaticPrintingButtonGroup;
-    private javax.swing.JPanel automaticPrintingPanel;
     private javax.swing.JPanel backupDestinationPanel;
     private javax.swing.JPanel basicDataPartitionPanel;
     private javax.swing.JPanel basicExchangePartitionPanel;
@@ -6385,7 +5269,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JProgressBar cpPogressBar;
     private javax.swing.JLabel cpTimeLabel;
     private javax.swing.JLabel currentlyInstalledDeviceLabel;
-    private javax.swing.JLabel currentlyResettingDeviceLabel;
     private javax.swing.JLabel currentlyUpgradedDeviceLabel;
     private javax.swing.JLabel dataDefinitionLabel;
     private javax.swing.JPanel dataPartitionDetailsPanel;
@@ -6394,7 +5277,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JComboBox<String> dataPartitionModeComboBox;
     private javax.swing.JLabel dataPartitionModeLabel;
     private javax.swing.JSeparator dataPartitionSeparator;
-    private javax.swing.JCheckBox deleteOnDataPartitionCheckBox;
     private javax.swing.JLabel doneLabel;
     private javax.swing.JPanel donePanel;
     private javax.swing.ButtonGroup exchangeButtonGroup;
@@ -6414,8 +5296,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel executionLabel;
     private javax.swing.JPanel executionPanel;
     private javax.swing.JSeparator executionPanelSeparator;
-    private javax.swing.JRadioButton formatDataPartitionRadioButton;
-    private javax.swing.JCheckBox homeDirectoryCheckBox;
     private javax.swing.JLabel infoLabel;
     private javax.swing.JLabel infoStepLabel;
     private javax.swing.JPanel installBasicsPanel;
@@ -6440,7 +5320,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel installSelectionHeaderLabel;
     private javax.swing.JPanel installSelectionPanel;
     private javax.swing.JTabbedPane installSelectionTabbedPane;
-    private javax.swing.JCheckBox installShowHarddisksCheckBox;
+    private javax.swing.JCheckBox installShowHardDisksCheckBox;
     private javax.swing.ButtonGroup installSourceButtonGroup;
     private javax.swing.JPanel installSourcePanel;
     private javax.swing.JList<StorageDevice> installStorageDeviceList;
@@ -6453,7 +5333,6 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JList<StorageDevice> installTransferStorageDeviceList;
     private javax.swing.JScrollPane installationResultsScrollPane;
     private javax.swing.JTable installationResultsTable;
-    private javax.swing.ButtonGroup isoButtonGroup;
     private ch.fhnw.dlcopy.gui.swing.IsoCreatorPanels isoCreatorPanels;
     private javax.swing.JButton isoSourceFileChooserButton;
     private javax.swing.JRadioButton isoSourceRadioButton;
@@ -6461,10 +5340,8 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JSeparator jSeparator1;
-    private javax.swing.JSeparator jSeparator2;
     private javax.swing.JSeparator jSeparator3;
     private javax.swing.JSeparator jSeparator4;
-    private javax.swing.JSeparator jSeparator5;
     private javax.swing.JComboBox<String> jumpComboBox;
     private javax.swing.JLabel jumpLabel1;
     private javax.swing.JLabel jumpLabel2;
@@ -6478,88 +5355,13 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JRadioButton originalExchangeRadioButton;
     private javax.swing.JPanel prevNextButtonPanel;
     private javax.swing.JButton previousButton;
-    private javax.swing.JLabel printCopiesLabel;
-    private javax.swing.JPanel printCopiesPanel;
-    private javax.swing.JSpinner printCopiesSpinner;
-    private javax.swing.JCheckBox printDocCheckBox;
-    private javax.swing.JCheckBox printDocumentsCheckBox;
-    private javax.swing.JCheckBox printDocxCheckBox;
-    private javax.swing.JCheckBox printDuplexCheckBox;
-    private javax.swing.JPanel printFileFormatsPanel;
-    private javax.swing.JCheckBox printOdpCheckBox;
-    private javax.swing.JCheckBox printOdsCheckBox;
-    private javax.swing.JCheckBox printOdtCheckBox;
-    private javax.swing.JCheckBox printPdfCheckBox;
-    private javax.swing.JCheckBox printPptCheckBox;
-    private javax.swing.JCheckBox printPptxCheckBox;
-    private javax.swing.JCheckBox printXlsCheckBox;
-    private javax.swing.JCheckBox printXlsxCheckBox;
-    private javax.swing.JScrollPane printingDirectoriesScrollPane;
-    private javax.swing.JTextArea printingDirectoriesTextArea;
-    private javax.swing.JPanel printingDirectoryPanel;
     private javax.swing.JCheckBox reactivateWelcomeCheckBox;
     private javax.swing.JRadioButton removeExchangeRadioButton;
-    private javax.swing.JRadioButton removeFilesRadioButton;
     private javax.swing.JCheckBox removeHiddenFilesCheckBox;
     private javax.swing.JPanel repartitionExchangeOptionsPanel;
-    private javax.swing.JRadioButton resetAutomaticModeRadioButton;
-    private javax.swing.JCheckBox resetBackupCheckBox;
-    private javax.swing.JLabel resetBackupCopyLabel;
-    private javax.swing.JButton resetBackupDestinationButton;
-    private javax.swing.JPanel resetBackupDestinationPanel;
-    private javax.swing.JTextField resetBackupDestinationTextField;
-    private javax.swing.JPanel resetBackupDetailsPanel;
-    private ch.fhnw.filecopier.FileCopierPanel resetBackupFileCopierPanel;
-    private javax.swing.JPanel resetBackupPanel;
-    private javax.swing.JPanel resetBackupSourcePanel;
-    private javax.swing.JTextField resetBackupSourceTextField;
-    private javax.swing.JPanel resetBackupSpacerPanel;
-    private javax.swing.JPanel resetBackupSubdirectoryPanel;
-    private javax.swing.JScrollPane resetBackupSubdirectoryScrollPane;
-    private javax.swing.JTable resetBackupSubdirectoryTable;
     private javax.swing.JButton resetButton;
-    private javax.swing.JPanel resetCardPanel;
-    private javax.swing.JLabel resetDataDefinitionLabel;
-    private javax.swing.ButtonGroup resetDataPartitionButtonGroup;
     private javax.swing.JCheckBox resetDataPartitionCheckBox;
-    private javax.swing.JPanel resetDataPartitionDetailsPanel;
-    private javax.swing.JPanel resetDeletePanel;
-    private javax.swing.JLabel resetExchangeDefinitionLabel;
-    private javax.swing.ButtonGroup resetExchangePartitionButtonGroup;
-    private javax.swing.JPanel resetExchangePartitionDetailsPanel;
-    private javax.swing.JPanel resetExchangespacer;
-    private javax.swing.JCheckBox resetFormatExchangePartitionCheckBox;
-    private javax.swing.JComboBox<String> resetFormatExchangePartitionFileSystemComboBox;
-    private javax.swing.JLabel resetFormatExchangePartitionFileSystemLabel;
-    private javax.swing.JRadioButton resetFormatExchangePartitionKeepLabelRadioButton;
-    private javax.swing.JRadioButton resetFormatExchangePartitionNewLabelRadioButton;
-    private javax.swing.JTextField resetFormatExchangePartitionNewLabelTextField;
-    private javax.swing.JLabel resetInfoLabel;
-    private javax.swing.JPanel resetInfoPanel;
-    private javax.swing.JRadioButton resetListModeRadioButton;
-    private javax.swing.JButton resetMoveDownButton;
-    private javax.swing.JButton resetMoveUpButton;
-    private javax.swing.JLabel resetNoMediaLabel;
-    private javax.swing.JPanel resetNoMediaPanel;
-    private javax.swing.JLabel resetOsDefinitionLabel;
-    private javax.swing.JPanel resetPanel;
-    private javax.swing.JPanel resetPrintingDetailsPanel;
-    private javax.swing.JProgressBar resetProgressBar;
-    private javax.swing.JPanel resetProgressPanel;
-    private ch.fhnw.dlcopy.gui.swing.OverwriteConfigurationPanel resetRestoreConfigurationPanel;
-    private javax.swing.JCheckBox resetRestoreDataCheckBox;
-    private javax.swing.JPanel resetRestorePanel;
-    private javax.swing.JPanel resetSelectionCardPanel;
-    private javax.swing.JLabel resetSelectionCountLabel;
-    private javax.swing.JPanel resetSelectionDeviceListPanel;
-    private javax.swing.JLabel resetSelectionHeaderLabel;
-    private javax.swing.JPanel resetSelectionInfoPanel;
-    private javax.swing.ButtonGroup resetSelectionModeButtonGroup;
-    private javax.swing.JPanel resetSelectionPanel;
-    private javax.swing.JTabbedPane resetSelectionTabbedPane;
-    private javax.swing.JCheckBox resetShowHarddisksCheckBox;
-    private javax.swing.JList<StorageDevice> resetStorageDeviceList;
-    private javax.swing.JScrollPane resetStorageDeviceListScrollPane;
+    private ch.fhnw.dlcopy.gui.swing.ResetterPanels resetterPanels;
     private javax.swing.JLabel resizeExchangeLabel;
     private javax.swing.JRadioButton resizeExchangeRadioButton;
     private javax.swing.JTextField resizeExchangeTextField;
@@ -6568,19 +5370,16 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JScrollPane resultsScrollPane;
     private javax.swing.JTable resultsTable;
     private javax.swing.JPanel resultsTitledPanel;
-    private javax.swing.JPanel rightPrintingPanel;
     private javax.swing.JPanel rsyncPanel;
     private javax.swing.JProgressBar rsyncPogressBar;
     private javax.swing.JLabel rsyncTimeLabel;
     private javax.swing.JRadioButton runningSystemSourceRadioButton;
-    private javax.swing.JCheckBox scanDirectoriesRecursivelyCheckBox;
     private javax.swing.JLabel selectionLabel;
     private javax.swing.JButton sortAscendingButton;
     private javax.swing.JButton sortDescendingButton;
     private javax.swing.JLabel stepsLabel;
     private javax.swing.JPanel stepsPanel;
     private javax.swing.JLabel systemDefinitionLabel;
-    private javax.swing.JCheckBox systemFilesCheckBox;
     private javax.swing.JButton toISOButton;
     private javax.swing.JPanel transferCheckboxPanel;
     private javax.swing.JCheckBox transferExchangeCheckBox;
@@ -6638,7 +5437,7 @@ private void upgradeShowHarddisksCheckBoxItemStateChanged(java.awt.event.ItemEve
     private javax.swing.JPanel upgradeSelectionPanel;
     private javax.swing.JSeparator upgradeSelectionSeparator;
     private javax.swing.JTabbedPane upgradeSelectionTabbedPane;
-    private javax.swing.JCheckBox upgradeShowHarddisksCheckBox;
+    private javax.swing.JCheckBox upgradeShowHardDisksCheckBox;
     private javax.swing.JList<StorageDevice> upgradeStorageDeviceList;
     private javax.swing.JScrollPane upgradeStorageDeviceListScrollPane;
     private javax.swing.JCheckBox upgradeSystemPartitionCheckBox;

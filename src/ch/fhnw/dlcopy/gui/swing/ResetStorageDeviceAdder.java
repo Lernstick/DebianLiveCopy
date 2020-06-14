@@ -25,7 +25,7 @@ public class ResetStorageDeviceAdder extends StorageDeviceAdder {
      * creates a new ResetStorageDeviceAdder
      *
      * @param addedPath the added udisks path
-     * @param showHarddisks if true, paths to hard disks are processed,
+     * @param showHardDisks if true, paths to hard disks are processed,
      * otherwise ignored
      * @param dialogHandler the dialog handler for updating storage device lists
      * @param listModel the ListModel of the storage devices JList
@@ -36,13 +36,13 @@ public class ResetStorageDeviceAdder extends StorageDeviceAdder {
      * automatic upgrades where the detail information is never rendered on
      * screen)
      */
-    public ResetStorageDeviceAdder(String addedPath, boolean showHarddisks,
+    public ResetStorageDeviceAdder(String addedPath, boolean showHardDisks,
             StorageDeviceListUpdateDialogHandler dialogHandler,
             DefaultListModel<StorageDevice> listModel,
             JList<StorageDevice> list, DLCopySwingGUI swingGUI, Lock lock,
             boolean mustInit) {
 
-        super(addedPath, showHarddisks, dialogHandler,
+        super(addedPath, showHardDisks, dialogHandler,
                 listModel, list, swingGUI, lock);
 
         this.mustInit = mustInit;
@@ -55,12 +55,12 @@ public class ResetStorageDeviceAdder extends StorageDeviceAdder {
         }
         try {
             TimeUnit.SECONDS.sleep(7);
-            for (Partition partition : addedDevice.getPartitions()) {
+            addedDevice.getPartitions().forEach(partition -> {
                 try {
                     partition.getUsedSpace(false);
                 } catch (Exception ignored) {
                 }
-            }
+            });
         } catch (InterruptedException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
         }

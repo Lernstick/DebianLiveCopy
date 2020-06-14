@@ -29,7 +29,7 @@ public class UpgradeStorageDeviceAdder extends StorageDeviceAdder {
      *
      * @param source the system source
      * @param addedPath the added udisks path
-     * @param showHarddisks if true, paths to hard disks are processed,
+     * @param showHardDisks if true, paths to hard disks are processed,
      * otherwise ignored
      * @param dialogHandler the dialog handler for updating storage device lists
      * @param listModel the ListModel of the storage devices JList
@@ -38,12 +38,12 @@ public class UpgradeStorageDeviceAdder extends StorageDeviceAdder {
      * @param lock the lock to aquire before adding the device to the listModel
      */
     public UpgradeStorageDeviceAdder(SystemSource source,
-            String addedPath, boolean showHarddisks,
+            String addedPath, boolean showHardDisks,
             StorageDeviceListUpdateDialogHandler dialogHandler,
             DefaultListModel<StorageDevice> listModel,
             JList<StorageDevice> list, DLCopySwingGUI swingGUI, Lock lock) {
         
-        super(addedPath, showHarddisks, dialogHandler,
+        super(addedPath, showHardDisks, dialogHandler,
                 listModel, list, swingGUI, lock);
         
         this.source = source;

@@ -34,7 +34,7 @@ public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
     protected final JList<StorageDevice> list;
 
     private final String addedPath;
-    private final boolean showHarddisks;
+    private final boolean showHardDisks;
     private final StorageDeviceListUpdateDialogHandler dialogHandler;
     private final DefaultListModel<StorageDevice> listModel;
     private final Lock lock;
@@ -43,7 +43,7 @@ public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
      * creates a new StorageDeviceAdder
      *
      * @param addedPath the added udisks path
-     * @param showHarddisks if true, paths to hard disks are processed,
+     * @param showHardDisks if true, paths to hard disks are processed,
      * otherwise ignored
      * @param dialogHandler the dialog handler for updating storage device lists
      * @param listModel the ListModel of the storage devices JList
@@ -51,13 +51,13 @@ public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
      * @param swingGUI the DLCopySwingGUI
      * @param lock the lock to aquire before adding the device to the listModel
      */
-    public StorageDeviceAdder(String addedPath, boolean showHarddisks,
+    public StorageDeviceAdder(String addedPath, boolean showHardDisks,
             StorageDeviceListUpdateDialogHandler dialogHandler,
             DefaultListModel<StorageDevice> listModel,
             JList<StorageDevice> list, DLCopySwingGUI swingGUI, Lock lock) {
 
         this.addedPath = addedPath;
-        this.showHarddisks = showHarddisks;
+        this.showHardDisks = showHardDisks;
         this.dialogHandler = dialogHandler;
         this.listModel = listModel;
         this.list = list;
@@ -73,7 +73,7 @@ public abstract class StorageDeviceAdder extends SwingWorker<Void, Void> {
         Thread.currentThread().setName(getClass().getName());
 
         addedDevice = DLCopy.getStorageDeviceAfterTimeout(
-                addedPath, showHarddisks);
+                addedPath, showHardDisks);
         if (addedDevice != null) {
             initDevice();
         }

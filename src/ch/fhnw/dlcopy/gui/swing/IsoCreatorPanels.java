@@ -170,6 +170,7 @@ public class IsoCreatorPanels
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        mediumButtonGroup = new javax.swing.ButtonGroup();
         infoPanel = new javax.swing.JPanel();
         infoLabel = new javax.swing.JLabel();
         selectionPanel = new javax.swing.JPanel();
@@ -302,6 +303,7 @@ public class IsoCreatorPanels
 
         radioButtonPanel.setLayout(new java.awt.GridBagLayout());
 
+        mediumButtonGroup.add(bootMediumRadioButton);
         bootMediumRadioButton.setText(bundle.getString("DLCopySwingGUI.bootMediumRadioButton.text")); // NOI18N
         bootMediumRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -313,6 +315,7 @@ public class IsoCreatorPanels
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         radioButtonPanel.add(bootMediumRadioButton, gridBagConstraints);
 
+        mediumButtonGroup.add(dataPartitionRadioButton);
         dataPartitionRadioButton.setText(bundle.getString("DLCopySwingGUI.dataPartitionRadioButton.text")); // NOI18N
         dataPartitionRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -324,6 +327,7 @@ public class IsoCreatorPanels
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         radioButtonPanel.add(dataPartitionRadioButton, gridBagConstraints);
 
+        mediumButtonGroup.add(systemMediumRadioButton);
         systemMediumRadioButton.setSelected(true);
         systemMediumRadioButton.setText(bundle.getString("DLCopySwingGUI.systemMediumRadioButton.text")); // NOI18N
         systemMediumRadioButton.addActionListener(new java.awt.event.ActionListener() {
@@ -495,6 +499,7 @@ public class IsoCreatorPanels
     private javax.swing.JLabel isoLabelLabel;
     private javax.swing.JTextField isoLabelTextField;
     private javax.swing.JLabel jLabel6;
+    private javax.swing.ButtonGroup mediumButtonGroup;
     private javax.swing.JPanel optionsCardPanel;
     private javax.swing.JPanel optionsPanel;
     private javax.swing.JProgressBar progressBar;
