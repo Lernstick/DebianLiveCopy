@@ -1,3 +1,10 @@
+dlcopy (202006141958-1) lernstick-10; urgency=medium
+
+  * [3ba2db] GUI code cleanup (most of all a separate class for resetter panels)
+             and some smaller GUI fixes
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 14 Jun 2020 19:58:41 +0200
+
 dlcopy (202006121400-1) lernstick-10; urgency=medium
 
   * [9101d3] fixed handling of explicit exchange size
