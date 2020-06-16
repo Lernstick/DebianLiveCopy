@@ -1,3 +1,11 @@
+dlcopy (202006161834-1) lernstick-10; urgency=medium
+
+  * [8c4bf7] GUI code cleaup (most of all a separate class for installer panels)
+             show summary in results table only if there is more than one result
+  * [8be7f3] added todo file
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Tue, 16 Jun 2020 18:34:35 +0200
+
 dlcopy (202006141958-1) lernstick-10; urgency=medium
 
   * [3ba2db] GUI code cleanup (most of all a separate class for resetter panels)
