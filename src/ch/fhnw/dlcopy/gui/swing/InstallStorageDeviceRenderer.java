@@ -7,15 +7,27 @@ package ch.fhnw.dlcopy.gui.swing;
 
 import ch.fhnw.dlcopy.DLCopy;
 import static ch.fhnw.dlcopy.DLCopy.MEGA;
-import ch.fhnw.dlcopy.PartitionState;
 import static ch.fhnw.dlcopy.DLCopy.STRINGS;
+import ch.fhnw.dlcopy.PartitionState;
 import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.StorageDevice;
-import java.awt.*;
+import java.awt.Color;
+import java.awt.Component;
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics;
+import java.awt.Graphics2D;
+import java.awt.GridBagLayout;
+import java.awt.Insets;
+import java.awt.RenderingHints;
 import java.awt.geom.Rectangle2D;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.*;
+import javax.swing.ImageIcon;
+import javax.swing.JList;
+import javax.swing.JPanel;
+import javax.swing.JSlider;
+import javax.swing.ListCellRenderer;
 
 /**
  * A renderer for storage devices
@@ -33,7 +45,7 @@ public class InstallStorageDeviceRenderer extends JPanel
     private final static int OFFSET = 5;
     private final static int BAR_HEIGHT = 30;
     private final static int MIN_WIDTH = 3;
-    private final DLCopySwingGUI dlCopy;
+    private final DLCopySwingGUI dlCopySwingGUI;
     private final Color LIGHT_BLUE = new Color(170, 170, 255);
     private final Color DARK_BLUE = new Color(69, 69, 255);
     private long systemSize;
@@ -44,12 +56,12 @@ public class InstallStorageDeviceRenderer extends JPanel
     private int iconGap;
 
     /**
-     * Creates new form UsbRenderer
+     * Creates new form InstallStorageDeviceRenderer
      *
-     * @param dlCopy the main program
+     * @param dlCopySwingGUI the main program
      */
-    public InstallStorageDeviceRenderer(DLCopySwingGUI dlCopy) {
-        this.dlCopy = dlCopy;
+    public InstallStorageDeviceRenderer(DLCopySwingGUI dlCopySwingGUI) {
+        this.dlCopySwingGUI = dlCopySwingGUI;
         initComponents();
         GridBagLayout layout = (GridBagLayout) getLayout();
         Insets insets = layout.getConstraints(iconLabel).insets;
@@ -211,15 +223,15 @@ public class InstallStorageDeviceRenderer extends JPanel
                         / storageSize);
                 systemWidth = (int) ((usbStorageWidth * systemSize)
                         / storageSize);
-                JSlider getExchangePartitionSizeSlider
-                        = dlCopy.getExchangePartitionSizeSlider();
+                JSlider exchangePartitionSizeSlider
+                        = dlCopySwingGUI.getExchangePartitionSizeSlider();
                 long exchangeSize
-                        = (long) getExchangePartitionSizeSlider.getValue()
+                        = (long) exchangePartitionSizeSlider.getValue()
                         * MEGA;
                 int exchangeWidth = (int) ((usbStorageWidth * exchangeSize)
                         / storageSize);
                 int maximumExchangeSizeMega
-                        = getExchangePartitionSizeSlider.getMaximum();
+                        = exchangePartitionSizeSlider.getMaximum();
                 long maximumExchangeSize
                         = (long) maximumExchangeSizeMega * MEGA;
                 long persistentSize = 0;
@@ -392,50 +404,62 @@ public class InstallStorageDeviceRenderer extends JPanel
     // End of variables declaration//GEN-END:variables
 
     private int drawTopText(Graphics2D graphics2D, String text) {
+
         FontMetrics fontMetrics = graphics2D.getFontMetrics();
+
         Rectangle2D stringBounds
                 = fontMetrics.getStringBounds(text, graphics2D);
+
         int stringHeight = (int) stringBounds.getHeight();
+
         graphics2D.drawString(text,
                 iconGap + OFFSET,
                 OFFSET - (int) stringBounds.getY());
+
         return stringHeight + 2 * OFFSET;
     }
 
     private void drawCenterText(int x, int y, int width, int height,
             String text, Graphics2D graphics2D) {
+
         Font originalFont = graphics2D.getFont();
 
         Rectangle2D stringBounds = setFont(graphics2D, text, width);
         int stringWidth = (int) stringBounds.getWidth();
         int stringHeight = (int) stringBounds.getHeight();
         graphics2D.setPaint(Color.BLACK);
+
         int textX = x + (width - stringWidth) / 2;
+
         int textY = y + (height - stringHeight) / 2
                 - (int) stringBounds.getY();
+
         graphics2D.drawString(text, textX, textY);
+
         graphics2D.setFont(originalFont);
     }
 
     private Rectangle2D setFont(
             Graphics2D graphics2D, String string, int width) {
+
         FontMetrics fontMetrics = graphics2D.getFontMetrics();
         Font font = graphics2D.getFont();
         for (int stringWidth = width + 1; stringWidth > width;) {
+
             Rectangle2D stringBounds = fontMetrics.getStringBounds(
                     string, graphics2D);
+
             stringWidth = (int) stringBounds.getWidth() + 2;
-            //System.out.println("stringWidth: " + stringWidth);
+
             if ((font.getSize() > 7) && (stringWidth > width)) {
-                //System.out.println("old font: " + font);
                 font = font.deriveFont(font.getSize() - 1f);
-                //System.out.println("new font: " + font);
                 graphics2D.setFont(font);
                 fontMetrics = graphics2D.getFontMetrics();
             } else {
                 return stringBounds;
             }
         }
+
         return null;
     }
 }

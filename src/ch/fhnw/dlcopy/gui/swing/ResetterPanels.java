@@ -49,8 +49,8 @@ public class ResetterPanels
     private static final Logger LOGGER
             = Logger.getLogger(ResetterPanels.class.getName());
 
-    private final DefaultListModel<StorageDevice> resetStorageDeviceListModel;
-    private final ResetStorageDeviceRenderer resetStorageDeviceRenderer;
+    private final DefaultListModel<StorageDevice> storageDeviceListModel;
+    private final ResetStorageDeviceRenderer storageDeviceRenderer;
 
     private DLCopySwingGUI dlCopySwingGUI;
     private String runningSystemSourceDeviceName;
@@ -65,10 +65,10 @@ public class ResetterPanels
 
         initComponents();
 
-        resetStorageDeviceListModel = new DefaultListModel<>();
-        resetStorageDeviceList.setModel(resetStorageDeviceListModel);
-        resetStorageDeviceRenderer = new ResetStorageDeviceRenderer();
-        resetStorageDeviceList.setCellRenderer(resetStorageDeviceRenderer);
+        storageDeviceListModel = new DefaultListModel<>();
+        storageDeviceList.setModel(storageDeviceListModel);
+        storageDeviceRenderer = new ResetStorageDeviceRenderer();
+        storageDeviceList.setCellRenderer(storageDeviceRenderer);
 
         // set renderer that respects the "enabled" state of the table
         setEnabledRespectingDefaultRenderer(
@@ -87,6 +87,7 @@ public class ResetterPanels
         this.runningSystemSourceDeviceName = runningSystemSourceDeviceName;
 
         String countString = DLCopy.STRINGS.getString("Selection_Count");
+        countString = MessageFormat.format(countString, 0, 0);
         selectionCountLabel.setText(countString);
 
         preferencesHandler.addPreference(new ResetSelectionPreferences(
@@ -132,7 +133,7 @@ public class ResetterPanels
         formatExchangePartitionFileSystemComboBox.setModel(
                 exchangePartitionFileSystemsModel);
 
-        resetStorageDeviceListModel.addListDataListener(this);
+        storageDeviceListModel.addListDataListener(this);
 
         backupDestinationSubdirectoryTable.getSelectionModel().
                 addListSelectionListener(this);
@@ -190,19 +191,19 @@ public class ResetterPanels
     }
 
     public DefaultListModel<StorageDevice> getDeviceListModel() {
-        return resetStorageDeviceListModel;
+        return storageDeviceListModel;
     }
 
     public JList<StorageDevice> getDeviceList() {
-        return resetStorageDeviceList;
+        return storageDeviceList;
     }
 
     public void storageDeviceListChanged() {
         if (selectFromListModeRadioButton.isSelected()) {
             dlCopySwingGUI.storageDeviceListChanged(
-                    resetStorageDeviceListModel, selectionCardPanel,
+                    storageDeviceListModel, selectionCardPanel,
                     "noMediaPanel", "selectionDeviceListPanel",
-                    resetStorageDeviceRenderer, resetStorageDeviceList);
+                    storageDeviceRenderer, storageDeviceList);
         }
     }
 
@@ -211,7 +212,7 @@ public class ResetterPanels
         // check all selected storage devices
         boolean canReset = true;
         List<StorageDevice> selectedStorageDevices
-                = resetStorageDeviceList.getSelectedValuesList();
+                = storageDeviceList.getSelectedValuesList();
         for (StorageDevice storageDevice : selectedStorageDevices) {
             Partition dataPartition = storageDevice.getDataPartition();
             try {
@@ -230,7 +231,7 @@ public class ResetterPanels
         int selectionCount = selectedStorageDevices.size();
         String countString = DLCopy.STRINGS.getString("Selection_Count");
         countString = MessageFormat.format(countString,
-                selectionCount, resetStorageDeviceListModel.size());
+                selectionCount, storageDeviceListModel.size());
         selectionCountLabel.setText(countString);
 
         // update nextButton state
@@ -367,7 +368,7 @@ public class ResetterPanels
 
         String pattern = DLCopy.STRINGS.getString("Reset_Device_Info");
         String message = MessageFormat.format(pattern, batchCounter,
-                resetStorageDeviceList.getSelectedIndices().length,
+                storageDeviceList.getSelectedIndices().length,
                 storageDevice.getVendor() + " " + storageDevice.getModel(),
                 " (" + DLCopy.STRINGS.getString("Size") + ": "
                 + LernstickFileTools.getDataVolumeString(
@@ -449,7 +450,7 @@ public class ResetterPanels
         selectionHeaderLabel = new javax.swing.JLabel();
         selectionCountLabel = new javax.swing.JLabel();
         storageDeviceListScrollPane = new javax.swing.JScrollPane();
-        resetStorageDeviceList = new javax.swing.JList<>();
+        storageDeviceList = new javax.swing.JList<>();
         exchangeDefinitionLabel = new javax.swing.JLabel();
         dataDefinitionLabel = new javax.swing.JLabel();
         osDefinitionLabel = new javax.swing.JLabel();
@@ -625,13 +626,13 @@ public class ResetterPanels
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
         selectionDeviceListPanel.add(selectionInfoPanel, gridBagConstraints);
 
-        resetStorageDeviceList.setName("storageDeviceList"); // NOI18N
-        resetStorageDeviceList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+        storageDeviceList.setName("storageDeviceList"); // NOI18N
+        storageDeviceList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
             public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
-                resetStorageDeviceListValueChanged(evt);
+                storageDeviceListValueChanged(evt);
             }
         });
-        storageDeviceListScrollPane.setViewportView(resetStorageDeviceList);
+        storageDeviceListScrollPane.setViewportView(storageDeviceList);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -1236,7 +1237,7 @@ public class ResetterPanels
                     "selectionDeviceListPanel");
 
             new ResetStorageDeviceListUpdater(dlCopySwingGUI,
-                    resetStorageDeviceList, resetStorageDeviceListModel,
+                    storageDeviceList, storageDeviceListModel,
                     showHardDisksCheckBox.isSelected(),
                     runningSystemSourceDeviceName).execute();
         }
@@ -1244,7 +1245,7 @@ public class ResetterPanels
 
     private void showHardDisksCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_showHardDisksCheckBoxItemStateChanged
         new ResetStorageDeviceListUpdater(dlCopySwingGUI,
-                resetStorageDeviceList, resetStorageDeviceListModel,
+                storageDeviceList, storageDeviceListModel,
                 showHardDisksCheckBox.isSelected(),
                 runningSystemSourceDeviceName).execute();
     }//GEN-LAST:event_showHardDisksCheckBoxItemStateChanged
@@ -1259,9 +1260,9 @@ public class ResetterPanels
                 !automaticModeRadioButton.isSelected());
     }//GEN-LAST:event_automaticModeRadioButtonActionPerformed
 
-    private void resetStorageDeviceListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_resetStorageDeviceListValueChanged
+    private void storageDeviceListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_storageDeviceListValueChanged
         dlCopySwingGUI.updateResetSelectionCountAndNextButton();
-    }//GEN-LAST:event_resetStorageDeviceListValueChanged
+    }//GEN-LAST:event_storageDeviceListValueChanged
 
     private void printDocumentsCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_printDocumentsCheckBoxItemStateChanged
         boolean enabled = printDocumentsCheckBox.isSelected();
@@ -1374,7 +1375,7 @@ public class ResetterPanels
     private void selectionAndConfigurationTabbedPaneComponentShown(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_selectionAndConfigurationTabbedPaneComponentShown
         if (selectFromListModeRadioButton.isSelected()) {
             new ResetStorageDeviceListUpdater(dlCopySwingGUI,
-                    resetStorageDeviceList, resetStorageDeviceListModel,
+                    storageDeviceList, storageDeviceListModel,
                     showHardDisksCheckBox.isSelected(),
                     runningSystemSourceDeviceName).execute();
         }
@@ -1409,7 +1410,7 @@ public class ResetterPanels
         LOGGER.info(e.toString());
         Object source = e.getSource();
 
-        if (source == resetStorageDeviceListModel) {
+        if (source == storageDeviceListModel) {
             LOGGER.info("source == resetStorageDeviceListModel");
             if ((e.getType() == ListDataEvent.INTERVAL_ADDED)
                     && automaticModeRadioButton.isSelected()) {
@@ -1418,7 +1419,7 @@ public class ResetterPanels
                 for (int i = e.getIndex0(); i <= e.getIndex1(); i++) {
                     LOGGER.log(Level.INFO,
                             "adding index {0} to device list", i);
-                    deviceList.add(resetStorageDeviceListModel.get(i));
+                    deviceList.add(storageDeviceListModel.get(i));
                 }
 
                 dlCopySwingGUI.resetStorageDevices(deviceList);
@@ -1508,7 +1509,6 @@ public class ResetterPanels
     private javax.swing.JPanel resetCardPanel;
     private javax.swing.JLabel resetInfoLabel;
     private javax.swing.JPanel resetPanel;
-    private javax.swing.JList<StorageDevice> resetStorageDeviceList;
     private ch.fhnw.dlcopy.gui.swing.OverwriteConfigurationPanel restoreConfigurationPanel;
     private javax.swing.JCheckBox restoreDataCheckBox;
     private javax.swing.JPanel restorePanel;
@@ -1525,6 +1525,7 @@ public class ResetterPanels
     private javax.swing.JPanel selectionPanel;
     private javax.swing.JCheckBox showHardDisksCheckBox;
     private javax.swing.JPanel spacerPanel;
+    private javax.swing.JList<StorageDevice> storageDeviceList;
     private javax.swing.JScrollPane storageDeviceListScrollPane;
     // End of variables declaration//GEN-END:variables
 }

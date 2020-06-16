@@ -75,7 +75,9 @@ public class ResultsTableModel extends PreferredSizesTableModel {
         if (resultList == null) {
             return 0;
         }
-        return resultList.size() + 1;
+        int rows = resultList.size();
+        // show summary row only if there is more than one result
+        return (rows == 1) ? 1 : rows + 1;
     }
 
     @Override

@@ -2,20 +2,16 @@ package ch.fhnw.dlcopy.gui.swing;
 
 import ch.fhnw.util.StorageDevice;
 import java.util.concurrent.locks.Lock;
-import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
 /**
  * parses udisks output paths and adds the corresponding storage devices to the
- * installation list
+ * installation transfer list
  *
  * @author Ronny Standtke <ronny.standtke@gmx.net>
  */
 public class InstallTransferStorageDeviceAdder extends StorageDeviceAdder {
-
-    private static final Logger LOGGER = Logger.getLogger(
-            InstallTransferStorageDeviceAdder.class.getName());
 
     /**
      * creates a new InstallStorageDeviceAdder

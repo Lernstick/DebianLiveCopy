@@ -249,12 +249,12 @@
 
                       <Layout class="org.netbeans.modules.form.compat2.layouts.support.JScrollPaneSupportLayout"/>
                       <SubComponents>
-                        <Component class="javax.swing.JList" name="resetStorageDeviceList">
+                        <Component class="javax.swing.JList" name="storageDeviceList">
                           <Properties>
                             <Property name="name" type="java.lang.String" value="storageDeviceList" noResource="true"/>
                           </Properties>
                           <Events>
-                            <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="resetStorageDeviceListValueChanged"/>
+                            <EventHandler event="valueChanged" listener="javax.swing.event.ListSelectionListener" parameters="javax.swing.event.ListSelectionEvent" handler="storageDeviceListValueChanged"/>
                           </Events>
                           <AuxValues>
                             <AuxValue name="JavaCodeGenerator_TypeParameters" type="java.lang.String" value="&lt;StorageDevice&gt;"/>

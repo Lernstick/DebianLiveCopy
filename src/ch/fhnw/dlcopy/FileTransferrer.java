@@ -98,7 +98,7 @@ public class FileTransferrer extends Transferrer {
                 + "/rw" + sourceDir;
         String copyScript = "#!/bin/bash\n"
                 + "mkdir -p \"" + destination + "\"\n"
-                + "cp -a \"" + cowPath + sourceDir + "\"* \""
+                + "cp -av \"" + cowPath + sourceDir + "\"* \""
                 + destination + "\"";
         gui.showInstallPersistencyCopy(installer, copyScript, cowPath);
     }

@@ -3,10 +3,12 @@ package ch.fhnw.dlcopy.gui.swing;
 import ch.fhnw.dlcopy.DLCopy;
 import static ch.fhnw.dlcopy.DLCopy.STRINGS;
 import ch.fhnw.dlcopy.DataPartitionMode;
+import ch.fhnw.dlcopy.SystemSource;
 import ch.fhnw.util.LernstickFileTools;
 import java.awt.Color;
 import java.io.File;
 import java.text.MessageFormat;
+import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JFileChooser;
 import javax.swing.JTextField;
@@ -22,6 +24,9 @@ import javax.swing.event.DocumentListener;
 public class IsoCreatorPanels
         extends javax.swing.JPanel
         implements DocumentListener {
+
+    private static final Logger LOGGER
+            = Logger.getLogger(IsoCreatorPanels.class.getName());
 
     private DLCopySwingGUI dlCopySwingGUI;
 
@@ -62,11 +67,38 @@ public class IsoCreatorPanels
     public void showSelectionPanel() {
         DLCopySwingGUI.showCard(this, "selectionPanel");
     }
-    
+
     public void showProgressPanel() {
         DLCopySwingGUI.showCard(this, "progressPanel");
     }
-    
+
+    public void setSystemSource(SystemSource systemSource) {
+        
+        DataPartitionMode sourceDataPartitionMode
+                = systemSource.getDataPartitionMode();
+        
+        if (sourceDataPartitionMode != null) {
+            String selectedItem = null;
+            switch (sourceDataPartitionMode) {
+                case NOT_USED:
+                    selectedItem = STRINGS.getString("Not_Used");
+                    break;
+
+                case READ_ONLY:
+                    selectedItem = STRINGS.getString("Read_Only");
+                    break;
+
+                case READ_WRITE:
+                    selectedItem = STRINGS.getString("Read_Write");
+                    break;
+
+                default:
+                    LOGGER.warning("Unsupported data partition mode!");
+            }
+            dataPartitionModeComboBox.setSelectedItem(selectedItem);
+        }
+    }
+
     public boolean isSystemMediumSelected() {
         return systemMediumRadioButton.isSelected();
     }
@@ -97,10 +129,6 @@ public class IsoCreatorPanels
 
     public String getIsoLabel() {
         return isoLabelTextField.getText();
-    }
-
-    public void setDataPartitionMode(String mode) {
-        dataPartitionModeComboBox.setSelectedItem(mode);
     }
 
     public void checkFreeSpace() {

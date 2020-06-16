@@ -5,8 +5,6 @@
  */
 package ch.fhnw.dlcopy.gui.swing;
 
-import ch.fhnw.dlcopy.SystemSource;
-
 /**
  * A renderer for storage devices to transfer data from
  *
@@ -15,7 +13,7 @@ import ch.fhnw.dlcopy.SystemSource;
 public class InstallTransferStorageDeviceRenderer
         extends DetailedStorageDeviceRenderer {
 
-    public InstallTransferStorageDeviceRenderer(SystemSource source) {
-        super(source, false);
+    public InstallTransferStorageDeviceRenderer() {
+        super(null/*not needed*/, false);
     }
 }
