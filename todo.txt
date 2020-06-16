@@ -1,0 +1,5 @@
+upgrader uses system source from installer
+    - common/global system source configuration?
+
+changing installation source from running system to iso and back:
+    - check if upgrade mode (in upgrade renderer) updates correclty
