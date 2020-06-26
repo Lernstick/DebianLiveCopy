@@ -25,7 +25,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.SimpleFileVisitor;
-import java.nio.file.StandardOpenOption;
 import java.nio.file.attribute.BasicFileAttributeView;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.nio.file.attribute.FileTime;
@@ -41,8 +40,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 import javax.swing.Timer;
 import org.freedesktop.dbus.exceptions.DBusException;
 
@@ -60,7 +57,7 @@ public class Upgrader extends InstallerOrUpgrader {
     private final int resizedExchangePartitionSize;
     private final boolean automaticBackup;
     private final String automaticBackupDestination;
-    private final boolean removeBackup;
+    private final boolean deleteBackup;
     private final boolean upgradeSystemPartition;
     private final boolean resetDataPartition;
     private final boolean keepPrinterSettings;
@@ -68,7 +65,7 @@ public class Upgrader extends InstallerOrUpgrader {
     private final boolean keepFirewallSettings;
     private final boolean keepUserSettings;
     private final boolean reactivateWelcome;
-    private final boolean removeHiddenFiles;
+    private final boolean deleteHiddenFiles;
     private final List<String> filesToOverwrite;
     private final long systemSizeEnlarged;
 
@@ -94,7 +91,7 @@ public class Upgrader extends InstallerOrUpgrader {
      * @param automaticBackup if an automatic backup should be run before
      * upgrading
      * @param automaticBackupDestination the destination for automatic backups
-     * @param removeBackup if temporary backups should be removed
+     * @param deleteBackup if temporary backups should be deleted
      * @param upgradeSystemPartition if the system partition should be upgraded
      * @param resetDataPartition if the data partition should be reset
      * @param keepPrinterSettings if the printer settings should be kept when
@@ -106,8 +103,8 @@ public class Upgrader extends InstallerOrUpgrader {
      * @param keepUserSettings if the user name, password and groups should be
      * kept when upgrading
      * @param reactivateWelcome if the welcome program should be reactivated
-     * @param removeHiddenFiles if hidden files in the user's home of the
-     * storage device should be removed
+     * @param deleteHiddenFiles if hidden files in the user's home of the
+     * storage device should be deleted
      * @param filesToOverwrite the list of files to copy from the currently
      * running system to the upgraded storage device
      * @param systemSizeEnlarged the "enlarged" system size (multiplied with a
@@ -120,11 +117,11 @@ public class Upgrader extends InstallerOrUpgrader {
             DLCopySwingGUI dlCopy, DLCopyGUI dlCopyGUI,
             RepartitionStrategy repartitionStrategy,
             int resizedExchangePartitionSize, boolean automaticBackup,
-            String automaticBackupDestination, boolean removeBackup,
+            String automaticBackupDestination, boolean deleteBackup,
             boolean upgradeSystemPartition, boolean resetDataPartition,
             boolean keepPrinterSettings, boolean keepNetworkSettings,
             boolean keepFirewallSettings, boolean keepUserSettings,
-            boolean reactivateWelcome, boolean removeHiddenFiles,
+            boolean reactivateWelcome, boolean deleteHiddenFiles,
             List<String> filesToOverwrite, long systemSizeEnlarged, Lock lock) {
 
         super(source, deviceList, exchangePartitionLabel,
@@ -135,7 +132,7 @@ public class Upgrader extends InstallerOrUpgrader {
         this.resizedExchangePartitionSize = resizedExchangePartitionSize;
         this.automaticBackup = automaticBackup;
         this.automaticBackupDestination = automaticBackupDestination;
-        this.removeBackup = removeBackup;
+        this.deleteBackup = deleteBackup;
         this.upgradeSystemPartition = upgradeSystemPartition;
         this.resetDataPartition = resetDataPartition;
         this.keepPrinterSettings = keepPrinterSettings;
@@ -143,7 +140,7 @@ public class Upgrader extends InstallerOrUpgrader {
         this.keepFirewallSettings = keepFirewallSettings;
         this.keepUserSettings = keepUserSettings;
         this.reactivateWelcome = reactivateWelcome;
-        this.removeHiddenFiles = removeHiddenFiles;
+        this.deleteHiddenFiles = deleteHiddenFiles;
         this.filesToOverwrite = filesToOverwrite;
         this.systemSizeEnlarged = systemSizeEnlarged;
     }
@@ -207,7 +204,7 @@ public class Upgrader extends InstallerOrUpgrader {
                     }
 
                     // automatic removal of (temporary) backup
-                    if (removeBackup) {
+                    if (deleteBackup) {
                         LernstickFileTools.recursiveDelete(
                                 dataDestination, true);
                     }
@@ -807,7 +804,7 @@ public class Upgrader extends InstallerOrUpgrader {
         }
 
         // remove hidden files from user directory
-        if (removeHiddenFiles) {
+        if (deleteHiddenFiles) {
             LOGGER.info("removing hidden files");
             File userDir = new File(persistenceRoot + "/home/user/");
             File[] files = userDir.listFiles();

@@ -25,7 +25,6 @@ import javax.swing.DefaultListModel;
 import javax.swing.JFileChooser;
 import javax.swing.JList;
 import javax.swing.JPanel;
-import javax.swing.JProgressBar;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
@@ -381,8 +380,8 @@ public class ResetterPanels
 
         // We are called from the udisks monitoring thread, therefore we must
         // use SwingUtilities.invokeLater() here.
-        SwingUtilities.invokeLater(
-                () -> currentlyResettingDeviceLabel.setText(message));
+        DLCopySwingGUI.setLabelTextonEDT(
+                currentlyResettingDeviceLabel, message);
     }
 
     public void showProgressPanel() {
@@ -391,7 +390,8 @@ public class ResetterPanels
     }
 
     public void showPrintingDocuments() {
-        setProgressBarStringOnEDT(progressBar, "Printing_Documents");
+        DLCopySwingGUI.setProgressBarStringOnEDT(
+                progressBar, "Printing_Documents");
     }
 
     public void showBackup(FileCopier fileCopier) {
@@ -402,17 +402,20 @@ public class ResetterPanels
 
     public void showFormattingExchangePartition() {
         SwingUtilities.invokeLater(() -> showProgressPanel());
-        setProgressBarStringOnEDT(progressBar, "Formatting_Exchange_Partition");
+        DLCopySwingGUI.setProgressBarStringOnEDT(
+                progressBar, "Formatting_Exchange_Partition");
     }
 
     public void showResetFormattingDataPartition() {
         SwingUtilities.invokeLater(() -> showProgressPanel());
-        setProgressBarStringOnEDT(progressBar, "Formatting_Data_Partition");
+        DLCopySwingGUI.setProgressBarStringOnEDT(
+                progressBar, "Formatting_Data_Partition");
     }
 
     public void showResetRemovingFiles() {
         SwingUtilities.invokeLater(() -> showProgressPanel());
-        setProgressBarStringOnEDT(progressBar, "Removing_Selected_Files");
+        DLCopySwingGUI.setProgressBarStringOnEDT(
+                progressBar, "Removing_Selected_Files");
     }
 
     public void showNoMediaPanel() {
@@ -1428,12 +1431,6 @@ public class ResetterPanels
         } else {
             LOGGER.log(Level.WARNING, "unknown source: {0}", source);
         }
-    }
-
-    private static void setProgressBarStringOnEDT(
-            final JProgressBar progressBar, final String key) {
-        SwingUtilities.invokeLater(()
-                -> progressBar.setString(DLCopy.STRINGS.getString(key)));
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables

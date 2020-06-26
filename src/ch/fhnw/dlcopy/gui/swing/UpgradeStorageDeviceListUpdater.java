@@ -34,8 +34,10 @@ public class UpgradeStorageDeviceListUpdater extends StorageDeviceListUpdater {
     public UpgradeStorageDeviceListUpdater(SystemSource source,
             DLCopySwingGUI swingGUI, JList<StorageDevice> list,
             DefaultListModel<StorageDevice> listModel, boolean showHardDisks) {
+
         super(swingGUI, list, listModel, showHardDisks,
                 false, source.getDeviceName());
+
         this.source = source;
     }
 

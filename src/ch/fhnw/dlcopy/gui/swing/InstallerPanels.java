@@ -544,7 +544,8 @@ public class InstallerPanels extends JPanel implements DocumentListener {
                         storageDevice.getSize(), 1),
                 "/dev/" + storageDevice.getDevice(), batchCounter,
                 storageDeviceList.getSelectedIndices().length);
-        setLabelTextonEDT(currentlyInstalledDeviceLabel, deviceInfo);
+        DLCopySwingGUI.setLabelTextonEDT(
+                currentlyInstalledDeviceLabel, deviceInfo);
 
         resultsTableModel.setList(resultsList);
     }
@@ -571,7 +572,9 @@ public class InstallerPanels extends JPanel implements DocumentListener {
     public void updateInstallSelectionCountAndExchangeInfo() {
 
         // early return
-        if (dlCopySwingGUI.state != DLCopySwingGUI.State.INSTALL_SELECTION) {
+        if ((dlCopySwingGUI == null)
+                || (dlCopySwingGUI.state
+                != DLCopySwingGUI.State.INSTALL_SELECTION)) {
             return;
         }
 
@@ -1730,11 +1733,6 @@ public class InstallerPanels extends JPanel implements DocumentListener {
                 // ignore
             }
         }
-    }
-
-    private static void setLabelTextonEDT(
-            final JLabel label, final String text) {
-        SwingUtilities.invokeLater(() -> label.setText(text));
     }
 
     private boolean checkPersistence(PartitionSizes partitionSizes)
