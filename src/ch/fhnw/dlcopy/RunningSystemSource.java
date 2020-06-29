@@ -144,7 +144,7 @@ public final class RunningSystemSource extends SystemSource {
     }
 
     @Override
-    public Source getEfiCopySource() throws DBusException {
+    public Source getEfiCopySource() throws DBusException, IOException {
         return new Source(getBasePath(), hasLegacyGrub
                 ? SystemSource.LEGACY_EFI_COPY_PATTERN
                 : SystemSource.EFI_COPY_PATTERN);
@@ -171,7 +171,7 @@ public final class RunningSystemSource extends SystemSource {
     }
 
     @Override
-    public Source getExchangeCopySource() throws DBusException {
+    public Source getExchangeCopySource() throws DBusException, IOException {
         if (hasExchangePartition()) {
             mountExchangeIfNeeded();
             return new Source(exchangePath, ".*");
@@ -216,7 +216,7 @@ public final class RunningSystemSource extends SystemSource {
         if (isEfiTmpMounted && efiPath != null) {
             try {
                 efiPartition.umount();
-            } catch (DBusException ex) {
+            } catch (DBusException | IOException ex) {
                 LOGGER.log(Level.SEVERE, "unmount boot", ex);
             }
             efiPath = null;
@@ -224,7 +224,7 @@ public final class RunningSystemSource extends SystemSource {
         if (isExchangeTmpMounted && exchangePath != null) {
             try {
                 exchangePartition.umount();
-            } catch (DBusException ex) {
+            } catch (DBusException | IOException ex) {
                 LOGGER.log(Level.SEVERE, "unmount exchange", ex);
             }
             exchangePath = null;
@@ -232,7 +232,7 @@ public final class RunningSystemSource extends SystemSource {
 
     }
 
-    private void mountEfiIfNeeded() throws DBusException {
+    private void mountEfiIfNeeded() throws DBusException, IOException {
         if (efiPath == null) {
             MountInfo efiMountInfo = efiPartition.mount();
             efiPath = efiMountInfo.getMountPath();
@@ -240,7 +240,7 @@ public final class RunningSystemSource extends SystemSource {
         }
     }
 
-    private void mountExchangeIfNeeded() throws DBusException {
+    private void mountExchangeIfNeeded() throws DBusException, IOException {
         if (exchangePath == null) {
             MountInfo bootMountInfo = exchangePartition.mount();
             exchangePath = bootMountInfo.getMountPath();
@@ -259,7 +259,7 @@ public final class RunningSystemSource extends SystemSource {
         }
     }
 
-    private String getBasePath() throws DBusException {
+    private String getBasePath() throws DBusException, IOException {
         String basePath;
         if (hasEfiPartition()) {
             mountEfiIfNeeded();

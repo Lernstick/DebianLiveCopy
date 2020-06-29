@@ -2034,6 +2034,8 @@ public class DLCopySwingGUI extends JFrame
                 installerPanels.getAutoNumber(),
                 installerPanels.getAutoIncrement(),
                 installerPanels.getAutoMinDigits(),
+                installerPanels.isEncryptionSelected(),
+                installerPanels.getEncryptionPassword(),
                 installerPanels.isCopyDataSelected(),
                 installerPanels.getDataPartitionMode(),
                 installerPanels.getTransferDevice(),

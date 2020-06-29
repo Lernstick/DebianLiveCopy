@@ -352,12 +352,12 @@ public class Resetter extends SwingWorker<Boolean, Void> {
             case NONE:
                 List<Path> documents = getAllDocuments(mountInfo, printDirs);
                 if (!documents.isEmpty()) {
-                    List<Path> selectedDocuments =
-                            dlCopyGUI.selectDocumentsToPrint(null/*no type*/,
+                    List<Path> selectedDocuments
+                            = dlCopyGUI.selectDocumentsToPrint(null/*no type*/,
                                     mountInfo.getMountPath(), documents);
                     if (selectedDocuments != null) {
-                        selectedDocuments.forEach(document ->
-                                PrintingHelper.print(document,
+                        selectedDocuments.forEach(document
+                                -> PrintingHelper.print(document,
                                         printCopies, printDuplex));
                     }
                 }
@@ -615,9 +615,11 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         if (formatDataPartition) {
             // format data partition
             dlCopyGUI.showResetFormattingDataPartition();
+
+            // TODO: support encryption
             DLCopy.formatPersistencePartition(
                     "/dev/" + dataPartition.getDeviceAndNumber(),
-                    dataPartitionFileSystem, dlCopyGUI);
+                    false, null, dataPartitionFileSystem, dlCopyGUI);
 
             cleanupRoot = dataPartition.mount().getMountPath() + "/rw";
 

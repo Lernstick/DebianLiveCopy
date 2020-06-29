@@ -140,7 +140,7 @@ public abstract class SystemSource {
      * @return the Source definitions for copy jobs to the EFI partition
      * @throws DBusException
      */
-    public abstract Source getEfiCopySource() throws DBusException;
+    public abstract Source getEfiCopySource() throws DBusException, IOException;
 
     /**
      * returns a copy source for the system, without the squashfs files
@@ -158,7 +158,8 @@ public abstract class SystemSource {
 
     public abstract Source getPersistentCopySource();
 
-    public abstract Source getExchangeCopySource() throws DBusException;
+    public abstract Source getExchangeCopySource() 
+            throws DBusException, IOException;
 
     public abstract Partition getEfiPartition();
 

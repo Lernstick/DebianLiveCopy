@@ -3,6 +3,7 @@ package ch.fhnw.dlcopy.gui.swing.preferences;
 import static ch.fhnw.dlcopy.DLCopy.STRINGS;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
+import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 
@@ -21,6 +22,7 @@ public class InstallationDestinationDetailsPreferences
     private final static String AUTO_NUMBER_MIN_DIGITS = "autoNumberMinDigits";
     private final static String EXCHANGE_PARTITION_FILESYSTEM = "exchangePartitionFileSystem";
     private final static String DATA_PARTITION_FILESYSTEM = "dataPartitionFileSystem";
+    private final static String ENCRYPTION = "encryption";
     private final static String CHECK_COPIES = "checkCopies";
 
     private final JComboBox<String> exchangePartitionFileSystemComboBox;
@@ -30,6 +32,7 @@ public class InstallationDestinationDetailsPreferences
     private final JSpinner autoNumberIncrementSpinner;
     private final JSpinner autoNumberMinDigitsSpinner;
     private final JComboBox dataPartitionFileSystemComboBox;
+    private final JRadioButton encryptionRadioButton;
     private final JCheckBox checkCopiesCheckBox;
 
     public InstallationDestinationDetailsPreferences(
@@ -40,6 +43,7 @@ public class InstallationDestinationDetailsPreferences
             JSpinner autoNumberIncrementSpinner,
             JSpinner autoNumberMinDigitsSpinner,
             JComboBox dataPartitionFileSystemComboBox,
+            JRadioButton encryptionRadioButton,
             JCheckBox checkCopiesCheckBox) {
 
         this.exchangePartitionFileSystemComboBox = exchangePartitionFileSystemComboBox;
@@ -49,6 +53,7 @@ public class InstallationDestinationDetailsPreferences
         this.autoNumberIncrementSpinner = autoNumberIncrementSpinner;
         this.autoNumberMinDigitsSpinner = autoNumberMinDigitsSpinner;
         this.dataPartitionFileSystemComboBox = dataPartitionFileSystemComboBox;
+        this.encryptionRadioButton = encryptionRadioButton;
         this.checkCopiesCheckBox = checkCopiesCheckBox;
     }
 
@@ -71,6 +76,10 @@ public class InstallationDestinationDetailsPreferences
                 preferences.get(DATA_PARTITION_FILESYSTEM, "ext4"));
         checkCopiesCheckBox.setSelected(
                 preferences.getBoolean(CHECK_COPIES, false));
+        if (preferences.getBoolean(ENCRYPTION, false)) {
+            // must be "clicked" to trigger action and cardlayout changes
+            encryptionRadioButton.doClick();
+        }
     }
 
     @Override
@@ -89,6 +98,7 @@ public class InstallationDestinationDetailsPreferences
                 ((Number) autoNumberMinDigitsSpinner.getValue()).intValue());
         preferences.put(DATA_PARTITION_FILESYSTEM,
                 dataPartitionFileSystemComboBox.getSelectedItem().toString());
+        preferences.putBoolean(ENCRYPTION, encryptionRadioButton.isSelected());
         preferences.putBoolean(CHECK_COPIES, checkCopiesCheckBox.isSelected());
     }
 }

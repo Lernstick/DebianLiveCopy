@@ -193,9 +193,10 @@ public class Upgrader extends InstallerOrUpgrader {
                             break;
 
                         case INSTALLATION:
+                            // TODO: support encryption and checking of copies
                             DLCopy.copyToStorageDevice(source, fileCopier,
                                     storageDevice, exchangePartitionLabel,
-                                    this, false, dlCopyGUI);
+                                    this, false, null, false, dlCopyGUI);
                             break;
 
                         default:
@@ -298,8 +299,9 @@ public class Upgrader extends InstallerOrUpgrader {
         backupExchangePartition(storageDevice, exchangeDestination);
 
         // installation
+        // TODO: support encryption and checking of copies
         DLCopy.copyToStorageDevice(source, fileCopier, storageDevice,
-                exchangePartitionLabel, this, false, dlCopyGUI);
+                exchangePartitionLabel, this, false, null, false, dlCopyGUI);
 
         // !!! update reference to storage device !!!
         // copyToStorageDevice() may change the storage device completely
@@ -612,7 +614,6 @@ public class Upgrader extends InstallerOrUpgrader {
 
         return true;
     }
-
 
     private void resetDataPartition(String cowPath, String dataMountPoint,
             int majorDebianVersion, boolean upgradeFromAufsToOverlay)

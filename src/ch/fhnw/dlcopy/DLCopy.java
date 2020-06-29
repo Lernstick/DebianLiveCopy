@@ -203,6 +203,9 @@ public class DLCopy {
      * @param exchangePartitionLabel the label of the exchange partition
      * @param installerOrUpgrader the Installer or Upgrader that is calling this
      * method
+     * @param encryptPersistence if the persistence partition should be
+     * encrypted
+     * @param encryptionPassword the encryption password
      * @param checkCopies if copies should be checked for errors
      * @param dlCopyGUI the program GUI
      * @throws InterruptedException when the installation was interrupted
@@ -214,8 +217,8 @@ public class DLCopy {
     public static void copyToStorageDevice(SystemSource source,
             FileCopier fileCopier, StorageDevice storageDevice,
             String exchangePartitionLabel,
-            InstallerOrUpgrader installerOrUpgrader, boolean checkCopies,
-            DLCopyGUI dlCopyGUI)
+            InstallerOrUpgrader installerOrUpgrader, boolean encryptPersistence,
+            String encryptionPassword, boolean checkCopies, DLCopyGUI dlCopyGUI)
             throws InterruptedException, IOException,
             DBusException, NoSuchAlgorithmException {
 
@@ -284,6 +287,7 @@ public class DLCopy {
             createPartitions(storageDevice, partitionSizes, storageDeviceSize,
                     partitionState, destinationExchangeDevice, exchangeMB,
                     exchangePartitionLabel, destinationDataDevice,
+                    encryptPersistence, encryptionPassword,
                     destinationEfiDevice, destinationSystemDevice,
                     installerOrUpgrader, dlCopyGUI);
         } catch (IOException iOException) {
@@ -334,6 +338,7 @@ public class DLCopy {
             createPartitions(storageDevice, partitionSizes, storageDeviceSize,
                     partitionState, destinationExchangeDevice, exchangeMB,
                     exchangePartitionLabel, destinationDataDevice,
+                    encryptPersistence, encryptionPassword,
                     destinationEfiDevice, destinationSystemDevice,
                     installerOrUpgrader, dlCopyGUI);
         }
@@ -485,7 +490,7 @@ public class DLCopy {
      * @throws DBusException
      */
     public static boolean umount(Partition partition, DLCopyGUI dlCopyGUI)
-            throws DBusException {
+            throws DBusException, IOException {
         // early return
         if (!partition.isMounted()) {
             LOGGER.log(Level.INFO, "{0} was NOT mounted...",
@@ -517,32 +522,44 @@ public class DLCopy {
 
         Path configFilePath = Paths.get(mountPath, "persistence.conf");
         if (!Files.exists(configFilePath)) {
-            try (BufferedWriter writer
-                    = Files.newBufferedWriter(configFilePath)) {
-                writer.write("/ union,source=.\n");
-                writer.flush();
-            }
+            Files.write(configFilePath, "/ union,source=.\n".getBytes());
         }
     }
 
     /**
-     * formats and tunes the persistence partition of a given device (e.g.
-     * "/dev/sdb1") and creates the default persistence configuration file on
-     * the partition file system
+     * formats and tunes the persistence partition of a given device
+     * (e.g."/dev/sdb1") and creates the default persistence configuration file
+     * on the partition file system
      *
      * @param device the given device (e.g. "/dev/sdb1")
+     * @param encrypt if the persistence partition should be encrypted
+     * @param encryptionPassword the encryption password
      * @param fileSystem the file system to use
      * @param dlCopyGUI the program GUI to show error messages
      * @throws DBusException if a DBusException occurs
      * @throws IOException if an IOException occurs
      */
-    public static void formatPersistencePartition(
-            String device, String fileSystem, DLCopyGUI dlCopyGUI)
+    public static void formatPersistencePartition(String device,
+            boolean encrypt, String encryptionPassword,
+            String fileSystem, DLCopyGUI dlCopyGUI)
             throws DBusException, IOException {
 
         // make sure that the partition is unmounted
         if (isMounted(device)) {
             umount(device, dlCopyGUI);
+        }
+
+        String mapperDevice = null;
+        if (encrypt) {
+            String mappingID = "encrypted_persistence";
+            String script = "#!/bin/sh\n"
+                    + "echo \"" + encryptionPassword + "\" | "
+                    + "cryptsetup --pbkdf pbkdf2 --pbkdf-force-iterations 1000 luksFormat "
+                    + device + "\n"
+                    + "echo \"" + encryptionPassword + "\" | "
+                    + "cryptsetup luksOpen " + device + " " + mappingID;
+            PROCESS_EXECUTOR.executeScript(true, true, script);
+            mapperDevice = "/dev/mapper/" + mappingID;
         }
 
         // If we want to create a partition at the exact same location of
@@ -556,7 +573,8 @@ public class DLCopy {
         // To make a long story short, this is the reason we have to use the
         // force flag "-F" here.
         int exitValue = PROCESS_EXECUTOR.executeProcess("/sbin/mkfs."
-                + fileSystem, "-F", "-L", Partition.PERSISTENCE_LABEL, device);
+                + fileSystem, "-F", "-L", Partition.PERSISTENCE_LABEL, 
+                encrypt ? mapperDevice : device);
         if (exitValue != 0) {
             LOGGER.severe(PROCESS_EXECUTOR.getOutput());
             String errorMessage = STRINGS.getString(
@@ -567,7 +585,8 @@ public class DLCopy {
 
         // tuning
         exitValue = PROCESS_EXECUTOR.executeProcess(
-                "/sbin/tune2fs", "-m", "0", "-c", "0", "-i", "0", device);
+                "/sbin/tune2fs", "-m", "0", "-c", "0", "-i", "0", 
+                encrypt ? mapperDevice : device);
         if (exitValue != 0) {
             LOGGER.severe(PROCESS_EXECUTOR.getOutput());
             String errorMessage = STRINGS.getString(
@@ -587,6 +606,7 @@ public class DLCopy {
         } catch (InterruptedException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
         }
+        settleUdev();
 
         // create default persistence configuration file
         Partition persistencePartition
@@ -622,14 +642,15 @@ public class DLCopy {
      * @param destinationExchangePartitionFileSystem the file system of the
      * destination exchange partition
      * @return the CopyJobsInfo for the given source / destination combination
-     * @throws DBusException
+     * @throws DBusException if a D-BUS exception occurs
+     * @throws java.io.IOException if an I/O exception occurs
      */
     public static CopyJobsInfo prepareEfiAndSystemCopyJobs(SystemSource source,
             StorageDevice storageDevice, Partition destinationEfiPartition,
             Partition destinationExchangePartition,
             Partition destinationSystemPartition,
             String destinationExchangePartitionFileSystem)
-            throws DBusException {
+            throws DBusException, IOException {
 
         String destinationEfiPath
                 = destinationEfiPartition.mount().getMountPath();
@@ -1036,7 +1057,8 @@ public class DLCopy {
             PartitionSizes partitionSizes, long storageDeviceSize,
             final PartitionState partitionState, String exchangeDevice,
             int exchangeMB, String exchangePartitionLabel,
-            String persistenceDevice, String efiDevice, String systemDevice,
+            String persistenceDevice, boolean encryptPersistence,
+            String encryptionPassword, String efiDevice, String systemDevice,
             InstallerOrUpgrader installerOrUpgrader, DLCopyGUI dlCopyGUI)
             throws InterruptedException, IOException, DBusException {
 
@@ -1334,6 +1356,7 @@ public class DLCopy {
 
             case PERSISTENCE:
                 formatPersistencePartition(persistenceDevice,
+                        encryptPersistence, encryptionPassword,
                         installerOrUpgrader.getDataPartitionFileSystem(),
                         dlCopyGUI);
                 formatEfiAndSystemPartition(efiDevice, systemDevice);
@@ -1349,6 +1372,7 @@ public class DLCopy {
                 }
                 if (persistenceDevice != null) {
                     formatPersistencePartition(persistenceDevice,
+                            encryptPersistence, encryptionPassword,
                             installerOrUpgrader.getDataPartitionFileSystem(),
                             dlCopyGUI);
                 }
@@ -1710,6 +1734,11 @@ public class DLCopy {
         }
 
         return true;
+    }
+    
+    public static void settleUdev() {
+        ProcessExecutor processExecutor = new ProcessExecutor(true);
+        processExecutor.executeProcess(true, true, "udevadm", "settle");
     }
 
     private static void copyPersistenceCp(Installer installer,

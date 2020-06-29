@@ -10,6 +10,7 @@ import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.StorageDevice;
 import java.awt.*;
+import java.io.IOException;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -64,138 +65,138 @@ public class ResetStorageDeviceRenderer extends JPanel
             StorageDevice storageDevice, int index, boolean isSelected,
             boolean cellHasFocus) {
 
-            this.storageDevice = storageDevice;
+        this.storageDevice = storageDevice;
 
-            // set icon based on storage type
-            StorageDevice.Type deviceType = storageDevice.getType();
-            switch (deviceType) {
-                case HardDrive:
-                    iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                            "/ch/fhnw/dlcopy/icons/32x32/drive-harddisk.png")));
-                    break;
-                case SDMemoryCard:
-                    iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                            "/ch/fhnw/dlcopy/icons/32x32/media-flash-sd-mmc.png")));
-                    break;
-                case USBFlashDrive:
-                    iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                            "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media-usb-pendrive.png")));
-                    break;
-                default:
-                    iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                            "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media.png")));
-                    LOGGER.log(Level.WARNING,
-                            "unsupported deviceType:{0}", deviceType);
-            }
+        // set icon based on storage type
+        StorageDevice.Type deviceType = storageDevice.getType();
+        switch (deviceType) {
+            case HardDrive:
+                iconLabel.setIcon(new ImageIcon(getClass().getResource(
+                        "/ch/fhnw/dlcopy/icons/32x32/drive-harddisk.png")));
+                break;
+            case SDMemoryCard:
+                iconLabel.setIcon(new ImageIcon(getClass().getResource(
+                        "/ch/fhnw/dlcopy/icons/32x32/media-flash-sd-mmc.png")));
+                break;
+            case USBFlashDrive:
+                iconLabel.setIcon(new ImageIcon(getClass().getResource(
+                        "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media-usb-pendrive.png")));
+                break;
+            default:
+                iconLabel.setIcon(new ImageIcon(getClass().getResource(
+                        "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media.png")));
+                LOGGER.log(Level.WARNING,
+                        "unsupported deviceType:{0}", deviceType);
+        }
 
-            // set device text
-            DLCopySwingGUI.setStorageDeviceLabel(
-                    descriptionLabel, storageDevice);
+        // set device text
+        DLCopySwingGUI.setStorageDeviceLabel(
+                descriptionLabel, storageDevice);
 
-            // partition caption
-            partitionCaptionPanel.removeAll();
-            List<Partition> partitions = storageDevice.getPartitions();
-            for (int i = 0, size = partitions.size(); i < size; i++) {
-                Partition partition = partitions.get(i);
-                JLabel label = new JLabel();
+        // partition caption
+        partitionCaptionPanel.removeAll();
+        List<Partition> partitions = storageDevice.getPartitions();
+        for (int i = 0, size = partitions.size(); i < size; i++) {
+            Partition partition = partitions.get(i);
+            JLabel label = new JLabel();
 
-                // use small, non-bold font
-                Font font = label.getFont();
-                label.setFont(font.deriveFont(
-                        font.getStyle() & ~Font.BOLD, font.getSize() - 1));
+            // use small, non-bold font
+            Font font = label.getFont();
+            label.setFont(font.deriveFont(
+                    font.getStyle() & ~Font.BOLD, font.getSize() - 1));
 
-                boolean extended = partition.isExtended();
+            boolean extended = partition.isExtended();
 
-                // set color box
-                try {
-                    if (partition.isSystemPartition()) {
-                        label.setIcon(BLUE_BOX);
-                    } else if (partition.isPersistencePartition()) {
-                        label.setIcon(GREEN_BOX);
-                    } else if (partition.isExchangePartition()) {
-                        label.setIcon(YELLOW_BOX);
-                    } else if (extended) {
-                        label.setIcon(DARK_GRAY_BOX);
-                    } else {
-                        label.setIcon(GRAY_BOX);
-                    }
-                } catch (DBusException ex) {
-                    LOGGER.log(Level.SEVERE, "", ex);
-                }
-
-                // set text
-                StringBuilder stringBuilder = new StringBuilder();
-                stringBuilder.append("<html><b>&#47;dev&#47;");
-                stringBuilder.append(partition.getDeviceAndNumber());
-                stringBuilder.append("</b> (");
-                stringBuilder.append(LernstickFileTools.getDataVolumeString(
-                        partition.getSize(), 1));
-                stringBuilder.append(")<br>");
-                if (extended) {
-                    stringBuilder.append(STRINGS.getString("Extended"));
-                    stringBuilder.append("<br>&nbsp;");
-                } else {
-                    stringBuilder.append(STRINGS.getString("Label"));
-                    stringBuilder.append(": ");
-                    stringBuilder.append(partition.getIdLabel());
-                    stringBuilder.append("<br>");
-                    stringBuilder.append(STRINGS.getString("File_System"));
-                    stringBuilder.append(": ");
-                    stringBuilder.append(partition.getIdType());
-                    stringBuilder.append("<br>");
-                    stringBuilder.append(STRINGS.getString("Used"));
-                    stringBuilder.append(": ");
-                    try {
-                        long usedSpace = partition.getUsedSpace(false);
-                        if (usedSpace == -1) {
-                            stringBuilder.append(STRINGS.getString("Unknown"));
-                        } else {
-                            stringBuilder.append(
-                                    LernstickFileTools.getDataVolumeString(
-                                            usedSpace, 1));
-                        }
-                    } catch (DBusExecutionException ex) {
-                        LOGGER.log(Level.SEVERE, "", ex);
-                    }
-                }
-                stringBuilder.append("</html>");
-                label.setText(stringBuilder.toString());
-
-                GridBagConstraints gridBagConstraints
-                        = new GridBagConstraints();
-                gridBagConstraints.anchor = GridBagConstraints.WEST;
-                if (i == (size - 1)) {
-                    // last element
-                    gridBagConstraints.weightx = 1.0;
-                } else {
-                    // non-last element
-                    gridBagConstraints.insets = new Insets(0, 0, 0, 20);
-                }
-                partitionCaptionPanel.add(label, gridBagConstraints);
-            }
-
-            // upgrade info text
-            Partition dataPartition = storageDevice.getDataPartition();
+            // set color box
             try {
-                if ((dataPartition != null)
-                        && dataPartition.isActivePersistencePartition()) {
-                    upgradeInfoLabel.setIcon(CANCEL_ICON);
-                    upgradeInfoLabel.setText(STRINGS.getString(
-                            "Resetting_Impossible_Active_Data_Partition"));
+                if (partition.isSystemPartition()) {
+                    label.setIcon(BLUE_BOX);
+                } else if (partition.isPersistencePartition()) {
+                    label.setIcon(GREEN_BOX);
+                } else if (partition.isExchangePartition()) {
+                    label.setIcon(YELLOW_BOX);
+                } else if (extended) {
+                    label.setIcon(DARK_GRAY_BOX);
                 } else {
-                    upgradeInfoLabel.setIcon(OK_ICON);
-                    upgradeInfoLabel.setText(
-                            STRINGS.getString("Resetting_Possible"));
+                    label.setIcon(GRAY_BOX);
                 }
-            } catch (DBusException | DBusExecutionException ex) {
+            } catch (DBusException ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
             }
 
-            if (isSelected) {
-                setBackground(list.getSelectionBackground());
+            // set text
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("<html><b>&#47;dev&#47;");
+            stringBuilder.append(partition.getDeviceAndNumber());
+            stringBuilder.append("</b> (");
+            stringBuilder.append(LernstickFileTools.getDataVolumeString(
+                    partition.getSize(), 1));
+            stringBuilder.append(")<br>");
+            if (extended) {
+                stringBuilder.append(STRINGS.getString("Extended"));
+                stringBuilder.append("<br>&nbsp;");
             } else {
-                setBackground(list.getBackground());
+                stringBuilder.append(STRINGS.getString("Label"));
+                stringBuilder.append(": ");
+                stringBuilder.append(partition.getIdLabel());
+                stringBuilder.append("<br>");
+                stringBuilder.append(STRINGS.getString("File_System"));
+                stringBuilder.append(": ");
+                stringBuilder.append(partition.getIdType());
+                stringBuilder.append("<br>");
+                stringBuilder.append(STRINGS.getString("Used"));
+                stringBuilder.append(": ");
+                try {
+                    long usedSpace = partition.getUsedSpace(false);
+                    if (usedSpace == -1) {
+                        stringBuilder.append(STRINGS.getString("Unknown"));
+                    } else {
+                        stringBuilder.append(
+                                LernstickFileTools.getDataVolumeString(
+                                        usedSpace, 1));
+                    }
+                } catch (DBusExecutionException ex) {
+                    LOGGER.log(Level.SEVERE, "", ex);
+                }
             }
+            stringBuilder.append("</html>");
+            label.setText(stringBuilder.toString());
+
+            GridBagConstraints gridBagConstraints
+                    = new GridBagConstraints();
+            gridBagConstraints.anchor = GridBagConstraints.WEST;
+            if (i == (size - 1)) {
+                // last element
+                gridBagConstraints.weightx = 1.0;
+            } else {
+                // non-last element
+                gridBagConstraints.insets = new Insets(0, 0, 0, 20);
+            }
+            partitionCaptionPanel.add(label, gridBagConstraints);
+        }
+
+        // upgrade info text
+        Partition dataPartition = storageDevice.getDataPartition();
+        try {
+            if ((dataPartition != null)
+                    && dataPartition.isActivePersistencePartition()) {
+                upgradeInfoLabel.setIcon(CANCEL_ICON);
+                upgradeInfoLabel.setText(STRINGS.getString(
+                        "Resetting_Impossible_Active_Data_Partition"));
+            } else {
+                upgradeInfoLabel.setIcon(OK_ICON);
+                upgradeInfoLabel.setText(
+                        STRINGS.getString("Resetting_Possible"));
+            }
+        } catch (DBusException | DBusExecutionException | IOException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+        }
+
+        if (isSelected) {
+            setBackground(list.getSelectionBackground());
+        } else {
+            setBackground(list.getBackground());
+        }
 
         return this;
     }

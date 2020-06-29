@@ -15,6 +15,7 @@ import ch.fhnw.util.Partition;
 import ch.fhnw.util.StorageDevice;
 import java.awt.Component;
 import java.io.File;
+import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -220,7 +221,7 @@ public class ResetterPanels
                     canReset = false;
                     break;
                 }
-            } catch (DBusException ex) {
+            } catch (DBusException | IOException ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
                 canReset = false;
                 break;

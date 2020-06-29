@@ -32,6 +32,7 @@ import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -193,10 +194,11 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         preferencesHandler.addPreference(
                 new InstallationDestinationDetailsPreferences(
                         exchangePartitionFileSystemComboBox,
-                        exchangePartitionLabelTextField, autoNumberPatternTextField,
-                        autoNumberStartSpinner, autoNumberIncrementSpinner,
-                        autoNumberMinDigitsSpinner,
-                        dataPartitionFileSystemComboBox, checkCopiesCheckBox));
+                        exchangePartitionLabelTextField,
+                        autoNumberPatternTextField, autoNumberStartSpinner,
+                        autoNumberIncrementSpinner, autoNumberMinDigitsSpinner,
+                        dataPartitionFileSystemComboBox, encryptionRadioButton,
+                        checkCopiesCheckBox));
 
         preferencesHandler.addPreference(
                 new InstallationDestinationTransferPreferences(
@@ -291,6 +293,36 @@ public class InstallerPanels extends JPanel implements DocumentListener {
                     STRINGS.getString("Error"), JOptionPane.ERROR_MESSAGE);
 
             return false;
+        }
+
+        // check encryption
+        if (encryptionRadioButton.isSelected()) {
+
+            char[] password = passwordField.getPassword();
+
+            if (password.length == 0) {
+
+                focusPasswordField();
+
+                JOptionPane.showMessageDialog(dlCopySwingGUI,
+                        STRINGS.getString("Error_Encryption_No_Password"),
+                        STRINGS.getString("Error"), JOptionPane.ERROR_MESSAGE);
+
+                return false;
+            }
+
+            char[] retypedPassword = retypePasswordField.getPassword();
+
+            if (!Arrays.equals(password, retypedPassword)) {
+
+                focusPasswordField();
+
+                JOptionPane.showMessageDialog(dlCopySwingGUI,
+                        STRINGS.getString("Error_Encryption_Password_Mismatch"),
+                        STRINGS.getString("Error"), JOptionPane.ERROR_MESSAGE);
+
+                return false;
+            }
         }
 
         // show big fat warning dialog
@@ -391,6 +423,14 @@ public class InstallerPanels extends JPanel implements DocumentListener {
 
     public int getExchangePartitionSize() {
         return exchangePartitionSizeSlider.getValue();
+    }
+
+    public boolean isEncryptionSelected() {
+        return encryptionRadioButton.isSelected();
+    }
+
+    public String getEncryptionPassword() {
+        return String.valueOf(passwordField.getPassword());
     }
 
     public StorageDevice getTransferDevice() {
@@ -683,6 +723,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         java.awt.GridBagConstraints gridBagConstraints;
 
         installSourceButtonGroup = new javax.swing.ButtonGroup();
+        encryptionButtonGroup = new javax.swing.ButtonGroup();
         infoPanel = new javax.swing.JPanel();
         infoLabel = new javax.swing.JLabel();
         selectionPanel = new javax.swing.JPanel();
@@ -737,6 +778,16 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         dataPartitionDetailsPanel = new javax.swing.JPanel();
         dataPartitionFileSystemLabel = new javax.swing.JLabel();
         dataPartitionFileSystemComboBox = new javax.swing.JComboBox<>();
+        encryptionRadioButtonPanel = new javax.swing.JPanel();
+        noEncryptionRadioButton = new javax.swing.JRadioButton();
+        encryptionRadioButton = new javax.swing.JRadioButton();
+        encryptionCardPanel = new javax.swing.JPanel();
+        noEncryptionPanel = new javax.swing.JPanel();
+        encryptionDetailsPanel = new javax.swing.JPanel();
+        passwordLabel = new javax.swing.JLabel();
+        passwordField = new javax.swing.JPasswordField();
+        retypePasswordLabel = new javax.swing.JLabel();
+        retypePasswordField = new javax.swing.JPasswordField();
         checkCopiesCheckBox = new javax.swing.JCheckBox();
         transferPanel = new javax.swing.JPanel();
         transferLabel = new javax.swing.JLabel();
@@ -1179,11 +1230,85 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         dataPartitionFileSystemComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ext2", "ext3", "ext4" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         dataPartitionDetailsPanel.add(dataPartitionFileSystemComboBox, gridBagConstraints);
+
+        encryptionRadioButtonPanel.setLayout(new java.awt.GridBagLayout());
+
+        encryptionButtonGroup.add(noEncryptionRadioButton);
+        noEncryptionRadioButton.setSelected(true);
+        noEncryptionRadioButton.setText(bundle.getString("InstallerPanels.noEncryptionRadioButton.text")); // NOI18N
+        noEncryptionRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                noEncryptionRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        encryptionRadioButtonPanel.add(noEncryptionRadioButton, gridBagConstraints);
+
+        encryptionButtonGroup.add(encryptionRadioButton);
+        encryptionRadioButton.setText(bundle.getString("InstallerPanels.encryptionRadioButton.text")); // NOI18N
+        encryptionRadioButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                encryptionRadioButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        encryptionRadioButtonPanel.add(encryptionRadioButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
+        gridBagConstraints.insets = new java.awt.Insets(0, 30, 0, 0);
+        dataPartitionDetailsPanel.add(encryptionRadioButtonPanel, gridBagConstraints);
+
+        encryptionCardPanel.setLayout(new java.awt.CardLayout());
+        encryptionCardPanel.add(noEncryptionPanel, "noEncryptionPanel");
+
+        encryptionDetailsPanel.setLayout(new java.awt.GridBagLayout());
+
+        passwordLabel.setText(bundle.getString("InstallerPanels.passwordLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        encryptionDetailsPanel.add(passwordLabel, gridBagConstraints);
+
+        passwordField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                passwordFieldActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 0, 0);
+        encryptionDetailsPanel.add(passwordField, gridBagConstraints);
+
+        retypePasswordLabel.setText(bundle.getString("InstallerPanels.retypePasswordLabel.text")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 0, 0, 0);
+        encryptionDetailsPanel.add(retypePasswordLabel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
+        encryptionDetailsPanel.add(retypePasswordField, gridBagConstraints);
+
+        encryptionCardPanel.add(encryptionDetailsPanel, "encryptionDetailsPanel");
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(0, 30, 10, 10);
+        dataPartitionDetailsPanel.add(encryptionCardPanel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -1476,6 +1601,18 @@ public class InstallerPanels extends JPanel implements DocumentListener {
     private void exchangePartitionSizeSliderComponentResized(java.awt.event.ComponentEvent evt) {//GEN-FIRST:event_exchangePartitionSizeSliderComponentResized
         updateInstallSelectionCountAndExchangeInfo();
     }//GEN-LAST:event_exchangePartitionSizeSliderComponentResized
+
+    private void noEncryptionRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_noEncryptionRadioButtonActionPerformed
+        DLCopySwingGUI.showCard(encryptionCardPanel, "noEncryptionPanel");
+    }//GEN-LAST:event_noEncryptionRadioButtonActionPerformed
+
+    private void encryptionRadioButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_encryptionRadioButtonActionPerformed
+        DLCopySwingGUI.showCard(encryptionCardPanel, "encryptionDetailsPanel");
+    }//GEN-LAST:event_encryptionRadioButtonActionPerformed
+
+    private void passwordFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_passwordFieldActionPerformed
+        retypePasswordField.requestFocusInWindow();
+    }//GEN-LAST:event_passwordFieldActionPerformed
 
     private void syncWidth(JComponent component1, JComponent component2) {
         int preferredWidth = Math.max(component1.getPreferredSize().width,
@@ -1885,6 +2022,12 @@ public class InstallerPanels extends JPanel implements DocumentListener {
                 "Error_Transfer_Target_Persistence_Too_Small");
     }
 
+    private void focusPasswordField() {
+        passwordField.selectAll();
+        passwordField.requestFocusInWindow();
+        selectionTabbedPane.setSelectedComponent(detailsPanel);
+    }
+
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel autoNumberIncrementLabel;
     private javax.swing.JSpinner autoNumberIncrementSpinner;
@@ -1918,6 +2061,11 @@ public class InstallerPanels extends JPanel implements DocumentListener {
     private javax.swing.JLabel dataPartitionModeLabel;
     private javax.swing.JSeparator dataPartitionSeparator;
     private javax.swing.JPanel detailsPanel;
+    private javax.swing.ButtonGroup encryptionButtonGroup;
+    private javax.swing.JPanel encryptionCardPanel;
+    private javax.swing.JPanel encryptionDetailsPanel;
+    private javax.swing.JRadioButton encryptionRadioButton;
+    private javax.swing.JPanel encryptionRadioButtonPanel;
     private javax.swing.JLabel exchangeDefinitionLabel;
     private javax.swing.JPanel exchangePartitionDetailsPanel;
     private javax.swing.JComboBox<String> exchangePartitionFileSystemComboBox;
@@ -1944,13 +2092,19 @@ public class InstallerPanels extends JPanel implements DocumentListener {
     private javax.swing.JLabel jLabel3;
     private javax.swing.JLabel jLabel4;
     private javax.swing.JSeparator jSeparator3;
+    private javax.swing.JPanel noEncryptionPanel;
+    private javax.swing.JRadioButton noEncryptionRadioButton;
     private javax.swing.JLabel noMediaLabel;
     private javax.swing.JPanel noMediaPanel;
     private javax.swing.JLabel noSouceLabel;
     private javax.swing.JPanel noSourcePanel;
+    private javax.swing.JPasswordField passwordField;
+    private javax.swing.JLabel passwordLabel;
     private javax.swing.JPanel reportPanel;
     private javax.swing.JScrollPane resultsScrollPane;
     private javax.swing.JTable resultsTable;
+    private javax.swing.JPasswordField retypePasswordField;
+    private javax.swing.JLabel retypePasswordLabel;
     private javax.swing.JPanel rsyncPanel;
     private javax.swing.JProgressBar rsyncPogressBar;
     private javax.swing.JLabel rsyncTimeLabel;
