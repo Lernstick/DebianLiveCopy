@@ -1,3 +1,10 @@
+dlcopy (202006291557-1) lernstick-10; urgency=medium
+
+  * [a44bb0] code cleanup (most of all a separate class for the upgrader panels)
+  * [bc9988] added support for LUKS encryption in installer
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Mon, 29 Jun 2020 15:57:02 +0200
+
 dlcopy (202006161834-1) lernstick-10; urgency=medium
 
   * [8c4bf7] GUI code cleaup (most of all a separate class for installer panels)
