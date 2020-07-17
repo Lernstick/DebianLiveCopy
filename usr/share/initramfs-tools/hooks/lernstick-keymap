@@ -1,0 +1,28 @@
+#!/bin/sh
+
+PREREQ="keymap"
+
+prereqs()
+{
+   echo "$PREREQ"
+}
+
+case $1 in
+prereqs)
+    prereqs
+    exit 0
+    ;;
+esac
+
+. /usr/share/initramfs-tools/hook-functions
+
+tmp_dir="$(mktemp -d)"
+
+for keymap in "de" "ch" "ch(fr)" "fr" "it" "us" "es" "br" "ru" "pt" "al"; do
+    setupcon --save-keyboard "${tmp_dir}/boottime.${keymap}.kmap.gz" "$keymap"
+    copy_file "keymap" "${tmp_dir}/boottime.${keymap}.kmap.gz" "/usr/share/keymaps/boottime.${keymap}.kmap.gz"
+done
+
+rm -rf $tmp_dir
+
+exit 0

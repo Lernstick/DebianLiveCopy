@@ -1,0 +1,39 @@
+#!/bin/sh
+
+PREREQ="keymap"
+
+prereqs()
+{
+   echo "$PREREQ"
+}
+
+case $1 in
+prereqs)
+    prereqs
+    exit 0
+    ;;
+esac
+
+. /scripts/functions
+
+# extract the keymaps from cmdline
+for x in $(cat /proc/cmdline); do
+    case $x in
+        keyboard-layouts=*)
+            keymaps=${x#keyboard-layouts=}
+            ;;
+    esac
+done
+
+# set the first keymap that exists
+IFS=","
+for keymap in $keymaps; do
+    if [ -r "/usr/share/keymaps/boottime.${keymap}.kmap.gz" ]; then
+        log_begin_msg "Setting keymap ${keymap}"
+        loadkeys "/usr/share/keymaps/boottime.${keymap}.kmap.gz"
+        log_end_msg
+        break
+    fi
+done
+
+exit 0
