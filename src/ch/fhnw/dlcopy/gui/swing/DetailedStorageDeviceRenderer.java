@@ -161,7 +161,7 @@ public abstract class DetailedStorageDeviceRenderer extends JPanel
                 stringBuilder.append(": ");
                 stringBuilder.append(partition.getIdLabel());
                 stringBuilder.append("<br>");
-                stringBuilder.append(STRINGS.getString("File_System"));
+                stringBuilder.append(STRINGS.getString("FileSystem"));
                 stringBuilder.append(": ");
                 stringBuilder.append(partition.getIdType());
                 stringBuilder.append("<br>");

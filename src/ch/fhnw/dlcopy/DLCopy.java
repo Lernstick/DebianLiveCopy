@@ -557,7 +557,7 @@ public class DLCopy {
                     + "cryptsetup --pbkdf pbkdf2 --pbkdf-force-iterations 1000 luksFormat "
                     + device + "\n"
                     + "echo \"" + encryptionPassword + "\" | "
-                    + "cryptsetup luksOpen " + device + " " + mappingID;
+                    + "cryptsetup open --type luks " + device + " " + mappingID;
             PROCESS_EXECUTOR.executeScript(true, true, script);
             mapperDevice = "/dev/mapper/" + mappingID;
         }

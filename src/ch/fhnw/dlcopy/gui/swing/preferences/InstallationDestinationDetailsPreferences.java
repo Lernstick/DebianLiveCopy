@@ -32,7 +32,7 @@ public class InstallationDestinationDetailsPreferences
     private final JSpinner autoNumberIncrementSpinner;
     private final JSpinner autoNumberMinDigitsSpinner;
     private final JComboBox dataPartitionFileSystemComboBox;
-    private final JRadioButton encryptionRadioButton;
+    private final JCheckBox encryptionCheckBox;
     private final JCheckBox checkCopiesCheckBox;
 
     public InstallationDestinationDetailsPreferences(
@@ -43,7 +43,7 @@ public class InstallationDestinationDetailsPreferences
             JSpinner autoNumberIncrementSpinner,
             JSpinner autoNumberMinDigitsSpinner,
             JComboBox dataPartitionFileSystemComboBox,
-            JRadioButton encryptionRadioButton,
+            JCheckBox encryptionCheckBox,
             JCheckBox checkCopiesCheckBox) {
 
         this.exchangePartitionFileSystemComboBox = exchangePartitionFileSystemComboBox;
@@ -53,7 +53,7 @@ public class InstallationDestinationDetailsPreferences
         this.autoNumberIncrementSpinner = autoNumberIncrementSpinner;
         this.autoNumberMinDigitsSpinner = autoNumberMinDigitsSpinner;
         this.dataPartitionFileSystemComboBox = dataPartitionFileSystemComboBox;
-        this.encryptionRadioButton = encryptionRadioButton;
+        this.encryptionCheckBox = encryptionCheckBox;
         this.checkCopiesCheckBox = checkCopiesCheckBox;
     }
 
@@ -78,7 +78,7 @@ public class InstallationDestinationDetailsPreferences
                 preferences.getBoolean(CHECK_COPIES, false));
         if (preferences.getBoolean(ENCRYPTION, false)) {
             // must be "clicked" to trigger action and cardlayout changes
-            encryptionRadioButton.doClick();
+            encryptionCheckBox.doClick();
         }
     }
 
@@ -98,7 +98,7 @@ public class InstallationDestinationDetailsPreferences
                 ((Number) autoNumberMinDigitsSpinner.getValue()).intValue());
         preferences.put(DATA_PARTITION_FILESYSTEM,
                 dataPartitionFileSystemComboBox.getSelectedItem().toString());
-        preferences.putBoolean(ENCRYPTION, encryptionRadioButton.isSelected());
+        preferences.putBoolean(ENCRYPTION, encryptionCheckBox.isSelected());
         preferences.putBoolean(CHECK_COPIES, checkCopiesCheckBox.isSelected());
     }
 }
