@@ -31,8 +31,10 @@ public class Installer extends InstallerOrUpgrader
     private int autoNumber;
     private final int autoNumberIncrement;
     private final int autoNumberMinDigits;
-    private final boolean encryptDataPartition;
-    private final String encryptionPassword;
+    private final boolean personalDataPartitionEncryption;
+    private final String personalEncryptionPassword;
+    private final boolean secondaryDataPartitionEncryption;
+    private final String secondaryEncryptionPassword;
     private final boolean copyDataPartition;
     private final DataPartitionMode dataPartitionMode;
     private final StorageDevice transferDevice;
@@ -62,8 +64,14 @@ public class Installer extends InstallerOrUpgrader
      * @param autoNumberIncrement the auto numbering increment
      * @param autoNumberMinDigits the minimal number of digits to use for auto
      * numbering
-     * @param encryptDataPartition if the data partition should be encrypted
-     * @param encryptionPassword the password for data partition encryption
+     * @param personalDataPartitionEncryption if the data partition should be
+     * encrypted with a personal password
+     * @param personalEncryptionPassword the personal password for data
+     * partition encryption
+     * @param secondaryDataPartitionEncryption if the data partition should be
+     * encrypted with a secondary password
+     * @param secondaryEncryptionPassword the secondary password for data
+     * partition encryption
      * @param copyDataPartition if the data partition should be copied
      * @param dataPartitionMode the mode of the data partition to set in the
      * bootloaders config
@@ -83,8 +91,10 @@ public class Installer extends InstallerOrUpgrader
             DLCopyGUI dlCopyGUI, int exchangePartitionSize,
             boolean copyExchangePartition, String autoNumberPattern,
             int autoNumberStart, int autoNumberIncrement,
-            int autoNumberMinDigits, boolean encryptDataPartition,
-            String encryptionPassword, boolean copyDataPartition,
+            int autoNumberMinDigits, boolean personalDataPartitionEncryption,
+            String personalEncryptionPassword,
+            boolean secondaryDataPartitionEncryption,
+            String secondaryEncryptionPassword, boolean copyDataPartition,
             DataPartitionMode dataPartitionMode, StorageDevice transferDevice,
             boolean transferExchange, boolean transferHome,
             boolean transferNetwork, boolean transferPrinter,
@@ -100,8 +110,10 @@ public class Installer extends InstallerOrUpgrader
         this.autoNumber = autoNumberStart;
         this.autoNumberIncrement = autoNumberIncrement;
         this.autoNumberMinDigits = autoNumberMinDigits;
-        this.encryptDataPartition = encryptDataPartition;
-        this.encryptionPassword = encryptionPassword;
+        this.personalDataPartitionEncryption = personalDataPartitionEncryption;
+        this.personalEncryptionPassword = personalEncryptionPassword;
+        this.secondaryDataPartitionEncryption = secondaryDataPartitionEncryption;
+        this.secondaryEncryptionPassword = secondaryEncryptionPassword;
         this.copyDataPartition = copyDataPartition;
         this.dataPartitionMode = dataPartitionMode;
         this.checkCopies = checkCopies;
@@ -146,7 +158,10 @@ public class Installer extends InstallerOrUpgrader
                 try {
                     DLCopy.copyToStorageDevice(source, fileCopier,
                             storageDevice, currentExchangePartitionLabel,
-                            this, encryptDataPartition, encryptionPassword,
+                            this, personalDataPartitionEncryption,
+                            personalEncryptionPassword,
+                            secondaryDataPartitionEncryption,
+                            secondaryEncryptionPassword,
                             checkCopies, dlCopyGUI);
                 } catch (InterruptedException | IOException
                         | DBusException exception) {

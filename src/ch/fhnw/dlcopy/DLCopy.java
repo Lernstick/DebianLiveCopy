@@ -203,9 +203,12 @@ public class DLCopy {
      * @param exchangePartitionLabel the label of the exchange partition
      * @param installerOrUpgrader the Installer or Upgrader that is calling this
      * method
-     * @param encryptPersistence if the persistence partition should be
-     * encrypted
-     * @param encryptionPassword the encryption password
+     * @param personalDataPartitionEncryption if the persistence partition
+     * should be encrypted with a personal password
+     * @param personalEncryptionPassword the personal encryption password
+     * @param secondaryDataPartitionEncryption if the persistence partition
+     * should be encrypted with a secondary password
+     * @param secondaryEncryptionPassword the secondary encryption password
      * @param checkCopies if copies should be checked for errors
      * @param dlCopyGUI the program GUI
      * @throws InterruptedException when the installation was interrupted
@@ -217,8 +220,12 @@ public class DLCopy {
     public static void copyToStorageDevice(SystemSource source,
             FileCopier fileCopier, StorageDevice storageDevice,
             String exchangePartitionLabel,
-            InstallerOrUpgrader installerOrUpgrader, boolean encryptPersistence,
-            String encryptionPassword, boolean checkCopies, DLCopyGUI dlCopyGUI)
+            InstallerOrUpgrader installerOrUpgrader,
+            boolean personalDataPartitionEncryption,
+            String personalEncryptionPassword,
+            boolean secondaryDataPartitionEncryption,
+            String secondaryEncryptionPassword, boolean checkCopies,
+            DLCopyGUI dlCopyGUI)
             throws InterruptedException, IOException,
             DBusException, NoSuchAlgorithmException {
 
@@ -287,9 +294,10 @@ public class DLCopy {
             createPartitions(storageDevice, partitionSizes, storageDeviceSize,
                     partitionState, destinationExchangeDevice, exchangeMB,
                     exchangePartitionLabel, destinationDataDevice,
-                    encryptPersistence, encryptionPassword,
-                    destinationEfiDevice, destinationSystemDevice,
-                    installerOrUpgrader, dlCopyGUI);
+                    personalDataPartitionEncryption, personalEncryptionPassword,
+                    secondaryDataPartitionEncryption,
+                    secondaryEncryptionPassword, destinationEfiDevice,
+                    destinationSystemDevice, installerOrUpgrader, dlCopyGUI);
         } catch (IOException iOException) {
             // On some Corsair Flash Voyager GT drives the first sfdisk try
             // failes with the following output:
@@ -338,9 +346,10 @@ public class DLCopy {
             createPartitions(storageDevice, partitionSizes, storageDeviceSize,
                     partitionState, destinationExchangeDevice, exchangeMB,
                     exchangePartitionLabel, destinationDataDevice,
-                    encryptPersistence, encryptionPassword,
-                    destinationEfiDevice, destinationSystemDevice,
-                    installerOrUpgrader, dlCopyGUI);
+                    personalDataPartitionEncryption, personalEncryptionPassword,
+                    secondaryDataPartitionEncryption,
+                    secondaryEncryptionPassword, destinationEfiDevice,
+                    destinationSystemDevice, installerOrUpgrader, dlCopyGUI);
         }
 
         // Here have to trigger a rescan of the device partitions. Otherwise
@@ -532,15 +541,22 @@ public class DLCopy {
      * on the partition file system
      *
      * @param device the given device (e.g. "/dev/sdb1")
-     * @param encrypt if the persistence partition should be encrypted
-     * @param encryptionPassword the encryption password
+     * @param personalDataPartitionEncryption if the persistence partition
+     * should be encrypted with a personal password
+     * @param personalEncryptionPassword the personal encryption password
+     * @param secondaryDataPartitionEncryption if the persistence partition
+     * should be encrypted with a secondary password
+     * @param secondaryEncryptionPassword the secondary encryption password
      * @param fileSystem the file system to use
      * @param dlCopyGUI the program GUI to show error messages
      * @throws DBusException if a DBusException occurs
      * @throws IOException if an IOException occurs
      */
     public static void formatPersistencePartition(String device,
-            boolean encrypt, String encryptionPassword,
+            boolean personalDataPartitionEncryption,
+            String personalEncryptionPassword,
+            boolean secondaryDataPartitionEncryption,
+            String secondaryEncryptionPassword,
             String fileSystem, DLCopyGUI dlCopyGUI)
             throws DBusException, IOException {
 
@@ -550,16 +566,27 @@ public class DLCopy {
         }
 
         String mapperDevice = null;
-        if (encrypt) {
+        if (personalDataPartitionEncryption) {
             String mappingID = "encrypted_persistence";
+            mapperDevice = "/dev/mapper/" + mappingID;
             String script = "#!/bin/sh\n"
-                    + "echo \"" + encryptionPassword + "\" | "
-                    + "cryptsetup --pbkdf pbkdf2 --pbkdf-force-iterations 1000 luksFormat "
-                    + device + "\n"
-                    + "echo \"" + encryptionPassword + "\" | "
+                    + "echo \"" + personalEncryptionPassword + "\" | "
+                    + "cryptsetup --pbkdf pbkdf2 --pbkdf-force-iterations 1000 "
+                    + "luksFormat " + device + "\n"
+                    + "echo \"" + personalEncryptionPassword + "\" | "
                     + "cryptsetup open --type luks " + device + " " + mappingID;
             PROCESS_EXECUTOR.executeScript(true, true, script);
-            mapperDevice = "/dev/mapper/" + mappingID;
+
+            if (secondaryDataPartitionEncryption) {
+                script = "#!/bin/sh\n"
+                        + "echo -n \"" + secondaryEncryptionPassword + "\""
+                        + " > keyfile\n"
+                        + "echo \"" + personalEncryptionPassword + "\" | "
+                        + "cryptsetup --pbkdf pbkdf2 --pbkdf-force-iterations 1000 "
+                        + "luksAddKey --key-slot 1 " + device + " keyfile\n"
+                        + "rm keyfile";
+                PROCESS_EXECUTOR.executeScript(true, true, script);
+            }
         }
 
         // If we want to create a partition at the exact same location of
@@ -573,8 +600,8 @@ public class DLCopy {
         // To make a long story short, this is the reason we have to use the
         // force flag "-F" here.
         int exitValue = PROCESS_EXECUTOR.executeProcess("/sbin/mkfs."
-                + fileSystem, "-F", "-L", Partition.PERSISTENCE_LABEL, 
-                encrypt ? mapperDevice : device);
+                + fileSystem, "-F", "-L", Partition.PERSISTENCE_LABEL,
+                personalDataPartitionEncryption ? mapperDevice : device);
         if (exitValue != 0) {
             LOGGER.severe(PROCESS_EXECUTOR.getOutput());
             String errorMessage = STRINGS.getString(
@@ -585,8 +612,8 @@ public class DLCopy {
 
         // tuning
         exitValue = PROCESS_EXECUTOR.executeProcess(
-                "/sbin/tune2fs", "-m", "0", "-c", "0", "-i", "0", 
-                encrypt ? mapperDevice : device);
+                "/sbin/tune2fs", "-m", "0", "-c", "0", "-i", "0",
+                personalDataPartitionEncryption ? mapperDevice : device);
         if (exitValue != 0) {
             LOGGER.severe(PROCESS_EXECUTOR.getOutput());
             String errorMessage = STRINGS.getString(
@@ -1057,9 +1084,12 @@ public class DLCopy {
             PartitionSizes partitionSizes, long storageDeviceSize,
             final PartitionState partitionState, String exchangeDevice,
             int exchangeMB, String exchangePartitionLabel,
-            String persistenceDevice, boolean encryptPersistence,
-            String encryptionPassword, String efiDevice, String systemDevice,
-            InstallerOrUpgrader installerOrUpgrader, DLCopyGUI dlCopyGUI)
+            String persistenceDevice, boolean personalDataPartitionEncryption,
+            String personalEncryptionPassword,
+            boolean secondaryDataPartitionEncryption,
+            String secondaryEncryptionPassword, String efiDevice,
+            String systemDevice, InstallerOrUpgrader installerOrUpgrader,
+            DLCopyGUI dlCopyGUI)
             throws InterruptedException, IOException, DBusException {
 
         // update GUI
@@ -1356,7 +1386,10 @@ public class DLCopy {
 
             case PERSISTENCE:
                 formatPersistencePartition(persistenceDevice,
-                        encryptPersistence, encryptionPassword,
+                        personalDataPartitionEncryption,
+                        personalEncryptionPassword,
+                        secondaryDataPartitionEncryption,
+                        secondaryEncryptionPassword,
                         installerOrUpgrader.getDataPartitionFileSystem(),
                         dlCopyGUI);
                 formatEfiAndSystemPartition(efiDevice, systemDevice);
@@ -1372,7 +1405,10 @@ public class DLCopy {
                 }
                 if (persistenceDevice != null) {
                     formatPersistencePartition(persistenceDevice,
-                            encryptPersistence, encryptionPassword,
+                            personalDataPartitionEncryption,
+                            personalEncryptionPassword,
+                            secondaryDataPartitionEncryption,
+                            secondaryEncryptionPassword,
                             installerOrUpgrader.getDataPartitionFileSystem(),
                             dlCopyGUI);
                 }
@@ -1735,7 +1771,7 @@ public class DLCopy {
 
         return true;
     }
-    
+
     public static void settleUdev() {
         ProcessExecutor processExecutor = new ProcessExecutor(true);
         processExecutor.executeProcess(true, true, "udevadm", "settle");

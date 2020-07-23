@@ -22,7 +22,8 @@ public class InstallationDestinationDetailsPreferences
     private final static String AUTO_NUMBER_MIN_DIGITS = "autoNumberMinDigits";
     private final static String EXCHANGE_PARTITION_FILESYSTEM = "exchangePartitionFileSystem";
     private final static String DATA_PARTITION_FILESYSTEM = "dataPartitionFileSystem";
-    private final static String ENCRYPTION = "encryption";
+    private final static String PERSONAL_ENCRYPTION = "personalEncryption";
+    private final static String SECONDARY_ENCRYPTION = "secondaryEncryption";
     private final static String CHECK_COPIES = "checkCopies";
 
     private final JComboBox<String> exchangePartitionFileSystemComboBox;
@@ -32,7 +33,8 @@ public class InstallationDestinationDetailsPreferences
     private final JSpinner autoNumberIncrementSpinner;
     private final JSpinner autoNumberMinDigitsSpinner;
     private final JComboBox dataPartitionFileSystemComboBox;
-    private final JCheckBox encryptionCheckBox;
+    private final JCheckBox personalEncryptionCheckBox;
+    private final JCheckBox secondaryEncryptionCheckBox;
     private final JCheckBox checkCopiesCheckBox;
 
     public InstallationDestinationDetailsPreferences(
@@ -43,7 +45,8 @@ public class InstallationDestinationDetailsPreferences
             JSpinner autoNumberIncrementSpinner,
             JSpinner autoNumberMinDigitsSpinner,
             JComboBox dataPartitionFileSystemComboBox,
-            JCheckBox encryptionCheckBox,
+            JCheckBox personalEncryptionCheckBox,
+            JCheckBox secondaryEncryptionCheckBox,
             JCheckBox checkCopiesCheckBox) {
 
         this.exchangePartitionFileSystemComboBox = exchangePartitionFileSystemComboBox;
@@ -53,7 +56,8 @@ public class InstallationDestinationDetailsPreferences
         this.autoNumberIncrementSpinner = autoNumberIncrementSpinner;
         this.autoNumberMinDigitsSpinner = autoNumberMinDigitsSpinner;
         this.dataPartitionFileSystemComboBox = dataPartitionFileSystemComboBox;
-        this.encryptionCheckBox = encryptionCheckBox;
+        this.personalEncryptionCheckBox = personalEncryptionCheckBox;
+        this.secondaryEncryptionCheckBox = secondaryEncryptionCheckBox;
         this.checkCopiesCheckBox = checkCopiesCheckBox;
     }
 
@@ -76,10 +80,10 @@ public class InstallationDestinationDetailsPreferences
                 preferences.get(DATA_PARTITION_FILESYSTEM, "ext4"));
         checkCopiesCheckBox.setSelected(
                 preferences.getBoolean(CHECK_COPIES, false));
-        if (preferences.getBoolean(ENCRYPTION, false)) {
-            // must be "clicked" to trigger action and cardlayout changes
-            encryptionCheckBox.doClick();
-        }
+        personalEncryptionCheckBox.setSelected(
+                preferences.getBoolean(PERSONAL_ENCRYPTION, false));
+        secondaryEncryptionCheckBox.setSelected(
+                preferences.getBoolean(SECONDARY_ENCRYPTION, false));
     }
 
     @Override
@@ -98,7 +102,10 @@ public class InstallationDestinationDetailsPreferences
                 ((Number) autoNumberMinDigitsSpinner.getValue()).intValue());
         preferences.put(DATA_PARTITION_FILESYSTEM,
                 dataPartitionFileSystemComboBox.getSelectedItem().toString());
-        preferences.putBoolean(ENCRYPTION, encryptionCheckBox.isSelected());
+        preferences.putBoolean(PERSONAL_ENCRYPTION, 
+                personalEncryptionCheckBox.isSelected());
+        preferences.putBoolean(SECONDARY_ENCRYPTION, 
+                secondaryEncryptionCheckBox.isSelected());
         preferences.putBoolean(CHECK_COPIES, checkCopiesCheckBox.isSelected());
     }
 }

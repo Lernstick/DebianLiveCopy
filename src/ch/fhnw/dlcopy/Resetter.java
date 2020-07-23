@@ -618,7 +618,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
 
             // TODO: support encryption
             DLCopy.formatPersistencePartition(
-                    "/dev/" + dataPartition.getDeviceAndNumber(),
+                    "/dev/" + dataPartition.getDeviceAndNumber(), false, null, 
                     false, null, dataPartitionFileSystem, dlCopyGUI);
 
             cleanupRoot = dataPartition.mount().getMountPath() + "/rw";
