@@ -1,3 +1,10 @@
+dlcopy (202007232343-1) lernstick-10; urgency=medium
+
+  * [03e204] simplified encryption GUI
+  * [445046] added support for secondary encryption password
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 23 Jul 2020 23:43:21 +0200
+
 dlcopy (202006291557-1) lernstick-10; urgency=medium
 
   * [a44bb0] code cleanup (most of all a separate class for the upgrader panels)
