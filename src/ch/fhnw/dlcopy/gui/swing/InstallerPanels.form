@@ -815,6 +815,9 @@
                                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                                           <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="InstallerPanels.personalPasswordCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                         </Property>
+                                        <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="Encryption_ToolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                        </Property>
                                       </Properties>
                                       <Events>
                                         <EventHandler event="itemStateChanged" listener="java.awt.event.ItemListener" parameters="java.awt.event.ItemEvent" handler="personalPasswordCheckBoxItemStateChanged"/>
@@ -827,6 +830,9 @@
                                     </Component>
                                     <Component class="javax.swing.JPasswordField" name="personalPasswordField">
                                       <Properties>
+                                        <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="Encryption_ToolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                        </Property>
                                         <Property name="enabled" type="boolean" value="false"/>
                                       </Properties>
                                       <Constraints>
@@ -839,6 +845,9 @@
                                       <Properties>
                                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                                           <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/password-show-on.png"/>
+                                        </Property>
+                                        <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="Encryption_ToolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                         </Property>
                                         <Property name="enabled" type="boolean" value="false"/>
                                         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
@@ -859,6 +868,9 @@
                                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                                           <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="InstallerPanels.secondaryPasswordCheckBox.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                         </Property>
+                                        <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="SecondaryPassword_ToolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                        </Property>
                                         <Property name="enabled" type="boolean" value="false"/>
                                       </Properties>
                                       <Events>
@@ -872,6 +884,9 @@
                                     </Component>
                                     <Component class="javax.swing.JPasswordField" name="secondaryPasswordField">
                                       <Properties>
+                                        <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="SecondaryPassword_ToolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
+                                        </Property>
                                         <Property name="enabled" type="boolean" value="false"/>
                                       </Properties>
                                       <Constraints>
@@ -884,6 +899,9 @@
                                       <Properties>
                                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
                                           <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/password-show-on.png"/>
+                                        </Property>
+                                        <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
+                                          <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="SecondaryPassword_ToolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
                                         </Property>
                                         <Property name="enabled" type="boolean" value="false"/>
                                         <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">

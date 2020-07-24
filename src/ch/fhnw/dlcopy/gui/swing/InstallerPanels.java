@@ -1217,6 +1217,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         encryptionPanel.setLayout(new java.awt.GridBagLayout());
 
         personalPasswordCheckBox.setText(bundle.getString("InstallerPanels.personalPasswordCheckBox.text")); // NOI18N
+        personalPasswordCheckBox.setToolTipText(bundle.getString("Encryption_ToolTipText")); // NOI18N
         personalPasswordCheckBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 personalPasswordCheckBoxItemStateChanged(evt);
@@ -1227,6 +1228,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
         encryptionPanel.add(personalPasswordCheckBox, gridBagConstraints);
 
+        personalPasswordField.setToolTipText(bundle.getString("Encryption_ToolTipText")); // NOI18N
         personalPasswordField.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -1236,6 +1238,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         encryptionPanel.add(personalPasswordField, gridBagConstraints);
 
         personalPasswordToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/password-show-on.png"))); // NOI18N
+        personalPasswordToggleButton.setToolTipText(bundle.getString("Encryption_ToolTipText")); // NOI18N
         personalPasswordToggleButton.setEnabled(false);
         personalPasswordToggleButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         personalPasswordToggleButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1249,6 +1252,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         encryptionPanel.add(personalPasswordToggleButton, gridBagConstraints);
 
         secondaryPasswordCheckBox.setText(bundle.getString("InstallerPanels.secondaryPasswordCheckBox.text")); // NOI18N
+        secondaryPasswordCheckBox.setToolTipText(bundle.getString("SecondaryPassword_ToolTipText")); // NOI18N
         secondaryPasswordCheckBox.setEnabled(false);
         secondaryPasswordCheckBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
@@ -1260,6 +1264,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
         encryptionPanel.add(secondaryPasswordCheckBox, gridBagConstraints);
 
+        secondaryPasswordField.setToolTipText(bundle.getString("SecondaryPassword_ToolTipText")); // NOI18N
         secondaryPasswordField.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -1269,6 +1274,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         encryptionPanel.add(secondaryPasswordField, gridBagConstraints);
 
         secondaryPasswordToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/password-show-on.png"))); // NOI18N
+        secondaryPasswordToggleButton.setToolTipText(bundle.getString("SecondaryPassword_ToolTipText")); // NOI18N
         secondaryPasswordToggleButton.setEnabled(false);
         secondaryPasswordToggleButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         secondaryPasswordToggleButton.addActionListener(new java.awt.event.ActionListener() {
