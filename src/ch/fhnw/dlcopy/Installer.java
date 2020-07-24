@@ -35,6 +35,7 @@ public class Installer extends InstallerOrUpgrader
     private final String personalEncryptionPassword;
     private final boolean secondaryDataPartitionEncryption;
     private final String secondaryEncryptionPassword;
+    private final boolean randomFillDataPartition;
     private final boolean copyDataPartition;
     private final DataPartitionMode dataPartitionMode;
     private final StorageDevice transferDevice;
@@ -72,6 +73,8 @@ public class Installer extends InstallerOrUpgrader
      * encrypted with a secondary password
      * @param secondaryEncryptionPassword the secondary password for data
      * partition encryption
+     * @param randomFillDataPartition if the data partition should be filled
+     * with random data before formatting
      * @param copyDataPartition if the data partition should be copied
      * @param dataPartitionMode the mode of the data partition to set in the
      * bootloaders config
@@ -94,7 +97,8 @@ public class Installer extends InstallerOrUpgrader
             int autoNumberMinDigits, boolean personalDataPartitionEncryption,
             String personalEncryptionPassword,
             boolean secondaryDataPartitionEncryption,
-            String secondaryEncryptionPassword, boolean copyDataPartition,
+            String secondaryEncryptionPassword, boolean randomFillDataPartition,
+            boolean copyDataPartition,
             DataPartitionMode dataPartitionMode, StorageDevice transferDevice,
             boolean transferExchange, boolean transferHome,
             boolean transferNetwork, boolean transferPrinter,
@@ -114,6 +118,7 @@ public class Installer extends InstallerOrUpgrader
         this.personalEncryptionPassword = personalEncryptionPassword;
         this.secondaryDataPartitionEncryption = secondaryDataPartitionEncryption;
         this.secondaryEncryptionPassword = secondaryEncryptionPassword;
+        this.randomFillDataPartition = randomFillDataPartition;
         this.copyDataPartition = copyDataPartition;
         this.dataPartitionMode = dataPartitionMode;
         this.checkCopies = checkCopies;
@@ -162,7 +167,7 @@ public class Installer extends InstallerOrUpgrader
                             personalEncryptionPassword,
                             secondaryDataPartitionEncryption,
                             secondaryEncryptionPassword,
-                            checkCopies, dlCopyGUI);
+                            randomFillDataPartition, checkCopies, dlCopyGUI);
                 } catch (InterruptedException | IOException
                         | DBusException exception) {
                     LOGGER.log(Level.WARNING, "", exception);

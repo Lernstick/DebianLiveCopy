@@ -3,7 +3,6 @@ package ch.fhnw.dlcopy.gui.swing.preferences;
 import static ch.fhnw.dlcopy.DLCopy.STRINGS;
 import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
-import javax.swing.JRadioButton;
 import javax.swing.JSpinner;
 import javax.swing.JTextField;
 
@@ -21,9 +20,10 @@ public class InstallationDestinationDetailsPreferences
     private final static String AUTO_NUMBER_INCREMENT = "autoNumberIncrement";
     private final static String AUTO_NUMBER_MIN_DIGITS = "autoNumberMinDigits";
     private final static String EXCHANGE_PARTITION_FILESYSTEM = "exchangePartitionFileSystem";
-    private final static String DATA_PARTITION_FILESYSTEM = "dataPartitionFileSystem";
     private final static String PERSONAL_ENCRYPTION = "personalEncryption";
     private final static String SECONDARY_ENCRYPTION = "secondaryEncryption";
+    private final static String RANDOM_OVERWRITE = "randomOverwrite";
+    private final static String DATA_PARTITION_FILESYSTEM = "dataPartitionFileSystem";
     private final static String CHECK_COPIES = "checkCopies";
 
     private final JComboBox<String> exchangePartitionFileSystemComboBox;
@@ -32,9 +32,10 @@ public class InstallationDestinationDetailsPreferences
     private final JSpinner autoNumberStartSpinner;
     private final JSpinner autoNumberIncrementSpinner;
     private final JSpinner autoNumberMinDigitsSpinner;
-    private final JComboBox dataPartitionFileSystemComboBox;
     private final JCheckBox personalEncryptionCheckBox;
     private final JCheckBox secondaryEncryptionCheckBox;
+    private final JCheckBox overwriteWithRandomDataCheckBox;
+    private final JComboBox dataPartitionFileSystemComboBox;
     private final JCheckBox checkCopiesCheckBox;
 
     public InstallationDestinationDetailsPreferences(
@@ -44,9 +45,10 @@ public class InstallationDestinationDetailsPreferences
             JSpinner autoNumberStartSpinner,
             JSpinner autoNumberIncrementSpinner,
             JSpinner autoNumberMinDigitsSpinner,
-            JComboBox dataPartitionFileSystemComboBox,
             JCheckBox personalEncryptionCheckBox,
             JCheckBox secondaryEncryptionCheckBox,
+            JCheckBox overwriteWithRandomDataCheckBox,
+            JComboBox dataPartitionFileSystemComboBox,
             JCheckBox checkCopiesCheckBox) {
 
         this.exchangePartitionFileSystemComboBox = exchangePartitionFileSystemComboBox;
@@ -55,9 +57,10 @@ public class InstallationDestinationDetailsPreferences
         this.autoNumberStartSpinner = autoNumberStartSpinner;
         this.autoNumberIncrementSpinner = autoNumberIncrementSpinner;
         this.autoNumberMinDigitsSpinner = autoNumberMinDigitsSpinner;
-        this.dataPartitionFileSystemComboBox = dataPartitionFileSystemComboBox;
         this.personalEncryptionCheckBox = personalEncryptionCheckBox;
         this.secondaryEncryptionCheckBox = secondaryEncryptionCheckBox;
+        this.overwriteWithRandomDataCheckBox = overwriteWithRandomDataCheckBox;
+        this.dataPartitionFileSystemComboBox = dataPartitionFileSystemComboBox;
         this.checkCopiesCheckBox = checkCopiesCheckBox;
     }
 
@@ -76,14 +79,16 @@ public class InstallationDestinationDetailsPreferences
                 preferences.getInt(AUTO_NUMBER_INCREMENT, 1));
         autoNumberMinDigitsSpinner.setValue(
                 preferences.getInt(AUTO_NUMBER_MIN_DIGITS, 1));
-        dataPartitionFileSystemComboBox.setSelectedItem(
-                preferences.get(DATA_PARTITION_FILESYSTEM, "ext4"));
-        checkCopiesCheckBox.setSelected(
-                preferences.getBoolean(CHECK_COPIES, false));
         personalEncryptionCheckBox.setSelected(
                 preferences.getBoolean(PERSONAL_ENCRYPTION, false));
         secondaryEncryptionCheckBox.setSelected(
                 preferences.getBoolean(SECONDARY_ENCRYPTION, false));
+        overwriteWithRandomDataCheckBox.setSelected(
+                preferences.getBoolean(RANDOM_OVERWRITE, false));
+        dataPartitionFileSystemComboBox.setSelectedItem(
+                preferences.get(DATA_PARTITION_FILESYSTEM, "ext4"));
+        checkCopiesCheckBox.setSelected(
+                preferences.getBoolean(CHECK_COPIES, false));
     }
 
     @Override
@@ -100,12 +105,14 @@ public class InstallationDestinationDetailsPreferences
                 ((Number) autoNumberIncrementSpinner.getValue()).intValue());
         preferences.putInt(AUTO_NUMBER_MIN_DIGITS,
                 ((Number) autoNumberMinDigitsSpinner.getValue()).intValue());
-        preferences.put(DATA_PARTITION_FILESYSTEM,
-                dataPartitionFileSystemComboBox.getSelectedItem().toString());
         preferences.putBoolean(PERSONAL_ENCRYPTION, 
                 personalEncryptionCheckBox.isSelected());
         preferences.putBoolean(SECONDARY_ENCRYPTION, 
                 secondaryEncryptionCheckBox.isSelected());
+        preferences.putBoolean(RANDOM_OVERWRITE, 
+                overwriteWithRandomDataCheckBox.isSelected());
+        preferences.put(DATA_PARTITION_FILESYSTEM,
+                dataPartitionFileSystemComboBox.getSelectedItem().toString());
         preferences.putBoolean(CHECK_COPIES, checkCopiesCheckBox.isSelected());
     }
 }

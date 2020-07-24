@@ -490,7 +490,14 @@ public class DLCopySwingGUI extends JFrame
 
     @Override
     public void showInstallCreatingFileSystems() {
-        showInstallIndeterminateProgressBarText("Creating_File_Systems");
+        installerPanels.showIndeterminateProgressBarText(
+                "Creating_File_Systems");
+    }
+
+    @Override
+    public void showInstallOverwritingDataPartitionWithRandomData(
+            long done, long size) {
+        installerPanels.showOverwriteRandomProgressBar(done, size);
     }
 
     @Override
@@ -513,12 +520,14 @@ public class DLCopySwingGUI extends JFrame
 
     @Override
     public void showInstallUnmounting() {
-        showInstallIndeterminateProgressBarText("Unmounting_File_Systems");
+        installerPanels.showIndeterminateProgressBarText(
+                "Unmounting_File_Systems");
     }
 
     @Override
     public void showInstallWritingBootSector() {
-        showInstallIndeterminateProgressBarText("Writing_Boot_Sector");
+        installerPanels.showIndeterminateProgressBarText(
+                "Writing_Boot_Sector");
     }
 
     @Override
@@ -2038,6 +2047,7 @@ public class DLCopySwingGUI extends JFrame
                 installerPanels.getPersonalEncryptionPassword(),
                 installerPanels.isSecondaryEncryptionSelected(),
                 installerPanels.getSecondaryEncryptionPassword(),
+                installerPanels.isOverwriteDataPartitionWithRandomDataSelected(),
                 installerPanels.isCopyDataSelected(),
                 installerPanels.getDataPartitionMode(),
                 installerPanels.getTransferDevice(),
@@ -2121,10 +2131,6 @@ public class DLCopySwingGUI extends JFrame
                     isoCreatorPanels.getIsoLabel())
                     .execute();
         }
-    }
-
-    private void showInstallIndeterminateProgressBarText(final String text) {
-        installerPanels.showIndeterminateProgressBarText(text);
     }
 
     private void deviceStarted(StorageDevice storageDevice) {

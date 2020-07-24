@@ -32,6 +32,16 @@ public interface DLCopyGUI {
     public void showInstallCreatingFileSystems();
 
     /**
+     * shows the user interface for overwriting the data partition with random
+     * data
+     *
+     * @param done the amount of data that is already overwritten
+     * @param size the size of the data partition
+     */
+    public void showInstallOverwritingDataPartitionWithRandomData(
+            long done, long size);
+
+    /**
      * shows the user interface for copying files of a running installation
      *
      * @param fileCopier the FileCopier used for copying files of an

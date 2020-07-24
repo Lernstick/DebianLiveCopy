@@ -96,6 +96,9 @@ public class InstallerPanels extends JPanel implements DocumentListener {
 
     private CpActionListener cpActionListener;
 
+    private Timer overwriteTimer;
+    private OverwriteRandomActionListener overwriteRandomActionListener;
+
     /**
      * Creates new form InstallerPanels
      */
@@ -203,9 +206,9 @@ public class InstallerPanels extends JPanel implements DocumentListener {
                         exchangePartitionLabelTextField,
                         autoNumberPatternTextField, autoNumberStartSpinner,
                         autoNumberIncrementSpinner, autoNumberMinDigitsSpinner,
-                        dataPartitionFileSystemComboBox,
                         personalPasswordCheckBox, secondaryPasswordCheckBox,
-                        checkCopiesCheckBox));
+                        overwriteWithRandomDataCheckBox,
+                        dataPartitionFileSystemComboBox, checkCopiesCheckBox));
 
         preferencesHandler.addPreference(
                 new InstallationDestinationTransferPreferences(
@@ -428,6 +431,10 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         return String.valueOf(secondaryPasswordField.getPassword());
     }
 
+    public boolean isOverwriteDataPartitionWithRandomDataSelected() {
+        return overwriteWithRandomDataCheckBox.isSelected();
+    }
+
     public StorageDevice getTransferDevice() {
         return transferStorageDeviceList.getSelectedValue();
     }
@@ -516,7 +523,29 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         }
     }
 
+    public void showOverwriteRandomProgressBar(long value, long maximum) {
+
+        if (overwriteTimer == null) {
+            SwingUtilities.invokeLater(() -> {
+                DLCopySwingGUI.showCard(installCardPanel, "progressPanel");
+            });
+            overwriteRandomActionListener
+                    = new OverwriteRandomActionListener(progressBar, maximum);
+            overwriteTimer = new Timer(1000, overwriteRandomActionListener);
+            overwriteTimer.setInitialDelay(0);
+            overwriteTimer.start();
+        }
+
+        overwriteRandomActionListener.setDone(value);
+    }
+
     public void showIndeterminateProgressBarText(final String text) {
+
+        if (overwriteTimer != null) {
+            overwriteTimer.stop();
+            overwriteTimer = null;
+        }
+
         SwingUtilities.invokeLater(() -> {
             DLCopySwingGUI.showCard(installCardPanel,
                     "indeterminateProgressPanel");
@@ -778,6 +807,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         secondaryPasswordCheckBox = new javax.swing.JCheckBox();
         secondaryPasswordField = new javax.swing.JPasswordField();
         secondaryPasswordToggleButton = new javax.swing.JToggleButton();
+        overwriteWithRandomDataCheckBox = new javax.swing.JCheckBox();
         fileSystemPanel = new javax.swing.JPanel();
         dataPartitionFileSystemComboBox = new javax.swing.JComboBox<>();
         checkCopiesCheckBox = new javax.swing.JCheckBox();
@@ -800,6 +830,8 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         currentlyInstalledDeviceLabel = new javax.swing.JLabel();
         jSeparator3 = new javax.swing.JSeparator();
         installCardPanel = new javax.swing.JPanel();
+        progressPanel = new javax.swing.JPanel();
+        progressBar = new javax.swing.JProgressBar();
         indeterminateProgressPanel = new javax.swing.JPanel();
         indeterminateProgressBar = new javax.swing.JProgressBar();
         copyPanel = new javax.swing.JPanel();
@@ -1225,7 +1257,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         encryptionPanel.add(personalPasswordCheckBox, gridBagConstraints);
 
         personalPasswordField.setToolTipText(bundle.getString("Encryption_ToolTipText")); // NOI18N
@@ -1261,7 +1293,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         encryptionPanel.add(secondaryPasswordCheckBox, gridBagConstraints);
 
         secondaryPasswordField.setToolTipText(bundle.getString("SecondaryPassword_ToolTipText")); // NOI18N
@@ -1270,7 +1302,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         encryptionPanel.add(secondaryPasswordField, gridBagConstraints);
 
         secondaryPasswordToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/password-show-on.png"))); // NOI18N
@@ -1284,8 +1316,17 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
         encryptionPanel.add(secondaryPasswordToggleButton, gridBagConstraints);
+
+        overwriteWithRandomDataCheckBox.setText(bundle.getString("InstallerPanels.overwriteWithRandomDataCheckBox.text")); // NOI18N
+        overwriteWithRandomDataCheckBox.setToolTipText(bundle.getString("RandomFill_ToolTipText")); // NOI18N
+        overwriteWithRandomDataCheckBox.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        encryptionPanel.add(overwriteWithRandomDataCheckBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -1442,6 +1483,17 @@ public class InstallerPanels extends JPanel implements DocumentListener {
 
         installCardPanel.setName("installCardPanel"); // NOI18N
         installCardPanel.setLayout(new java.awt.CardLayout());
+
+        progressPanel.setLayout(new java.awt.GridBagLayout());
+
+        progressBar.setPreferredSize(new java.awt.Dimension(300, 25));
+        progressBar.setStringPainted(true);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 1.0;
+        progressPanel.add(progressBar, gridBagConstraints);
+
+        installCardPanel.add(progressPanel, "progressPanel");
 
         indeterminateProgressPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -1616,6 +1668,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         boolean bothEnabled = enabled && secondaryPasswordCheckBox.isSelected();
         secondaryPasswordField.setEnabled(bothEnabled);
         secondaryPasswordToggleButton.setEnabled(bothEnabled);
+        overwriteWithRandomDataCheckBox.setEnabled(enabled);
     }//GEN-LAST:event_personalPasswordCheckBoxItemStateChanged
 
     private void secondaryPasswordToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_secondaryPasswordToggleButtonActionPerformed
@@ -2140,9 +2193,12 @@ public class InstallerPanels extends JPanel implements DocumentListener {
     private javax.swing.JPanel noMediaPanel;
     private javax.swing.JLabel noSouceLabel;
     private javax.swing.JPanel noSourcePanel;
+    private javax.swing.JCheckBox overwriteWithRandomDataCheckBox;
     private javax.swing.JCheckBox personalPasswordCheckBox;
     private javax.swing.JPasswordField personalPasswordField;
     private javax.swing.JToggleButton personalPasswordToggleButton;
+    private javax.swing.JProgressBar progressBar;
+    private javax.swing.JPanel progressPanel;
     private javax.swing.JPanel reportPanel;
     private javax.swing.JScrollPane resultsScrollPane;
     private javax.swing.JTable resultsTable;

@@ -12,15 +12,17 @@ import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
 import java.io.BufferedReader;
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.ByteBuffer;
+import java.nio.channels.FileChannel;
 import java.nio.file.DirectoryStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -209,6 +211,8 @@ public class DLCopy {
      * @param secondaryDataPartitionEncryption if the persistence partition
      * should be encrypted with a secondary password
      * @param secondaryEncryptionPassword the secondary encryption password
+     * @param randomFillDataPartition if the data partition should be filled
+     * with random data before formatting
      * @param checkCopies if copies should be checked for errors
      * @param dlCopyGUI the program GUI
      * @throws InterruptedException when the installation was interrupted
@@ -224,8 +228,8 @@ public class DLCopy {
             boolean personalDataPartitionEncryption,
             String personalEncryptionPassword,
             boolean secondaryDataPartitionEncryption,
-            String secondaryEncryptionPassword, boolean checkCopies,
-            DLCopyGUI dlCopyGUI)
+            String secondaryEncryptionPassword, boolean randomFillDataPartition,
+            boolean checkCopies, DLCopyGUI dlCopyGUI)
             throws InterruptedException, IOException,
             DBusException, NoSuchAlgorithmException {
 
@@ -292,12 +296,13 @@ public class DLCopy {
         // create all necessary partitions
         try {
             createPartitions(storageDevice, partitionSizes, storageDeviceSize,
-                    partitionState, destinationExchangeDevice, exchangeMB,
+                    partitionState, destinationExchangeDevice,
                     exchangePartitionLabel, destinationDataDevice,
                     personalDataPartitionEncryption, personalEncryptionPassword,
                     secondaryDataPartitionEncryption,
-                    secondaryEncryptionPassword, destinationEfiDevice,
-                    destinationSystemDevice, installerOrUpgrader, dlCopyGUI);
+                    secondaryEncryptionPassword, randomFillDataPartition,
+                    destinationEfiDevice, destinationSystemDevice,
+                    installerOrUpgrader, dlCopyGUI);
         } catch (IOException iOException) {
             // On some Corsair Flash Voyager GT drives the first sfdisk try
             // failes with the following output:
@@ -344,12 +349,13 @@ public class DLCopy {
             // more strangely, it always works the second time. Therefore
             // we automatically retry once more in case of an error.
             createPartitions(storageDevice, partitionSizes, storageDeviceSize,
-                    partitionState, destinationExchangeDevice, exchangeMB,
+                    partitionState, destinationExchangeDevice,
                     exchangePartitionLabel, destinationDataDevice,
                     personalDataPartitionEncryption, personalEncryptionPassword,
                     secondaryDataPartitionEncryption,
-                    secondaryEncryptionPassword, destinationEfiDevice,
-                    destinationSystemDevice, installerOrUpgrader, dlCopyGUI);
+                    secondaryEncryptionPassword, randomFillDataPartition,
+                    destinationEfiDevice, destinationSystemDevice,
+                    installerOrUpgrader, dlCopyGUI);
         }
 
         // Here have to trigger a rescan of the device partitions. Otherwise
@@ -547,6 +553,8 @@ public class DLCopy {
      * @param secondaryDataPartitionEncryption if the persistence partition
      * should be encrypted with a secondary password
      * @param secondaryEncryptionPassword the secondary encryption password
+     * @param randomFillDataPartition if the data partition should be filled
+     * with random data before formatting
      * @param fileSystem the file system to use
      * @param dlCopyGUI the program GUI to show error messages
      * @throws DBusException if a DBusException occurs
@@ -556,7 +564,7 @@ public class DLCopy {
             boolean personalDataPartitionEncryption,
             String personalEncryptionPassword,
             boolean secondaryDataPartitionEncryption,
-            String secondaryEncryptionPassword,
+            String secondaryEncryptionPassword, boolean randomFillDataPartition,
             String fileSystem, DLCopyGUI dlCopyGUI)
             throws DBusException, IOException {
 
@@ -567,6 +575,37 @@ public class DLCopy {
 
         String mapperDevice = null;
         if (personalDataPartitionEncryption) {
+
+            if (randomFillDataPartition) {
+
+                Partition persistencePartition
+                        = Partition.getPartitionFromDeviceAndNumber(
+                                device.substring(5));
+                long persistenceSize = persistencePartition.getSize();
+
+                LOGGER.info("filling data partition with random data...");
+                try (FileChannel source = FileChannel.open(
+                        Paths.get("/dev/urandom"), StandardOpenOption.READ);
+                        FileChannel destination = FileChannel.open(
+                                Paths.get(device), StandardOpenOption.WRITE)) {
+                    ByteBuffer byteBuffer = ByteBuffer.allocateDirect(MEGA);
+                    long written = 0;
+                    while (true) {
+                        byteBuffer.clear();
+                        source.read(byteBuffer);
+                        byteBuffer.flip();
+                        written += destination.write(byteBuffer);
+                        dlCopyGUI.showInstallOverwritingDataPartitionWithRandomData(
+                                written, persistenceSize);
+                    }
+                } catch (IOException e) {
+                    // this exception is thrown when the filling process is done
+                    // just ignore it...
+                    LOGGER.log(Level.INFO, "", e);
+                }
+                dlCopyGUI.showInstallCreatingFileSystems();
+            }
+
             String mappingID = "encrypted_persistence";
             mapperDevice = "/dev/mapper/" + mappingID;
             String script = "#!/bin/sh\n"
@@ -1083,13 +1122,13 @@ public class DLCopy {
     private static void createPartitions(StorageDevice storageDevice,
             PartitionSizes partitionSizes, long storageDeviceSize,
             final PartitionState partitionState, String exchangeDevice,
-            int exchangeMB, String exchangePartitionLabel,
+            String exchangePartitionLabel,
             String persistenceDevice, boolean personalDataPartitionEncryption,
             String personalEncryptionPassword,
             boolean secondaryDataPartitionEncryption,
-            String secondaryEncryptionPassword, String efiDevice,
-            String systemDevice, InstallerOrUpgrader installerOrUpgrader,
-            DLCopyGUI dlCopyGUI)
+            String secondaryEncryptionPassword, boolean randomFillDataPartition,
+            String efiDevice, String systemDevice,
+            InstallerOrUpgrader installerOrUpgrader, DLCopyGUI dlCopyGUI)
             throws InterruptedException, IOException, DBusException {
 
         // update GUI
@@ -1100,6 +1139,7 @@ public class DLCopy {
         // determine exact partition sizes
         long overhead = storageDeviceSize - getEnlargedSystemSize(
                 installerOrUpgrader.getSourceSystemSize());
+        int exchangeMB = partitionSizes.getExchangeMB();
         int persistenceMB = partitionSizes.getPersistenceMB();
         if (LOGGER.isLoggable(Level.FINEST)) {
             LOGGER.log(Level.FINEST, "size of {0} = {1} Byte\n"
@@ -1307,9 +1347,9 @@ public class DLCopy {
                 //  1) efi (EFI)
                 //  2) system (Linux)
                 PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
-                        "--id", device, "1", "ef");
+                        "--part-type", device, "1", "ef");
                 PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
-                        "--id", device, "2", "83");
+                        "--part-type", device, "2", "83");
                 break;
 
             case PERSISTENCE:
@@ -1318,11 +1358,11 @@ public class DLCopy {
                 //  2) persistence (Linux)
                 //  3) system (Linux)
                 PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
-                        "--id", device, "1", "ef");
+                        "--part-type", device, "1", "ef");
                 PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
-                        "--id", device, "2", "83");
+                        "--part-type", device, "2", "83");
                 PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
-                        "--id", device, "3", "83");
+                        "--part-type", device, "3", "83");
                 break;
 
             case EXCHANGE:
@@ -1332,11 +1372,11 @@ public class DLCopy {
                     //  2) persistence (Linux)
                     //  3) system (Linux)
                     PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
-                            "--id", device, "1", "ef");
+                            "--part-type", device, "1", "ef");
                     PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
-                            "--id", device, "2", "83");
+                            "--part-type", device, "2", "83");
                     PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
-                            "--id", device, "3", "83");
+                            "--part-type", device, "3", "83");
                 } else {
                     // determine ID for exchange partition
                     String exchangePartitionID;
@@ -1352,21 +1392,21 @@ public class DLCopy {
                     //  1) efi (EFI)
                     //  2) exchange (exFAT, FAT32 or NTFS)
                     PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
-                            "--id", device, "1", "ef");
+                            "--part-type", device, "1", "ef");
                     PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
-                            "--id", device, "2", exchangePartitionID);
+                            "--part-type", device, "2", exchangePartitionID);
 
                     if (persistenceMB == 0) {
                         //  3) system (Linux)
                         PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
-                                "--id", device, "3", "83");
+                                "--part-type", device, "3", "83");
                     } else {
                         //  3) persistence (Linux)
                         //  4) system (Linux)
                         PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
-                                "--id", device, "3", "83");
+                                "--part-type", device, "3", "83");
                         PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk",
-                                "--id", device, "4", "83");
+                                "--part-type", device, "4", "83");
                     }
                 }
                 break;
@@ -1377,6 +1417,12 @@ public class DLCopy {
                 LOGGER.log(Level.SEVERE, errorMessage);
                 throw new IOException(errorMessage);
         }
+
+        // Partition.getPartitionFromDeviceAndNumber() in
+        // formatPersistencePartition() below failed without waiting here for
+        // a little bit
+        TimeUnit.SECONDS.sleep(3);
+        settleUdev();
 
         // create file systems
         switch (partitionState) {
@@ -1389,7 +1435,7 @@ public class DLCopy {
                         personalDataPartitionEncryption,
                         personalEncryptionPassword,
                         secondaryDataPartitionEncryption,
-                        secondaryEncryptionPassword,
+                        secondaryEncryptionPassword, randomFillDataPartition,
                         installerOrUpgrader.getDataPartitionFileSystem(),
                         dlCopyGUI);
                 formatEfiAndSystemPartition(efiDevice, systemDevice);
@@ -1409,6 +1455,7 @@ public class DLCopy {
                             personalEncryptionPassword,
                             secondaryDataPartitionEncryption,
                             secondaryEncryptionPassword,
+                            randomFillDataPartition,
                             installerOrUpgrader.getDataPartitionFileSystem(),
                             dlCopyGUI);
                 }
@@ -1601,7 +1648,7 @@ public class DLCopy {
         Pattern pattern = Pattern.compile("(.*)(\\p{Digit}+)");
         Matcher matcher = pattern.matcher(device);
         if (matcher.matches()) {
-            PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk", "--id",
+            PROCESS_EXECUTOR.executeProcess("/sbin/sfdisk", "--part-type",
                     matcher.group(1), matcher.group(2), exchangePartitionID);
             try {
                 TimeUnit.SECONDS.sleep(7);

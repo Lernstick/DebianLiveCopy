@@ -197,7 +197,7 @@ public class Upgrader extends InstallerOrUpgrader {
                             DLCopy.copyToStorageDevice(source, fileCopier,
                                     storageDevice, exchangePartitionLabel,
                                     this, false, null, false, null, false,
-                                    dlCopyGUI);
+                                    false, dlCopyGUI);
                             break;
 
                         default:
@@ -303,7 +303,7 @@ public class Upgrader extends InstallerOrUpgrader {
         // TODO: support encryption and checking of copies
         DLCopy.copyToStorageDevice(source, fileCopier, storageDevice,
                 exchangePartitionLabel, this, false, null, false, null, false,
-                dlCopyGUI);
+                false, dlCopyGUI);
 
         // !!! update reference to storage device !!!
         // copyToStorageDevice() may change the storage device completely
