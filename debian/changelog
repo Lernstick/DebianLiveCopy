@@ -1,3 +1,11 @@
+dlcopy (202007250005-1) lernstick-10; urgency=medium
+
+  * [f27622] added encryption tooltips
+  * [8f954a] added option to overwrite data partition with random data before
+             encryption
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 25 Jul 2020 00:05:29 +0200
+
 dlcopy (202007232343-1) lernstick-10; urgency=medium
 
   * [03e204] simplified encryption GUI
