@@ -606,6 +606,8 @@ public class DLCopy {
                 dlCopyGUI.showInstallCreatingFileSystems();
             }
 
+            ProcessExecutor processExecutor = new ProcessExecutor(false);
+            
             String mappingID = "encrypted_persistence";
             mapperDevice = "/dev/mapper/" + mappingID;
             String script = "#!/bin/sh\n"
@@ -614,7 +616,7 @@ public class DLCopy {
                     + "luksFormat " + device + "\n"
                     + "echo \"" + personalEncryptionPassword + "\" | "
                     + "cryptsetup open --type luks " + device + " " + mappingID;
-            PROCESS_EXECUTOR.executeScript(true, true, script);
+            processExecutor.executeScript(script);
 
             if (secondaryDataPartitionEncryption) {
                 script = "#!/bin/sh\n"
@@ -624,7 +626,7 @@ public class DLCopy {
                         + "cryptsetup --pbkdf pbkdf2 --pbkdf-force-iterations 1000 "
                         + "luksAddKey --key-slot 1 " + device + " keyfile\n"
                         + "rm keyfile";
-                PROCESS_EXECUTOR.executeScript(true, true, script);
+                processExecutor.executeScript(script);
             }
         }
 
