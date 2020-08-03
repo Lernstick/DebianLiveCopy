@@ -1,3 +1,10 @@
+dlcopy (202008031742-1) lernstick-10; urgency=medium
+
+  * [50f088] don't log LUKS passwords
+  * [feee48] use current lernstickTools library for more LUKS operations
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Mon, 03 Aug 2020 17:42:29 +0200
+
 dlcopy (202007250005-1) lernstick-10; urgency=medium
 
   * [f27622] added encryption tooltips
