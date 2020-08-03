@@ -576,11 +576,12 @@ public class DLCopy {
         String mapperDevice = null;
         if (personalDataPartitionEncryption) {
 
+            Partition persistencePartition
+                    = Partition.getPartitionFromDeviceAndNumber(
+                            device.substring(5));
+
             if (randomFillDataPartition) {
 
-                Partition persistencePartition
-                        = Partition.getPartitionFromDeviceAndNumber(
-                                device.substring(5));
                 long persistenceSize = persistencePartition.getSize();
 
                 LOGGER.info("filling data partition with random data...");
@@ -606,27 +607,15 @@ public class DLCopy {
                 dlCopyGUI.showInstallCreatingFileSystems();
             }
 
-            ProcessExecutor processExecutor = new ProcessExecutor(false);
-            
-            String mappingID = "encrypted_persistence";
-            mapperDevice = "/dev/mapper/" + mappingID;
-            String script = "#!/bin/sh\n"
-                    + "echo \"" + personalEncryptionPassword + "\" | "
-                    + "cryptsetup --pbkdf pbkdf2 --pbkdf-force-iterations 1000 "
-                    + "luksFormat " + device + "\n"
-                    + "echo \"" + personalEncryptionPassword + "\" | "
-                    + "cryptsetup open --type luks " + device + " " + mappingID;
-            processExecutor.executeScript(script);
+            persistencePartition.luksFormat(personalEncryptionPassword);
+
+            mapperDevice
+                    = persistencePartition.luksOpen(personalEncryptionPassword);
 
             if (secondaryDataPartitionEncryption) {
-                script = "#!/bin/sh\n"
-                        + "echo -n \"" + secondaryEncryptionPassword + "\""
-                        + " > keyfile\n"
-                        + "echo \"" + personalEncryptionPassword + "\" | "
-                        + "cryptsetup --pbkdf pbkdf2 --pbkdf-force-iterations 1000 "
-                        + "luksAddKey --key-slot 1 " + device + " keyfile\n"
-                        + "rm keyfile";
-                processExecutor.executeScript(script);
+                persistencePartition.addSecondaryLuksPassword(
+                        personalEncryptionPassword,
+                        secondaryEncryptionPassword);
             }
         }
 
