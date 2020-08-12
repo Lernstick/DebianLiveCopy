@@ -28,6 +28,8 @@ import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
 import java.util.concurrent.TimeUnit;
@@ -1779,6 +1781,55 @@ public class DLCopy {
             throw new IOException(
                     "resizing partition " + previousPartition + " failed");
         }
+
+        // It might happen that the parted command returns but the device nodes
+        // aren't created yet. See here for details:
+        // https://www.gnu.org/software/parted/manual/parted.html#quit
+        // Therefore we have to wait here for the device nodes of both 
+        // partitions to reappear. Otherwise subsequent operations (like
+        // formatting the EFI partition) might fail.
+        waitForDeviceNodes(
+                Paths.get("/dev/" + previousPartition.getDeviceAndNumber()),
+                Paths.get("/dev/" + partition.getDeviceAndNumber()));
+    }
+
+    public static boolean waitForDeviceNodes(Path... deviceNodes) {
+
+        settleUdev();
+
+        List<Path> deviceNodeList = Arrays.asList(deviceNodes);
+
+        for (int i = 0, MAX = 30; i < MAX; i++) {
+
+            Iterator<Path> iterator = deviceNodeList.iterator();
+            while (iterator.hasNext()) {
+                Path path = iterator.next();
+                boolean reappeared = Files.exists(path);
+                LOGGER.log(Level.INFO, "{0} {1}.", new Object[]{
+                    path, reappeared ? "reappeared" : "is still missing"
+                });
+                if (reappeared) {
+                    iterator.remove();
+                }
+            }
+
+            if (deviceNodeList.isEmpty()) {
+                return true;
+            }
+
+            if (i < (MAX - 1)) {
+                try {
+                    TimeUnit.SECONDS.sleep(1);
+                } catch (InterruptedException ex) {
+                    LOGGER.log(Level.SEVERE, "", ex);
+                }
+            } else {
+                LOGGER.warning("Timeout reached, "
+                        + "no longer waiting for device nodes to reappear.");
+            }
+        }
+
+        return false;
     }
 
     public static boolean transfer(StorageDevice sourceDevice,
