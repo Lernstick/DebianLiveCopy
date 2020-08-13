@@ -1,3 +1,10 @@
+dlcopy (202008131915-1) lernstick-10; urgency=medium
+
+  * [c1dd62] wait for device node creation after running parted
+  * [0ea741] fixed waiting for device nodes
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 13 Aug 2020 19:15:09 +0200
+
 dlcopy (202008031742-1) lernstick-10; urgency=medium
 
   * [50f088] don't log LUKS passwords
