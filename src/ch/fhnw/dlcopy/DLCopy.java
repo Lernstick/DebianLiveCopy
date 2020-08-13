@@ -29,6 +29,7 @@ import java.security.NoSuchAlgorithmException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ResourceBundle;
@@ -1797,7 +1798,13 @@ public class DLCopy {
 
         settleUdev();
 
-        List<Path> deviceNodeList = Arrays.asList(deviceNodes);
+        // With this version:
+        // List<Path> deviceNodeList = Arrays.asList(deviceNodes);
+        // iterator.remove() below just throws
+        // java.lang.UnsupportedOperationException: remove
+        // Therefore we have to make a copy of the deviceNodes varargs array.
+        List<Path> deviceNodeList = new ArrayList<>();
+        Collections.addAll(deviceNodeList, deviceNodes);
 
         for (int i = 0, MAX = 30; i < MAX; i++) {
 
