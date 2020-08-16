@@ -1,6 +1,7 @@
 package ch.fhnw.dlcopy;
 
 import static ch.fhnw.dlcopy.DLCopy.STRINGS;
+import static ch.fhnw.util.StorageDevice.EfiUpgradeVariant;
 import ch.fhnw.dlcopy.gui.swing.DLCopySwingGUI;
 import ch.fhnw.dlcopy.gui.DLCopyGUI;
 import ch.fhnw.filecopier.CopyJob;
@@ -846,59 +847,68 @@ public class Upgrader extends InstallerOrUpgrader {
 
         ProcessExecutor processExecutor = new ProcessExecutor();
 
-        // enlarge EFI partition if necessary and possible
-        long currentEfiPartitionSize = efiPartition.getSize();
-        long wantedEfiPartitionSize = DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA;
-        if (currentEfiPartitionSize < wantedEfiPartitionSize) {
-            // enlarging is (for now) only possible when the next partition is
-            // ext[234]
-            // (the list returned by getPartitions() is 0-based and getNumber()
-            // is 1-based, so we really get the next partition...)
-            Partition nextPartition = storageDevice.getPartitions().get(
-                    efiPartition.getNumber());
-            File exchangeDestination = null;
+        // (the list returned by getPartitions() is 0-based and getNumber()
+        // is 1-based, so we really get the next partition...)
+        Partition nextPartition = storageDevice.getPartitions().get(
+                efiPartition.getNumber());
+        File exchangeDestination = null;
 
-            if (nextPartition.hasExtendedFilesystem()) {
-                // repartition EFI and next partition
-                long offset = wantedEfiPartitionSize - currentEfiPartitionSize;
-                DLCopy.moveExtPartitionOffsetForward(
-                        efiPartition, nextPartition, offset);
-                DLCopy.formatEfiPartition(
-                        "/dev/" + efiPartition.getDeviceAndNumber());
+        long neededEfiPartitionSize = DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA;
+        EfiUpgradeVariant efiUpgradeVariant
+                = storageDevice.getEfiUpgradeVariant(neededEfiPartitionSize);
 
-            } else {
-                // backup
-                exchangeDestination = new File(
-                        getBackupDestination(storageDevice),
-                        STRINGS.getString("Exchange_Partition"));
-                exchangeDestination.mkdirs();
-                backupExchangePartition(storageDevice, exchangeDestination);
+        if (efiUpgradeVariant == EfiUpgradeVariant.ENLARGE_REPARTITION) {
 
-                dlCopyGUI.showUpgradeChangingPartitionSizes();
+            long offset = neededEfiPartitionSize - efiPartition.getSize();
+            DLCopy.moveExtPartitionOffsetForward(
+                    efiPartition, nextPartition, offset);
+            DLCopy.formatEfiPartition(
+                    "/dev/" + efiPartition.getDeviceAndNumber());
+        } else if (efiUpgradeVariant == EfiUpgradeVariant.ENLARGE_BACKUP) {
 
-                // remove old EFI and exchange partitions
-                efiPartition.remove();
-                nextPartition.remove();
+            // backup
+            exchangeDestination = new File(getBackupDestination(storageDevice),
+                    STRINGS.getString("Exchange_Partition"));
+            exchangeDestination.mkdirs();
+            backupExchangePartition(storageDevice, exchangeDestination);
 
-                // create and format new EFI partition
-                long nextOffset = efiPartition.getOffset()
-                        + wantedEfiPartitionSize;
-                storageDevice.createPrimaryPartition(efiPartition.getIdType(),
-                        efiPartition.getOffset(), nextOffset - 1);
-                DLCopy.formatEfiPartition(
-                        "/dev/" + efiPartition.getDeviceAndNumber());
+            dlCopyGUI.showUpgradeChangingPartitionSizes();
 
-                // create new exchange partition
-                long nextEnd = nextPartition.getOffset()
-                        + nextPartition.getSize() - 1;
-                storageDevice.createPrimaryPartition(
-                        nextPartition.getIdType(), nextOffset, nextEnd);
-                DLCopy.formatExchangePartition(
-                        "/dev/" + exchangePartition.getDeviceAndNumber(),
-                        exchangePartition.getIdLabel(),
-                        exchangePartition.getIdType(), dlCopyGUI);
-            }
+            // remove old EFI and exchange partitions
+            efiPartition.remove();
+            nextPartition.remove();
 
+            // It might happen that the parted command returns but the device
+            // nodes aren't created yet. See here for details:
+            // https://www.gnu.org/software/parted/manual/parted.html#quit
+            // Therefore we have to call DLCopy.waitForDeviceNodes() here for
+            // the device nodes of both partitions to reappear. Otherwise
+            // subsequent operations (like formatting the partitions) might
+            // fail.
+            //
+            // create and format new EFI partition
+            long nextOffset = efiPartition.getOffset() + neededEfiPartitionSize;
+            storageDevice.createPrimaryPartition(efiPartition.getIdType(),
+                    efiPartition.getOffset(), nextOffset - 1);
+            String efiPartitionDevicePath
+                    = "/dev/" + efiPartition.getDeviceAndNumber();
+            DLCopy.waitForDeviceNodes(Paths.get(efiPartitionDevicePath));
+            DLCopy.formatEfiPartition(efiPartitionDevicePath);
+
+            // create new exchange partition
+            long nextEnd = nextPartition.getOffset()
+                    + nextPartition.getSize() - 1;
+            storageDevice.createPrimaryPartition(
+                    nextPartition.getIdType(), nextOffset, nextEnd);
+            String exchangePartitionDevicePath
+                    = "/dev/" + exchangePartition.getDeviceAndNumber();
+            DLCopy.waitForDeviceNodes(Paths.get(exchangePartitionDevicePath));
+            DLCopy.formatExchangePartition(exchangePartitionDevicePath,
+                    exchangePartition.getIdLabel(),
+                    exchangePartition.getIdType(), dlCopyGUI);
+        }
+
+        if (efiUpgradeVariant != EfiUpgradeVariant.REGULAR) {
             // must update partition info because of changes above
             TimeUnit.SECONDS.sleep(7);
             storageDevice = new StorageDevice(storageDevice.getDevice());
@@ -907,11 +917,11 @@ public class Upgrader extends InstallerOrUpgrader {
             dataPartition = storageDevice.getDataPartition();
             systemPartition = storageDevice.getSystemPartition();
             systemPartitionNumber = systemPartition.getNumber();
+        }
 
-            if (!nextPartition.hasExtendedFilesystem()) {
-                restoreExchangePartition(storageDevice, exchangeDestination);
-                dlCopyGUI.showUpgradeChangingPartitionSizes();
-            }
+        if (efiUpgradeVariant == EfiUpgradeVariant.ENLARGE_BACKUP) {
+            restoreExchangePartition(storageDevice, exchangeDestination);
+            dlCopyGUI.showUpgradeChangingPartitionSizes();
         }
 
         // make sure that systemPartition is unmounted
