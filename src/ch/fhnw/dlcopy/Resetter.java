@@ -641,7 +641,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                         "!", "-regex", mountPoint,
                         "!", "-regex", mountPoint + "/lost\\+found",
                         "!", "-regex", mountPoint + "/persistence.conf",
-                        "-exec", "rm", "-rf", "{}", ";");
+                        "-delete");
             } else {
                 if (resetSystem) {
                     // remove all files but keep
@@ -652,7 +652,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                             "!", "-regex", mountPoint + "/lost\\+found",
                             "!", "-regex", mountPoint + "/persistence.conf",
                             "!", "-regex", cleanupRoot + "/home.*",
-                            "-exec", "rm", "-rf", "{}", ";");
+                            "-delete");
                 }
                 if (resetHome) {
                     // only remove "/home/user/"

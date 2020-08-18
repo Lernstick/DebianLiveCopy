@@ -693,7 +693,7 @@ public class Upgrader extends InstallerOrUpgrader {
         excludes.forEach((exclude) -> {
             addExclude(commandList, root + exclude);
         });
-        commandList.addAll(Arrays.asList("-exec", "rm", "-rf", "{}", ";"));
+        commandList.add("-delete");
         String[] command = commandList.toArray(new String[commandList.size()]);
         ProcessExecutor processExecutor = new ProcessExecutor();
         return processExecutor.executeProcess(true, true, command);
