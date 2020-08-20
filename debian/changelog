@@ -1,3 +1,10 @@
+dlcopy (202008201457-1) lernstick-10; urgency=medium
+
+  * [76a76c] use find's internal delete command instead of external 'rm'
+             (prevents some error messages when removing deeply nested directories)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 20 Aug 2020 14:57:36 +0200
+
 dlcopy (202008162240-1) lernstick-10; urgency=medium
 
   * [07ce51] fixed upgrading EFI partition
