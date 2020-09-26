@@ -1,3 +1,10 @@
+dlcopy (202009261965-1) lernstick-10; urgency=medium
+
+  * rebuild with updated lernstickTools library
+    (fixed NPE with partitions without filesystem)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 26 Sep 2020 19:56:41 +0200
+
 dlcopy (202008201457-1) lernstick-10; urgency=medium
 
   * [76a76c] use find's internal delete command instead of external 'rm'
