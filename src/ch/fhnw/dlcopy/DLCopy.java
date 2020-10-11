@@ -1636,6 +1636,10 @@ public class DLCopy {
             // ignored
         }
 
+        // If there was a LUKS partition at the very same location, the LUKS
+        // header would be still there without wiping.
+        PROCESS_EXECUTOR.executeProcess("/usr/sbin/wipefs", "-a", device);
+
         // So that we continue to reliably detect exchange partitions even after
         // reformatting them with a different file system we have to adopt the
         // partition type according to the file system we use.
