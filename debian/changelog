@@ -1,3 +1,9 @@
+dlcopy (202010111011-1) lernstick-10; urgency=medium
+
+  * [c445a3] wipe filesystem before creating exchange partition
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 11 Oct 2020 10:11:15 +0200
+
 dlcopy (202009261965-1) lernstick-10; urgency=medium
 
   * rebuild with updated lernstickTools library
