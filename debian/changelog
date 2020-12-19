@@ -1,3 +1,9 @@
+dlcopy (202012191647-1) lernstick-10; urgency=medium
+
+  * [cb2d5d] fixed overwriting files in resetter
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 19 Dec 2020 16:47:49 +0100
+
 dlcopy (202010111011-1) lernstick-10; urgency=medium
 
   * [c445a3] wipe filesystem before creating exchange partition
