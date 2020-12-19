@@ -726,26 +726,25 @@ public class Resetter extends SwingWorker<Boolean, Void> {
         }
 
         for (OverwriteEntry overwriteEntry : overwriteEntries) {
+
             FileCopier fileCopier = new FileCopier();
             dlCopyGUI.showResetRestore(fileCopier);
 
             String sourceString = overwriteEntry.getSource();
-            Path sourcePath = Paths.get(sourceString);
+            Source[] sources = new Source[]{
+                Files.isDirectory(Paths.get(sourceString))
+                ? new Source(sourceString, ".*")
+                : new Source(sourceString)
+            };
+
             String destination
                     = restoreRoot + '/' + overwriteEntry.getDestination();
-
-            // remove old destination
-            LernstickFileTools.recursiveDelete(new File(destination), true);
-
-            Source source;
-            if (Files.isDirectory(sourcePath)) {
-                source = new Source(sourceString, ".*");
-                Files.createDirectories(Paths.get(destination));
-            } else {
-                source = new Source(sourceString);
+            if (Files.isDirectory(Paths.get(destination))) {
+                LernstickFileTools.recursiveDelete(
+                        new File(destination), false);
             }
-            Source[] sources = new Source[]{source};
             String[] destinations = new String[]{destination};
+
             fileCopier.copy(new CopyJob(sources, destinations));
 
             // TODO: Above we are copying files as root so that the normal user
