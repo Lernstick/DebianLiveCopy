@@ -1,3 +1,9 @@
+dlcopy (202102051319-1) lernstick-10; urgency=medium
+
+  * [cf3b0a] wipe all filesystem signatures before creating partitions
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 05 Feb 2021 13:19:10 +0100
+
 dlcopy (202012191647-1) lernstick-10; urgency=medium
 
   * [cb2d5d] fixed overwriting files in resetter
