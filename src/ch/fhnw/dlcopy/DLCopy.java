@@ -1250,10 +1250,17 @@ public class DLCopy {
         // umount all mounted partitions of device
         umountPartitions(device, dlCopyGUI);
 
-        // Create a new partition table before creating the partitions,
+        // We must wipe the whole storage device before creating the partitions,
         // otherwise USB flash drives previously written with a dd'ed ISO
         // will NOT work!
-        //
+        if (PROCESS_EXECUTOR.executeProcess(
+                true, true, "wipefs", "-a", device) != 0) {
+            String errorMessage = STRINGS.getString("Error_Wiping_File_System");
+            errorMessage = MessageFormat.format(errorMessage, device);
+            LOGGER.severe(errorMessage);
+            throw new IOException(errorMessage);
+        }
+
         // "parted <device> mklabel msdos" did NOT work correctly here!
         // (the partition table type was still unknown and booting failed)
         int exitValue;
