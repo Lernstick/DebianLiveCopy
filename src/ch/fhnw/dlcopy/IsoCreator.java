@@ -46,12 +46,10 @@ public class IsoCreator
             = new ProcessExecutor();
 
     // xorriso output looks like this:
-    // xorriso : UPDATE : Writing:    234234s  31.5%   fifo 23% buf 50% 12.7xD
-    //
-    // The first 31.5% is the progress value we are looking for. We are only
-    // interested in the integer value (31 in the example above).
+    // xorriso : UPDATE :  31.59% done, estimate finish Sat Feb 06 18:58:23 2021
+    // We are only interested in the integer value (31 in the example above).
     private static final Pattern XORRISO_PATTERN
-            = Pattern.compile(".* (.*)\\..*% .*%.*%.*");
+            = Pattern.compile(".* (.*)\\..*% done, .*");
 
     // mksquashfs output looks like this:
     // [==========           ]  43333/230033  18%
@@ -210,14 +208,17 @@ public class IsoCreator
 
             String xorrisoScript = "#!/bin/sh\n"
                     + "cd \"" + targetDirectory + "\"\n"
-                    + "xorriso -dev \"" + isoPath + "\" -volid LERNSTICK";
+                    + "xorriso -as mkisofs -R -r -J -joliet-long -l "
+                    + "-iso-level 3 -partition_offset 16 "
+                    + "-isohybrid-mbr /usr/lib/ISOLINUX/isohdpfx.bin ";
             if (!(isoLabel.isEmpty())) {
-                xorrisoScript += " -application_id \"" + isoLabel + "\"";
+                xorrisoScript += "-A \"" + isoLabel + "\" ";
             }
-            xorrisoScript += " -boot_image isolinux dir=isolinux"
-                    + " -joliet on"
-                    + " -compliance iso_9660_level=3"
-                    + " -add .";
+            xorrisoScript += "-b isolinux/isolinux.bin -c isolinux/boot.cat "
+                    + "-no-emul-boot -boot-load-size 4 -boot-info-table "
+                    + "-eltorito-alt-boot -e boot/grub/efi.img -no-emul-boot "
+                    + "-isohybrid-gpt-basdat -isohybrid-apm-hfsplus "
+                    + "-o \"" + isoPath + "\" .";
 
             int returnValue = PROCESS_EXECUTOR.executeScript(
                     true, true, xorrisoScript);
