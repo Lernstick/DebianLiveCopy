@@ -1,3 +1,10 @@
+dlcopy (202102061947-1) lernstick-10; urgency=medium
+
+  * [21e1c7] create hybrid ISO files
+  * [eca731] declare Debian compat level 10
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 06 Feb 2021 19:47:04 +0100
+
 dlcopy (202102051319-1) lernstick-10; urgency=medium
 
   * [cf3b0a] wipe all filesystem signatures before creating partitions
