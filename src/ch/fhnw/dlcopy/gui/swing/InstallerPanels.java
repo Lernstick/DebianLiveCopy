@@ -133,6 +133,12 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         preferredSize = storageDeviceListScrollPane.getPreferredSize();
         preferredSize.height = 200;
         storageDeviceListScrollPane.setPreferredSize(preferredSize);
+
+        // set columns based on current text
+        exchangePartitionLabelTextField.setColumns(Math.max(5,
+                exchangePartitionLabelTextField.getText().length()));
+        autoNumberPatternTextField.setColumns(Math.max(2,
+                autoNumberPatternTextField.getText().length()));
     }
 
     // post-constructor initialization
@@ -1145,7 +1151,6 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         exchangePartitionLabelPanel.add(exchangePartitionLabel, gridBagConstraints);
 
-        exchangePartitionLabelTextField.setColumns(11);
         exchangePartitionLabelTextField.setText(bundle.getString("Exchange")); // NOI18N
         exchangePartitionLabelTextField.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -1156,8 +1161,10 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         exchangePartitionLabelPanel.add(exchangePartitionLabelTextField, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTH;
-        gridBagConstraints.insets = new java.awt.Insets(17, 3, 0, 0);
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(17, 5, 0, 0);
         exchangePartitionDetailsPanel.add(exchangePartitionLabelPanel, gridBagConstraints);
 
         autoNumberPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.autoNumberPanel.border.title"))); // NOI18N
@@ -1171,9 +1178,9 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         autoNumberPanel.add(autoNumberPatternLabel, gridBagConstraints);
 
-        autoNumberPatternTextField.setColumns(11);
         autoNumberPatternTextField.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.insets = new java.awt.Insets(0, 2, 0, 0);
@@ -1229,9 +1236,10 @@ public class InstallerPanels extends JPanel implements DocumentListener {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 0);
+        gridBagConstraints.weightx = 0.2;
+        gridBagConstraints.insets = new java.awt.Insets(0, 10, 5, 5);
         exchangePartitionDetailsPanel.add(autoNumberPanel, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
