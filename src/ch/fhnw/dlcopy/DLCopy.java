@@ -64,7 +64,7 @@ public class DLCopy {
     /**
      * the size of the EFI partition (given in MiB)
      */
-    public static final long EFI_PARTITION_SIZE = 300;
+    public static final long EFI_PARTITION_SIZE = 200;
 
     public static final String[] DATA_PARTITION_MODES = new String[]{
         STRINGS.getString("Read_Write"),
