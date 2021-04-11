@@ -1700,10 +1700,12 @@ public class DLCopy {
      * @throws IOException if reading or parsing /etc/debian_version fails
      */
     public static int getMajorDebianVersion() throws IOException {
+
         String debianVersionPath = "/etc/debian_version";
         List<String> debianVersionFile = LernstickFileTools.readFile(
                 new File(debianVersionPath));
         String versionString = debianVersionFile.get(0);
+
         // first try pattern <major>.<minor>
         Pattern versionPattern = Pattern.compile("(\\p{Digit}*)\\..*");
         Matcher matcher = versionPattern.matcher(versionString);
@@ -1712,17 +1714,23 @@ public class DLCopy {
             LOGGER.log(Level.INFO, "majorDebianVersion: {0}",
                     majorDebianVersion);
             return majorDebianVersion;
-        } else {
-            // retry with a simple number pattern
-            versionPattern = Pattern.compile("(\\p{Digit}*)");
-            matcher = versionPattern.matcher(versionString);
-            if (matcher.matches()) {
-                int majorDebianVersion = Integer.parseInt(matcher.group(1));
-                LOGGER.log(Level.INFO, "majorDebianVersion: {0}",
-                        majorDebianVersion);
-                return majorDebianVersion;
-            }
         }
+
+        // retry with a simple number pattern
+        versionPattern = Pattern.compile("(\\p{Digit}*)");
+        matcher = versionPattern.matcher(versionString);
+        if (matcher.matches()) {
+            int majorDebianVersion = Integer.parseInt(matcher.group(1));
+            LOGGER.log(Level.INFO, "majorDebianVersion: {0}",
+                    majorDebianVersion);
+            return majorDebianVersion;
+        }
+
+        // maybe a testing version with codenames?
+        if (versionString.startsWith("bullseye")) {
+            return 11;
+        }
+
         throw new IOException("could not parse " + debianVersionPath);
     }
 
@@ -1797,7 +1805,7 @@ public class DLCopy {
         // It might happen that the parted command returns but the device nodes
         // aren't created yet. See here for details:
         // https://www.gnu.org/software/parted/manual/parted.html#quit
-        // Therefore we have to wait here for the device nodes of both 
+        // Therefore we have to wait here for the device nodes of both
         // partitions to reappear. Otherwise subsequent operations (like
         // formatting the EFI partition) might fail.
         waitForDeviceNodes(
