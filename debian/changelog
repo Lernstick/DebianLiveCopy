@@ -1,3 +1,9 @@
+dlcopy (202104111432-1) lernstick-10; urgency=medium
+
+  * rebuild with updated lernstickTools library
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 11 Apr 2021 14:32:54 +0200
+
 dlcopy (202102171939-1) lernstick-10; urgency=medium
 
   * [934d94] small layout improvements in installer panels
