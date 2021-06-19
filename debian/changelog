@@ -1,3 +1,9 @@
+dlcopy (202106191504-1) lernstick-11; urgency=medium
+
+  * [db115b] replaced deprecated dependency "exfat-utils" with "exfatprogs"
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 19 Jun 2021 15:04:21 +0200
+
 dlcopy (202102171939-1) lernstick-10; urgency=medium
 
   * [934d94] small layout improvements in installer panels
