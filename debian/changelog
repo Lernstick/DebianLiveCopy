@@ -4,6 +4,30 @@ dlcopy (202106191504-1) lernstick-11; urgency=medium
 
  -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 19 Jun 2021 15:04:21 +0200
 
+dlcopy (202104112300-1) lernstick-10; urgency=medium
+
+  * [3b0446] set EFI partition size back to 200 MiB (300 MiB was too wasteful)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 11 Apr 2021 23:00:46 +0200
+
+dlcopy (202104111534-1) lernstick-10; urgency=medium
+
+  * [c5c3c5] enlarged EFI partition size to 300 MiB (150 MiB was too small)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 11 Apr 2021 15:43:10 +0200
+
+dlcopy (202104111531-1) lernstick-10; urgency=medium
+
+  * [bd7119] improved Debian version detection
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 11 Apr 2021 15:31:33 +0200
+
+dlcopy (202104111432-1) lernstick-10; urgency=medium
+
+  * rebuild with updated lernstickTools library
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 11 Apr 2021 14:32:54 +0200
+
 dlcopy (202102171939-1) lernstick-10; urgency=medium
 
   * [934d94] small layout improvements in installer panels
