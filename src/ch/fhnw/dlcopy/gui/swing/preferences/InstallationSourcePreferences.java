@@ -1,5 +1,8 @@
 package ch.fhnw.dlcopy.gui.swing.preferences;
 
+import ch.fhnw.dlcopy.IsoSystemSource;
+import ch.fhnw.dlcopy.SystemSource;
+import ch.fhnw.dlcopy.gui.swing.InstallerPanels;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
 
@@ -13,26 +16,24 @@ public class InstallationSourcePreferences extends DLCopySwingGUIPreferences {
     private final static String ISO_SOURCE_SELECTED = "isoSourceSelected";
     private final static String ISO_SOURCE = "isoSource";
 
-    private final JRadioButton isoSourceRadioButton;
-    private final JTextField isoSourceTextField;
+    private InstallerPanels installerPanels;
 
-    public InstallationSourcePreferences(JRadioButton isoSourceRadioButton,
-            JTextField isoSourceTextField) {
-        this.isoSourceRadioButton = isoSourceRadioButton;
-        this.isoSourceTextField = isoSourceTextField;
+    public InstallationSourcePreferences(InstallerPanels installerPanels) {
+        this.installerPanels = installerPanels;
     }
 
     @Override
     public void load() {
-        isoSourceRadioButton.setSelected(preferences.getBoolean(
-                ISO_SOURCE_SELECTED, false));
-        isoSourceTextField.setText(preferences.get(ISO_SOURCE, null));
+        installerPanels.setInstallationSource(
+                preferences.getBoolean(ISO_SOURCE_SELECTED, false),
+                preferences.get(ISO_SOURCE, null));
     }
 
     @Override
     public void save() {
         preferences.putBoolean(ISO_SOURCE_SELECTED,
-                isoSourceRadioButton.isSelected());
-        preferences.put(ISO_SOURCE, isoSourceTextField.getText());
+                installerPanels.getSystemSource() instanceof IsoSystemSource);
+        
+        preferences.put(ISO_SOURCE, installerPanels.getIsoSource());
     }
 }

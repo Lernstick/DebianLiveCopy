@@ -32,7 +32,6 @@ import java.text.DateFormat;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.Dictionary;
 import java.util.Hashtable;
@@ -193,8 +192,8 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         exchangePartitionDocument.setDocumentFilter(new DocumentSizeFilter());
         exchangePartitionSizeTextField.getDocument().addDocumentListener(this);
 
-        preferencesHandler.addPreference(new InstallationSourcePreferences(
-                isoSourceRadioButton, isoSourceTextField));
+        preferencesHandler.addPreference(
+                new InstallationSourcePreferences(this));
 
         destinationSelectionPreferences
                 = new InstallationDestinationSelectionPreferences(
@@ -661,28 +660,36 @@ public class InstallerPanels extends JPanel implements DocumentListener {
 
         } else {
 
-            for (int i = 0; i < selectionCount; i++) {
+            SystemSource systemSource = dlCopySwingGUI.getSystemSource();
 
-                StorageDevice device
-                        = storageDeviceListModel.get(selectedIndices[i]);
+            if (systemSource == null) {
+                LOGGER.warning("No valid system source selected!");
+
+            } else {
 
                 long enlargedSystemSize = DLCopy.getEnlargedSystemSize(
-                        dlCopySwingGUI.getSystemSource().getSystemSize());
+                        systemSource.getSystemSize());
 
-                long overhead = device.getSize()
-                        - (DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA)
-                        - enlargedSystemSize;
+                for (int i = 0; i < selectionCount; i++) {
 
-                minOverhead = Math.min(minOverhead, overhead);
+                    StorageDevice device
+                            = storageDeviceListModel.get(selectedIndices[i]);
 
-                PartitionState partitionState = DLCopy.getPartitionState(
-                        device.getSize(),
-                        (DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA)
-                        + enlargedSystemSize);
+                    long overhead = device.getSize()
+                            - (DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA)
+                            - enlargedSystemSize;
 
-                if (partitionState != PartitionState.EXCHANGE) {
-                    exchange = false;
-                    break; // for
+                    minOverhead = Math.min(minOverhead, overhead);
+
+                    PartitionState partitionState = DLCopy.getPartitionState(
+                            device.getSize(),
+                            (DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA)
+                            + enlargedSystemSize);
+
+                    if (partitionState != PartitionState.EXCHANGE) {
+                        exchange = false;
+                        break; // for
+                    }
                 }
             }
         }
@@ -740,6 +747,27 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         if (isoSystemSource != null) {
             isoSystemSource.unmountTmpPartitions();
         }
+    }
+
+    public void setInstallationSource(boolean isoSelected, String isoSource) {
+
+        // This automatically sets the system source to an ISO system source...
+        if (!(isoSource == null || isoSource.isEmpty())) {
+            setISOInstallationSourcePath(isoSource);
+        }
+        // ... but this will be corrected in the following lines.
+        
+        if (isoSelected) {
+            isoSourceRadioButton.setSelected(true);
+        } else {
+            runningSystemSourceRadioButton.setSelected(true);
+        }
+
+        updateInstallSourceGUI();
+    }
+
+    public String getIsoSource() {
+        return isoSourceTextField.getText();
     }
 
     /**
@@ -894,6 +922,11 @@ public class InstallerPanels extends JPanel implements DocumentListener {
 
         installSourceButtonGroup.add(isoSourceRadioButton);
         isoSourceRadioButton.setText(bundle.getString("DLCopySwingGUI.isoSourceRadioButton.text")); // NOI18N
+        isoSourceRadioButton.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                isoSourceRadioButtonItemStateChanged(evt);
+            }
+        });
         isoSourceRadioButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 isoSourceRadioButtonActionPerformed(evt);
@@ -1690,6 +1723,10 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         secondaryPasswordToggleButton.setEnabled(enabled);
     }//GEN-LAST:event_secondaryPasswordCheckBoxItemStateChanged
 
+    private void isoSourceRadioButtonItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_isoSourceRadioButtonItemStateChanged
+        updateInstallSourceGUI();
+    }//GEN-LAST:event_isoSourceRadioButtonItemStateChanged
+
     private boolean checkNonEmptyPassword(
             JCheckBox passwordCheckBox, JPasswordField passwordField) {
 
@@ -1891,26 +1928,33 @@ public class InstallerPanels extends JPanel implements DocumentListener {
             return;
         }
 
-        // check selection
-        long enlargedSystemSize = DLCopy.getEnlargedSystemSize(
-                dlCopySwingGUI.getSystemSource().getSystemSize());
+        SystemSource systemSource = dlCopySwingGUI.getSystemSource();
 
-        for (int i : selectedIndices) {
+        if (systemSource == null) {
+            LOGGER.warning("No system source configured!");
 
-            StorageDevice device = storageDeviceListModel.get(i);
+        } else {
+            // check selection
+            long enlargedSystemSize = DLCopy.getEnlargedSystemSize(
+                    systemSource.getSystemSize());
 
-            PartitionState partitionState = DLCopy.getPartitionState(
-                    device.getSize(), enlargedSystemSize);
+            for (int i : selectedIndices) {
 
-            if (partitionState == PartitionState.TOO_SMALL) {
-                // a selected device is too small, disable nextButton
-                dlCopySwingGUI.disableNextButton();
-                return;
+                StorageDevice device = storageDeviceListModel.get(i);
+
+                PartitionState partitionState = DLCopy.getPartitionState(
+                        device.getSize(), enlargedSystemSize);
+
+                if (partitionState == PartitionState.TOO_SMALL) {
+                    // a selected device is too small, disable nextButton
+                    dlCopySwingGUI.disableNextButton();
+                    return;
+                }
             }
-        }
 
-        // all selected devices are large enough, enable nextButton
-        dlCopySwingGUI.enableNextButton();
+            // all selected devices are large enough, enable nextButton
+            dlCopySwingGUI.enableNextButton();
+        }
     }
 
     private void setMajorTickSpacing(JSlider slider, int maxValue) {
