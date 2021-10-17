@@ -1,0 +1,65 @@
+@startuml
+class ch.fhnw.dlcopy.DLCopy
+class ch.fhnw.dlcopy.Installer
+class ch.fhnw.dlcopy.Upgrader
+class ch.fhnw.dlcopy.Resetter
+class ch.fhnw.dlcopy.IsoCreator
+class ch.fhnw.dlcopy.SquashFSCreator
+interface ch.fhnw.dlcopy.gui.DLCopyGUI
+class ch.fhnw.dlcopy.gui.swing.DLCopySwingGUI implements ch.fhnw.dlcopy.gui.DLCopyGUI
+class ch.fhnw.dlcopy.gui.javafx.DLCopyJavaFxGUI implements ch.fhnw.dlcopy.gui.DLCopyGUI
+
+package "ch.fhnw.dlcopy.gui.javafx" #DDDDDD {}
+
+note right of ch.fhnw.dlcopy.gui.DLCopyGUI
+  This is the interface <b><u>all</u></b> GUI
+  versions have to implement.
+end note
+
+note bottom of ch.fhnw.dlcopy.gui.swing.DLCopySwingGUI
+  This is the classic Swing GUI
+  that is already implemented.
+end note
+
+note bottom of ch.fhnw.dlcopy.gui.javafx.DLCopyJavaFxGUI
+  This is the new JavaFX GUI
+  you need to implement.
+end note
+
+note top of ch.fhnw.dlcopy
+  Package with helper classes
+end note
+
+ch.fhnw.dlcopy.DLCopy -down[hidden]-> ch.fhnw.dlcopy.Installer
+ch.fhnw.dlcopy.Installer -down[hidden]-> ch.fhnw.dlcopy.Upgrader
+ch.fhnw.dlcopy.Upgrader -down[hidden]-> ch.fhnw.dlcopy.Resetter
+ch.fhnw.dlcopy.Resetter -down[hidden]-> ch.fhnw.dlcopy.IsoCreator
+ch.fhnw.dlcopy.IsoCreator -down[hidden]-> ch.fhnw.dlcopy.SquashFSCreator
+
+note right of ch.fhnw.dlcopy.DLCopy
+  Core class with many helper functions
+end note
+
+note right of ch.fhnw.dlcopy.Installer
+  Installs the system to a list of storage devices
+end note
+
+note right of ch.fhnw.dlcopy.Upgrader
+  Upgrades a list of storage devices
+end note
+
+
+note right of ch.fhnw.dlcopy.IsoCreator
+  Creates an ISO file from a running system
+end note
+
+note right of ch.fhnw.dlcopy.Resetter
+  Resets selected storage devices
+end note
+
+note right of ch.fhnw.dlcopy.SquashFSCreator
+  Creates a SquashFS file of the data partition
+  (needed for the Glados exam server)
+end note
+
+@enduml

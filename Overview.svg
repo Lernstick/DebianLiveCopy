@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="UTF-8"?><svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" contentScriptType="application/ecmascript" contentStyleType="text/css" height="799px" preserveAspectRatio="none" style="width:1119px;height:799px;" version="1.1" viewBox="0 0 1119 799" width="1119px" zoomAndPan="magnify">
+    <defs>
+        <filter height="300%" id="f11ag64tgh0j73" width="300%" x="-1" y="-1">
+            <feGaussianBlur result="blurOut" stdDeviation="2.0"/>
+            <feColorMatrix in="blurOut" result="blurOut2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 .4 0"/>
+            <feOffset dx="4.0" dy="4.0" in="blurOut2" result="blurOut3"/>
+            <feBlend in="SourceGraphic" in2="blurOut3" mode="normal"/>
+        </filter>
+    </defs>
+    <g>
+        <!--MD5=[001ce4b18cf55e7c5b1acc43d2d8f32f]
+cluster ch.fhnw.dlcopy-->
+        <polygon fill="#FFFFFF" filter="url(#f11ag64tgh0j73)" points="610,137,722,137,729,159.0986,796,159.0986,796,792,610,792,610,137" style="stroke:#000000;stroke-width:1.5;"/>
+        <line style="stroke:#000000;stroke-width:1.5;" x1="610" x2="729" y1="159.0986" y2="159.0986"/>
+        <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="106" x="614" y="152.1318">ch.fhnw.dlcopy</text>
+        <!--MD5=[b12d071c4b2027fc611e28732a08d5fa]
+cluster ch.fhnw.dlcopy.gui-->
+        <polygon fill="#FFFFFF" filter="url(#f11ag64tgh0j73)" points="140,6,278,6,285,28.0986,288,28.0986,288,105,140,105,140,6" style="stroke:#000000;stroke-width:1.5;"/>
+        <line style="stroke:#000000;stroke-width:1.5;" x1="140" x2="285" y1="28.0986" y2="28.0986"/>
+        <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="132" x="144" y="21.1318">ch.fhnw.dlcopy.gui</text>
+        <!--MD5=[95e96ed8fb09a43b019866a85d3cbda5]
+cluster ch.fhnw.dlcopy.gui.swing-->
+        <polygon fill="#FFFFFF" filter="url(#f11ag64tgh0j73)" points="16,145,199,145,206,167.0986,209,167.0986,209,244,16,244,16,145" style="stroke:#000000;stroke-width:1.5;"/>
+        <line style="stroke:#000000;stroke-width:1.5;" x1="16" x2="206" y1="167.0986" y2="167.0986"/>
+        <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="177" x="20" y="160.1318">ch.fhnw.dlcopy.gui.swing</text>
+        <!--MD5=[75d279bdfb8c1f1cd8c55897a96c9ab5]
+cluster ch.fhnw.dlcopy.gui.javafx-->
+        <polygon fill="#DDDDDD" filter="url(#f11ag64tgh0j73)" points="235,145,418,145,425,167.0986,428,167.0986,428,244,235,244,235,145" style="stroke:#000000;stroke-width:1.5;"/>
+        <line style="stroke:#000000;stroke-width:1.5;" x1="235" x2="425" y1="167.0986" y2="167.0986"/>
+        <text fill="#000000" font-family="sans-serif" font-size="14" font-weight="bold" lengthAdjust="spacing" textLength="177" x="239" y="160.1318">ch.fhnw.dlcopy.gui.javafx</text>
+        <!--MD5=[3f9da7a71f7334997b2a9ac742090559]
+class ch.fhnw.dlcopy.DLCopy-->
+        <rect codeLine="1" fill="#FEFECE" filter="url(#f11ag64tgh0j73)" height="48" id="ch.fhnw.dlcopy.DLCopy" style="stroke:#A80036;stroke-width:1.5;" width="77" x="694.5" y="180"/>
+        <ellipse cx="709.5" cy="196" fill="#ADD1B2" rx="11" ry="11" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M707.1563,195.8438 Q707.1563,197.7188 707.7344,198.7344 Q708.3125,199.7344 709.4688,199.7344 Q710.8125,199.7344 711.4688,197.7188 L713.7344,198.1406 Q712.625,201.6719 709.4531,201.6719 Q707.1094,201.6719 705.8906,200.1875 Q704.6719,198.7031 704.6719,195.8438 Q704.6719,190.125 709.375,190.125 Q710.9219,190.125 711.9531,190.9375 Q713,191.75 713.5,193.3594 L711.2344,193.9063 Q711,193.0313 710.5156,192.5469 Q710.0313,192.0469 709.4063,192.0469 Q707.1563,192.0469 707.1563,195.8438 Z " fill="#000000"/>
+        <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacing" textLength="45" x="723.5" y="200.3564">DLCopy</text>
+        <line style="stroke:#A80036;stroke-width:1.5;" x1="695.5" x2="770.5" y1="212" y2="212"/>
+        <line style="stroke:#A80036;stroke-width:1.5;" x1="695.5" x2="770.5" y1="220" y2="220"/>
+        <!--MD5=[fa9df61979c3f3a5c534a4d876129a05]
+class ch.fhnw.dlcopy.Installer-->
+        <rect codeLine="2" fill="#FEFECE" filter="url(#f11ag64tgh0j73)" height="48" id="ch.fhnw.dlcopy.Installer" style="stroke:#A80036;stroke-width:1.5;" width="75" x="695.5" y="288"/>
+        <ellipse cx="710.5" cy="304" fill="#ADD1B2" rx="11" ry="11" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M708.1563,303.8438 Q708.1563,305.7188 708.7344,306.7344 Q709.3125,307.7344 710.4688,307.7344 Q711.8125,307.7344 712.4688,305.7188 L714.7344,306.1406 Q713.625,309.6719 710.4531,309.6719 Q708.1094,309.6719 706.8906,308.1875 Q705.6719,306.7031 705.6719,303.8438 Q705.6719,298.125 710.375,298.125 Q711.9219,298.125 712.9531,298.9375 Q714,299.75 714.5,301.3594 L712.2344,301.9063 Q712,301.0313 711.5156,300.5469 Q711.0313,300.0469 710.4063,300.0469 Q708.1563,300.0469 708.1563,303.8438 Z " fill="#000000"/>
+        <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacing" textLength="43" x="724.5" y="308.3564">Installer</text>
+        <line style="stroke:#A80036;stroke-width:1.5;" x1="696.5" x2="769.5" y1="320" y2="320"/>
+        <line style="stroke:#A80036;stroke-width:1.5;" x1="696.5" x2="769.5" y1="328" y2="328"/>
+        <!--MD5=[4899ed4f9701a4f5b40ca66f3be794ad]
+class ch.fhnw.dlcopy.Upgrader-->
+        <rect codeLine="3" fill="#FEFECE" filter="url(#f11ag64tgh0j73)" height="48" id="ch.fhnw.dlcopy.Upgrader" style="stroke:#A80036;stroke-width:1.5;" width="84" x="688" y="396"/>
+        <ellipse cx="703" cy="412" fill="#ADD1B2" rx="11" ry="11" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M700.6563,411.8438 Q700.6563,413.7188 701.2344,414.7344 Q701.8125,415.7344 702.9688,415.7344 Q704.3125,415.7344 704.9688,413.7188 L707.2344,414.1406 Q706.125,417.6719 702.9531,417.6719 Q700.6094,417.6719 699.3906,416.1875 Q698.1719,414.7031 698.1719,411.8438 Q698.1719,406.125 702.875,406.125 Q704.4219,406.125 705.4531,406.9375 Q706.5,407.75 707,409.3594 L704.7344,409.9063 Q704.5,409.0313 704.0156,408.5469 Q703.5313,408.0469 702.9063,408.0469 Q700.6563,408.0469 700.6563,411.8438 Z " fill="#000000"/>
+        <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacing" textLength="52" x="717" y="416.3564">Upgrader</text>
+        <line style="stroke:#A80036;stroke-width:1.5;" x1="689" x2="771" y1="428" y2="428"/>
+        <line style="stroke:#A80036;stroke-width:1.5;" x1="689" x2="771" y1="436" y2="436"/>
+        <!--MD5=[907199c1b812147f83eb6817b8ddc4b9]
+class ch.fhnw.dlcopy.Resetter-->
+        <rect codeLine="4" fill="#FEFECE" filter="url(#f11ag64tgh0j73)" height="48" id="ch.fhnw.dlcopy.Resetter" style="stroke:#A80036;stroke-width:1.5;" width="78" x="691" y="504"/>
+        <ellipse cx="706" cy="520" fill="#ADD1B2" rx="11" ry="11" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M703.6563,519.8438 Q703.6563,521.7188 704.2344,522.7344 Q704.8125,523.7344 705.9688,523.7344 Q707.3125,523.7344 707.9688,521.7188 L710.2344,522.1406 Q709.125,525.6719 705.9531,525.6719 Q703.6094,525.6719 702.3906,524.1875 Q701.1719,522.7031 701.1719,519.8438 Q701.1719,514.125 705.875,514.125 Q707.4219,514.125 708.4531,514.9375 Q709.5,515.75 710,517.3594 L707.7344,517.9063 Q707.5,517.0313 707.0156,516.5469 Q706.5313,516.0469 705.9063,516.0469 Q703.6563,516.0469 703.6563,519.8438 Z " fill="#000000"/>
+        <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacing" textLength="46" x="720" y="524.3564">Resetter</text>
+        <line style="stroke:#A80036;stroke-width:1.5;" x1="692" x2="768" y1="536" y2="536"/>
+        <line style="stroke:#A80036;stroke-width:1.5;" x1="692" x2="768" y1="544" y2="544"/>
+        <!--MD5=[7bcb4f6f103fe5fb40328b9bf8efce29]
+class ch.fhnw.dlcopy.IsoCreator-->
+        <rect codeLine="5" fill="#FEFECE" filter="url(#f11ag64tgh0j73)" height="48" id="ch.fhnw.dlcopy.IsoCreator" style="stroke:#A80036;stroke-width:1.5;" width="89" x="683.5" y="612"/>
+        <ellipse cx="698.5" cy="628" fill="#ADD1B2" rx="11" ry="11" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M696.1563,627.8438 Q696.1563,629.7188 696.7344,630.7344 Q697.3125,631.7344 698.4688,631.7344 Q699.8125,631.7344 700.4688,629.7188 L702.7344,630.1406 Q701.625,633.6719 698.4531,633.6719 Q696.1094,633.6719 694.8906,632.1875 Q693.6719,630.7031 693.6719,627.8438 Q693.6719,622.125 698.375,622.125 Q699.9219,622.125 700.9531,622.9375 Q702,623.75 702.5,625.3594 L700.2344,625.9063 Q700,625.0313 699.5156,624.5469 Q699.0313,624.0469 698.4063,624.0469 Q696.1563,624.0469 696.1563,627.8438 Z " fill="#000000"/>
+        <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacing" textLength="57" x="712.5" y="632.3564">IsoCreator</text>
+        <line style="stroke:#A80036;stroke-width:1.5;" x1="684.5" x2="771.5" y1="644" y2="644"/>
+        <line style="stroke:#A80036;stroke-width:1.5;" x1="684.5" x2="771.5" y1="652" y2="652"/>
+        <!--MD5=[a0494630e5b0ccd426a5aebf1e8426ed]
+class ch.fhnw.dlcopy.SquashFSCreator-->
+        <rect codeLine="6" fill="#FEFECE" filter="url(#f11ag64tgh0j73)" height="48" id="ch.fhnw.dlcopy.SquashFSCreator" style="stroke:#A80036;stroke-width:1.5;" width="130" x="642" y="720"/>
+        <ellipse cx="657" cy="736" fill="#ADD1B2" rx="11" ry="11" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M654.6563,735.8438 Q654.6563,737.7188 655.2344,738.7344 Q655.8125,739.7344 656.9688,739.7344 Q658.3125,739.7344 658.9688,737.7188 L661.2344,738.1406 Q660.125,741.6719 656.9531,741.6719 Q654.6094,741.6719 653.3906,740.1875 Q652.1719,738.7031 652.1719,735.8438 Q652.1719,730.125 656.875,730.125 Q658.4219,730.125 659.4531,730.9375 Q660.5,731.75 661,733.3594 L658.7344,733.9063 Q658.5,733.0313 658.0156,732.5469 Q657.5313,732.0469 656.9063,732.0469 Q654.6563,732.0469 654.6563,735.8438 Z " fill="#000000"/>
+        <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacing" textLength="98" x="671" y="740.3564">SquashFSCreator</text>
+        <line style="stroke:#A80036;stroke-width:1.5;" x1="643" x2="771" y1="752" y2="752"/>
+        <line style="stroke:#A80036;stroke-width:1.5;" x1="643" x2="771" y1="760" y2="760"/>
+        <!--MD5=[8d33f0df1a17f47267a76e543537726f]
+class ch.fhnw.dlcopy.gui.DLCopyGUI-->
+        <rect codeLine="7" fill="#FEFECE" filter="url(#f11ag64tgh0j73)" height="48" id="ch.fhnw.dlcopy.gui.DLCopyGUI" style="stroke:#A80036;stroke-width:1.5;" width="98" x="171" y="41"/>
+        <ellipse cx="186" cy="57" fill="#B4A7E5" rx="11" ry="11" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M182.2969,51.2969 L189.9063,51.2969 L189.9063,53.1875 L187.3281,53.1875 L187.3281,60.6094 L189.9063,60.6094 L189.9063,62.5 L182.2969,62.5 L182.2969,60.6094 L184.8906,60.6094 L184.8906,53.1875 L182.2969,53.1875 L182.2969,51.2969 Z " fill="#000000"/>
+        <text fill="#000000" font-family="sans-serif" font-size="12" font-style="italic" lengthAdjust="spacing" textLength="66" x="200" y="61.3564">DLCopyGUI</text>
+        <line style="stroke:#A80036;stroke-width:1.5;" x1="172" x2="268" y1="73" y2="73"/>
+        <line style="stroke:#A80036;stroke-width:1.5;" x1="172" x2="268" y1="81" y2="81"/>
+        <!--MD5=[428a5d4e96e499d209ce65502b18fbe5]
+class ch.fhnw.dlcopy.gui.swing.DLCopySwingGUI-->
+        <rect codeLine="8" fill="#FEFECE" filter="url(#f11ag64tgh0j73)" height="48" id="ch.fhnw.dlcopy.gui.swing.DLCopySwingGUI" style="stroke:#A80036;stroke-width:1.5;" width="132" x="46" y="180"/>
+        <ellipse cx="61" cy="196" fill="#ADD1B2" rx="11" ry="11" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M58.6563,195.8438 Q58.6563,197.7188 59.2344,198.7344 Q59.8125,199.7344 60.9688,199.7344 Q62.3125,199.7344 62.9688,197.7188 L65.2344,198.1406 Q64.125,201.6719 60.9531,201.6719 Q58.6094,201.6719 57.3906,200.1875 Q56.1719,198.7031 56.1719,195.8438 Q56.1719,190.125 60.875,190.125 Q62.4219,190.125 63.4531,190.9375 Q64.5,191.75 65,193.3594 L62.7344,193.9063 Q62.5,193.0313 62.0156,192.5469 Q61.5313,192.0469 60.9063,192.0469 Q58.6563,192.0469 58.6563,195.8438 Z " fill="#000000"/>
+        <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacing" textLength="100" x="75" y="200.3564">DLCopySwingGUI</text>
+        <line style="stroke:#A80036;stroke-width:1.5;" x1="47" x2="177" y1="212" y2="212"/>
+        <line style="stroke:#A80036;stroke-width:1.5;" x1="47" x2="177" y1="220" y2="220"/>
+        <!--MD5=[e68629af5fa376761eda70b137f59a9a]
+class ch.fhnw.dlcopy.gui.javafx.DLCopyJavaFxGUI-->
+        <rect codeLine="9" fill="#FEFECE" filter="url(#f11ag64tgh0j73)" height="48" id="ch.fhnw.dlcopy.gui.javafx.DLCopyJavaFxGUI" style="stroke:#A80036;stroke-width:1.5;" width="137" x="259.5" y="180"/>
+        <ellipse cx="274.5" cy="196" fill="#ADD1B2" rx="11" ry="11" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M272.1563,195.8438 Q272.1563,197.7188 272.7344,198.7344 Q273.3125,199.7344 274.4688,199.7344 Q275.8125,199.7344 276.4688,197.7188 L278.7344,198.1406 Q277.625,201.6719 274.4531,201.6719 Q272.1094,201.6719 270.8906,200.1875 Q269.6719,198.7031 269.6719,195.8438 Q269.6719,190.125 274.375,190.125 Q275.9219,190.125 276.9531,190.9375 Q278,191.75 278.5,193.3594 L276.2344,193.9063 Q276,193.0313 275.5156,192.5469 Q275.0313,192.0469 274.4063,192.0469 Q272.1563,192.0469 272.1563,195.8438 Z " fill="#000000"/>
+        <text fill="#000000" font-family="sans-serif" font-size="12" lengthAdjust="spacing" textLength="105" x="288.5" y="200.3564">DLCopyJavaFxGUI</text>
+        <line style="stroke:#A80036;stroke-width:1.5;" x1="260.5" x2="395.5" y1="212" y2="212"/>
+        <line style="stroke:#A80036;stroke-width:1.5;" x1="260.5" x2="395.5" y1="220" y2="220"/>
+        <path d="M304.5,45 L304.5,61 L269.09,65 L304.5,69 L304.5,84.8975 A0,0 0 0 0 304.5,84.8975 L489.5,84.8975 A0,0 0 0 0 489.5,84.8975 L489.5,55 L479.5,45 L304.5,45 A0,0 0 0 0 304.5,45 " fill="#FBFB77" filter="url(#f11ag64tgh0j73)" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M479.5,45 L479.5,55 L489.5,55 L479.5,45 " fill="#FBFB77" style="stroke:#A80036;stroke-width:1.0;"/>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="115" x="310.5" y="62.1938">This is the interface</text>
+        <text fill="#000000" font-family="sans-serif" font-size="13" font-weight="bold" lengthAdjust="spacing" text-decoration="underline" textLength="15" x="429.5" y="62.1938">all</text>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="23" x="448.5" y="62.1938">GUI</text>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="164" x="310.5" y="77.1426">versions have to implement.</text>
+        <path d="M11.5,292 L11.5,331.8975 A0,0 0 0 0 11.5,331.8975 L204.5,331.8975 A0,0 0 0 0 204.5,331.8975 L204.5,302 L194.5,292 L112.72,292 L111.13,228 L104.72,292 L11.5,292 A0,0 0 0 0 11.5,292 " fill="#FBFB77" filter="url(#f11ag64tgh0j73)" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M194.5,292 L194.5,302 L204.5,302 L194.5,292 " fill="#FBFB77" style="stroke:#A80036;stroke-width:1.0;"/>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="172" x="17.5" y="309.1938">This is the classic Swing GUI</text>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="164" x="17.5" y="324.1426">that is already implemented.</text>
+        <path d="M239.5,292 L239.5,331.8975 A0,0 0 0 0 239.5,331.8975 L424.5,331.8975 A0,0 0 0 0 424.5,331.8975 L424.5,302 L414.5,292 L335.28,292 L328.87,228 L327.28,292 L239.5,292 A0,0 0 0 0 239.5,292 " fill="#FBFB77" filter="url(#f11ag64tgh0j73)" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M414.5,292 L414.5,302 L424.5,302 L414.5,292 " fill="#FBFB77" style="stroke:#A80036;stroke-width:1.0;"/>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="164" x="245.5" y="309.1938">This is the new JavaFX GUI</text>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="136" x="245.5" y="324.1426">you need to implement.</text>
+        <path d="M524.5,52.5 L524.5,77.4487 L711.5,77.4487 L711.5,62.5 L701.5,52.5 L524.5,52.5 " fill="#FBFB77" filter="url(#f11ag64tgh0j73)" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M701.5,52.5 L701.5,62.5 L711.5,62.5 L701.5,52.5 " fill="#FBFB77" style="stroke:#A80036;stroke-width:1.0;"/>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="166" x="530.5" y="69.6938">Package with helper classes</text>
+        <path d="M820,191.5 L820,200 L771.59,204 L820,208 L820,216.4487 A0,0 0 0 0 820,216.4487 L1062,216.4487 A0,0 0 0 0 1062,216.4487 L1062,201.5 L1052,191.5 L820,191.5 A0,0 0 0 0 820,191.5 " fill="#FBFB77" filter="url(#f11ag64tgh0j73)" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M1052,191.5 L1052,201.5 L1062,201.5 L1052,191.5 " fill="#FBFB77" style="stroke:#A80036;stroke-width:1.0;"/>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="221" x="826" y="208.6938">Core class with many helper functions</text>
+        <path d="M820,299.5 L820,308 L770.61,312 L820,316 L820,324.4487 A0,0 0 0 0 820,324.4487 L1110,324.4487 A0,0 0 0 0 1110,324.4487 L1110,309.5 L1100,299.5 L820,299.5 A0,0 0 0 0 820,299.5 " fill="#FBFB77" filter="url(#f11ag64tgh0j73)" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M1100,299.5 L1100,309.5 L1110,309.5 L1100,299.5 " fill="#FBFB77" style="stroke:#A80036;stroke-width:1.0;"/>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="269" x="826" y="316.6938">Installs the system to a list of storage devices</text>
+        <path d="M820.5,407.5 L820.5,416 L772.19,420 L820.5,424 L820.5,432.4487 A0,0 0 0 0 820.5,432.4487 L1039.5,432.4487 A0,0 0 0 0 1039.5,432.4487 L1039.5,417.5 L1029.5,407.5 L820.5,407.5 A0,0 0 0 0 820.5,407.5 " fill="#FBFB77" filter="url(#f11ag64tgh0j73)" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M1029.5,407.5 L1029.5,417.5 L1039.5,417.5 L1029.5,407.5 " fill="#FBFB77" style="stroke:#A80036;stroke-width:1.0;"/>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="198" x="826.5" y="424.6938">Upgrades a list of storage devices</text>
+        <path d="M820,623.5 L820,632 L772.82,636 L820,640 L820,648.4487 A0,0 0 0 0 820,648.4487 L1086,648.4487 A0,0 0 0 0 1086,648.4487 L1086,633.5 L1076,623.5 L820,623.5 A0,0 0 0 0 820,623.5 " fill="#FBFB77" filter="url(#f11ag64tgh0j73)" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M1076,623.5 L1076,633.5 L1086,633.5 L1076,623.5 " fill="#FBFB77" style="stroke:#A80036;stroke-width:1.0;"/>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="245" x="826" y="640.6938">Creates an ISO file from a running system</text>
+        <path d="M820.5,515.5 L820.5,524 L769.05,528 L820.5,532 L820.5,540.4487 A0,0 0 0 0 820.5,540.4487 L1031.5,540.4487 A0,0 0 0 0 1031.5,540.4487 L1031.5,525.5 L1021.5,515.5 L820.5,515.5 A0,0 0 0 0 820.5,515.5 " fill="#FBFB77" filter="url(#f11ag64tgh0j73)" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M1021.5,515.5 L1021.5,525.5 L1031.5,525.5 L1021.5,515.5 " fill="#FBFB77" style="stroke:#A80036;stroke-width:1.0;"/>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="190" x="826.5" y="532.6938">Resets selected storage devices</text>
+        <path d="M820.5,724 L820.5,740 L772.23,744 L820.5,748 L820.5,763.8975 A0,0 0 0 0 820.5,763.8975 L1099.5,763.8975 A0,0 0 0 0 1099.5,763.8975 L1099.5,734 L1089.5,724 L820.5,724 A0,0 0 0 0 820.5,724 " fill="#FBFB77" filter="url(#f11ag64tgh0j73)" style="stroke:#A80036;stroke-width:1.0;"/>
+        <path d="M1089.5,724 L1089.5,734 L1099.5,734 L1089.5,724 " fill="#FBFB77" style="stroke:#A80036;stroke-width:1.0;"/>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="258" x="826.5" y="741.1938">Creates a SquashFS file of the data partition</text>
+        <text fill="#000000" font-family="sans-serif" font-size="13" lengthAdjust="spacing" textLength="212" x="826.5" y="756.1426">(needed for the Glados exam server)</text>
+        <!--MD5=[e7ecb03b0b3185c4ff3437c5a80c0065]
+reverse link ch.fhnw.dlcopy.gui.DLCopyGUI to ch.fhnw.dlcopy.gui.swing.DLCopySwingGUI-->
+        <path d="M189.16,105.12 C170.18,129.2 146.5,159.24 130.41,179.65 " fill="none" id="ch.fhnw.dlcopy.gui.DLCopyGUI-backto-ch.fhnw.dlcopy.gui.swing.DLCopySwingGUI" style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/>
+        <polygon fill="none" points="183.8,100.61,201.68,89.24,194.79,109.28,183.8,100.61" style="stroke:#A80036;stroke-width:1.0;"/>
+        <!--MD5=[2ddcf21a15476e4c012ba712ea8c050e]
+reverse link ch.fhnw.dlcopy.gui.DLCopyGUI to ch.fhnw.dlcopy.gui.javafx.DLCopyJavaFxGUI-->
+        <path d="M250.84,105.12 C269.82,129.2 293.5,159.24 309.59,179.65 " fill="none" id="ch.fhnw.dlcopy.gui.DLCopyGUI-backto-ch.fhnw.dlcopy.gui.javafx.DLCopyJavaFxGUI" style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/>
+        <polygon fill="none" points="245.21,109.28,238.32,89.24,256.2,100.61,245.21,109.28" style="stroke:#A80036;stroke-width:1.0;"/>
+        <!--MD5=[42fafd5375d3fbdfdc42c85a4fee3531]
+link GMN6225 to ch.fhnw.dlcopy-->
+        <path d="M618,77.68 C618,85.8325 618,97.5619 618,110.6139 C618,117.1399 618,123.9966 618,130.9022 C618,132.6286 618,134.358 618,136.0861 C618,136.3021 618,136.5181 618,136.7341 " fill="none" id="GMN6225-ch.fhnw.dlcopy" style="stroke:#A80036;stroke-width:1.0;stroke-dasharray:7.0,7.0;"/>
+        <!--MD5=[8d00f653083fa58c4dd587c3409aedb9]
+link ch.fhnw.dlcopy.DLCopy to ch.fhnw.dlcopy.Installer-->
+        <!--MD5=[c7c42ead4d1e1ab04f9b6bc0830b8a17]
+link ch.fhnw.dlcopy.Installer to ch.fhnw.dlcopy.Upgrader-->
+        <!--MD5=[05459fcc124ff3c78bc432f993e87e45]
+link ch.fhnw.dlcopy.Upgrader to ch.fhnw.dlcopy.Resetter-->
+        <!--MD5=[bcd5a1641b15b702e94eed3748a6974f]
+link ch.fhnw.dlcopy.Resetter to ch.fhnw.dlcopy.IsoCreator-->
+        <!--MD5=[ff269b1b6d5b899e55205bde6e80598e]
+link ch.fhnw.dlcopy.IsoCreator to ch.fhnw.dlcopy.SquashFSCreator-->
+        <!--MD5=[fc32e3da439bd37640842aa238ec1f20]
+@startuml
+class ch.fhnw.dlcopy.DLCopy
+class ch.fhnw.dlcopy.Installer
+class ch.fhnw.dlcopy.Upgrader
+class ch.fhnw.dlcopy.Resetter
+class ch.fhnw.dlcopy.IsoCreator
+class ch.fhnw.dlcopy.SquashFSCreator
+interface ch.fhnw.dlcopy.gui.DLCopyGUI
+class ch.fhnw.dlcopy.gui.swing.DLCopySwingGUI implements ch.fhnw.dlcopy.gui.DLCopyGUI
+class ch.fhnw.dlcopy.gui.javafx.DLCopyJavaFxGUI implements ch.fhnw.dlcopy.gui.DLCopyGUI
+
+package "ch.fhnw.dlcopy.gui.javafx" #DDDDDD {}
+
+note right of ch.fhnw.dlcopy.gui.DLCopyGUI
+  This is the interface <b><u>all</u></b> GUI
+  versions have to implement.
+end note
+
+note bottom of ch.fhnw.dlcopy.gui.swing.DLCopySwingGUI
+  This is the classic Swing GUI
+  that is already implemented.
+end note
+
+note bottom of ch.fhnw.dlcopy.gui.javafx.DLCopyJavaFxGUI
+  This is the new JavaFX GUI
+  you need to implement.
+end note
+
+note top of ch.fhnw.dlcopy
+  Package with helper classes
+end note
+
+ch.fhnw.dlcopy.DLCopy -down[hidden]-> ch.fhnw.dlcopy.Installer
+ch.fhnw.dlcopy.Installer -down[hidden]-> ch.fhnw.dlcopy.Upgrader
+ch.fhnw.dlcopy.Upgrader -down[hidden]-> ch.fhnw.dlcopy.Resetter
+ch.fhnw.dlcopy.Resetter -down[hidden]-> ch.fhnw.dlcopy.IsoCreator
+ch.fhnw.dlcopy.IsoCreator -down[hidden]-> ch.fhnw.dlcopy.SquashFSCreator
+
+note right of ch.fhnw.dlcopy.DLCopy
+  Core class with many helper functions
+end note
+
+note right of ch.fhnw.dlcopy.Installer
+  Installs the system to a list of storage devices
+end note
+
+note right of ch.fhnw.dlcopy.Upgrader
+  Upgrades a list of storage devices
+end note
+
+
+note right of ch.fhnw.dlcopy.IsoCreator
+  Creates an ISO file from a running system
+end note
+
+note right of ch.fhnw.dlcopy.Resetter
+  Resets selected storage devices
+end note
+
+note right of ch.fhnw.dlcopy.SquashFSCreator
+  Creates a SquashFS file of the data partition
+  (needed for the Glados exam server)
+end note
+
+@enduml
+
+PlantUML version 1.2021.3(Mon Mar 22 17:53:19 CET 2021)
+(GPL source distribution)
+Java Runtime: OpenJDK Runtime Environment
+JVM: OpenJDK 64-Bit Server VM
+Default Encoding: UTF-8
+Language: de
+Country: CH
+-->
+    </g>
+</svg>
