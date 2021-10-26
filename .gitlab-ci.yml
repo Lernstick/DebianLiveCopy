@@ -28,6 +28,7 @@ checkspell:
       libmatthew-debug-java
       libunixsocket-java
       openjdk-11-jdk
+      openjfx
     - mkdir -p nbproject/private
     - |
       cat << EOF > nbproject/private/private.properties
