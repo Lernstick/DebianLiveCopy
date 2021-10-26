@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Puppy Crawl//DTD Check Configuration 1.3//EN" "http://www.puppycrawl.com/dtds/configuration_1_3.dtd">
+
+<module name="Checker">
+    <property name="severity" value="warning" />
+    <module name="TreeWalker">
+        <property name="tabWidth" value="4" />
+        <module name="JavadocType">
+            <property name="excludeScope" value="private" />
+            <property name="scope" value="protected" />
+        </module>
+        <module name="JavadocVariable">
+            <property name="excludeScope" value="private" />
+            <property name="scope" value="protected" />
+        </module>
+        <module name="JavadocStyle">
+            <property name="scope" value="package" />
+            <property name="excludeScope" value="private" />
+        </module>
+        <module name="MethodName" />
+        <module name="PackageName" />
+        <module name="ParameterName" />
+        <module name="StaticVariableName" />
+        <module name="TypeName" />
+        <module name="IllegalImport" />
+        <module name="RedundantImport" />
+        <module name="EmptyForIteratorPad" />
+        <module name="MethodParamPad" />
+        <module name="NoWhitespaceBefore" />
+        <module name="OperatorWrap" />
+        <module name="ParenPad" />
+        <module name="TypecastParenPad" />
+        <module name="WhitespaceAfter" />
+        <module name="AvoidNestedBlocks" />
+        <module name="EmptyBlock" />
+        <module name="LeftCurly" />
+        <module name="NeedBraces" />
+        <module name="RightCurly" />
+        <module name="EmptyStatement" />
+        <module name="EqualsHashCode" />
+        <module name="IllegalInstantiation" />
+        <module name="InnerAssignment" />
+        <module name="SimplifyBooleanExpression" />
+        <module name="SimplifyBooleanReturn" />
+        <module name="InterfaceIsType" />
+        <module name="UpperEll" />
+        <!--- Start of Metric analysis -->
+        <!-- disable metrics <module name="ClassFanOutComplexity"/> <module name="ClassDataAbstractionCoupling">
+            <property name="max" value="10"/> </module> <module name="BooleanExpressionComplexity">
+            <property name="max" value="4"/> </module> <module name="CyclomaticComplexity"/>
+            <module name="JavaNCSS"/> --><!-- End of Metric analysis -->
+    </module>
+    <module name="NewlineAtEndOfFile">
+        <property name="lineSeparator" value="lf_cr_crlf" />
+    </module>
+    <module name="Translation" />
+    <module name="FileTabCharacter">
+        <property name="fileExtensions" value="*.java" />
+    </module>
+</module>
