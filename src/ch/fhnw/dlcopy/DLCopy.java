@@ -1,6 +1,7 @@
 package ch.fhnw.dlcopy;
 
 import ch.fhnw.dlcopy.gui.DLCopyGUI;
+import ch.fhnw.dlcopy.gui.javafx.StorageMediaManagement;
 import ch.fhnw.dlcopy.gui.swing.DLCopySwingGUI;
 import ch.fhnw.filecopier.CopyJob;
 import ch.fhnw.filecopier.FileCopier;
@@ -102,6 +103,22 @@ public class DLCopy {
      * @param args the command line arguments
      */
     public static void main(final String args[]) {
+        ArrayList<String> arguments = new ArrayList<>();
+        for(String a : args){
+            arguments.add(a);
+        }
+        if(arguments.contains("--old-ui")){
+            startSwing(args);
+        } else {
+            startFX(args);
+        }
+    }
+    
+    public static void startFX(final String args[]){
+        StorageMediaManagement.launchFX(args);
+    }
+    
+    public static void startSwing(final String args[]){
         java.awt.EventQueue.invokeLater(() -> {
             DLCopySwingGUI gui = new DLCopySwingGUI(args);
             gui.init();
