@@ -10,16 +10,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import ch.fhnw.dlcopy.gui.javafx.ui.*;
 
-/**
- *
- * @author user
- */
 public class StorageMediaManagement extends Application{
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("view/startscreen.fxml"));
+        Parent root = new StartscreenUI().getView();
         Scene scene = new Scene(root);
 
         stage.setScene(scene);
