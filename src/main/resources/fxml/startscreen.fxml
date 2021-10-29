@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.layout.Pane?>
-<?import javafx.scene.text.Text?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.layout.FlowPane?>
 
 
-<Pane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
+<FlowPane 
+    maxHeight="-Infinity"
+    maxWidth="-Infinity"
+    minHeight="-Infinity"
+    minWidth="-Infinity"
+    prefHeight="400.0"
+    prefWidth="600.0"
+    xmlns="http://javafx.com/javafx/9"
+    xmlns:fx="http://javafx.com/fxml/1"
+    fx:id="flowPane"
+>
    <children>
-      <Text layoutX="188.0" layoutY="159.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Hello World from Lukas" wrappingWidth="207.65185546875" />
+      <Button id="btnIsoExport" fx:id="btnIsoExport" mnemonicParsing="false" text="Export ISO" textAlignment="CENTER" />
    </children>
-</Pane>
+</FlowPane>
