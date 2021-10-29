@@ -2,7 +2,7 @@ package ch.fhnw.dlcopy.gui.javafx.ui;
 
 import javafx.scene.Parent;
 
-interface View {
+public interface View {
 
   default void init(){
     initSelf();
@@ -36,6 +36,4 @@ interface View {
   default void setupValueChangedListeners(){
 
   }
-  
-  Parent getView();
 }

@@ -5,6 +5,7 @@
  */
 package ch.fhnw.dlcopy.gui.javafx;
 
+import ch.fhnw.dlcopy.gui.javafx.ui.SceneManager;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -14,11 +15,16 @@ import ch.fhnw.dlcopy.gui.javafx.ui.*;
 
 public class StorageMediaManagement extends Application{
 
+    private Scene scene;
+
+    public void setScene(SceneManager sceneManager){
+        scene.setRoot(sceneManager.getRoot(this));
+    }
+
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = new StartscreenUI().getView();
-        Scene scene = new Scene(root);
-
+        Parent root = new StartscreenUI().getRoot(this);
+        scene = new Scene(root);
         stage.setScene(scene);
         stage.show();
     }
