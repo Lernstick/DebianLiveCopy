@@ -23,12 +23,10 @@ import java.nio.file.attribute.UserPrincipalLookupService;
 import java.text.MessageFormat;
 import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.SwingWorker;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 /**
@@ -36,9 +34,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
  *
  * @author Ronny Standtke <ronny.standtke@gmx.net>
  */
-public class IsoCreator
-        extends SwingWorker<Boolean, String>
-        implements PropertyChangeListener {
+public class IsoCreator implements PropertyChangeListener {
 
     private static final Logger LOGGER
             = Logger.getLogger(IsoCreator.class.getName());
@@ -91,6 +87,7 @@ public class IsoCreator
             DataPartitionMode dataPartitionMode,
             boolean showNotUsedDialog, boolean autoStartInstaller,
             String isoLabel) {
+        
         this.dlCopyGUI = dlCopyGUI;
         this.systemSource = systemSource;
         this.onlyBootMedium = onlyBootMedium;
@@ -100,18 +97,18 @@ public class IsoCreator
         this.autoStartInstaller = autoStartInstaller;
         this.isoLabel = isoLabel;
     }
-
+    
     /**
-     * creates the ISO in a background thread
+     * creates the ISO
      *
-     * @return <tt>true</tt>, if the ISO was successfully created,
-     * <tt>false</tt> otherwise
-     * @throws Exception
+     * @return <code>true</code>, if the ISO was successfully created,
+     * <code>false</code> otherwise
+     * @throws Exception if any exception occurs
      */
-    @Override
-    protected Boolean doInBackground() throws Exception {
+    public boolean createISO() throws Exception {
+        
         inhibit = new LogindInhibit("Creating ISO");
-
+        
         try {
             dlCopyGUI.showIsoProgressMessage(
                     STRINGS.getString("Copying_Files"));
@@ -230,20 +227,11 @@ public class IsoCreator
 
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
-        }
-        return true;
-    }
-
-    @Override
-    protected void done() {
-        if (inhibit != null) {
+        } finally {
             inhibit.delete();
         }
-        try {
-            dlCopyGUI.isoCreationFinished(isoPath, get());
-        } catch (InterruptedException | ExecutionException ex) {
-            LOGGER.log(Level.SEVERE, "", ex);
-        }
+        
+        return true;
     }
 
     @Override
@@ -299,6 +287,10 @@ public class IsoCreator
         }
     }
 
+    public String getIsoPath() {
+        return isoPath;
+    }
+    
     private void createSquashFS(String targetDirectory)
             throws IOException, DBusException {
 

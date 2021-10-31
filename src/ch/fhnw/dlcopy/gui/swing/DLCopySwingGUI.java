@@ -2122,7 +2122,7 @@ public class DLCopySwingGUI extends JFrame
                     isoCreatorPanels.isAutoStartInstallerSelected())
                     .execute();
         } else {
-            new IsoCreator(this, runningSystemSource,
+            new IsoCreatorSwingWorker(this, runningSystemSource,
                     isoCreatorPanels.isBootMediumSelected(),
                     isoCreatorPanels.getTemporaryDirectory(),
                     isoCreatorPanels.getDataPartitionMode(),
