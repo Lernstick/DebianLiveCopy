@@ -11,7 +11,7 @@ import javafx.scene.Parent;
 import javafx.scene.layout.*;
 import javafx.scene.control.*;
 
-public class StartscreenUI implements View, SceneManager{
+public class StartscreenUI implements View{
     
     private Parent root;
     private Button btnIsoExport;

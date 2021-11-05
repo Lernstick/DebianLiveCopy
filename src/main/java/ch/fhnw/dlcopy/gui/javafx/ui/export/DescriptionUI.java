@@ -12,7 +12,7 @@ import javafx.scene.Parent;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
-public class DescriptionUI implements View, SceneManager {
+public class DescriptionUI implements View {
     private Parent root;
     private TextField txtDVDLabel;
     private StorageMediaManagement context;
