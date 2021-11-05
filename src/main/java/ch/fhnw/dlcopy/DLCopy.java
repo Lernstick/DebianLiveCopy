@@ -107,7 +107,7 @@ public class DLCopy {
         for(String a : args){
             arguments.add(a);
         }
-        if(arguments.contains("8")){
+        if(arguments.contains("--old-ui")){
             startSwing(args);
         } else {
             startFX(args);
