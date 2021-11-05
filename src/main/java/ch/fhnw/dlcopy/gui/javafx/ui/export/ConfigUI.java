@@ -10,14 +10,14 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.control.TextField;
 
-public class DescriptionUI implements View {
+public class ConfigUI implements View {
     private Parent root;
     private TextField txtDVDLabel;
     private SceneContext context;
 
-    public DescriptionUI(){
+    public ConfigUI(){
          try {
-            root = FXMLLoader.load(getClass().getResource("/fxml/export/description.fxml"));
+            root = FXMLLoader.load(getClass().getResource("/fxml/export/config.fxml"));
         } catch (IOException ex) {
             Logger.getLogger(StartscreenUI.class.getName()).log(Level.SEVERE, "Failed to load FXML-file!", ex);
         }

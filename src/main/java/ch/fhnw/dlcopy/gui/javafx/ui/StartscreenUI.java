@@ -1,7 +1,7 @@
 package ch.fhnw.dlcopy.gui.javafx.ui;
 
 import ch.fhnw.dlcopy.gui.javafx.SceneContext;
-import ch.fhnw.dlcopy.gui.javafx.ui.export.DescriptionUI;
+import ch.fhnw.dlcopy.gui.javafx.ui.export.ConfigUI;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -36,7 +36,7 @@ public class StartscreenUI implements View{
     public void setupEventHandlers(){
         btnIsoExport.setOnAction(event -> {
             System.out.println("Button was pressed");
-            context.setScene(new DescriptionUI());
+            context.setScene(new ConfigUI());
             
         });
     }
