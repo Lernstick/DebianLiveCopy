@@ -1,21 +1,19 @@
 package ch.fhnw.dlcopy.gui.javafx.ui;
 
-import ch.fhnw.dlcopy.gui.javafx.StorageMediaManagement;
+import ch.fhnw.dlcopy.gui.javafx.SceneContext;
 import ch.fhnw.dlcopy.gui.javafx.ui.export.DescriptionUI;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.layout.*;
 import javafx.scene.control.*;
 
 public class StartscreenUI implements View{
     
     private Parent root;
     private Button btnIsoExport;
-    private StorageMediaManagement context;
+    private SceneContext context;
     
     public StartscreenUI(){
         try {
@@ -43,8 +41,7 @@ public class StartscreenUI implements View{
         });
     }
     
-    @Override
-    public Parent getRoot(StorageMediaManagement context) {
+    public Parent getRoot(SceneContext context) {
         this.context = context;
         return root;
     }

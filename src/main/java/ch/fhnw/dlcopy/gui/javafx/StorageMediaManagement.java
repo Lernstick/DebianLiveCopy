@@ -5,20 +5,24 @@
  */
 package ch.fhnw.dlcopy.gui.javafx;
 
-import ch.fhnw.dlcopy.gui.javafx.ui.SceneManager;
 import javafx.application.Application;
-import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import ch.fhnw.dlcopy.gui.javafx.ui.*;
 
-public class StorageMediaManagement extends Application{
+public class StorageMediaManagement
+        extends Application
+        implements SceneContext{
 
     private Scene scene;
 
-    public void setScene(SceneManager sceneManager){
-        scene.setRoot(sceneManager.getRoot(this));
+    /**
+     * A view calls this methode, when the scene should be cnaged to another view
+     * @param view The target view to be displayed
+     */
+    public void setScene(View view){
+        scene.setRoot(view.getRoot(this));
     }
 
     @Override

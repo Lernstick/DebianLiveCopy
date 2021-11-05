@@ -1,7 +1,6 @@
 package ch.fhnw.dlcopy.gui.javafx.ui.export;
 
-import ch.fhnw.dlcopy.gui.javafx.StorageMediaManagement;
-import ch.fhnw.dlcopy.gui.javafx.ui.SceneManager;
+import ch.fhnw.dlcopy.gui.javafx.SceneContext;
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import java.io.IOException;
@@ -9,13 +8,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
-import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 
 public class DescriptionUI implements View {
     private Parent root;
     private TextField txtDVDLabel;
-    private StorageMediaManagement context;
+    private SceneContext context;
 
     public DescriptionUI(){
          try {
@@ -27,7 +25,7 @@ public class DescriptionUI implements View {
     }
     
     @Override
-    public Parent getRoot(StorageMediaManagement context) {
+    public Parent getRoot(SceneContext context) {
         this.context = context;
         return root;
     }
