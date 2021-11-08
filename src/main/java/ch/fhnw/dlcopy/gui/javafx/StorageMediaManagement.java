@@ -10,6 +10,9 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
 import ch.fhnw.dlcopy.gui.javafx.ui.*;
+import java.io.IOException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class StorageMediaManagement
         extends Application
@@ -22,7 +25,11 @@ public class StorageMediaManagement
      * @param view The target view to be displayed
      */
     public void setScene(View view){
-        scene.setRoot(view.getRoot(this));
+        try {
+            scene.setRoot(view.getRoot(this));
+        } catch (IOException ex) {
+            Logger.getLogger(StorageMediaManagement.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     @Override

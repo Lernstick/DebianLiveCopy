@@ -1,48 +1,50 @@
 package ch.fhnw.dlcopy.gui.javafx.ui;
 
 import ch.fhnw.dlcopy.gui.javafx.SceneContext;
+import java.io.IOException;
+import java.net.URL;
+import javafx.fxml.FXML;
+import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 
-public interface View {
+public abstract class View {
 
-  default void init(){
-    initSelf();
-    initControls();
-    layoutControls();
-    setupBindings();
-    setupEventHandlers();
-    setupValueChangedListeners();
-  }
+    protected SceneContext context;
+    protected URL resourcePath;
+    
+    @FXML
+    public final void initialize(){
+        initSelf();
+        initControls();
+        layoutControls();
+        setupBindings();
+        setupEventHandlers();
+        setupValueChangedListeners();
+    }
 
-  default void initSelf(){
+    protected void initSelf(){}
 
-  }
+    protected void initControls(){}
 
-  default void initControls(){
+    protected void layoutControls(){}
 
-  }
+    protected void setupBindings(){}
 
-  default void layoutControls(){
+    protected void setupEventHandlers(){}
 
-  }
-
-  default void setupBindings(){
-
-  }
-
-  default void setupEventHandlers(){
-
-  }
-
-  default void setupValueChangedListeners(){
-
-  }
+    protected void setupValueChangedListeners(){}
   
-  /**
-   * Returns the root parent. This parent can be displayed in a FX-scene
-   * For displaying an other scene, this view can call `context.setScene(new ViewToBeDisplayed())`
-   * @param context The context, where to set the scene
-   * @return A Parent to be displayed
-   */
-  Parent getRoot(SceneContext context);
-}
+    /**
+    * Returns the root parent. This parent can be displayed in a FX-scene
+    * For displaying an other scene, this view can call `context.setScene(new ViewToBeDisplayed())`
+    * @param context The context, where to set the scene
+    * @return A Parent to be displayed
+    */
+    public Parent getRoot(SceneContext context) throws IOException{
+        this.context = context;
+        
+        FXMLLoader loader = new FXMLLoader(resourcePath);
+        loader.setController(this);
+        return loader.load();
+    }
+ }
