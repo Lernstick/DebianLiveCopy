@@ -11,8 +11,8 @@
    <bottom>
       <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
          <children>
-            <Button mnemonicParsing="false" text="Button" />
-            <Button mnemonicParsing="false" text="Button" />
+            <Button id="btnBack" fx:id="btnBack" mnemonicParsing="false" text="Back" />
+            <Button id="btnNext" fx:id="btnNext" mnemonicParsing="false" text="Next" />
          </children>
       </HBox>
    </bottom>
