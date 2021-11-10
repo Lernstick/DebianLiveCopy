@@ -12,7 +12,7 @@
     <target name="bin-jar" depends="init,compile,-pre-pre-jar">
         <jar destfile="dist/DLCopy.jar" basedir="build/classes/">
             <zipfileset src="${reference.JBackpack.jar}" excludes="META-INF/**"/>
-            <zipfileset src="${file.reference.lernstickTools.jar}" excludes="META-INF/**"/>
+            <zipfileset src="${reference.lernstickTools.jar}" excludes="META-INF/**"/>
             <zipfileset src="libs/jh.jar" excludes="META-INF/**"/>
             <zipfileset src="libs/derby.jar" excludes="META-INF/**"/>
             <zipfileset
@@ -28,7 +28,7 @@
     <target name="full-jar" depends="init,compile,-pre-pre-jar">
         <jar destfile="dist/DLCopy_full.jar" basedir="build/classes/">
             <zipfileset src="${reference.JBackpack.jar}" excludes="META-INF/**"/>
-            <zipfileset src="${file.reference.lernstickTools.jar}" excludes="META-INF/**"/>
+            <zipfileset src="${reference.lernstickTools.jar}" excludes="META-INF/**"/>
             <zipfileset src="libs/jh.jar" excludes="META-INF/**"/>
             <zipfileset src="libs/derby.jar" excludes="META-INF/**"/>
             <zipfileset
