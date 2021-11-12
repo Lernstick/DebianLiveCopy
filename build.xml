@@ -62,4 +62,24 @@
             <arg value="sort_strings.sh"></arg>
         </exec>
     </target>
+
+    <target name="checkstyle" description="Generates a report of code convention violations.">
+        <taskdef name="checkstyle"
+            classname="com.puppycrawl.tools.checkstyle.ant.CheckstyleAntTask"
+            classpath="/usr/share/java/checkstyle.jar"/>
+        <property name="check.config" location="config/checkstyle/checks.xml"/>
+
+        <checkstyle config="${check.config}"
+            executeIgnoredModules="true"
+            failureProperty="checkstyle.failure.property"
+            failOnViolation="false">
+            <formatter type="xml" tofile="checkstyle_report.xml"/>
+            <fileset dir="src" includes="**/*.java"/>
+            <classpath path="/usr/share/java/checkstyle.jar"/>
+        </checkstyle>
+
+        <style in="checkstyle_report.xml" out="checkstyle_report.html"
+        style="checkstyle.xsl"/>
+    </target>
+
 </project>

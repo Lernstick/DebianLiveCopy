@@ -13,8 +13,13 @@ checkspell:
   stage: lint
   before_script:
     - apt update
-    - apt install --no-install-recommends -y gradle
-  script: echo "todo"
+    - >
+      apt install --no-install-recommends -y
+      ant
+      checkstyle
+      gradle
+  script:
+    - checkstyle -c config/checkstyle/checks.xml src/
 
 .prepare:
   before_script:
