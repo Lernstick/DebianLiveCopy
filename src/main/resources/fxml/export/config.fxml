@@ -7,32 +7,44 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
-   <bottom>
-      <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
-         <children>
-            <Button id="btnBack" fx:id="btnBack" mnemonicParsing="false" text="Back" />
-            <Button id="btnNext" fx:id="btnNext" mnemonicParsing="false" text="Next" />
-         </children>
-      </HBox>
-   </bottom>
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
    <center>
       <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
          <children>
-            <Label id="labelDescription" fx:id="labelDescription" prefHeight="26.0" text="Label" textAlignment="CENTER" />
             <HBox>
                <children>
-                  <Label id="labelDVDLabel" fx:id="labelDVDLabel" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="26.0" prefWidth="150.0" text="DVD Label: " />
+                  <Label id="labelDVDLabel" fx:id="labelDVDLabel" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="150.0" prefWidth="150.0" text="DVD label: " />
                   <TextField id="txtDVDLabel" fx:id="txtDVDLabel" promptText="Lernstick DVD" />
                </children>
             </HBox>
             <HBox>
                <children>
-                  <Label id="labelTmpDir" fx:id="labelTmpDir" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="26.0" prefWidth="150.0" text="Temp. Directory" />
-                  <TextField id="txtTmpDir" fx:id="txtTmpDir" promptText="Tem. Directory" />
+                  <Label id="labelTmpDir" fx:id="labelTmpDir" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="150.0" prefWidth="150.0" text="Temp. directory" />
+                  <TextField id="txtTmpDir" fx:id="txtTempDirSelect" editable="false" promptText="Tem. Directory" />
+                  <Button id="btnTempDirSelect" fx:id="btnTempDirSelect" mnemonicParsing="false" prefWidth="25.0" />
+               </children>
+            </HBox>
+            <HBox>
+               <children>
+                  <Label id="labelFreeSpace" fx:id="labelFreeSpace" minWidth="150.0" text="Free space" />
+                  <TextField id="txtFreeSpace" fx:id="txtFreeSpace" editable="false" promptText="? Byte" />
+               </children>
+            </HBox>
+            <HBox>
+               <children>
+                  <Label id="labelWritable" fx:id="labelWritable" minWidth="150.0" text="Writable" />
+                  <TextField id="txtWritable" fx:id="txtWritable" editable="false" promptText="Is Writable?" />
                </children>
             </HBox>
          </children>
       </VBox>
    </center>
+   <bottom>
+        <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button id="btnBack" fx:id="btnBack" mnemonicParsing="false" text="Back" />
+                <Button id="btnNext" fx:id="btnNext" mnemonicParsing="false" text="Next" />
+            </children>
+        </HBox>
+    </bottom>
 </BorderPane>
