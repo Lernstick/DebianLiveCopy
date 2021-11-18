@@ -3,6 +3,8 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
@@ -20,20 +22,27 @@
             <HBox>
                <children>
                   <Label id="labelTmpDir" fx:id="labelTmpDir" maxHeight="-Infinity" maxWidth="-Infinity" minWidth="150.0" prefWidth="150.0" text="Temp. directory" />
-                  <TextField id="txtTmpDir" fx:id="txtTempDirSelect" editable="false" promptText="Tem. Directory" />
-                  <Button id="btnTempDirSelect" fx:id="btnTempDirSelect" mnemonicParsing="false" prefWidth="25.0" />
+                  <TextField id="txtTmpDir" fx:id="txtTempDirSelect" editable="false" promptText="/media/" />
+                  <Button id="btnTempDirSelect" fx:id="btnTempDirSelect" mnemonicParsing="false" prefWidth="25.0">
+                     <graphic>
+                        <ImageView fitHeight="15.0" fitWidth="15.0" pickOnBounds="true" preserveRatio="true">
+                           <image>
+                              <Image url="@../../../java/ch/fhnw/dlcopy/icons/fileopen.png" />
+                           </image>
+                        </ImageView>
+                     </graphic></Button>
                </children>
             </HBox>
             <HBox>
                <children>
                   <Label id="labelFreeSpace" fx:id="labelFreeSpace" minWidth="150.0" text="Free space" />
-                  <TextField id="txtFreeSpace" fx:id="txtFreeSpace" editable="false" promptText="? Byte" />
+                  <TextField id="txtFreeSpace" fx:id="txtFreeSpace" editable="false" />
                </children>
             </HBox>
             <HBox>
                <children>
                   <Label id="labelWritable" fx:id="labelWritable" minWidth="150.0" text="Writable" />
-                  <TextField id="txtWritable" fx:id="txtWritable" editable="false" promptText="Is Writable?" />
+                  <TextField id="txtWritable" fx:id="txtWritable" editable="false" />
                </children>
             </HBox>
          </children>
