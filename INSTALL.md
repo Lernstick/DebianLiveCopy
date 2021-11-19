@@ -1,6 +1,6 @@
 # Lernstick Storage Media Management Setup
 
-[![GitLab pipeline status](https://gitlab.fhnw.ch/%{project_path}/badges/%{default_branch}/pipeline.svg)](https://gitlab.fhnw.ch/%{project_path}/-/commits/%{default_branch})
+[![GitLab pipeline status](https://gitlab.fhnw.ch/ip34-21vt/ip34-21vt_lernstick/storage-media-management/badges/develop/pipeline.svg)](https://gitlab.fhnw.ch/ip34-21vt/ip34-21vt_lernstick/storage-media-management/-/commits/develop)
 
 This is a work in progress project for a new version of the [DebianLiveCopy](https://github.com/Lernstick/DebianLiveCopy) application.
 
@@ -31,7 +31,7 @@ sudo apt install --no-install-recommends -y checkstyle gradle openjfx
 
 ### Source code
 
-Choose any directory (e.g. `~/NetBeansProjects`) and clone the project and the dependencies:
+Choose any directory (e.g. `~/NetBeansProjects`) and clone the project and its dependencies:
 
 ```sh
 mkdir -p ~/NetBeansProjects
@@ -41,7 +41,7 @@ git clone https://github.com/Lernstick/jbackpack
 git clone git@gitlab.fhnw.ch:ip34-21vt/ip34-21vt_lernstick/storage-media-management.git
 ```
 
-_Note: All repositories must be cloned to the same directory._
+_Note: All repositories must be cloned to the same parent directory._
 
 ## Build & Run
 
@@ -69,15 +69,15 @@ The project was initially build using Apache NetBeans. Therefore this is the eas
 
 ### NetBeans
 
-It's strongly recomment to get the latest release before starting. Unfortunately they are not packaged for Debian, but you can get the latest release from [their website](https://netbeans.apache.org/download/). Follow the instructions in their installer.
+It's strongly recommend to get the latest release before starting. Unfortunately they are not packaged for Debian, but you can get the latest release from [their website](https://netbeans.apache.org/download/). Follow the instructions in their installer.
 
 To import the project use "Open Project" and...
 
-1. select the `lernstickTools` folder
-2. agree to resolve the project problem by building gradle
-3. select the `jbackpack` folder
+1. ...select the `lernstickTools` folder
+2. agree to resolve the project problem by setting up Gradle
+3. ...select the `jbackpack` folder
 4. agree to install the `nb-javac` plugin and follow the instructions in the wizard
-5. select the storage-media-management folder
+5. ...select the `storage-media-management` folder
 6. ignore the dialog about the missing `openjfx` library (this is a false positive)
 7. verify that you can build and run the project in NetBeans
 8. hack & profit.
@@ -95,4 +95,4 @@ The FXML files are located in `src/main/resources/fxml`, the corresponding code 
 
 ### Guidelines & Testing
 
-Our guidelines and procedure can be found in the [Construction section](https://www.cs.technik.fhnw.ch/confluence20/display/VT342105/Construction) of our project wiki.
+Our guidelines and procedure can be found in the [Construction section](https://www.cs.technik.fhnw.ch/confluence20/display/VT342105/Construction) of our project wiki. Our project management and issue tracker is [here](https://www.cs.technik.fhnw.ch/jira20/browse/VT342105).
