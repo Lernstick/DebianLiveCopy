@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" styleClass="borderpane" stylesheets="@css/global.css" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
+   <left>
+      <HBox maxWidth="256.0" minWidth="256.0" prefHeight="100.0" prefWidth="256.0" BorderPane.alignment="CENTER">
+         <children>
+            <VBox maxWidth="256.0" minWidth="256.0" prefHeight="800.0" prefWidth="256.0" />
+            <Separator orientation="VERTICAL" prefHeight="200.0" />
+         </children>
+      </HBox>
+   </left>
+   <center>
+      <VBox prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+         <children>
+            <Pane maxHeight="700.0" minHeight="700.0" prefHeight="700.0" prefWidth="0.0" />
+            <Separator prefWidth="200.0" />
+            <Pane maxHeight="100.0" minHeight="100.0" prefHeight="100.0" prefWidth="200.0" />
+         </children>
+      </VBox>
+   </center>
+</BorderPane>
