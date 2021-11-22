@@ -1,5 +1,6 @@
 package ch.fhnw.dlcopy.gui.javafx;
 
+import ch.fhnw.dlcopy.gui.DLCopyGUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
 
 /**
@@ -8,7 +9,7 @@ import ch.fhnw.dlcopy.gui.javafx.ui.View;
  * 
  * @since 2021-11-05
  */
-public interface SceneContext {
+public interface SceneContext extends DLCopyGUI{
     /**
      * A view calls this methode, when the scene should be cnaged to another view
      * @param view The target view to be displayed
