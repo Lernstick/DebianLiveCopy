@@ -24,3 +24,14 @@
 	-fx-background-color:  #353535;
 }
 
+.navigation {
+	-fx-alignment:center;
+}
+
+.navigationfocused {
+	-fx-alignment:center;
+	-fx-background-color:  #494949;
+}
+
+
+
