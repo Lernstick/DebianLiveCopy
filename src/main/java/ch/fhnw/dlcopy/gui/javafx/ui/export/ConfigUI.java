@@ -68,11 +68,11 @@ public class ConfigUI extends View {
             new IsoCreator(
                     context,
                     runningSystemSource,
-                    false,
-                    "/home/user/",
-                    DataPartitionMode.READ_WRITE,
-                    false,
-                    false,
+                    false,                          // Only boot medium
+                    txtTempDirSelect.getText(),     // tmpDirectory
+                    DataPartitionMode.READ_WRITE,   // Data Partition mode
+                    false,                          // showNotUsedDialog
+                    false,                          // autoStartInstaller
                     "lernstick"
             ).execute();
         });
