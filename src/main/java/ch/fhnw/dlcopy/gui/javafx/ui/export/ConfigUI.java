@@ -65,7 +65,6 @@ public class ConfigUI extends View {
         });
         
         btnNext.setOnAction(event -> {
-            System.out.println("Export ISO");
             new IsoCreator(
                     context,
                     runningSystemSource,

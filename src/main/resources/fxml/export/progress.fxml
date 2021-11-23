@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
+   <bottom>
+        <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
+            <children>
+                <Button id="btnBack" fx:id="btnBack" disable="true" mnemonicParsing="false" text="Back" />
+                <Button id="btnNext" fx:id="btnNext" disable="true" mnemonicParsing="false" text="Next" />
+            </children>
+        </HBox>
+    </bottom>
+   <center>
+      <VBox alignment="CENTER" prefHeight="200.0" prefWidth="100.0" BorderPane.alignment="CENTER">
+         <children>
+            <Label fx:id="labelProgress" text="labelProgress" />
+            <ProgressBar fx:id="barProgress" prefHeight="20.0" prefWidth="510.0" progress="0.0" />
+         </children>
+      </VBox>
+   </center>
+</BorderPane>

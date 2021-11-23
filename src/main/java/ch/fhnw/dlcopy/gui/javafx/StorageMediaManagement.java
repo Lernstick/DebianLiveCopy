@@ -6,6 +6,7 @@
 package ch.fhnw.dlcopy.gui.javafx;
 
 import ch.fhnw.dlcopy.Installer;
+import ch.fhnw.dlcopy.gui.javafx.ui.export.ProgressUI;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
@@ -199,12 +200,12 @@ public class StorageMediaManagement
 
     @Override
     public void showIsoProgressMessage(String message) {
-        System.out.println("Show ISO Progress Message StorageMediaManagement::201");
+        setScene(new ProgressUI(message));
     }
 
     @Override
     public void showIsoProgressMessage(String message, int value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setScene(new ProgressUI(message, (double)value / 100));
     }
 
     @Override
