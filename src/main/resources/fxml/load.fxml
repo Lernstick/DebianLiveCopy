@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" styleClass="borderpane" stylesheets="@css/global.css" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" styleClass="borderpane" stylesheets="@css/global.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
    <left>
       <HBox maxWidth="256.0" minWidth="256.0" prefHeight="100.0" prefWidth="256.0" BorderPane.alignment="CENTER">
          <children>
@@ -55,14 +55,14 @@
          <children>
             <Pane maxHeight="700.0" minHeight="700.0" prefHeight="700.0" prefWidth="0.0">
                <children>
-                  <VBox layoutX="162.0" layoutY="264.0" prefHeight="200.0" prefWidth="720.0" spacing="20.0">
+                  <VBox layoutX="162.0" layoutY="264.0" prefHeight="239.0" prefWidth="720.0" spacing="20.0">
                      <children>
                         <ImageView fitHeight="150.0" fitWidth="720.0" pickOnBounds="true" preserveRatio="true" translateX="285.0">
                            <image>
                               <Image url="@../new_icons/export-file-white.png" />
                            </image>
                         </ImageView>
-                        <ProgressBar prefHeight="20.0" prefWidth="720.0" progress="0.0" />
+                        <ProgressBar prefHeight="24.0" prefWidth="721.0" progress="0.42" />
                         <Label text="Daten werden expotiert..." textFill="#eeeeee" translateX="270.0">
                            <font>
                               <Font name="Cantarell Bold" size="16.0" />
@@ -84,6 +84,11 @@
                         <Font name="Cantarell Bold" size="13.0" />
                      </font>
                   </Button>
+                  <Label layoutX="83.0" layoutY="38.0" prefHeight="25.0" prefWidth="458.0" text="Info: Bitte beenden sie das Programm nicht vor Abschluss des Export" textFill="#eeeeee">
+                     <font>
+                        <Font name="Cantarell Bold" size="16.0" />
+                     </font>
+                  </Label>
                </children></Pane>
          </children>
       </VBox>

@@ -164,7 +164,7 @@
                <font>
                   <Font size="18.0" />
                </font></Button>
-            <Button fx:id="btnCopy" mnemonicParsing="false" prefHeight="183.0" prefWidth="251.0" text="System kopieren" textFill="#eeeeee" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <Button fx:id="btnCopy" mnemonicParsing="false" prefHeight="183.0" prefWidth="251.0" text="System konvertieren" textFill="#eeeeee" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <font>
                   <Font size="18.0" />
                </font></Button>
