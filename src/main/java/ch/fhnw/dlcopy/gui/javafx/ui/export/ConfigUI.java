@@ -15,9 +15,10 @@ import javafx.stage.DirectoryChooser;
 
 public class ConfigUI extends View {
     @FXML private Label labelDVDLabel;
+    @FXML private TextField txtDVDLabel;
     @FXML private Label labelTmpDir;
     @FXML private TextField txtTempDirSelect;
-    @FXML private Button btnTempDirSelect;    
+    @FXML private Button btnTempDirSelect;
     @FXML private Label labelFreeSpace;
     @FXML private TextField txtFreeSpace;
     @FXML private Label labelWritable;
@@ -25,7 +26,7 @@ public class ConfigUI extends View {
     @FXML private Button btnNext;
     @FXML private Button btnBack;
     private DLCopySwingGUI dlCopySwingGUI;
-    //private static final Logger LOGGER = Logger.getLogger(ConfigUI.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ConfigUI.class.getName());
 
     public ConfigUI(){
         resourcePath = getClass().getResource("/fxml/export/config.fxml");
@@ -36,36 +37,38 @@ public class ConfigUI extends View {
         btnBack.setOnAction(event -> {
             context.setScene(new StartscreenUI());
         });
-      
+
         btnTempDirSelect.setOnAction(event -> {
-                selectDirectory();
+            selectDirectory();
         });
     }
-    
+
     private void selectDirectory() {
-        DirectoryChooser folder = new DirectoryChooser();  
+        DirectoryChooser folder = new DirectoryChooser();
         File selectedDirectory = folder.showDialog(
-                btnTempDirSelect.getScene().getWindow());
-        folder.setTitle("Open Directory");  
-        txtTempDirSelect.setText(selectedDirectory.getAbsolutePath());
-        checkFreeSpace();
+            btnTempDirSelect.getScene().getWindow());
+        folder.setTitle("Open Directory");
+        if (selectedDirectory != null) {
+            txtTempDirSelect.setText(selectedDirectory.getAbsolutePath());
+            checkFreeSpace();
+        }
     }
-    
+
     public void checkFreeSpace() {
         File tmpDir = new File(txtTempDirSelect.getText());
         if (tmpDir.exists()) {
             long freeSpace = tmpDir.getFreeSpace();
             txtFreeSpace.setText(
-                    LernstickFileTools.getDataVolumeString(freeSpace, 1));
+                LernstickFileTools.getDataVolumeString(freeSpace, 1));
             if (tmpDir.canWrite()) {
                 txtWritable.setText(STRINGS.getString("Yes"));
-                txtWritable.setStyle("-fx-text-fill: red ;") ;
+                txtWritable.setStyle("-fx-text-fill: red ;");
                 if (dlCopySwingGUI != null) {
                     dlCopySwingGUI.enableNextButton();
-                } 
+                }
             } else {
                 txtWritable.setText(STRINGS.getString("No"));
-                txtWritable.setStyle("-fx-text-fill: red ;") ;
+                txtWritable.setStyle("-fx-text-fill: red ;");
 
                 if (dlCopySwingGUI != null) {
                     dlCopySwingGUI.disableNextButton();
@@ -74,35 +77,35 @@ public class ConfigUI extends View {
         } else {
             txtFreeSpace.setText(null);
             txtWritable.setText(
-                    STRINGS.getString("Directory_Does_Not_Exist"));
-            txtWritable.setStyle("-fx-text-fill: red ;") ;
+            STRINGS.getString("Directory_Does_Not_Exist"));
+            txtWritable.setStyle("-fx-text-fill: red ;");
 
             if (dlCopySwingGUI != null) {
                 dlCopySwingGUI.disableNextButton();
             }
         }
     }
-    
-    
+
+
     public void init() {
         this.dlCopySwingGUI = dlCopySwingGUI;
-        setText(); 
+        setText();
     }
-    
-    
+
+
     //TODO David discuss MVC: same class fxml constructor.
     @FXML
     private void setText() {
-        java.util.ResourceBundle bundle = 
-                java.util.ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings"); // NOI18N
+        java.util.ResourceBundle bundle =
+            java.util.ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings"); // NOI18N
 
         System.out.println(labelTmpDir);
         labelTmpDir.setText(bundle.getString("DLCopySwingGUI.tmpDirLabel.text")); // NOI18N
-                /*
+        /*
         txtTempDirSelect.setText("/media/");
         labelFreeSpace.setText(bundle.getString("DLCopySwingGUI.freeSpaceLabel.text")); // NOI18N
         labelWritable.setText(bundle.getString("DLCopySwingGUI.writableLabel.text")); // NOI18N
         labelDVDLabel.setText(bundle.getString("DLCopySwingGUI.isoLabelLabel.text")); // NOI18N
-*/
+        */
     }
 }
