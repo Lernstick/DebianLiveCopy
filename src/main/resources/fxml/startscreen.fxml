@@ -45,14 +45,14 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" styleClass="borderpane" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" styleClass="borderpane" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <center>
       <Pane prefHeight="0.0" prefWidth="930.0" styleClass="pane" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets bottom="70.0" right="50.0" top="70.0" />
          </BorderPane.margin>
          <children>
-            <Pane fx:id="panDefault" layoutX="10.0" layoutY="10.0" prefHeight="660.0" prefWidth="930.0">
+            <Pane fx:id="panDefault" layoutX="10.0" layoutY="10.0" prefHeight="660.0" prefWidth="930.0" visible="false">
                <children>
                   <ImageView fx:id="imgDefault" disable="true" fitHeight="364.0" fitWidth="494.0" layoutX="218.0" layoutY="200.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -66,7 +66,7 @@
                   </Label>
                </children>
             </Pane>
-            <Pane fx:id="panInstall" prefHeight="660.0" prefWidth="930.0" visible="false">
+            <Pane fx:id="panInstall" prefHeight="660.0" prefWidth="930.0">
                <children>
                   <ImageView fx:id="imgInstall" disable="true" fitHeight="301.0" fitWidth="256.0" layoutX="319.0" layoutY="200.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -101,14 +101,14 @@
                         <Image url="@../new_icons/export-share-white.png" />
                      </image>
                   </ImageView>
-                  <Label fx:id="lblCopy1" disable="true" layoutX="161.0" layoutY="500.0" text="Das aktuelle System auf ein externes Medium exportieren" textFill="#eeeeee">
+                  <Label fx:id="lblCopy" disable="true" layoutX="161.0" layoutY="500.0" text="Das aktuelle System auf ein externes Medium exportieren" textFill="#eeeeee">
                      <font>
                         <Font size="24.0" />
                      </font>
                   </Label>
                </children>
             </Pane>
-            <Pane fx:id="c" prefHeight="660.0" prefWidth="930.0" visible="false">
+            <Pane fx:id="panUpdate" prefHeight="660.0" prefWidth="930.0" visible="false">
                <children>
                   <ImageView fx:id="imgUpdate" disable="true" fitHeight="301.0" fitWidth="256.0" layoutX="319.0" layoutY="200.0" pickOnBounds="true" preserveRatio="true">
                      <image>
@@ -156,23 +156,23 @@
           <RowConstraints maxHeight="50.0" minHeight="50.0" prefHeight="50.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button fx:id="btnInstall" mnemonicParsing="false" prefHeight="304.0" prefWidth="336.0" text="Installieren" textFill="#eeeeee" GridPane.columnIndex="1" GridPane.rowIndex="1">
+            <Button fx:id="btnInstall" mnemonicParsing="false" prefHeight="304.0" prefWidth="336.0" text="btnInstall" textFill="#eeeeee" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <font>
                   <Font size="18.0" />
                </font></Button>
-            <Button fx:id="btnExport" mnemonicParsing="false" prefHeight="159.0" prefWidth="243.0" text="Daten exportieren" textFill="#eeeeee" GridPane.columnIndex="1" GridPane.rowIndex="2">
+            <Button fx:id="btnExport" mnemonicParsing="false" prefHeight="159.0" prefWidth="243.0" text="btnExport" textFill="#eeeeee" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <font>
                   <Font size="18.0" />
                </font></Button>
-            <Button fx:id="btnCopy" mnemonicParsing="false" prefHeight="183.0" prefWidth="251.0" text="System konvertieren" textFill="#eeeeee" GridPane.columnIndex="1" GridPane.rowIndex="3">
+            <Button fx:id="btnCopy" mnemonicParsing="false" prefHeight="183.0" prefWidth="251.0" text="btnCopy" textFill="#eeeeee" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <font>
                   <Font size="18.0" />
                </font></Button>
-            <Button fx:id="btnUpdate" mnemonicParsing="false" prefHeight="160.0" prefWidth="245.0" text="Aktualisieren" textFill="#eeeeee" GridPane.columnIndex="1" GridPane.rowIndex="4">
+            <Button fx:id="btnUpdate" mnemonicParsing="false" prefHeight="160.0" prefWidth="245.0" text="btnUpdate" textFill="#eeeeee" GridPane.columnIndex="1" GridPane.rowIndex="4">
                <font>
                   <Font size="18.0" />
                </font></Button>
-            <Button fx:id="btnReset" mnemonicParsing="false" prefHeight="131.0" prefWidth="223.0" text="Zurücksetzen" textFill="#eeeeee" GridPane.columnIndex="1" GridPane.rowIndex="5">
+            <Button fx:id="btnReset" mnemonicParsing="false" prefHeight="131.0" prefWidth="223.0" text="btnReset" textFill="#eeeeee" GridPane.columnIndex="1" GridPane.rowIndex="5">
                <font>
                   <Font size="18.0" />
                </font></Button>

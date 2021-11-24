@@ -17,13 +17,13 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" styleClass="borderpane" stylesheets="@css/global.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" styleClass="borderpane" stylesheets="@css/global.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
    <left>
       <HBox maxWidth="256.0" minWidth="256.0" prefHeight="100.0" prefWidth="256.0" BorderPane.alignment="CENTER">
          <children>
-            <VBox maxWidth="256.0" minWidth="256.0" prefHeight="800.0" prefWidth="256.0">
+            <VBox fx:id="vbSteps" maxWidth="256.0" minWidth="256.0" prefHeight="800.0" prefWidth="256.0">
                <children>
-                  <Label prefHeight="20.0" prefWidth="270.0" styleClass="navigation" text="Schritte" textFill="#eeeeee">
+                  <Label fx:id="lblSteps" prefHeight="20.0" prefWidth="270.0" styleClass="navigation" text="lblSteps" textFill="#eeeeee">
                      <font>
                         <Font name="Cantarell Bold" size="16.0" />
                      </font>
@@ -39,12 +39,12 @@
                         <Insets bottom="10.0" top="10.0" />
                      </padding>
                   </Separator>
-                  <Label prefHeight="40.0" prefWidth="270.0" styleClass="navigationfocused" text="Auswahl" textAlignment="CENTER" textFill="#eeeeee">
+                  <Label fx:id="lblStepOne" prefHeight="40.0" prefWidth="270.0" styleClass="navigationfocused" text="lblStepOne" textAlignment="CENTER" textFill="#eeeeee">
                      <font>
                         <Font name="Cantarell Regular" size="14.0" />
                      </font>
                   </Label>
-                  <Label prefHeight="40.0" prefWidth="270.0" styleClass="navigation" text="Installation" textAlignment="CENTER" textFill="#eeeeee">
+                  <Label fx:id="lblStepTwo" prefHeight="40.0" prefWidth="270.0" styleClass="navigation" text="lblStepTwo" textAlignment="CENTER" textFill="#eeeeee">
                      <font>
                         <Font name="Cantarell Regular" size="14.0" />
                      </font>
@@ -55,15 +55,15 @@
       </HBox>
    </left>
    <center>
-      <VBox maxWidth="1024.0" minWidth="1024.0" prefHeight="200.0" prefWidth="1024.0" BorderPane.alignment="CENTER">
+      <VBox fx:id="vbContent" maxWidth="1024.0" minWidth="1024.0" prefHeight="200.0" prefWidth="1024.0" BorderPane.alignment="CENTER">
          <children>
-            <Pane maxHeight="700.0" maxWidth="1024.0" minHeight="700.0" minWidth="1024.0" prefHeight="700.0" prefWidth="1024.0">
+            <Pane fx:id="panContent" maxHeight="700.0" maxWidth="1024.0" minHeight="700.0" minWidth="1024.0" prefHeight="700.0" prefWidth="1024.0">
                <children>
                   <HBox maxWidth="1024.0" minWidth="1024.0" prefHeight="100.0" prefWidth="1024.0">
                      <children>
                         <VBox maxHeight="256.0" minWidth="256.0" prefHeight="200.0" prefWidth="256.0" spacing="30.0">
                            <children>
-                              <Label maxHeight="25.0" maxWidth="186.0" minHeight="25.0" minWidth="186.0" prefHeight="25.0" prefWidth="186.0" text="Zielverzeichnis:" textFill="#eeeeee">
+                              <Label fx:id="lblTargetDirectory" maxHeight="25.0" maxWidth="186.0" minHeight="25.0" minWidth="186.0" prefHeight="25.0" prefWidth="186.0" text="lblTargetDirectory" textFill="#eeeeee">
                                  <font>
                                     <Font name="Cantarell Bold" size="16.0" />
                                  </font>
@@ -71,12 +71,12 @@
                                     <Insets />
                                  </VBox.margin>
                               </Label>
-                              <Label maxHeight="25.0" maxWidth="186.0" minHeight="25.0" minWidth="186.0" prefHeight="25.0" prefWidth="186.0" text="Benötigter Speicherplatz:" textFill="#eeeeee">
+                              <Label fx:id="lblRequiredSpace" maxHeight="25.0" maxWidth="186.0" minHeight="25.0" minWidth="186.0" prefHeight="25.0" prefWidth="186.0" text="lblRequiredSpace" textFill="#eeeeee">
                                  <font>
                                     <Font name="Cantarell Bold" size="16.0" />
                                  </font>
                               </Label>
-                              <Label maxHeight="25.0" maxWidth="186.0" minHeight="25.0" minWidth="186.0" prefHeight="25.0" prefWidth="186.0" text="Freier Speicherplatz:" textFill="#eeeeee">
+                              <Label fx:id="lblFreeSpace" maxHeight="25.0" maxWidth="186.0" minHeight="25.0" minWidth="186.0" prefHeight="25.0" prefWidth="186.0" text="lblFreeSpace" textFill="#eeeeee">
                                  <font>
                                     <Font name="Cantarell Bold" size="16.0" />
                                  </font>
@@ -86,24 +86,24 @@
                               </Label>
                               <VBox prefHeight="200.0" prefWidth="100.0" spacing="12.0">
                                  <children>
-                                    <Label text="Expertenmodus" textFill="#eeeeee">
+                                    <Label fx:id="lblExpertMode" text="lblExpertMode" textFill="#eeeeee">
                                        <font>
                                           <Font name="Cantarell Bold" size="16.0" />
                                        </font>
                                     </Label>
-                                    <ToggleButtonGroup selectionType="SINGLE">
+                                    <ToggleButtonGroup fx:id="tbtngrExpertMode" selectionType="SINGLE">
                                         <toggles>
-                                            <ToggleButton prefHeight="25.0" prefWidth="40.0" text="On">
+                                            <ToggleButton fx:id="tbtnExpertModeOn" prefHeight="25.0" prefWidth="40.0" text="On">
                                              <graphic>
-                                                <Label prefHeight="25.0" prefWidth="20.0" text="An" textFill="#eeeeee">
+                                                <Label fx:id="lblExpertModeOn" prefHeight="25.0" prefWidth="20.0" text="An" textFill="#eeeeee" translateX="1.0">
                                                    <font>
                                                       <Font name="Cantarell Regular" size="16.0" />
                                                    </font></Label>
                                              </graphic>
                                             </ToggleButton>
-                                            <ToggleButton prefHeight="25.0" prefWidth="40.0" selected="true" text="Off">
+                                            <ToggleButton fx:id="tbtnExpertModeOff" prefHeight="25.0" prefWidth="40.0" selected="true" text="Off">
                                              <graphic>
-                                                <Label prefHeight="25.0" prefWidth="29.0" text="Aus" textFill="#eeeeee">
+                                                <Label fx:id="lblExpertModeOff" prefHeight="25.0" prefWidth="29.0" text="Aus" textFill="#eeeeee" translateX="-2.0">
                                                    <font>
                                                       <Font name="Cantarell Regular" size="16.0" />
                                                    </font>
@@ -126,29 +126,29 @@
                         </VBox>
                         <VBox maxWidth="640.0" minWidth="640.0" prefHeight="200.0" prefWidth="640.0" spacing="30.0">
                            <children>
-                              <TextField maxHeight="25.0" minHeight="25.0" prefHeight="25.0" text="/home/user/export">
+                              <TextField fx:id="tfTargetDirectory" maxHeight="25.0" minHeight="25.0" prefHeight="25.0" text="tfTargetDirectory">
                                  <VBox.margin>
                                     <Insets />
                                  </VBox.margin>
                               </TextField>
-                              <Label fx:id="lblRequiredSpace" maxHeight="25.0" maxWidth="186.0" minHeight="25.0" minWidth="186.0" prefHeight="25.0" prefWidth="186.0" text="10 GB" textFill="#eeeeee">
+                              <Label fx:id="lblRequiredSpaceDisplay" maxHeight="25.0" maxWidth="209.0" minHeight="25.0" minWidth="186.0" prefHeight="25.0" prefWidth="209.0" text="lblRequiredSpaceDisplay" textFill="#eeeeee">
                                  <font>
                                     <Font name="System Bold" size="16.0" />
                                  </font>
                               </Label>
-                              <Label fx:id="lblFreeSpace" maxHeight="25.0" maxWidth="186.0" minHeight="25.0" minWidth="186.0" prefHeight="25.0" prefWidth="186.0" text="20 GB" textFill="#00ff55">
+                              <Label fx:id="lblFreeSpaceDisplay" maxHeight="25.0" maxWidth="186.0" minHeight="25.0" minWidth="186.0" prefHeight="25.0" prefWidth="186.0" text="lblFreeSpaceDisplay" textFill="#00ff55">
                                  <font>
                                     <Font name="System Bold" size="16.0" />
                                  </font>
                               </Label>
-                              <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0" visible="false">
+                              <VBox fx:id="vbExpertMode" prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                                  <children>
-                                    <CheckBox mnemonicParsing="false" text="Informationsdialog  anzeigen" textFill="#eeeeee">
+                                    <CheckBox fx:id="chbInformationDialog" mnemonicParsing="false" text="chbInformationDialog" textFill="#eeeeee">
                                        <font>
                                           <Font name="Cantarell Bold" size="16.0" />
                                        </font>
                                     </CheckBox>
-                                    <CheckBox mnemonicParsing="false" text="Installationsprogramm automatisch ausführen" textFill="#eeeeee">
+                                    <CheckBox fx:id="chbInstallationProgram" mnemonicParsing="false" text="chbInstallationProgram" textFill="#eeeeee">
                                        <font>
                                           <Font name="Cantarell Bold" size="16.0" />
                                        </font>
@@ -164,12 +164,12 @@
                            </padding></VBox>
                         <VBox prefHeight="277.0" prefWidth="59.0">
                            <children>
-                              <Button maxHeight="51.0" maxWidth="98.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="61.0" style="-fx-border-color: #282828;;" textFill="#eeeeee">
+                              <Button fx:id="btnTargetDirectory" maxHeight="51.0" maxWidth="98.0" minHeight="20.0" minWidth="20.0" mnemonicParsing="false" prefHeight="39.0" prefWidth="61.0" style="-fx-border-color: #282828;;" textFill="#eeeeee">
                                  <VBox.margin>
                                     <Insets left="20.0" top="42.5" />
                                  </VBox.margin>
                                  <graphic>
-                                    <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
+                                    <ImageView fx:id="imgTargetDirectory" fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                        <image>
                                           <Image url="@../new_icons/export-share-white.png" />
                                        </image>
@@ -184,20 +184,23 @@
             <Separator prefWidth="200.0" />
             <Pane maxHeight="100.0" minHeight="100.0" prefHeight="100.0" prefWidth="200.0">
                <children>
-                  <Button layoutX="808.0" layoutY="30.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="93.0" text="Zurück" textFill="#eeeeee">
+                  <Button fx:id="btnBack" layoutX="808.0" layoutY="30.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="93.0" text="btnBack" textFill="#eeeeee">
                      <font>
                         <Font name="Cantarell Bold" size="13.0" />
                      </font>
                   </Button>
-                  <Button layoutX="917.0" layoutY="30.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="93.0" text="Weiter" textFill="#eeeeee">
+                  <Button fx:id="btnExport" layoutX="917.0" layoutY="30.0" mnemonicParsing="false" prefHeight="41.0" prefWidth="93.0" text="btnExport" textFill="#eeeeee">
                      <font>
                         <Font name="Cantarell Bold" size="13.0" />
                      </font>
                   </Button>
-                  <Label layoutX="70.0" layoutY="38.0" maxHeight="25.0" maxWidth="463.0" minHeight="25.0" minWidth="186.0" prefHeight="25.0" prefWidth="463.0" text="Info: Bitte wählen sie das Zielverzeichnis für das Datenabbild aus" textFill="#eeeeee">
+                  <Label fx:id="lblInfo" layoutX="7.0" layoutY="38.0" maxHeight="25.0" maxWidth="518.0" minHeight="25.0" minWidth="186.0" prefHeight="25.0" prefWidth="518.0" text="lblInfo" textFill="#eeeeee">
                      <font>
                         <Font name="Cantarell Bold" size="16.0" />
                      </font>
+                     <padding>
+                        <Insets left="50.0" />
+                     </padding>
                   </Label>
                </children></Pane>
          </children>
