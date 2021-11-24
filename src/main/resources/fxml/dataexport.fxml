@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import com.gluonhq.charm.glisten.control.ToggleButtonGroup?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleButton?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.BorderPane?>
@@ -36,14 +38,6 @@
                         <Insets bottom="10.0" top="10.0" />
                      </padding>
                   </Separator>
-                  <Label prefHeight="40.0" prefWidth="270.0" styleClass="navigation" text="Information" textAlignment="CENTER" textFill="#eeeeee">
-                     <font>
-                        <Font name="Cantarell Regular" size="14.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
-                  </Label>
                   <Label prefHeight="40.0" prefWidth="270.0" styleClass="navigationfocused" text="Auswahl" textAlignment="CENTER" textFill="#eeeeee">
                      <font>
                         <Font name="Cantarell Regular" size="14.0" />
@@ -84,11 +78,35 @@
                                     <Insets />
                                  </VBox.margin>
                               </Label>
-                              <CheckBox mnemonicParsing="false" text="Expertenmodus" textFill="#eeeeee">
-                                 <font>
-                                    <Font name="Cantarell Bold" size="16.0" />
-                                 </font>
-                              </CheckBox>
+                              <VBox prefHeight="200.0" prefWidth="100.0" spacing="12.0">
+                                 <children>
+                                    <Label text="Expertenmodus" textFill="#eeeeee">
+                                       <font>
+                                          <Font name="Cantarell Bold" size="16.0" />
+                                       </font>
+                                    </Label>
+                                    <ToggleButtonGroup selectionType="SINGLE">
+                                        <toggles>
+                                            <ToggleButton prefHeight="25.0" prefWidth="40.0" text="On">
+                                             <graphic>
+                                                <Label text="ON" textFill="#eeeeee" translateX="-2.0">
+                                                   <font>
+                                                      <Font name="Cantarell Regular" size="16.0" />
+                                                   </font></Label>
+                                             </graphic>
+                                            </ToggleButton>
+                                            <ToggleButton prefHeight="25.0" prefWidth="40.0" selected="true" text="Off">
+                                             <graphic>
+                                                <Label text="OFF" textFill="#eeeeee" translateX="-6.0">
+                                                   <font>
+                                                      <Font name="Cantarell Regular" size="16.0" />
+                                                   </font></Label>
+                                             </graphic>
+                                            </ToggleButton>
+                                        </toggles>
+                                    </ToggleButtonGroup>
+                                 </children>
+                              </VBox>
                            </children>
                            <HBox.margin>
                               <Insets />
@@ -128,14 +146,14 @@
                            </padding></VBox>
                         <VBox prefHeight="200.0" prefWidth="100.0">
                            <children>
-                              <Button maxHeight="40.0" maxWidth="40.0" minHeight="40.0" minWidth="40.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" text="Button" textFill="#eeeeee">
+                              <Button maxHeight="40.0" maxWidth="40.0" minHeight="40.0" minWidth="40.0" mnemonicParsing="false" prefHeight="40.0" prefWidth="40.0" style="-fx-border-color: #282828;;" text="Button" textFill="#eeeeee">
                                  <VBox.margin>
                                     <Insets left="20.0" top="42.5" />
                                  </VBox.margin>
                                  <graphic>
-                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" translateX="-8.0">
+                                    <ImageView fitHeight="30.0" fitWidth="30.0" pickOnBounds="true" preserveRatio="true" translateX="-5.0" translateY="-2.0">
                                        <image>
-                                          <Image url="@../../../../../../Downloads/directory.png" />
+                                          <Image url="@../new_icons/export-share-white.png" />
                                        </image>
                                     </ImageView>
                                  </graphic>

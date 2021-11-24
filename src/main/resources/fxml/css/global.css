@@ -33,5 +33,37 @@
 	-fx-background-color:  #494949;
 }
 
+.separator *.line { 
+	-fx-border-style: solid;
+	-fx-border-width: 1px;
+	-fx-border-color: #3C3C3C;
+
+}
+
+.toggle-button {
+    -fx-background-color: #3C3C3C;
+    -fx-border-color: #282828;
+    -fx-border-color: #282828;
+    -fx-border-width:2;
+
+    
+}
+.toggle-button:selected {
+    -fx-background-color: #494949;
+    -fx-border-color: #282828;
+}
+
+.check-box .box {
+    -fx-background-color: #3C3C3C;
+    -fx-border-color: #282828;
+    -fx-border-width:2;
+
+}
+
+
+.check-box:selected .box {
+    -fx-background-color: #494949;
+    -fx-border-color: #282828;
+}
 
 

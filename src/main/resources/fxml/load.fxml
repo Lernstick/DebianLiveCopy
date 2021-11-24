@@ -35,14 +35,6 @@
                         <Insets bottom="10.0" top="10.0" />
                      </padding>
                   </Separator>
-                  <Label prefHeight="40.0" prefWidth="270.0" styleClass="navigation" text="Information" textAlignment="CENTER" textFill="#eeeeee">
-                     <font>
-                        <Font name="Cantarell Regular" size="14.0" />
-                     </font>
-                     <VBox.margin>
-                        <Insets />
-                     </VBox.margin>
-                  </Label>
                   <Label prefHeight="40.0" prefWidth="270.0" styleClass="navigation" text="Auswahl" textAlignment="CENTER" textFill="#eeeeee">
                      <font>
                         <Font name="Cantarell Regular" size="14.0" />
@@ -63,14 +55,19 @@
          <children>
             <Pane maxHeight="700.0" minHeight="700.0" prefHeight="700.0" prefWidth="0.0">
                <children>
-                  <VBox layoutX="162.0" layoutY="264.0" prefHeight="200.0" prefWidth="720.0" spacing="10.0">
+                  <VBox layoutX="162.0" layoutY="264.0" prefHeight="200.0" prefWidth="720.0" spacing="20.0">
                      <children>
-                        <ImageView fitHeight="150.0" fitWidth="720.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fitHeight="150.0" fitWidth="720.0" pickOnBounds="true" preserveRatio="true" translateX="285.0">
                            <image>
-                              <Image url="@../../../../../../Downloads/directory.png" />
+                              <Image url="@../new_icons/export-file-white.png" />
                            </image>
                         </ImageView>
                         <ProgressBar prefHeight="20.0" prefWidth="720.0" progress="0.0" />
+                        <Label text="Daten werden expotiert..." textFill="#eeeeee" translateX="270.0">
+                           <font>
+                              <Font name="Cantarell Bold" size="16.0" />
+                           </font>
+                        </Label>
                      </children>
                   </VBox>
                </children></Pane>
