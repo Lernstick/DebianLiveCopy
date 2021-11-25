@@ -23,7 +23,7 @@ import java.util.logging.Logger;
 
 public class StorageMediaManagement
         extends Application
-        implements SceneContext, DLCopyGUI{
+        implements SceneContext{
 
     private Scene scene;
 

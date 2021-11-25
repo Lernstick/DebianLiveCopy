@@ -52,7 +52,7 @@
         <HBox prefHeight="100.0" prefWidth="200.0" BorderPane.alignment="CENTER">
             <children>
                 <Button id="btnBack" fx:id="btnBack" mnemonicParsing="false" text="Back" />
-                <Button id="btnNext" fx:id="btnNext" mnemonicParsing="false" text="Next" />
+                <Button id="btnNext" fx:id="btnNext" disable="true" mnemonicParsing="false" text="Next" />
             </children>
         </HBox>
     </bottom>

@@ -39,7 +39,6 @@ public class ConfigUI extends View {
     @FXML private TextField txtWritable;
     @FXML private Button btnNext;
     @FXML private Button btnBack;
-    private DLCopySwingGUI dlCopySwingGUI;
     private static final Logger LOGGER = Logger.getLogger(ConfigUI.class.getName());
 
     public ConfigUI(){
@@ -103,32 +102,23 @@ public class ConfigUI extends View {
             if (tmpDir.canWrite()) {
                 txtWritable.setText(STRINGS.getString("Yes"));
                 txtWritable.setStyle("-fx-text-fill: red ;");
-                if (dlCopySwingGUI != null) {
-                    dlCopySwingGUI.enableNextButton();
-                }
+                btnNext.setDisable(false);
             } else {
                 txtWritable.setText(STRINGS.getString("No"));
-                txtWritable.setStyle("-fx-text-fill: red ;");
-
-                if (dlCopySwingGUI != null) {
-                    dlCopySwingGUI.disableNextButton();
-                }
+                txtWritable.setStyle("-fx-text-fill: red ;") ;
+                btnNext.setDisable(true);
             }
         } else {
             txtFreeSpace.setText(null);
             txtWritable.setText(
-            STRINGS.getString("Directory_Does_Not_Exist"));
-            txtWritable.setStyle("-fx-text-fill: red ;");
-
-            if (dlCopySwingGUI != null) {
-                dlCopySwingGUI.disableNextButton();
-            }
+                    STRINGS.getString("Directory_Does_Not_Exist"));
+            txtWritable.setStyle("-fx-text-fill: red ;") ;
+            btnNext.setDisable(true);
         }
     }
 
 
     public void init() {
-        this.dlCopySwingGUI = dlCopySwingGUI;
         setText();
     }
 
