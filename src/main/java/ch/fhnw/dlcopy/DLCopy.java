@@ -104,9 +104,7 @@ public class DLCopy {
      */
     public static void main(final String args[]) {
         ArrayList<String> arguments = new ArrayList<>();
-        for(String a : args){
-            arguments.add(a);
-        }
+        arguments.addAll(Arrays.asList(args));
         if(arguments.contains("--old-ui")){
             startSwing(args);
         } else {
@@ -144,9 +142,9 @@ public class DLCopy {
      * @return the PartitionState for a given storage and system size
      */
     public static PartitionState getPartitionState(
-            long storageSize, long systemSize) {
+        long storageSize, long systemSize) {
         LOGGER.log(Level.FINE, "storageSize = {0}, systemSize = {1}",
-                new Object[]{storageSize, systemSize});
+            new Object[]{storageSize, systemSize});
         if (storageSize > (systemSize + (2 * MINIMUM_PARTITION_SIZE))) {
             return PartitionState.EXCHANGE;
         } else if (storageSize > (systemSize + MINIMUM_PARTITION_SIZE)) {
@@ -166,11 +164,11 @@ public class DLCopy {
      * @throws IOException if moving the file fails
      */
     public static void moveFile(String source, String destination)
-            throws IOException {
+        throws IOException {
         Path sourcePath = Paths.get(source);
         if (Files.notExists(sourcePath)) {
             String errorMessage
-                    = STRINGS.getString("Error_File_Does_Not_Exist");
+                = STRINGS.getString("Error_File_Does_Not_Exist");
             errorMessage = MessageFormat.format(errorMessage, source);
             throw new IOException(errorMessage);
         }
@@ -179,7 +177,7 @@ public class DLCopy {
         } catch (IOException exception) {
             String errorMessage = STRINGS.getString("Error_File_Move");
             errorMessage = MessageFormat.format(
-                    errorMessage, source, destination);
+                errorMessage, source, destination);
             throw new IOException(errorMessage, exception);
         }
     }
