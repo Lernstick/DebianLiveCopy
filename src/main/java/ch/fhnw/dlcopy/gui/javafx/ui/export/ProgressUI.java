@@ -15,6 +15,7 @@ public class ProgressUI extends View{
     @FXML private Button btnNext;
     @FXML private Button btnBack;
 
+    private static final Logger LOGGER = Logger.getLogger(ConfigUI.class.getName());
     private String tmpMessage;
     private double tmpProgress = -1;
 
@@ -50,5 +51,18 @@ public class ProgressUI extends View{
             labelProgress.setText("An error occured");
             btnBack.setDisable(false);
         }
+    }
+
+
+    @Override
+    protected void setupEventHandlers() {
+        btnBack.setOnAction(event -> {
+            context.setScene(new ConfigUI());
+        });
+
+        btnNext.setOnAction(event -> {
+            LOGGER.log(Level.INFO, "Mischief managed.");
+            context.setScene(new StartscreenUI());
+        });
     }
 }
