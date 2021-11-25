@@ -24,10 +24,10 @@ import javafx.stage.DirectoryChooser;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 public class ConfigUI extends View {
-    
+
     private SystemSource runningSystemSource;
     private final static ProcessExecutor PROCESS_EXECUTOR = new ProcessExecutor();
-    
+
     @FXML private Label labelDVDLabel;
     @FXML private TextField txtDVDLabel;
     @FXML private Label labelTmpDir;
@@ -43,18 +43,18 @@ public class ConfigUI extends View {
     private static final Logger LOGGER = Logger.getLogger(ConfigUI.class.getName());
 
     public ConfigUI(){
-        
+
         // prepare processExecutor to always use the POSIX locale
         Map<String, String> environment = new HashMap<>();
         environment.put("LC_ALL", "C");
         PROCESS_EXECUTOR.setEnvironment(environment);
-        
+
         try {
             runningSystemSource = new RunningSystemSource(PROCESS_EXECUTOR);
         } catch (DBusException | IOException ex) {
-            Logger.getLogger(ConfigUI.class.getName()).log(Level.SEVERE, null, ex);
+            LOGGER.log(Level.SEVERE, null, ex);
         }
-        
+
         resourcePath = getClass().getResource("/fxml/export/config.fxml");
     }
 
@@ -63,8 +63,9 @@ public class ConfigUI extends View {
         btnBack.setOnAction(event -> {
             context.setScene(new StartscreenUI());
         });
-        
+
         btnNext.setOnAction(event -> {
+            context.setScene(new ProgressUI());
             new IsoCreator(
                     context,
                     runningSystemSource,
@@ -76,7 +77,7 @@ public class ConfigUI extends View {
                     "lernstick"
             ).execute();
         });
-      
+
         btnTempDirSelect.setOnAction(event -> {
             selectDirectory();
         });

@@ -6,6 +6,7 @@
 package ch.fhnw.dlcopy.gui.javafx;
 
 import ch.fhnw.dlcopy.Installer;
+import ch.fhnw.dlcopy.gui.DLCopyGUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.export.ProgressUI;
 import javafx.application.Application;
 import javafx.scene.Parent;
@@ -22,7 +23,7 @@ import java.util.logging.Logger;
 
 public class StorageMediaManagement
         extends Application
-        implements SceneContext{
+        implements SceneContext, DLCopyGUI{
 
     private Scene scene;
 
@@ -210,7 +211,7 @@ public class StorageMediaManagement
 
     @Override
     public void isoCreationFinished(String path, boolean success) {
-        System.out.println("Show ISO finished StorageMediaManagement::211");
+        setScene(new ProgressUI("Finished ISO " + path, 100));
     }
 
     @Override
