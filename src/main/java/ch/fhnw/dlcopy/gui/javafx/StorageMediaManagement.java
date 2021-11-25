@@ -6,13 +6,8 @@
 package ch.fhnw.dlcopy.gui.javafx;
 
 import ch.fhnw.dlcopy.Installer;
-import ch.fhnw.dlcopy.gui.DLCopyGUI;
-import ch.fhnw.dlcopy.gui.javafx.ui.export.ProgressUI;
-import javafx.application.Application;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
-import javafx.stage.Stage;
 import ch.fhnw.dlcopy.gui.javafx.ui.*;
+import ch.fhnw.dlcopy.gui.javafx.ui.export.ProgressUI;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.StorageDevice;
 import java.io.IOException;
@@ -20,6 +15,10 @@ import java.nio.file.Path;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Application;
+import javafx.scene.Parent;
+import javafx.scene.Scene;
+import javafx.stage.Stage;
 
 public class StorageMediaManagement
         extends Application

@@ -1,6 +1,9 @@
 package ch.fhnw.dlcopy.gui.javafx.ui.export;
 
+import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
