@@ -377,7 +377,7 @@ public class IsoCreator implements PropertyChangeListener {
         dlCopyGUI.showIsoProgressMessage(
                 STRINGS.getString("Compressing_Filesystem"));
         PROCESS_EXECUTOR.addPropertyChangeListener(this);
-        int exitValue = PROCESS_EXECUTOR.executeProcess("mksquashfs",
+        int exitValue = PROCESS_EXECUTOR.executeProcess(true, true, "mksquashfs",
                 cowPath, targetDirectory + "/live/filesystem.squashfs",
                 "-comp", "zstd", "-Xcompression-level", "22");
         if (exitValue != 0) {
