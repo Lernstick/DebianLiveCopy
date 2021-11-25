@@ -42,5 +42,10 @@ public class ProgressUI extends View{
         if(tmpProgress >= 100) {
             btnNext.setDisable(false);
         }
+
+        if(tmpProgress < 0) {
+            labelProgress.setText("An error occured");
+            btnBack.setDisable(false);
+        }
     }
 }
