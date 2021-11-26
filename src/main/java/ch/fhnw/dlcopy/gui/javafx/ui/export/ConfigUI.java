@@ -41,7 +41,6 @@ public class ConfigUI extends View {
     @FXML private TextField txtFreeSpace;
     @FXML private Label labelWritable;
     @FXML private TextField txtWritable;
-    @FXML private TextField txtDVDLabel;
     @FXML private Button btnNext;
     @FXML private Button btnBack;
     private static final Logger LOGGER = Logger.getLogger(ConfigUI.class.getName());
