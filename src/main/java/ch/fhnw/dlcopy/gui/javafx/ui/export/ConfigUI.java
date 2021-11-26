@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
+import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
@@ -144,7 +146,9 @@ public class ConfigUI extends View {
         // check that a persistence partition is available
         Partition dataPartition = runningSystemSource.getDataPartition();
         if (dataPartition == null) {
-            LOGGER.log(Level.WARNING, "Error_No_Persistence");
+            String message = STRINGS.getString("Error_No_Persistence");
+            LOGGER.log(Level.WARNING, message);
+            showError(message);
             return false;
         }
 
@@ -174,6 +178,7 @@ public class ConfigUI extends View {
                         "Warning_Persistence_Mounted") + "\n"
                         + STRINGS.getString("Hint_Nonpersistent_Boot");
                 LOGGER.log(Level.WARNING, message);
+                showError(message);
                 return false;
             } else {
                 // persistence partition was manually mounted
@@ -182,6 +187,7 @@ public class ConfigUI extends View {
                         "Warning_Persistence_Mounted") + "\n"
                         + STRINGS.getString("Umount_Question");
                 LOGGER.log(Level.WARNING, message);
+                showError(message);
                 runningSystemSource.getDataPartition().umount();
                 LOGGER.log(Level.WARNING, "Parition unmounted");
                 return isUnmountedPersistenceAvailable();
@@ -191,6 +197,13 @@ public class ConfigUI extends View {
         return true;
     }
 
+    private void showError(String message) {
+        Alert alert = new Alert(AlertType.ERROR);
+        alert.setTitle(STRINGS.getString("Error"));
+        alert.setHeaderText(STRINGS.getString("Error"));
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
 
     public void init() {
         setText();
