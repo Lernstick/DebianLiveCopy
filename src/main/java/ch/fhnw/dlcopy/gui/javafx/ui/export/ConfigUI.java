@@ -84,7 +84,7 @@ public class ConfigUI extends View {
                     DataPartitionMode.READ_WRITE,   // Data Partition mode
                     false,                          // showNotUsedDialog
                     false,                          // autoStartInstaller
-                    txtDVDLabel.getText()           // TODO: txtDVDLabel
+                    txtDVDLabel.getText()           // partition label
             ).execute();
         });
 
@@ -206,6 +206,7 @@ public class ConfigUI extends View {
         System.out.println(labelTmpDir);
         labelTmpDir.setText(bundle.getString("DLCopySwingGUI.tmpDirLabel.text")); // NOI18N
         /*
+        txtDVDLabel.setText("lernstick");
         txtTempDirSelect.setText("/media/");
         labelFreeSpace.setText(bundle.getString("DLCopySwingGUI.freeSpaceLabel.text")); // NOI18N
         labelWritable.setText(bundle.getString("DLCopySwingGUI.writableLabel.text")); // NOI18N
