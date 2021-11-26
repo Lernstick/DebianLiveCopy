@@ -142,6 +142,7 @@ public class IsoCreator implements PropertyChangeListener {
                         + "cd " + systemSource.getSystemPath() + '\n'
                         + "find -not -name filesystem*.squashfs | cpio -pvdum \""
                         + targetDirectory + "\"";
+                LOGGER.log(Level.FINEST, "Execute: {0}", copyScript);
                 PROCESS_EXECUTOR.executeScript(copyScript);
             }
 
@@ -377,6 +378,8 @@ public class IsoCreator implements PropertyChangeListener {
         dlCopyGUI.showIsoProgressMessage(
                 STRINGS.getString("Compressing_Filesystem"));
         PROCESS_EXECUTOR.addPropertyChangeListener(this);
+        LOGGER.log(Level.FINEST, "Make squashfs: {0}, {1}",
+                new String[]{cowPath, targetDirectory});
         int exitValue = PROCESS_EXECUTOR.executeProcess(true, true, "mksquashfs",
                 cowPath, targetDirectory + "/live/filesystem.squashfs",
                 "-comp", "zstd", "-Xcompression-level", "22");
