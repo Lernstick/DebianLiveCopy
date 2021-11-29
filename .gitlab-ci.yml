@@ -1,39 +1,22 @@
 stages:
+  - docker
   - lint
   - dependencies
   - build
   - test
 
 default:
-  image: debian:bullseye-slim
+  image: $CI_REGISTRY_IMAGE:latest
   tags:
     - IP34-21vt_Lernstick
 
 checkspell:
   stage: lint
-  before_script:
-    - apt update
-    - >
-      apt install --no-install-recommends -y
-      ant
-      checkstyle
-      gradle
   script:
     - checkstyle -c config/checkstyle/checks.xml src/
 
 .prepare:
   before_script:
-    - apt update
-    - >
-      apt install --no-install-recommends -y
-      ant
-      git
-      gradle
-      libdbus-java
-      libmatthew-debug-java
-      libunixsocket-java
-      openjdk-11-jdk
-      openjfx
     - mkdir -p nbproject/private
     - |
       cat << EOF > nbproject/private/private.properties
@@ -41,6 +24,24 @@ checkspell:
       project.lernstickTools=lernstickTools
       reference.lernstickTools.jar=\${project.lernstickTools}/build/libs/lernstickTools.jar
       EOF
+
+ci:
+  image: docker
+  stage: docker
+  variables:
+    CI_REGISTRY: cr.gitlab.fhnw.ch
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:latest
+  services:
+    - name: docker:dind
+      alias: docker
+  before_script:
+        - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin
+  script:
+    - docker build --pull -t $IMAGE_TAG ci
+    - docker images
+    - docker push $IMAGE_TAG
+  only:
+    - schedules
 
 build:lernstickTools:
   extends: .prepare
