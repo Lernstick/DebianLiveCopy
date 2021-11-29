@@ -117,3 +117,4 @@ sonarqube:
       -Dsonar.projectKey="${CI_SONARQUBE_PROJECT}"
       -Dsonar.qualitygate.wait=true
       -Dsonar.sources=src
+  allow_failure: true
