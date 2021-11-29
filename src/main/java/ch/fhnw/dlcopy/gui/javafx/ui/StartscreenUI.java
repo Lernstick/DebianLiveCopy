@@ -6,18 +6,16 @@ import javafx.scene.control.*;
 
 public class StartscreenUI extends View{
 
-    //@FXML private Button btnIsoExport;
+    @FXML private Button btnCopy;
 
     public StartscreenUI(){
         resourcePath = getClass().getResource("/fxml/startscreen.fxml");
     }
 
-    /*
     @Override
     protected void setupEventHandlers(){
-        btnIsoExport.setOnAction(event -> {
+        btnCopy.setOnAction(event -> {
             context.setScene(new ConfigUI());
         });
     }
-    */
 }
