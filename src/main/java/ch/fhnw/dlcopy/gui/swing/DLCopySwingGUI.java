@@ -17,6 +17,7 @@ import ch.fhnw.dlcopy.StorageDeviceResult;
 import ch.fhnw.dlcopy.SystemSource;
 import ch.fhnw.dlcopy.Upgrader;
 import ch.fhnw.dlcopy.gui.DLCopyGUI;
+import ch.fhnw.dlcopy.gui.swing.IsoCreatorSwingWorker;
 import ch.fhnw.dlcopy.gui.swing.preferences.DLCopySwingGUIPreferencesHandler;
 import ch.fhnw.dlcopy.gui.swing.preferences.MainMenuPreferences;
 import ch.fhnw.filecopier.FileCopier;
