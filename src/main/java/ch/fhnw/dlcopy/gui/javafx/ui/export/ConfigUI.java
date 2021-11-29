@@ -73,11 +73,8 @@ public class ConfigUI extends View {
                     btnNext.setDisable(true);
                     return;
                 }
-            } catch (IOException | DBusException ex) {
-                LOGGER.log(Level.SEVERE, "", ex);
-            }
-            context.setScene(new ProgressUI());
-            new IsoCreator(
+                context.setScene(new ProgressUI());
+                new IsoCreator(
                     context,
                     runningSystemSource,
                     false,                          // Only boot medium
@@ -86,7 +83,11 @@ public class ConfigUI extends View {
                     false,                          // showNotUsedDialog
                     false,                          // autoStartInstaller
                     txtDVDLabel.getText()           // partition label
-            ).execute();
+                ).createISO();
+            } catch (Exception ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
+                showError(ex.getLocalizedMessage());
+            }
         });
 
         btnTempDirSelect.setOnAction(event -> {
