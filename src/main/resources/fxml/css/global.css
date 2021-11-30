@@ -1,3 +1,26 @@
+.root{
+	-fx-background-color: #353535;
+}
+
+.label{
+    	-fx-font-size: 11pt;
+    	-fx-font-family: "Cantarell";
+    	-fx-text-fill : #eeeeee
+}
+
+.labelStep{
+	-fx-alignment: center;
+}
+
+
+
+
+
+
+
+
+
+
 .button {
 	-fx-background-color: #3C3C3C;
 	-fx-border-color: #282828;
