@@ -5,9 +5,7 @@ import javafx.beans.property.SimpleIntegerProperty;
 
 public class PresentationModel {
     public final static int WINDOWS_HEIGHT_DEFAULT  = 720;
-    public final static int WINDOWS_HEIGHT_MIN      = 720;
     public final static int WINDOWS_WIDTH_DEFAULT   = 1024;
-    public final static int WINDOWS_WIDTH_MIN       = 1024;
     
     private static PresentationModel instance;
     
@@ -28,11 +26,7 @@ public class PresentationModel {
     }
     
     public void setHeight(int height){
-        if (height >= WINDOWS_HEIGHT_MIN) {
-            this.height.set(height);
-        } else {
-            throw new IllegalArgumentException("Height has to be bigger than " + WINDOWS_HEIGHT_MIN + "px!");
-        }
+        this.height.set(height);
     }
     
     public IntegerProperty heightProperty(){
@@ -44,11 +38,7 @@ public class PresentationModel {
     }
     
     public void setWidth(int width){
-        if (width >= WINDOWS_WIDTH_MIN) {
-            this.width.set(width);
-        } else {
-            throw new IllegalArgumentException("Width has to be bigger than " + WINDOWS_WIDTH_MIN + "px!");
-        }
+        this.width.set(width);
     }
     
     public IntegerProperty widthProperty(){

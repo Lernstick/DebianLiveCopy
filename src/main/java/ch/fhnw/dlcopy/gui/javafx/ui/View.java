@@ -1,6 +1,7 @@
 package ch.fhnw.dlcopy.gui.javafx.ui;
 
 import ch.fhnw.dlcopy.gui.javafx.SceneContext;
+import ch.fhnw.dlcopy.model.PresentationModel;
 import java.io.IOException;
 import java.net.URL;
 import javafx.fxml.FXML;
@@ -9,6 +10,7 @@ import javafx.scene.Parent;
 
 public abstract class View {
 
+    protected PresentationModel model = PresentationModel.getInstance();
     protected SceneContext context;
     protected URL resourcePath;
     

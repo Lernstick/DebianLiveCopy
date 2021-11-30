@@ -47,6 +47,12 @@ public class StorageMediaManagement
         stage.setScene(scene);
         stage.setHeight(model.getHeight());
         stage.setWidth(model.getWidth());
+        
+        
+        stage.heightProperty().addListener((observable, oldValue, newValue) -> {
+            model.setHeight((int) (double) newValue);
+        });
+        
         stage.show();
     }
 
