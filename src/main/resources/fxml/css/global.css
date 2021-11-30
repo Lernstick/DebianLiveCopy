@@ -3,12 +3,12 @@
 }
 
 .label{
-    	-fx-font-size: 11pt;
+    	-fx-font-size: 100%;
     	-fx-font-family: "Cantarell";
     	-fx-text-fill : #eeeeee
 }
 
-.labelStep{
+.labelcenter{
 	-fx-alignment: center;
 }
 
@@ -33,7 +33,6 @@
 	-fx-background-color: #494949;
 	-fx-border-color: #1F76E1;
 }
-
 
 
 

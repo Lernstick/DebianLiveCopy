@@ -4,3 +4,7 @@ nbproject/private/
 
 build.xml
 nbproject/
+
+.idea/
+out/
+storage-media-management.iml
