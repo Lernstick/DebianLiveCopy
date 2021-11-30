@@ -7,9 +7,9 @@ package ch.fhnw.dlcopy.gui.javafx;
 
 import ch.fhnw.dlcopy.Installer;
 import ch.fhnw.dlcopy.gui.javafx.ui.*;
-import ch.fhnw.dlcopy.gui.javafx.ui.export.ProgressUI;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.StorageDevice;
+import ch.fhnw.dlcopy.model.PresentationModel;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -25,6 +25,7 @@ public class StorageMediaManagement
         implements SceneContext{
 
     private Scene scene;
+    private PresentationModel model = PresentationModel.getInstance();
 
     /**
      * A view calls this methode, when the scene should be cnaged to another view
@@ -42,7 +43,10 @@ public class StorageMediaManagement
     public void start(Stage stage) throws Exception {
         Parent root = new StartscreenUI().getRoot(this);
         scene = new Scene(root);
+        
         stage.setScene(scene);
+        stage.setHeight(model.getHeight());
+        stage.setWidth(model.getWidth());
         stage.show();
     }
 
