@@ -23,33 +23,35 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import org.freedesktop.dbus.exceptions.DBusException;
 import javafx.stage.DirectoryChooser;
 
 public class SystemexportUI extends View{
-    
+
     private String option_NotUsed = stringBundle.getString("global.notUsed");
     private String option_ReadOnly = stringBundle.getString("global.readWrite");
     private String option_ReadWrite = stringBundle.getString("global.readOnly");
     private SystemSource runningSystemSource;
-    
+
     private static final Logger LOGGER = Logger.getLogger(SystemexportUI.class.getName());
     private final static ProcessExecutor PROCESS_EXECUTOR = new ProcessExecutor();
-    
+
     @FXML private Button btnBack;
     @FXML private Button btnExport;
     @FXML private Button btnTargetDirectory;
+    @FXML private CheckBox chbInstallationProgram;
     @FXML private ComboBox<String> cmbDataPartitionMode;
     @FXML private Label lblFreeSpaceDisplay;
     @FXML private Label lblWriteable;
     @FXML private Label lblInfo;
     @FXML private TextField tfDvdLabel;
     @FXML private TextField tfTargetDirectory;
-    
+
     public SystemexportUI(){
-        
+
         // prepare processExecutor to always use the POSIX locale
         Map<String, String> environment = new HashMap<>();
         environment.put("LC_ALL", "C");
@@ -60,16 +62,16 @@ public class SystemexportUI extends View{
         } catch (DBusException | IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
-        
+
         resourcePath = getClass().getResource("/fxml/exportSystem/systemexport.fxml");
     }
-    
+
     @Override
     protected void initControls(){
         cmbDataPartitionMode.getItems().addAll(option_ReadWrite, option_ReadOnly, option_NotUsed);
         cmbDataPartitionMode.setValue(option_ReadWrite);
     }
-    
+
     @Override
     protected void setupEventHandlers() {
         btnBack.setOnAction(event -> {
@@ -90,12 +92,12 @@ public class SystemexportUI extends View{
                 new IsoCreator(
                     context,
                     runningSystemSource,
-                    false,                          // Only boot medium
-                    tfTargetDirectory.getText(),    // tmpDirectory
-                    getDataPartitionMode(),   // Data Partition mode
-                    false,                          // showNotUsedDialog
-                    false,                          // autoStartInstaller
-                    tfDvdLabel.getText()            // partition label
+                    false,                               // Only boot medium
+                    tfTargetDirectory.getText(),         // tmpDirectory
+                    getDataPartitionMode(),              // Data Partition mode
+                    false,                               // showNotUsedDialog
+                    chbInstallationProgram.isSelected(), // autoStartInstaller
+                    tfDvdLabel.getText()                 // partition label
                 ).createISO();
             } catch (Exception ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
@@ -103,7 +105,7 @@ public class SystemexportUI extends View{
             }
         });
     }
-    
+
     public DataPartitionMode getDataPartitionMode(){
         if (option_NotUsed.equals(cmbDataPartitionMode.getValue())) {
             return DataPartitionMode.NOT_USED;
@@ -115,7 +117,7 @@ public class SystemexportUI extends View{
             throw new IllegalArgumentException();
         }
     }
-    
+
         private void selectDirectory() {
         DirectoryChooser folder = new DirectoryChooser();
         File selectedDirectory = folder.showDialog(
@@ -216,7 +218,7 @@ public class SystemexportUI extends View{
 
         return true;
     }
-    
+
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(STRINGS.getString("Error"));
