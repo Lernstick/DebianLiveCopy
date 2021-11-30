@@ -12,21 +12,18 @@
 	-fx-alignment: center;
 }
 
-
-
-
-
-
-
-
-
+.labelselected{
+	-fx-background-color: #494949;
+}
 
 .button {
+	-fx-text-fill : #eeeeee;
 	-fx-background-color: #3C3C3C;
 	-fx-border-color: #282828;
 	-fx-border-width:3;
 	-fx-border-radius:5;
 }
+
 .button:hover {
 	-fx-background-color: #494949;
 	-fx-border-color: #282828;
@@ -37,15 +34,20 @@
 	-fx-border-color: #1F76E1;
 }
 
+
+
+
+
+
+
+
+
 .pane {
 	-fx-border-width:3;
 	-fx-border-color: #282828;
 	-fx-border-radius:5;
 }
 
-.borderpane {
-	-fx-background-color:  #353535;
-}
 
 .navigation {
 	-fx-alignment:center;
