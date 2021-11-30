@@ -100,6 +100,20 @@
     -fx-background-color: #1F76E1;
 }
 
+.switchButtonInline {
+    -fx-background-radius: 1em;
+    -fx-background-color: #1F76E1;
+    -fx-text-fill: #EEEEEE;
+}
+
+.switchButtonOn {
+    -fx-background-color: #1F76E1;
+}
+
+.switchButtonOff {
+    -fx-background-color: #3C3C3C;
+}
+
 .check-box .box {
     -fx-background-color: #3C3C3C;
     -fx-border-color: #282828;

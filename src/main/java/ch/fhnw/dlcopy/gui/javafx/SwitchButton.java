@@ -53,22 +53,15 @@ public class SwitchButton extends Label {
 
         enabled.addListener((ObservableValue<? extends Boolean> ov,
                 Boolean t0, Boolean t1) -> {
-            // TODO: can we apply the styles in CSS?
+            getStyleClass().clear();
+            getStyleClass().add("switchButtonInline");
             if (t1) {
                 setText(labelOn);
-                setStyle(""
-                        + "-fx-background-radius: 1em;"
-                        + "-fx-background-color: #1F76E1;"
-                        + "-fx-text-fill: #EEEEEE;"
-                );
+                getStyleClass().add("switchButtonOn");
                 setContentDisplay(ContentDisplay.RIGHT);
             } else {
                 setText(labelOff);
-                setStyle(""
-                        + "-fx-background-radius: 1em;"
-                        + "-fx-background-color: #3C3C3C;"
-                        + "-fx-text-fill: #EEEEEE;"
-                );
+                getStyleClass().add("switchButtonOff");
                 setContentDisplay(ContentDisplay.LEFT);
             }
         });
