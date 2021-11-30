@@ -52,6 +52,9 @@ public class StorageMediaManagement
         stage.heightProperty().addListener((observable, oldValue, newValue) -> {
             model.setHeight((int) (double) newValue);
         });
+        stage.widthProperty().addListener((observable, oldValue, newValue) -> {
+            model.setWidth((int) (double) newValue);
+        });
         
         stage.show();
     }
