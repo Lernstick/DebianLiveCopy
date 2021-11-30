@@ -2,6 +2,7 @@
 
 <?import java.net.URL?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
@@ -9,7 +10,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="790.0" prefWidth="1024.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
   <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="19.0" prefWidth="100.0" />
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="1.0" prefWidth="100.0" />
@@ -102,11 +103,11 @@
             <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Schreibgeschützt" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Freier Speicherplatz:" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Expertenmodus" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.rowIndex="6" />
             <TextField promptText="Wähle das Verzeichnis aus" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Ja" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="20 GB" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="6" />
          </children>
       </GridPane>
    </children>
