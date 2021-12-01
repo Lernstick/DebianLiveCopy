@@ -4,6 +4,7 @@ import ch.fhnw.dlcopy.gui.javafx.SceneContext;
 import ch.fhnw.dlcopy.model.PresentationModel;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -47,6 +48,7 @@ public abstract class View {
         
         FXMLLoader loader = new FXMLLoader(resourcePath);
         loader.setController(this);
+        loader.setResources(ResourceBundle.getBundle("strings/Strings"));
         return loader.load();
     }
  }
