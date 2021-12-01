@@ -1,186 +1,239 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!--
-  Copyright (c) 2015, 2019, Gluon and/or its affiliates.
-  All rights reserved. Use is subject to license terms.
-
-  This file is available and licensed under the following license:
-
-  Redistribution and use in source and binary forms, with or without
-  modification, are permitted provided that the following conditions
-  are met:
-
-  - Redistributions of source code must retain the above copyright
-    notice, this list of conditions and the following disclaimer.
-  - Redistributions in binary form must reproduce the above copyright
-    notice, this list of conditions and the following disclaimer in
-    the documentation and/or other materials provided with the distribution.
-  - Neither the name of Oracle Corporation nor the names of its
-    contributors may be used to endorse or promote products derived
-    from this software without specific prior written permission.
-
-  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
-  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
-  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
-  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
-  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
-  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
-  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
-  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
--->
-
-<?import java.net.URL?>
-<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
-<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.Pane?>
 <?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.text.Font?>
 
-<BorderPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" styleClass="borderpane" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
-   <center>
-      <Pane prefHeight="0.0" prefWidth="930.0" styleClass="pane" BorderPane.alignment="CENTER">
-         <BorderPane.margin>
-            <Insets bottom="70.0" right="50.0" top="70.0" />
-         </BorderPane.margin>
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" stylesheets="@css/global.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+  <columnConstraints>
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="4.0" prefWidth="100.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="16.0" prefWidth="100.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="4.0" prefWidth="100.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="72.0" prefWidth="100.0" />
+    <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="4.0" prefWidth="100.0" />
+  </columnConstraints>
+  <rowConstraints>
+    <RowConstraints minHeight="10.0" percentHeight="4.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" percentHeight="80.0" prefHeight="30.0" vgrow="SOMETIMES" />
+      <RowConstraints minHeight="10.0" percentHeight="16.0" prefHeight="30.0" vgrow="SOMETIMES" />
+  </rowConstraints>
+   <children>
+      <GridPane GridPane.columnIndex="1" GridPane.rowIndex="1">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" percentHeight="16.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" percentHeight="5.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" percentHeight="16.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" percentHeight="5.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" percentHeight="16.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" percentHeight="5.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" percentHeight="16.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" percentHeight="5.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" percentHeight="16.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
          <children>
-            <Pane fx:id="panDefault" layoutX="10.0" layoutY="10.0" prefHeight="660.0" prefWidth="930.0" visible="false">
+            <Button fx:id="btnInstall" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="h2" text="Install" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btnExportData" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="h2" text="Export Data" GridPane.rowIndex="2" />
+            <Button fx:id="btnExportSystem" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="h2" text="Export System" GridPane.rowIndex="4" />
+            <Button fx:id="btnUpdate" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="h2" text="Update System" GridPane.rowIndex="6" />
+            <Button fx:id="btnReset" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="h2" text="Reset System" GridPane.rowIndex="8" />
+         </children>
+      </GridPane>
+      <GridPane GridPane.columnIndex="3" GridPane.rowIndex="2">
+        <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="40.0" prefWidth="100.0" />
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="30.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" percentHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" percentHeight="40.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" percentHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <ComboBox fx:id="cmbMenu" maxWidth="1.7976931348623157E308" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+         </children>
+      </GridPane>
+      <GridPane fx:id="panDefault" GridPane.columnIndex="3" GridPane.rowIndex="1">
+        <columnConstraints>
+          <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+        </columnConstraints>
+        <rowConstraints>
+          <RowConstraints minHeight="10.0" percentHeight="70.0" prefHeight="30.0" vgrow="SOMETIMES" />
+          <RowConstraints minHeight="10.0" percentHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        </rowConstraints>
+         <children>
+            <GridPane>
+              <columnConstraints>
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
+                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
+              </columnConstraints>
+              <rowConstraints>
+                <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+              </rowConstraints>
                <children>
-                  <ImageView fx:id="imgDefault" disable="true" fitHeight="364.0" fitWidth="494.0" layoutX="218.0" layoutY="200.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgDefault" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
                      <image>
                         <Image url="@../branding/Lernstick_Logo-Speichermedienverwaltung.png" />
                      </image>
                   </ImageView>
-                  <Label fx:id="lblDefault" disable="true" layoutX="211.0" layoutY="500.0" text="Willkommen bei der Speichermedienverwaltung" textFill="#eeeeee">
-                     <font>
-                        <Font size="24.0" />
-                     </font>
-                  </Label>
                </children>
-            </Pane>
-            <Pane fx:id="panInstall" prefHeight="660.0" prefWidth="930.0" visible="false">
+            </GridPane>
+            <Label styleClass="h3" text="Willkommen bei der Speicherverwaltung" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+         </children>
+      </GridPane>
+      <GridPane fx:id="panInstall" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="1">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" percentHeight="70.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" percentHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <GridPane>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
                <children>
-                  <ImageView fx:id="imgInstall" disable="true" fitHeight="301.0" fitWidth="256.0" layoutX="319.0" layoutY="200.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgInstall" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
                      <image>
                         <Image url="@../new_icons/install-software-download-white.png" />
                      </image>
                   </ImageView>
-                  <Label fx:id="lblInstall" disable="true" layoutX="297.0" layoutY="500.0" text="Das System lokal installieren" textFill="#eeeeee">
-                     <font>
-                        <Font size="24.0" />
-                     </font>
-                  </Label>
                </children>
-            </Pane>
-            <Pane fx:id="panExport" prefHeight="660.0" prefWidth="930.0" visible="false">
+            </GridPane>
+            <Label text="Das System auf lokalem Datenträger installieren" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+         </children>
+      </GridPane>
+      <GridPane fx:id="panExportData" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="1">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" percentHeight="70.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" percentHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <GridPane>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
                <children>
-                  <ImageView fx:id="imgExport" disable="true" fitHeight="301.0" fitWidth="256.0" layoutX="319.0" layoutY="200.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgExportData" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
                      <image>
                         <Image url="@../new_icons/export-file-white.png" />
                      </image>
                   </ImageView>
-                  <Label fx:id="lblExport" disable="true" layoutX="285.0" layoutY="500.0" text="Die Benutzerdaten exportieren" textFill="#eeeeee">
-                     <font>
-                        <Font size="24.0" />
-                     </font>
-                  </Label>
                </children>
-            </Pane>
-            <Pane fx:id="panCopy" prefHeight="660.0" prefWidth="930.0" visible="false">
+            </GridPane>
+            <Label text="Die Benutzerdaten exportieren (z.B. für Prüfungsumgebungen))" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+         </children>
+      </GridPane>
+      <GridPane fx:id="panExportSystem" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="1">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" percentHeight="70.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" percentHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <GridPane>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
                <children>
-                  <ImageView fx:id="imgCopy" disable="true" fitHeight="301.0" fitWidth="256.0" layoutX="319.0" layoutY="200.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgExportSystem" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
                      <image>
                         <Image url="@../new_icons/export-share-white.png" />
                      </image>
                   </ImageView>
-                  <Label fx:id="lblCopy" disable="true" layoutX="161.0" layoutY="500.0" text="Das aktuelle System auf ein externes Medium exportieren" textFill="#eeeeee">
-                     <font>
-                        <Font size="24.0" />
-                     </font>
-                  </Label>
                </children>
-            </Pane>
-            <Pane fx:id="panUpdate" prefHeight="660.0" prefWidth="930.0" visible="false">
+            </GridPane>
+            <Label text="Das ganze System exportieren" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+         </children>
+      </GridPane>
+      <GridPane fx:id="panUpdate" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="1">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" percentHeight="70.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" percentHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <GridPane>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
                <children>
-                  <ImageView fx:id="imgUpdate" disable="true" fitHeight="301.0" fitWidth="256.0" layoutX="319.0" layoutY="200.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgUpdate" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
                      <image>
                         <Image url="@../new_icons/update-white.png" />
                      </image>
                   </ImageView>
-                  <Label fx:id="lblUpdate" disable="true" layoutX="193.0" layoutY="500.0" text="Das aktuelle System auf den neusten Stand bringen" textFill="#eeeeee">
-                     <font>
-                        <Font size="24.0" />
-                     </font>
-                  </Label>
                </children>
-            </Pane>
-            <Pane fx:id="panReset" prefHeight="660.0" prefWidth="930.0" visible="false">
+            </GridPane>
+            <Label text="Das System aktualisieren (Eigene Programme gehen verloren)" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+         </children>
+      </GridPane>
+      <GridPane fx:id="panReset" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="1">
+         <columnConstraints>
+            <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
+         </columnConstraints>
+         <rowConstraints>
+            <RowConstraints minHeight="10.0" percentHeight="70.0" prefHeight="30.0" vgrow="SOMETIMES" />
+            <RowConstraints minHeight="10.0" percentHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         </rowConstraints>
+         <children>
+            <GridPane>
+               <columnConstraints>
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
+                  <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
+               </columnConstraints>
+               <rowConstraints>
+                  <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+               </rowConstraints>
                <children>
-                  <ImageView fx:id="imgReset" disable="true" fitHeight="301.0" fitWidth="256.0" layoutX="319.0" layoutY="200.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fx:id="imgReset" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
                      <image>
                         <Image url="@../new_icons/reset-update-white.png" />
                      </image>
                   </ImageView>
-                  <Label fx:id="lblReset" disable="true" layoutX="147.0" layoutY="500.0" text="Das aktuelle System auf Werkseinstellungen zurückgesetzen" textFill="#eeeeee">
-                     <font>
-                        <Font size="24.0" />
-                     </font>
-                  </Label>
                </children>
-            </Pane>
-         </children>
-      </Pane>
-   </center>
-   <left>
-      <GridPane vgap="20.0" BorderPane.alignment="CENTER">
-        <columnConstraints>
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="50.0" prefWidth="50.0" />
-          <ColumnConstraints hgrow="SOMETIMES" minWidth="200.0" prefWidth="200.0" />
-            <ColumnConstraints hgrow="SOMETIMES" minWidth="50.0" prefWidth="50.0" />
-        </columnConstraints>
-        <rowConstraints>
-            <RowConstraints maxHeight="50.0" minHeight="50.0" prefHeight="50.0" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="116.0" minHeight="116.0" prefHeight="116.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="116.0" minHeight="116.0" prefHeight="116.0" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="116.0" minHeight="116.0" prefHeight="116.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="116.0" minHeight="116.0" prefHeight="116.0" vgrow="SOMETIMES" />
-            <RowConstraints maxHeight="116.0" minHeight="116.0" prefHeight="116.0" vgrow="SOMETIMES" />
-          <RowConstraints maxHeight="50.0" minHeight="50.0" prefHeight="50.0" vgrow="SOMETIMES" />
-        </rowConstraints>
-         <children>
-            <Button fx:id="btnInstall" mnemonicParsing="false" prefHeight="304.0" prefWidth="336.0" text="btnInstall" textFill="#eeeeee" GridPane.columnIndex="1" GridPane.rowIndex="1">
-               <font>
-                  <Font size="18.0" />
-               </font></Button>
-            <Button fx:id="btnExport" mnemonicParsing="false" prefHeight="159.0" prefWidth="243.0" text="btnExport" textFill="#eeeeee" GridPane.columnIndex="1" GridPane.rowIndex="2">
-               <font>
-                  <Font size="18.0" />
-               </font></Button>
-            <Button fx:id="btnCopy" mnemonicParsing="false" prefHeight="183.0" prefWidth="251.0" text="btnCopy" textFill="#eeeeee" GridPane.columnIndex="1" GridPane.rowIndex="3">
-               <font>
-                  <Font size="18.0" />
-               </font></Button>
-            <Button fx:id="btnUpdate" mnemonicParsing="false" prefHeight="160.0" prefWidth="245.0" text="btnUpdate" textFill="#eeeeee" GridPane.columnIndex="1" GridPane.rowIndex="4">
-               <font>
-                  <Font size="18.0" />
-               </font></Button>
-            <Button fx:id="btnReset" mnemonicParsing="false" prefHeight="131.0" prefWidth="223.0" text="btnReset" textFill="#eeeeee" GridPane.columnIndex="1" GridPane.rowIndex="5">
-               <font>
-                  <Font size="18.0" />
-               </font></Button>
+            </GridPane>
+            <Label text="Das System auf Anfang zurücksetzen (Benutzerdaten können übernommen werden)" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
          </children>
       </GridPane>
-   </left>
-   <stylesheets>
-      <URL value="@css/global.css" />
-      <URL value="@css/startscreen.css" />
-   </stylesheets>
-</BorderPane>
+   </children>
+</GridPane>
