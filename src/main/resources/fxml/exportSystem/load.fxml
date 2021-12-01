@@ -13,7 +13,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="800.0" prefWidth="1280.0" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
   <columnConstraints>
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="19.0" prefWidth="100.0" />
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="1.0" prefWidth="100.0" />
@@ -43,20 +43,15 @@
             <RowConstraints minHeight="10.0" percentHeight="50.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="Steps" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="%global.systemexport" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
             <Separator prefWidth="200.0" GridPane.rowIndex="1" />
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="Label" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Label" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS">
+            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="%global.selection" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
+            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%global.export" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS">
                <styleClass>
                   <String fx:value="labelcenter" />
                   <String fx:value="labelselected" />
                </styleClass></Label>
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="Label" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="Label" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" GridPane.vgrow="ALWAYS" />
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="Label" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" GridPane.vgrow="ALWAYS" />
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="Label" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7" GridPane.vgrow="ALWAYS" />
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="Label" GridPane.hgrow="ALWAYS" GridPane.rowIndex="8" GridPane.vgrow="ALWAYS" />
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="Label" GridPane.hgrow="ALWAYS" GridPane.rowIndex="9" GridPane.vgrow="ALWAYS" />
+            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="%global.finish" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
          </children>
       </GridPane>
       <Separator orientation="VERTICAL" prefHeight="200.0" GridPane.columnIndex="1" />
@@ -80,7 +75,7 @@
         </rowConstraints>
          <children>
             <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Info" textAlignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
-            <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Button" GridPane.columnIndex="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
+            <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="%global.next" GridPane.columnIndex="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
          </children>
       </GridPane>
       <GridPane GridPane.columnIndex="2">

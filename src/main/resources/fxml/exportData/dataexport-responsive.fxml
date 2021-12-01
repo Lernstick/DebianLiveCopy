@@ -101,11 +101,11 @@
             <RowConstraints minHeight="10.0" percentHeight="50.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Label fx:id="lblTargetDirectory" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%dataexport.dataexport.lblTargetDirectory" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Label fx:id="lblWriteable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%dataexport.dataexport.lblWriteable" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Label fx:id="lblFreeSpace" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%dataexport.dataexport.lblFreeSpace" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Label fx:id="lblTargetDirectory" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%export.lblTargetDirectory" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+            <Label fx:id="lblWriteable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%export.lblWriteable" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <Label fx:id="lblFreeSpace" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%export.lblFreeSpace" GridPane.columnIndex="1" GridPane.rowIndex="3" />
             <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%global.expertmode" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-            <TextField fx:id="tfTargetDirectory" promptText="%dataexport.dateexport.tfTargetDirectory" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+            <TextField fx:id="tfTargetDirectory" promptText="%export.tfTargetDirectory" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Ja" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="20 GB" GridPane.columnIndex="2" GridPane.rowIndex="3" />
             <CheckBox mnemonicParsing="false" text="CheckBox" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="5" />
