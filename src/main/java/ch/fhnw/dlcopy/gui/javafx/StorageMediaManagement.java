@@ -6,7 +6,10 @@
 package ch.fhnw.dlcopy.gui.javafx;
 
 import ch.fhnw.dlcopy.Installer;
-import ch.fhnw.dlcopy.gui.javafx.ui.*;
+import ch.fhnw.dlcopy.gui.javafx.ui.View;
+import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
+import ch.fhnw.dlcopy.gui.javafx.SceneContext;
+import ch.fhnw.dlcopy.gui.javafx.ui.export.ProgressUI;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.StorageDevice;
 import ch.fhnw.dlcopy.model.PresentationModel;

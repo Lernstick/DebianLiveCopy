@@ -54,13 +54,6 @@
     	-fx-text-fill : #eeeeee
 }
 
-
-
-
-
-
-
-
 .pane {
 	-fx-border-width:3;
 	-fx-border-color: #282828;
@@ -101,7 +94,6 @@
 
 
 .check-box:selected .box {
--fx-text-fill : #eeeeee
     -fx-background-color: #494949;
     -fx-border-color: #282828;
 }

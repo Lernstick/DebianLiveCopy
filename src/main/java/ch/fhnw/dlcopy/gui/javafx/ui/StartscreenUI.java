@@ -1,8 +1,10 @@
 package ch.fhnw.dlcopy.gui.javafx.ui;
 
+import ch.fhnw.dlcopy.gui.javafx.ui.exportdata.ConfigUI;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.image.ImageView;
+import javafx.scene.control.*;
 
 public class StartscreenUI extends View {
     @FXML private Button btnCopy;
