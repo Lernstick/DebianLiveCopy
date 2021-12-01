@@ -8,9 +8,6 @@ package ch.fhnw.dlcopy.gui.javafx;
 import ch.fhnw.dlcopy.Installer;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
-import ch.fhnw.dlcopy.gui.javafx.SceneContext;
-import ch.fhnw.dlcopy.gui.javafx.ui.export.ProgressUI;
-import ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.SystemexportUI;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.StorageDevice;
 import ch.fhnw.dlcopy.model.PresentationModel;
@@ -45,7 +42,7 @@ public class StorageMediaManagement
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = new SystemexportUI().getRoot(this);
+        Parent root = new StartscreenUI().getRoot(this);
         scene = new Scene(root);
         
         stage.setScene(scene);
@@ -217,17 +214,17 @@ public class StorageMediaManagement
 
     @Override
     public void showIsoProgressMessage(String message) {
-        setScene(new ProgressUI(message));
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void showIsoProgressMessage(String message, int value) {
-        setScene(new ProgressUI(message, (double)value / 100));
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void isoCreationFinished(String path, boolean success) {
-        setScene(new ProgressUI("Finished ISO " + path, 100));
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
