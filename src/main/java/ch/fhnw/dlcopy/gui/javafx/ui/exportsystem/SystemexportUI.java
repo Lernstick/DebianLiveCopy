@@ -22,9 +22,11 @@ import java.util.logging.Logger;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
 import org.freedesktop.dbus.exceptions.DBusException;
+import javafx.stage.DirectoryChooser;
 
 public class SystemexportUI extends View{
     
@@ -36,9 +38,13 @@ public class SystemexportUI extends View{
     private static final Logger LOGGER = Logger.getLogger(SystemexportUI.class.getName());
     private final static ProcessExecutor PROCESS_EXECUTOR = new ProcessExecutor();
     
-    @FXML private Button btnNext;
     @FXML private Button btnBack;
+    @FXML private Button btnExport;
+    @FXML private Button btnTargetDirectory;
     @FXML private ComboBox<String> cmbDataPartitionMode;
+    @FXML private Label lblFreeSpaceDisplay;
+    @FXML private Label lblWriteable;
+    @FXML private Label lblInfo;
     @FXML private TextField tfDvdLabel;
     @FXML private TextField tfTargetDirectory;
     
@@ -70,10 +76,14 @@ public class SystemexportUI extends View{
             context.setScene(new StartscreenUI());
         });
 
-        btnNext.setOnAction(event -> {
+        btnTargetDirectory.setOnAction(event -> {
+            selectDirectory();
+        });
+
+        btnExport.setOnAction(event -> {
             try {
                 if (!isUnmountedPersistenceAvailable()) {
-                    btnNext.setDisable(true);
+                    btnExport.setDisable(true);
                     return;
                 }
                 context.setScene(new ProgressUI());
@@ -106,6 +116,41 @@ public class SystemexportUI extends View{
         }
     }
     
+        private void selectDirectory() {
+        DirectoryChooser folder = new DirectoryChooser();
+        File selectedDirectory = folder.showDialog(
+            btnTargetDirectory.getScene().getWindow());
+        folder.setTitle("Open Directory");
+        if (selectedDirectory != null) {
+            tfTargetDirectory.setText(selectedDirectory.getAbsolutePath());
+            checkFreeSpace();
+        }
+    }
+
+    public void checkFreeSpace() {
+        File tmpDir = new File(tfTargetDirectory.getText());
+        if (tmpDir.exists()) {
+            long freeSpace = tmpDir.getFreeSpace();
+            lblFreeSpaceDisplay.setText(
+                LernstickFileTools.getDataVolumeString(freeSpace, 1));
+            if (tmpDir.canWrite()) {
+                lblWriteable.setText(STRINGS.getString("Yes"));
+                lblWriteable.setStyle("-fx-text-fill: red ;");
+                btnExport.setDisable(false);
+            } else {
+                lblWriteable.setText(STRINGS.getString("No"));
+                lblWriteable.setStyle("-fx-text-fill: red ;") ;
+                btnExport.setDisable(true);
+            }
+        } else {
+            lblFreeSpaceDisplay.setText(null);
+            lblWriteable.setText(
+                    STRINGS.getString("Directory_Does_Not_Exist"));
+            lblWriteable.setStyle("-fx-text-fill: red ;") ;
+            btnExport.setDisable(true);
+        }
+    }
+
     /**
      * see equivalent function in ch.fhnw.dlcopy.gui.swing.DLCopySwingGUI
      * TODO: avoid code duplication
