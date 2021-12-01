@@ -3,6 +3,7 @@
 <?import java.net.URL?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
@@ -102,15 +103,19 @@
         </rowConstraints>
          <children>
             <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Zielverzeichnis:" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Schreibgeschützt" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Freier Speicherplatz:" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Expertenmodus" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Schreibgeschützt" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Freier Speicherplatz:" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <TextField promptText="Wähle das Verzeichnis aus" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Ja" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="20 GB" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="6" />
-            <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" GridPane.columnIndex="4" GridPane.rowIndex="1">
+            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Ja" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="20 GB" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+            <Label text="DVD Label" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+            <TextField promptText="DVD Label" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <Label text="Modus der Datenpartition" GridPane.columnIndex="1" GridPane.rowIndex="5" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+            <CheckBox mnemonicParsing="false" text="CheckBox" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="8" />
+            <Label text="Expertenmodus" GridPane.columnIndex="1" GridPane.rowIndex="6" />
+            <ComboBox prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+            <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" GridPane.columnIndex="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
                <graphic>
                   <ImageView fitHeight="21.0" fitWidth="230.0" pickOnBounds="true" preserveRatio="true">
                      <image>
