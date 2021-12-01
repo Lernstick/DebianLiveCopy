@@ -6,11 +6,11 @@
 package ch.fhnw.dlcopy.gui.javafx;
 
 import ch.fhnw.dlcopy.Installer;
-import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
+import ch.fhnw.dlcopy.gui.javafx.ui.View;
+import ch.fhnw.dlcopy.model.PresentationModel;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.StorageDevice;
-import ch.fhnw.dlcopy.model.PresentationModel;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
@@ -44,19 +44,18 @@ public class StorageMediaManagement
     public void start(Stage stage) throws Exception {
         Parent root = new StartscreenUI().getRoot(this);
         scene = new Scene(root);
-        
+
         stage.setScene(scene);
         stage.setHeight(model.getHeight());
         stage.setWidth(model.getWidth());
-        
-        
+
         stage.heightProperty().addListener((observable, oldValue, newValue) -> {
             model.setHeight((int) (double) newValue);
         });
         stage.widthProperty().addListener((observable, oldValue, newValue) -> {
             model.setWidth((int) (double) newValue);
         });
-        
+
         stage.show();
     }
 
