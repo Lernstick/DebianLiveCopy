@@ -10,6 +10,7 @@ import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
 import ch.fhnw.dlcopy.gui.javafx.SceneContext;
 import ch.fhnw.dlcopy.gui.javafx.ui.export.ProgressUI;
+import ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.SystemexportUI;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.StorageDevice;
 import ch.fhnw.dlcopy.model.PresentationModel;
@@ -44,7 +45,7 @@ public class StorageMediaManagement
 
     @Override
     public void start(Stage stage) throws Exception {
-        Parent root = new StartscreenUI().getRoot(this);
+        Parent root = new SystemexportUI().getRoot(this);
         scene = new Scene(root);
         
         stage.setScene(scene);

@@ -108,8 +108,8 @@
             <TextField fx:id="tfTargetDirectory" promptText="%export.tfTargetDirectory" GridPane.columnIndex="2" GridPane.rowIndex="1" />
             <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Ja" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="20 GB" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+            <CheckBox mnemonicParsing="false" text="%export.chbInformationDialog" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+            <CheckBox mnemonicParsing="false" text="%export.chbInstallationProgram" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="6" />
             <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" GridPane.columnIndex="4" GridPane.rowIndex="1">
                <graphic>
                   <ImageView fitHeight="21.0" fitWidth="230.0" pickOnBounds="true" preserveRatio="true">

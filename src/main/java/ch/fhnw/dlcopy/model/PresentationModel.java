@@ -4,8 +4,8 @@ import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
 public class PresentationModel {
-    public final static int WINDOWS_HEIGHT_DEFAULT  = 720;
-    public final static int WINDOWS_WIDTH_DEFAULT   = 1024;
+    public final static int WINDOWS_HEIGHT_DEFAULT  = 800;
+    public final static int WINDOWS_WIDTH_DEFAULT   = 1280;
     
     private static PresentationModel instance;
     

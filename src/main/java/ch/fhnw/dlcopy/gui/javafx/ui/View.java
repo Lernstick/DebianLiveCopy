@@ -11,9 +11,10 @@ import javafx.scene.Parent;
 
 public abstract class View {
 
-    protected PresentationModel model = PresentationModel.getInstance();
     protected SceneContext context;
+    protected PresentationModel model = PresentationModel.getInstance();
     protected URL resourcePath;
+    protected ResourceBundle stringBundle = ResourceBundle.getBundle("strings/Strings");
     
     @FXML
     public final void initialize(){
@@ -48,7 +49,7 @@ public abstract class View {
         
         FXMLLoader loader = new FXMLLoader(resourcePath);
         loader.setController(this);
-        loader.setResources(ResourceBundle.getBundle("strings/Strings"));
+        loader.setResources(stringBundle);
         return loader.load();
     }
  }

@@ -111,10 +111,10 @@
             <Label text="%export.lblDvdLabel" GridPane.columnIndex="1" GridPane.rowIndex="2" />
             <TextField fx:id="tfDvdLabel" promptText="%export.tfDvdLabel" GridPane.columnIndex="2" GridPane.rowIndex="2" />
             <Label text="%export.lblDataPartitionMode" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="7" />
-            <CheckBox mnemonicParsing="false" text="CheckBox" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="8" />
+            <CheckBox mnemonicParsing="false" text="%export.chbInformationDialog" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="7" />
+            <CheckBox mnemonicParsing="false" text="%export.chbInstallationProgram" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="8" />
             <Label text="%global.expertmode" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-            <ComboBox prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+            <ComboBox fx:id="cmbDataPartitionMode" prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="5" />
             <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" GridPane.columnIndex="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
                <graphic>
                   <ImageView fitHeight="21.0" fitWidth="230.0" pickOnBounds="true" preserveRatio="true">
