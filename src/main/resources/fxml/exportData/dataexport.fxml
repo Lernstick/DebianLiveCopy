@@ -110,8 +110,8 @@
             <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%global.expertmode" GridPane.columnIndex="1" GridPane.rowIndex="4" />
             <TextField fx:id="tfTargetDirectory" promptText="%export.tfTargetDirectory" GridPane.columnIndex="2" GridPane.rowIndex="1" />
 
-            <Label fx:id="lblWriteable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Ja" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-            <Label fx:id="lblFreeSpaceDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="20 GB" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+            <Label fx:id="lblWriteableDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="n/a" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+            <Label fx:id="lblFreeSpaceDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="n/a" GridPane.columnIndex="2" GridPane.rowIndex="3" />
             <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" GridPane.columnIndex="2" GridPane.rowIndex="4" />
             <CheckBox fx:id="chbInformationDialog" mnemonicParsing="false" text="%export.chbInformationDialog" GridPane.columnIndex="2" GridPane.rowIndex="5" />
             <CheckBox fx:id="chbInstallationProgram" mnemonicParsing="false" text="%export.chbInstallationProgram" GridPane.columnIndex="2" GridPane.rowIndex="6" />
