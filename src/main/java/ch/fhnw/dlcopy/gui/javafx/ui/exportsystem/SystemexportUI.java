@@ -9,7 +9,7 @@ import ch.fhnw.dlcopy.SystemSource;
 import ch.fhnw.dlcopy.gui.javafx.SwitchButton;
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
-import ch.fhnw.dlcopy.gui.javafx.ui.export.ProgressUI;
+import ch.fhnw.dlcopy.gui.javafx.ui.exportdata.LoadUI;
 import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
@@ -95,7 +95,7 @@ public class SystemexportUI extends View{
                     btnExport.setDisable(true);
                     return;
                 }
-                context.setScene(new ProgressUI());
+                context.setScene(new LoadUI());
                 new IsoCreator(
                     context,
                     runningSystemSource,
