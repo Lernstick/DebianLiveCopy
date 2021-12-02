@@ -6,6 +6,7 @@ import ch.fhnw.dlcopy.DataPartitionMode;
 import ch.fhnw.dlcopy.IsoCreator;
 import ch.fhnw.dlcopy.RunningSystemSource;
 import ch.fhnw.dlcopy.SystemSource;
+import ch.fhnw.dlcopy.gui.javafx.SwitchButton;
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import ch.fhnw.dlcopy.gui.javafx.ui.export.ProgressUI;
@@ -23,6 +24,7 @@ import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
@@ -44,16 +46,18 @@ public class SystemexportUI extends View{
     @FXML private Button btnBack;
     @FXML private Button btnExport;
     @FXML private Button btnTargetDirectory;
+    @FXML private CheckBox chbInformationDialog;
     @FXML private CheckBox chbInstallationProgram;
     @FXML private ComboBox<String> cmbDataPartitionMode;
     @FXML private ImageView imgTargetDirectory;
     @FXML private Label lblFreeSpaceDisplay;
     @FXML private Label lblWriteable;
     @FXML private Label lblInfo;
+    @FXML private SwitchButton switchBtn;
     @FXML private TextField tfDvdLabel;
     @FXML private TextField tfTargetDirectory;
 
-    public SystemexportUI(){
+    public SystemexportUI() {
 
         // prepare processExecutor to always use the POSIX locale
         Map<String, String> environment = new HashMap<>();
@@ -98,7 +102,7 @@ public class SystemexportUI extends View{
                     false,                               // Only boot medium
                     tfTargetDirectory.getText(),         // tmpDirectory
                     getDataPartitionMode(),              // Data Partition mode
-                    false,                               // showNotUsedDialog
+                    chbInformationDialog.isSelected(),   // showNotUsedDialog
                     chbInstallationProgram.isSelected(), // autoStartInstaller
                     tfDvdLabel.getText()                 // partition label
                 ).createISO();
@@ -107,7 +111,7 @@ public class SystemexportUI extends View{
                 showError(ex.getLocalizedMessage());
             }
         });
-        
+
         imgTargetDirectory.fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 25.714));
         imgTargetDirectory.fitWidthProperty().bind(Bindings.divide(model.widthProperty(), 4.1739));
     }
