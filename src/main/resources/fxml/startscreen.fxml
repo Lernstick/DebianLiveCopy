@@ -80,7 +80,7 @@
                 <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
               </rowConstraints>
                <children>
-                  <ImageView fx:id="imgDefault" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                  <ImageView fx:id="imgDefault" fitHeight="250.0" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
                      <image>
                         <Image url="@../branding/Lernstick_Logo-Speichermedienverwaltung.png" />
                      </image>
@@ -109,7 +109,7 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <ImageView fx:id="imgInstall" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                  <ImageView fx:id="imgInstall" fitHeight="250.0" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
                      <image>
                         <Image url="@../new_icons/install-software-download-white.png" />
                      </image>
@@ -138,7 +138,7 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <ImageView fx:id="imgExportData" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                  <ImageView fx:id="imgExportData" fitHeight="250.0" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
                      <image>
                         <Image url="@../new_icons/export-file-white.png" />
                      </image>
@@ -167,14 +167,14 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <ImageView fx:id="imgExportSystem" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                  <ImageView fx:id="imgExportSystem" fitHeight="250.0" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
                      <image>
                         <Image url="@../new_icons/export-share-white.png" />
                      </image>
                   </ImageView>
                </children>
             </GridPane>
-            <Label text="Das ganze System exportieren" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Label text="Das ganze System exportiere (Programme und Benutzerdaten bleiben erhalten)n" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
          </children>
       </GridPane>
       <GridPane fx:id="panUpdate" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="1">
@@ -196,7 +196,7 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <ImageView fx:id="imgUpdate" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                  <ImageView fx:id="imgUpdate" fitHeight="250.0" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
                      <image>
                         <Image url="@../new_icons/update-white.png" />
                      </image>
@@ -225,7 +225,7 @@
                   <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                </rowConstraints>
                <children>
-                  <ImageView fx:id="imgReset" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
+                  <ImageView fx:id="imgReset" fitHeight="250.0" pickOnBounds="true" preserveRatio="true" scaleX="0.8" scaleY="0.8" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="BOTTOM">
                      <image>
                         <Image url="@../new_icons/reset-update-white.png" />
                      </image>
