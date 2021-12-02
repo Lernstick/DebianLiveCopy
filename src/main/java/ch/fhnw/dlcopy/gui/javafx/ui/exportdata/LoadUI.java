@@ -14,7 +14,7 @@ public class LoadUI extends View{
     
     @Override
     protected void setupEventHandlers(){
-        imgExportFile.fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 5.5));
-        imgExportFile.fitWidthProperty().bind(Bindings.divide(model.widthProperty(), 9));
+        imgExportFile.fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 5.869));
+        imgExportFile.fitWidthProperty().bind(Bindings.divide(model.widthProperty(), 9.8969));
     }
 }
