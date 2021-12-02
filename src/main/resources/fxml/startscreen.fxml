@@ -9,7 +9,7 @@
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" stylesheets="@css/global.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" stylesheets="@css/global.css" xmlns="http://javafx.com/javafx/9" xmlns:fx="http://javafx.com/fxml/1">
   <columnConstraints>
     <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="4.0" prefWidth="100.0" />
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="16.0" prefWidth="100.0" />
@@ -39,11 +39,11 @@
             <RowConstraints minHeight="10.0" percentHeight="16.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
          <children>
-            <Button fx:id="btnInstall" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="h2" text="Install" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
-            <Button fx:id="btnExportData" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="h2" text="Export Data" GridPane.rowIndex="2" />
-            <Button fx:id="btnExportSystem" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="h2" text="Export System" GridPane.rowIndex="4" />
-            <Button fx:id="btnUpdate" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="h2" text="Update System" GridPane.rowIndex="6" />
-            <Button fx:id="btnReset" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="h2" text="Reset System" GridPane.rowIndex="8" />
+            <Button fx:id="btnInstall" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="h2" text="%global.install" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+            <Button fx:id="btnExportData" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="h2" text="%global.dataexport" GridPane.rowIndex="2" />
+            <Button fx:id="btnExportSystem" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="h2" text="%global.systemexport" GridPane.rowIndex="4" />
+            <Button fx:id="btnUpdate" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="h2" text="%global.update" GridPane.rowIndex="6" />
+            <Button fx:id="btnReset" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="h2" text="%global.reset" GridPane.rowIndex="8" />
          </children>
       </GridPane>
       <GridPane GridPane.columnIndex="3" GridPane.rowIndex="2">
@@ -87,7 +87,7 @@
                   </ImageView>
                </children>
             </GridPane>
-            <Label styleClass="h3" text="Willkommen bei der Speicherverwaltung" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Label styleClass="h3" text="%startscreen.lblDefault" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
          </children>
       </GridPane>
       <GridPane fx:id="panInstall" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="1">
@@ -116,7 +116,7 @@
                   </ImageView>
                </children>
             </GridPane>
-            <Label text="Das System auf lokalem Datenträger installieren" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Label text="%startscreen.lblInstall" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
          </children>
       </GridPane>
       <GridPane fx:id="panExportData" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="1">
@@ -145,7 +145,7 @@
                   </ImageView>
                </children>
             </GridPane>
-            <Label text="Die Benutzerdaten exportieren (z.B. für Prüfungsumgebungen))" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Label text="%startscreen.lblDataExport" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
          </children>
       </GridPane>
       <GridPane fx:id="panExportSystem" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="1">
@@ -174,7 +174,7 @@
                   </ImageView>
                </children>
             </GridPane>
-            <Label text="Das ganze System exportiere (Programme und Benutzerdaten bleiben erhalten)n" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Label text="%startscreen.lblSystemExport" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
          </children>
       </GridPane>
       <GridPane fx:id="panUpdate" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="1">
@@ -203,7 +203,7 @@
                   </ImageView>
                </children>
             </GridPane>
-            <Label text="Das System aktualisieren (Eigene Programme gehen verloren)" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Label text="%startscteen.lblUpdate" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
          </children>
       </GridPane>
       <GridPane fx:id="panReset" visible="false" GridPane.columnIndex="3" GridPane.rowIndex="1">
@@ -232,7 +232,7 @@
                   </ImageView>
                </children>
             </GridPane>
-            <Label text="Das System auf Anfang zurücksetzen (Benutzerdaten können übernommen werden)" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
+            <Label text="%startscreen.lblReset" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS" />
          </children>
       </GridPane>
    </children>
