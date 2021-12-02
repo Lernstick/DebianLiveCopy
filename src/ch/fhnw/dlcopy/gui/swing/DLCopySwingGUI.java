@@ -10,15 +10,15 @@ import ch.fhnw.dlcopy.DLCopy;
 import ch.fhnw.dlcopy.DataPartitionMode;
 import ch.fhnw.dlcopy.DebianLiveDistribution;
 import ch.fhnw.dlcopy.Installer;
-import ch.fhnw.dlcopy.IsoCreator;
 import ch.fhnw.dlcopy.RepartitionStrategy;
 import ch.fhnw.dlcopy.Resetter;
 import ch.fhnw.dlcopy.RunningSystemSource;
-import ch.fhnw.dlcopy.SquashFSCreator;
 import ch.fhnw.dlcopy.StorageDeviceResult;
 import ch.fhnw.dlcopy.SystemSource;
 import ch.fhnw.dlcopy.Upgrader;
 import ch.fhnw.dlcopy.gui.DLCopyGUI;
+import ch.fhnw.dlcopy.gui.swing.IsoCreatorSwingWorker;
+import ch.fhnw.dlcopy.gui.swing.SquashFSCreatorSwingWorker;
 import ch.fhnw.dlcopy.gui.swing.preferences.DLCopySwingGUIPreferencesHandler;
 import ch.fhnw.dlcopy.gui.swing.preferences.MainMenuPreferences;
 import ch.fhnw.filecopier.FileCopier;
@@ -2116,7 +2116,7 @@ public class DLCopySwingGUI extends JFrame
         nextButton.setEnabled(false);
 
         if (isoCreatorPanels.isDataPartitionSelected()) {
-            new SquashFSCreator(this, runningSystemSource,
+            new SquashFSCreatorSwingWorker(this, runningSystemSource,
                     isoCreatorPanels.getTemporaryDirectory(),
                     isoCreatorPanels.isShowNotUsedDialogSelected(),
                     isoCreatorPanels.isAutoStartInstallerSelected())

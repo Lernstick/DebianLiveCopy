@@ -16,12 +16,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.util.Properties;
-import java.util.concurrent.ExecutionException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import javax.swing.SwingWorker;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 /**
@@ -29,9 +27,7 @@ import org.freedesktop.dbus.exceptions.DBusException;
  *
  * @author Ronny Standtke <ronny.standtke@gmx.net>
  */
-public class SquashFSCreator
-        extends SwingWorker<Boolean, String>
-        implements PropertyChangeListener {
+public class SquashFSCreator implements PropertyChangeListener {
 
     private static final Logger LOGGER
             = Logger.getLogger(SquashFSCreator.class.getName());
@@ -73,8 +69,7 @@ public class SquashFSCreator
         this.autoStartInstaller = autoStartInstaller;
     }
 
-    @Override
-    protected Boolean doInBackground() throws Exception {
+    public Boolean createSquashFS() throws Exception {
         inhibit = new LogindInhibit("Creating ISO");
 
         try {
@@ -89,20 +84,10 @@ public class SquashFSCreator
 
         } catch (IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
-        }
-        return true;
-    }
-
-    @Override
-    protected void done() {
-        if (inhibit != null) {
+        } finally {
             inhibit.delete();
         }
-        try {
-            dlCopyGUI.isoCreationFinished(squashFsPath, get());
-        } catch (InterruptedException | ExecutionException ex) {
-            LOGGER.log(Level.SEVERE, "", ex);
-        }
+        return true;
     }
 
     @Override
@@ -129,6 +114,10 @@ public class SquashFSCreator
                 }
             }
         }
+    }
+
+    public String getSquashFsPath() {
+        return squashFsPath;
     }
 
     private void createSquashFS(String targetDirectory)
