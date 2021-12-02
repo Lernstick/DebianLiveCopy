@@ -8,7 +8,7 @@ package ch.fhnw.dlcopy.gui.javafx;
 import ch.fhnw.dlcopy.Installer;
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
-import ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.LoadUI;
+import ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.InfoUI;
 import ch.fhnw.dlcopy.model.PresentationModel;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.StorageDevice;
