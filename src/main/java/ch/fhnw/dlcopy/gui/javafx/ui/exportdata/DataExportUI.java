@@ -96,6 +96,8 @@ public class DataExportUI extends View {
                     
                     //context.setScene(new ProgressUI());
                     //createDataPartiton();
+                    //System.out.println(isChbInformationDialogChecked());    
+                    //System.out.println(isChbInstallationProgramChecked());
                 } catch (Exception ex) {
                     LOGGER.log(Level.SEVERE, "", ex);
                     showError(ex.getLocalizedMessage());
