@@ -3,8 +3,8 @@
 }
 
 .label{
-    	-fx-font-family: "Cantarell";
-    	-fx-text-fill : #eeeeee
+    -fx-font-family: "Cantarell";
+    -fx-text-fill : #eeeeee
 }
 
 .labelwraped{
@@ -20,11 +20,11 @@
 }
 
 .button {
+    -fx-background-color: #3C3C3C;
 	-fx-text-fill : #eeeeee;
-	-fx-background-color: #3C3C3C;
-	-fx-border-color: #282828;
-	-fx-border-width:3;
-	-fx-border-radius:5;
+    -fx-border-color: #282828;
+    -fx-border-width: 3;
+    -fx-border-radius: 5;
 }
 
 .button:hover {
@@ -38,8 +38,8 @@
 }
 
 .check-box{
-    	-fx-font-family: "Cantarell";
-    	-fx-text-fill : #eeeeee
+    -fx-font-family: "Cantarell";
+    -fx-text-fill : #eeeeee
 }
 
 
@@ -51,7 +51,7 @@
 .text-area .content{
 	-fx-background-color: #353535;
 	-fx-font-family: "Cantarell";
-    	-fx-text-fill : #eeeeee
+    -fx-text-fill : #eeeeee
 }
 
 .pane {

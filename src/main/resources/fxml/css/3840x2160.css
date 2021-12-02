@@ -1,27 +1,30 @@
-.h1{
-    -fx-font-size: 36px;
-    -font-style: bold;
-}
-
-.h2{
-    -fx-font-size: 32px;
-    -font-style: bold;
-}
-
-.h3{
-    -fx-font-size: 28px;
-    -font-style: bold;
+.button{
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
 }
 
 .label{
     -fx-font-size: 24px;
 }
 
-.button{
-    -fx-font-size: 24px;
-    -font-style: bold;
-}
-
 .textfield{
     -fx-font-size: 24px;
 }
+
+.h1{
+    -fx-font-size: 36px;
+    -fx-font-weight: bold;
+}
+
+.h2{
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+}
+
+.h3{
+    -fx-font-size: 28px;
+    -fx-font-weight: bold;
+}
+
+
+
