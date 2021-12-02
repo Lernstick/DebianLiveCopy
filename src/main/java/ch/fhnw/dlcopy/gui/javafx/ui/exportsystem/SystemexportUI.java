@@ -41,7 +41,7 @@ public class SystemexportUI extends View{
     private SystemSource runningSystemSource;
 
     private static final Logger LOGGER = Logger.getLogger(SystemexportUI.class.getName());
-    private final static ProcessExecutor PROCESS_EXECUTOR = new ProcessExecutor();
+    private static final ProcessExecutor PROCESS_EXECUTOR = new ProcessExecutor();
 
     @FXML private Button btnBack;
     @FXML private Button btnExport;
@@ -58,7 +58,6 @@ public class SystemexportUI extends View{
     @FXML private TextField tfTargetDirectory;
 
     public SystemexportUI() {
-
         // prepare processExecutor to always use the POSIX locale
         Map<String, String> environment = new HashMap<>();
         environment.put("LC_ALL", "C");
@@ -128,7 +127,7 @@ public class SystemexportUI extends View{
         }
     }
 
-        private void selectDirectory() {
+    private void selectDirectory() {
         DirectoryChooser folder = new DirectoryChooser();
         File selectedDirectory = folder.showDialog(
             btnTargetDirectory.getScene().getWindow());
