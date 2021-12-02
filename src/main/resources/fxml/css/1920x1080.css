@@ -1,30 +1,27 @@
-.button{
+.button {
     -fx-font-size: 12px;
     -fx-font-weight: bold;
 }
 
-.label{
+.label {
     -fx-font-size: 12px;
 }
 
-.textfield{
+.textfield {
     -fx-font-size: 12px;
 }
 
-.h1{
+.h1 {
     -fx-font-size: 18px;
     -fx-font-weight: bold;
 }
 
-.h2{
+.h2 {
     -fx-font-size: 16px;
     -fx-font-weight: bold;
 }
 
-.h3{
+.h3 {
     -fx-font-size: 14px;
     -fx-font-weight: bold;
 }
-
-
-
