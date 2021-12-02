@@ -1058,6 +1058,23 @@ public class DLCopy {
                 "/var/lib/live/config/openssh-server"));
     }
 
+    public static boolean isMountedReadWrite(String device) throws IOException {
+        List<String> mounts = LernstickFileTools.readFile(
+                new File("/proc/mounts"));
+        for (String mount : mounts) {
+            String[] tokens = mount.split(" ");
+            String mountedPartition = tokens[0];
+            if (mountedPartition.equals(device)) {
+                // check mount options
+                String mountOptions = tokens[3];
+                if (mountOptions.startsWith("rw")) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     private static PartitionSizes getPartitionSizes(SystemSource source,
             StorageDevice storageDevice, boolean upgrading,
             RepartitionStrategy upgradeRepartitionStrategy,

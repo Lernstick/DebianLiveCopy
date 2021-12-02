@@ -1105,25 +1105,8 @@ public class DLCopySwingGUI extends JFrame
         }
 
         // ensure that the persistence partition is not mounted read-write
-        String dataPartitionDevice
-                = "/dev/" + dataPartition.getDeviceAndNumber();
-        boolean mountedReadWrite = false;
-        List<String> mounts = LernstickFileTools.readFile(
-                new File("/proc/mounts"));
-        for (String mount : mounts) {
-            String[] tokens = mount.split(" ");
-            String mountedPartition = tokens[0];
-            if (mountedPartition.equals(dataPartitionDevice)) {
-                // check mount options
-                String mountOptions = tokens[3];
-                if (mountOptions.startsWith("rw")) {
-                    mountedReadWrite = true;
-                    break;
-                }
-            }
-        }
-
-        if (mountedReadWrite) {
+        if (DLCopy.isMountedReadWrite(
+                "/dev/" + dataPartition.getDeviceAndNumber())) {
             if (persistenceBoot) {
                 // error and hint
                 String message = STRINGS.getString(
