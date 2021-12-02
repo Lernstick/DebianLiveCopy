@@ -16,22 +16,22 @@ import ch.fhnw.util.ProcessExecutor;
 import java.io.File;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.Label;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.image.ImageView;
-import org.freedesktop.dbus.exceptions.DBusException;
 import javafx.stage.DirectoryChooser;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 public class SystemexportUI extends View{
 
@@ -186,23 +186,7 @@ public class SystemexportUI extends View{
         // ensure that the persistence partition is not mounted read-write
         String dataPartitionDevice
                 = "/dev/" + dataPartition.getDeviceAndNumber();
-        boolean mountedReadWrite = false;
-        List<String> mounts = LernstickFileTools.readFile(
-                new File("/proc/mounts"));
-        for (String mount : mounts) {
-            String[] tokens = mount.split(" ");
-            String mountedPartition = tokens[0];
-            if (mountedPartition.equals(dataPartitionDevice)) {
-                // check mount options
-                String mountOptions = tokens[3];
-                if (mountOptions.startsWith("rw")) {
-                    mountedReadWrite = true;
-                    break;
-                }
-            }
-        }
-
-        if (mountedReadWrite) {
+        if (DLCopy.isMountedReadWrite(dataPartitionDevice)) {
             if (persistenceBoot) {
                 // error and hint
                 String message = STRINGS.getString(
@@ -213,18 +197,22 @@ public class SystemexportUI extends View{
                 return false;
             } else {
                 // persistence partition was manually mounted
-                // TODO: warning and offer umount
+                // warning and offer umount
                 String message = STRINGS.getString(
                         "Warning_Persistence_Mounted") + "\n"
                         + STRINGS.getString("Umount_Question");
                 LOGGER.log(Level.WARNING, message);
-                showError(message);
-                runningSystemSource.getDataPartition().umount();
-                LOGGER.log(Level.WARNING, "Parition unmounted");
-                return isUnmountedPersistenceAvailable();
+                Optional<ButtonType> result = showConfirm(message);
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    LOGGER.log(Level.FINEST, result.get().getText());
+                    runningSystemSource.getDataPartition().umount();
+                    LOGGER.log(Level.WARNING, "Parition unmounted");
+                    return isUnmountedPersistenceAvailable();
+                } else {
+                    return false;
+                }
             }
         }
-
         return true;
     }
 
@@ -234,5 +222,13 @@ public class SystemexportUI extends View{
         alert.setHeaderText(STRINGS.getString("Error"));
         alert.setContentText(message);
         alert.showAndWait();
+    }
+
+    private Optional<ButtonType> showConfirm(String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(STRINGS.getString("Warning"));
+        alert.setHeaderText(STRINGS.getString("Warning"));
+        alert.setContentText(message);
+        return alert.showAndWait();
     }
 }
