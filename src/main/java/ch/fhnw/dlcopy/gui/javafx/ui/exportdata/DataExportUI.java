@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
@@ -68,6 +69,10 @@ public class DataExportUI extends View {
         imgTargetDirectory.fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 25.714));
         imgTargetDirectory.fitWidthProperty().bind(Bindings.divide(model.heightProperty(), 4.1739));
 
+        switchBtn.getButton().setOnAction(event -> {
+            toggleExpertMode();
+        });
+        
         btnTargetDirectory.setOnAction(event -> {
             selectDirectory();
         });
@@ -137,5 +142,13 @@ public class DataExportUI extends View {
         alert.setHeaderText(STRINGS.getString("Error"));
         alert.setContentText(message);
         alert.showAndWait();
+    }
+    
+    
+    private void toggleExpertMode(){
+        switchBtn.toggle();
+        for (Node n : new Node[]{chbInformationDialog,chbInstallationProgram}){
+            n.setVisible(switchBtn.isEnabled());
+        }
     }
 }
