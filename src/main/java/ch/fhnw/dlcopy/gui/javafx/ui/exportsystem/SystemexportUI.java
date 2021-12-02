@@ -22,6 +22,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
@@ -80,6 +81,9 @@ public class SystemexportUI extends View{
 
     @Override
     protected void setupEventHandlers() {
+        switchBtn.getButton().setOnAction(event -> {
+            toggleExpertMode();
+        });
         btnBack.setOnAction(event -> {
             context.setScene(new StartscreenUI());
         });
@@ -214,6 +218,14 @@ public class SystemexportUI extends View{
             }
         }
         return true;
+    }
+    
+    
+    private void toggleExpertMode(){
+        switchBtn.toggle();
+        for (Node n : new Node[]{chbInformationDialog,chbInstallationProgram}){
+            n.setVisible(switchBtn.isEnabled());
+        }
     }
 
     private void showError(String message) {

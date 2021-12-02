@@ -78,4 +78,9 @@ public class SwitchButton extends Label {
     public void toggle() {
         enabled.set(!enabled.get());
     }
+    
+    @FXML
+    public ToggleButton getButton() {
+        return switchBtn;
+    }
 }
