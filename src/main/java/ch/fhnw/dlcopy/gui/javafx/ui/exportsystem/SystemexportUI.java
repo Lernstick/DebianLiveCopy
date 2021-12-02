@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -26,6 +27,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.TextField;
+import javafx.scene.image.ImageView;
 import org.freedesktop.dbus.exceptions.DBusException;
 import javafx.stage.DirectoryChooser;
 
@@ -44,6 +46,7 @@ public class SystemexportUI extends View{
     @FXML private Button btnTargetDirectory;
     @FXML private CheckBox chbInstallationProgram;
     @FXML private ComboBox<String> cmbDataPartitionMode;
+    @FXML private ImageView imgTargetDirectory;
     @FXML private Label lblFreeSpaceDisplay;
     @FXML private Label lblWriteable;
     @FXML private Label lblInfo;
@@ -104,6 +107,9 @@ public class SystemexportUI extends View{
                 showError(ex.getLocalizedMessage());
             }
         });
+        
+        imgTargetDirectory.fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 25.714));
+        imgTargetDirectory.fitWidthProperty().bind(Bindings.divide(model.widthProperty(), 4.1739));
     }
 
     public DataPartitionMode getDataPartitionMode(){
