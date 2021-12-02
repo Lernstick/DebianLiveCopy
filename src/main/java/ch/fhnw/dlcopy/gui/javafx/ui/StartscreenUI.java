@@ -3,22 +3,37 @@ package ch.fhnw.dlcopy.gui.javafx.ui;
 import ch.fhnw.dlcopy.gui.javafx.ui.exportdata.ConfigUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.SystemexportUI;
 import javafx.beans.binding.Bindings;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
+import javafx.scene.control.*;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Pane;
 
 public class StartscreenUI extends View {
 
     @FXML private Button btnCopy;
+    @FXML private Button btnDefault;
+    @FXML private Button btnExport;
+    @FXML private Button btnInstall;
+    @FXML private Button btnReset;
+    @FXML private Button btnUpdate;
     @FXML private ImageView imgCopy;
     @FXML private ImageView imgDefault;
-    @FXML private Button btnExport;
     @FXML private ImageView imgExport;
     @FXML private ImageView imgInstall;
     @FXML private ImageView imgReset;
     @FXML private ImageView imgUpdate;
-
-    public StartscreenUI() {
+    @FXML private Pane panCopy;
+    @FXML private Pane panDefault;
+    @FXML private Pane panExport;
+    @FXML private Pane panInstall;
+    @FXML private Pane panReset;
+    @FXML private Pane panUpdate;
+    
+    
+    public StartscreenUI(){
         resourcePath = getClass().getResource("/fxml/startscreen.fxml");
     }
 
@@ -27,6 +42,13 @@ public class StartscreenUI extends View {
         btnCopy.setOnAction(event -> {
             context.setScene(new ConfigUI());
         });
+        
+        setupMenuButtonHandler(btnCopy, panCopy);
+        setupMenuButtonHandler(btnExport, panExport);
+        setupMenuButtonHandler(btnInstall, panInstall);
+        setupMenuButtonHandler(btnReset, panReset);
+        setupMenuButtonHandler(btnUpdate, panUpdate);
+        //setupMenuButtonHandler(btnDefault, panDefault);
 
         btnExport.setOnAction(event -> {
             context.setScene(new SystemexportUI());
@@ -49,5 +71,21 @@ public class StartscreenUI extends View {
 
         imgUpdate.fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 2.65));
         imgUpdate.fitWidthProperty().bind(Bindings.divide(model.widthProperty(), 5));
+    }
+    
+    private void setupMenuButtonHandler(Button btn, Pane ivw){
+        btn.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent e) {
+                ivw.setVisible(true);
+            }
+        });
+
+        btn.addEventHandler(MouseEvent.MOUSE_EXITED, new EventHandler<MouseEvent>() {
+            @Override
+            public void handle(MouseEvent e) {
+                ivw.setVisible(false);
+            }
+        });
     }
 }
