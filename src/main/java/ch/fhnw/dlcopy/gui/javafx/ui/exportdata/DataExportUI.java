@@ -15,7 +15,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.binding.Bindings;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
@@ -35,7 +34,6 @@ public class DataExportUI extends View {
     private static final ProcessExecutor PROCESS_EXECUTOR = new ProcessExecutor();
     private static final Logger LOGGER = Logger.getLogger(DataExportUI.class.getName());
 
-    @FXML private ImageView imgTargetDirectory;
     @FXML private Label lblTargetDirectory;
     @FXML private TextField tfTargetDirectory;
     @FXML private Button btnTargetDirectory;
@@ -66,8 +64,6 @@ public class DataExportUI extends View {
 
     @Override
     protected void setupEventHandlers() {
-        imgTargetDirectory.fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 33.75));
-        imgTargetDirectory.fitWidthProperty().bind(Bindings.divide(model.heightProperty(), 48));
 
         switchBtn.getButton().setOnAction(event -> {
             toggleExpertMode();

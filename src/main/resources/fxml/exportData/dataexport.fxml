@@ -11,8 +11,7 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
-
-<!--<?import ch.fhnw.dlcopy.gui.javafx.SwitchButton?>-->
+<?import ch.fhnw.dlcopy.gui.javafx.SwitchButton?>
 
 <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
@@ -111,14 +110,13 @@
                 <TextField fx:id="tfTargetDirectory" promptText="%export.tfTargetDirectory" GridPane.columnIndex="2" GridPane.rowIndex="1" />
                 <Label fx:id="lblWriteableDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="n/a" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                 <Label fx:id="lblFreeSpaceDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="n/a" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                <!--<SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" GridPane.columnIndex="2" GridPane.rowIndex="4" />-->
+                <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" GridPane.columnIndex="2" GridPane.rowIndex="4" />
                 <CheckBox fx:id="chbInformationDialog" mnemonicParsing="false" text="%export.chbInformationDialog" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="5" />
                 <CheckBox fx:id="chbInstallationProgram" mnemonicParsing="false" text="%export.chbInstallationProgram" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="6" />
                 <Button fx:id="btnTargetDirectory" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" GridPane.columnIndex="4" GridPane.rowIndex="1">
                     <graphic>
                         <ImageView fx:id="imgTargetDirectory" fitHeight="16.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                             <image>
-                                <Image url="@../../new_icons/open-file-folder-white.png" />
                             </image>
                         </ImageView>
                     </graphic>
