@@ -52,7 +52,7 @@ public class StorageMediaManagement
         stage.setHeight(model.getHeight());
         stage.setWidth(model.getWidth());
         stage.setTitle(stringBundle.getString("global.title"));
-        //stage.getIcons().add(new Image(getClass().getResource("/branding/Lernstick_Logo_Speichermedienverwaltung.png").getPath()));
+        stage.getIcons().add(new Image(getClass().getResourceAsStream("/branding/Lernstick_Icon.png")));
 
         stage.heightProperty().addListener((observable, oldValue, newValue) -> {
             model.setHeight((int) (double) newValue);
