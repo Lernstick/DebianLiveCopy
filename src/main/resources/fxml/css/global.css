@@ -4,7 +4,7 @@
 
 .label {
     -fx-font-family: "Cantarell";
-    -fx-text-fill : #eeeeee
+    -fx-text-fill: #EEEEEE
 }
 
 .labelwraped {
@@ -21,7 +21,7 @@
 
 .button {
     -fx-background-color: #3C3C3C;
-    -fx-text-fill : #eeeeee;
+    -fx-text-fill: #EEEEEE;
     -fx-border-color: #282828;
     -fx-border-width: 3;
     -fx-border-radius: 5;
@@ -39,18 +39,18 @@
 
 .check-box {
     -fx-font-family: "Cantarell";
-    -fx-text-fill : #eeeeee
+    -fx-text-fill: #EEEEEE
 }
 
 .text-area {
     -fx-font-family: "Cantarell";
-    -fx-text-fill : #eeeeee
+    -fx-text-fill: #EEEEEE
 }
 
 .text-area .content {
     -fx-background-color: #353535;
     -fx-font-family: "Cantarell";
-    -fx-text-fill : #eeeeee
+    -fx-text-fill: #EEEEEE
 }
 
 .pane {
@@ -105,6 +105,12 @@
     -fx-text-fill: #EEEEEE;
 }
 
+.check-box:selected .box {
+    -fx-text-fill: #EEEEEE;
+    -fx-background-color: #494949;
+    -fx-border-color: #282828;
+}
+
 .switchButtonOn {
     -fx-background-color: #1F76E1;
 }
@@ -122,4 +128,12 @@
 .check-box:selected .box {
     -fx-background-color: #494949;
     -fx-border-color: #282828;
+}
+
+.target-na, .target-ro {
+    -fx-text-fill: #E03F1F;
+}
+
+.target-rw {
+    -fx-text-fill: #26BF0B;
 }

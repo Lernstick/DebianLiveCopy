@@ -150,18 +150,21 @@ public class SystemexportUI extends View{
                 LernstickFileTools.getDataVolumeString(freeSpace, 1));
             if (tmpDir.canWrite()) {
                 lblWriteable.setText(STRINGS.getString("Yes"));
-                lblWriteable.setStyle("-fx-text-fill: red ;");
+                lblWriteable.getStyleClass().clear();
+                lblWriteable.getStyleClass().add("target-rw");
                 btnExport.setDisable(false);
             } else {
                 lblWriteable.setText(STRINGS.getString("No"));
-                lblWriteable.setStyle("-fx-text-fill: red ;") ;
+                lblWriteable.getStyleClass().clear();
+                lblWriteable.getStyleClass().add("target-ro");
                 btnExport.setDisable(true);
             }
         } else {
             lblFreeSpaceDisplay.setText(null);
             lblWriteable.setText(
-                    STRINGS.getString("Directory_Does_Not_Exist"));
-            lblWriteable.setStyle("-fx-text-fill: red ;") ;
+                STRINGS.getString("Directory_Does_Not_Exist"));
+            lblWriteable.getStyleClass().clear();
+            lblWriteable.getStyleClass().add("target-na");
             btnExport.setDisable(true);
         }
     }
@@ -219,8 +222,7 @@ public class SystemexportUI extends View{
         }
         return true;
     }
-    
-    
+
     private void toggleExpertMode(){
         switchBtn.toggle();
         for (Node n : new Node[]{chbInformationDialog,chbInstallationProgram}){

@@ -104,18 +104,21 @@ public class DataExportUI extends View {
                     LernstickFileTools.getDataVolumeString(freeSpace, 1));
             if (tmpDir.canWrite()) {
                 lblFreeSpaceDisplay.setText(STRINGS.getString("Yes"));
-                lblFreeSpaceDisplay.setStyle("-fx-text-fill: red ;");
+                lblFreeSpaceDisplay.getStyleClass().clear();
+                lblFreeSpaceDisplay.getStyleClass().add("target-rw");
                 btnExport.setDisable(false);
             } else {
                 lblFreeSpaceDisplay.setText(STRINGS.getString("No"));
-                lblFreeSpaceDisplay.setStyle("-fx-text-fill: red ;");
+                lblFreeSpaceDisplay.getStyleClass().clear();
+                lblFreeSpaceDisplay.getStyleClass().add("target-ro");
                 btnExport.setDisable(true);
             }
         } else {
             lblWriteableDisplay.setText(null);
             lblFreeSpaceDisplay.setText(
-                    STRINGS.getString("Directory_Does_Not_Exist"));
-            lblFreeSpaceDisplay.setStyle("-fx-text-fill: red ;");
+                STRINGS.getString("Directory_Does_Not_Exist"));
+            lblFreeSpaceDisplay.getStyleClass().clear();
+            lblFreeSpaceDisplay.getStyleClass().add("target-na");
             btnExport.setDisable(true);
         }
     }
