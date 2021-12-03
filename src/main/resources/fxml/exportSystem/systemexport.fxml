@@ -13,9 +13,10 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
-<?import ch.fhnw.dlcopy.gui.javafx.SwitchButton?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+<!--<?import ch.fhnw.dlcopy.gui.javafx.SwitchButton?>-->
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/16" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="19.0" prefWidth="100.0" />
         <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="1.0" prefWidth="100.0" />
@@ -120,11 +121,11 @@
                 <Label text="%export.lblDvdLabel" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                 <TextField fx:id="tfDvdLabel" promptText="%export.tfDvdLabel" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                 <Label text="%export.lblDataPartitionMode" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+               <!-- <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" GridPane.columnIndex="2" GridPane.rowIndex="6" /> -->
                 <CheckBox fx:id="chbInformationDialog" mnemonicParsing="false" text="%export.chbInformationDialog" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="7" />
                 <CheckBox fx:id="chbInstallationProgram" mnemonicParsing="false" text="%export.chbInstallationProgram" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="8" />
                 <Label text="%global.expertmode" GridPane.columnIndex="1" GridPane.rowIndex="6" />
-                <ComboBox fx:id="cmbDataPartitionMode" prefWidth="150.0" GridPane.columnIndex="2" GridPane.rowIndex="5" />
+                <ComboBox fx:id="cmbDataPartitionMode" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="5" GridPane.vgrow="ALWAYS" />
                 <Button fx:id="btnTargetDirectory" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" GridPane.columnIndex="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS">
                     <graphic>
                         <ImageView fx:id="imgTargetDirectory" fitHeight="21.0" fitWidth="230.0" pickOnBounds="true" preserveRatio="true">
