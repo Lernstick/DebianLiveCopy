@@ -78,7 +78,7 @@ public class DataExportUI extends View {
         });
 
         btnExport.setOnAction((ActionEvent event) -> {
-            if(tfTargetDirectory.getText().length() > 0){
+            if(tfTargetDirectory.getText().isBlank()){
                 createDataPartiton();
             }
         });

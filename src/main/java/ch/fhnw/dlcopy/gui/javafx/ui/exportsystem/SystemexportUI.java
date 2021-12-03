@@ -93,7 +93,7 @@ public class SystemexportUI extends View{
 
         btnExport.setOnAction(event -> {
             try {
-                if(!(tfTargetDirectory.getText().length() > 0 && tfDvdLabel.getText().length() > 0)){
+                if(!(tfTargetDirectory.getText().isBlank() && tfDvdLabel.getText().isBlank())){
                     return;
                 }
                 if (!isUnmountedPersistenceAvailable()) {
