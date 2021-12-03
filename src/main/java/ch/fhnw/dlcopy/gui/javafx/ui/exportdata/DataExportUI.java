@@ -66,8 +66,8 @@ public class DataExportUI extends View {
 
     @Override
     protected void setupEventHandlers() {
-        imgTargetDirectory.fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 25.714));
-        imgTargetDirectory.fitWidthProperty().bind(Bindings.divide(model.heightProperty(), 4.1739));
+        imgTargetDirectory.fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 33.75));
+        imgTargetDirectory.fitWidthProperty().bind(Bindings.divide(model.heightProperty(), 48));
 
         switchBtn.getButton().setOnAction(event -> {
             toggleExpertMode();
