@@ -20,7 +20,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -115,8 +114,6 @@ public class SystemexportUI extends View{
             }
         });
 
-        imgTargetDirectory.fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 25.714));
-        imgTargetDirectory.fitWidthProperty().bind(Bindings.divide(model.widthProperty(), 4.1739));
     }
 
     public DataPartitionMode getDataPartitionMode(){
