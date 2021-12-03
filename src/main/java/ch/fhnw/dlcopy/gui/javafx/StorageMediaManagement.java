@@ -14,11 +14,13 @@ import ch.fhnw.util.StorageDevice;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 public class StorageMediaManagement
@@ -27,6 +29,7 @@ public class StorageMediaManagement
 
     private Scene scene;
     private PresentationModel model = PresentationModel.getInstance();
+    private ResourceBundle stringBundle = ResourceBundle.getBundle("strings/Strings");
 
     /**
      * A view calls this methode, when the scene should be cnaged to another view
@@ -48,6 +51,8 @@ public class StorageMediaManagement
         stage.setScene(scene);
         stage.setHeight(model.getHeight());
         stage.setWidth(model.getWidth());
+        stage.setTitle(stringBundle.getString("global.title"));
+        //stage.getIcons().add(new Image(getClass().getResource("/branding/Lernstick_Logo_Speichermedienverwaltung.png").getPath()));
 
         stage.heightProperty().addListener((observable, oldValue, newValue) -> {
             model.setHeight((int) (double) newValue);
