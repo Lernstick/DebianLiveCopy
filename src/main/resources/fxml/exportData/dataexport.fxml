@@ -116,7 +116,7 @@
                 <CheckBox fx:id="chbInstallationProgram" mnemonicParsing="false" text="%export.chbInstallationProgram" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="6" />
                 <Button fx:id="btnTargetDirectory" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" GridPane.columnIndex="4" GridPane.rowIndex="1">
                     <graphic>
-                        <ImageView fx:id="imgTargetDirectory" fitHeight="21.0" fitWidth="230.0" pickOnBounds="true" preserveRatio="true">
+                        <ImageView fx:id="imgTargetDirectory" fitHeight="16.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                             <image>
                                 <Image url="@../../new_icons/open-file-folder-white.png" />
                             </image>
