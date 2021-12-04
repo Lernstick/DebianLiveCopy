@@ -130,6 +130,12 @@
     -fx-border-color: #282828;
 }
 
+.combo-box {
+    -fx-background-color: #3C3C3C;
+    -fx-background-radius: 1em;
+    -fx-border-radius: 1em;
+}
+
 .target-na, .target-ro {
     -fx-text-fill: #E03F1F;
 }
