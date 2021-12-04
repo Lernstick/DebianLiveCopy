@@ -611,7 +611,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
                 storageDevice.getVendor() + " " + storageDevice.getModel() + " "
                 + LernstickFileTools.getDataVolumeString(
                         storageDevice.getSize(), 1),
-                "/dev/" + storageDevice.getDevice(), batchCounter,
+                storageDevice.getFullDevice(), batchCounter,
                 storageDeviceList.getSelectedIndices().length);
         DLCopySwingGUI.setLabelTextonEDT(
                 currentlyInstalledDeviceLabel, deviceInfo);

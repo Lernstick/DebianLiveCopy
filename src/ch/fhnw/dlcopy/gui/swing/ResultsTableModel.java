@@ -135,7 +135,7 @@ public class ResultsTableModel extends PreferredSizesTableModel {
                 case 1:
                     // device
                     StorageDevice device = result.getStorageDevice();
-                    return "/dev/" + device.getDevice();
+                    return device.getFullDevice();
 
                 case 2:
                     // vendor

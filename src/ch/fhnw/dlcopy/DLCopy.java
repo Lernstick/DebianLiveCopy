@@ -240,7 +240,7 @@ public class DLCopy {
             DBusException, NoSuchAlgorithmException {
 
         // determine size and state
-        String device = "/dev/" + storageDevice.getDevice();
+        String device = storageDevice.getFullDevice();
         long storageDeviceSize = storageDevice.getSize();
         PartitionSizes partitionSizes
                 = installerOrUpgrader.getPartitionSizes(storageDevice);
@@ -1182,7 +1182,7 @@ public class DLCopy {
         // update GUI
         installerOrUpgrader.showCreatingFileSystems();
 
-        String device = "/dev/" + storageDevice.getDevice();
+        String device = storageDevice.getFullDevice();
 
         // determine exact partition sizes
         long overhead = storageDeviceSize - getEnlargedSystemSize(
@@ -1834,7 +1834,7 @@ public class DLCopy {
                     "moving filesystem on " + partitionDeviceFile + " failed");
         }
 
-        String deviceFile = "/dev/" + partition.getStorageDevice().getDevice();
+        String deviceFile = partition.getStorageDevice().getFullDevice();
 
         // remove partition
         partition.remove();
