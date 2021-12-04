@@ -1075,6 +1075,31 @@ public class DLCopy {
         return false;
     }
 
+    /**
+     * Checks <code>/proc/cmdline</code>, if the system was booted in
+     * persistence mode.
+     *
+     * @return <code>true</code>, if the system was booted in persistence mode,
+     * <code>false</code> otherwise
+     * @throws IOException if an I/O error occurs while reading
+     * <code>/proc/cmdline</code>
+     */
+    public static boolean isBootPersistent() throws IOException {
+        String cmdLineFileName = "/proc/cmdline";
+        boolean persistenceBoot = false;
+        try {
+            String cmdLine = DLCopy.readOneLineFile(new File(cmdLineFileName));
+            persistenceBoot = cmdLine.contains(" persistence ");
+            LOGGER.log(Level.FINEST,
+                    "persistenceBoot: {0}", persistenceBoot);
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE,
+                    "could not read \"" + cmdLineFileName + '\"', ex);
+            throw ex;
+        }
+        return persistenceBoot;
+    }
+
     private static PartitionSizes getPartitionSizes(SystemSource source,
             StorageDevice storageDevice, boolean upgrading,
             RepartitionStrategy upgradeRepartitionStrategy,

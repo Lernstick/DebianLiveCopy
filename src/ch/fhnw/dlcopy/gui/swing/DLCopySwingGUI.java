@@ -256,15 +256,10 @@ public class DLCopySwingGUI extends JFrame
                 DLCopy.systemPartitionLabel = "DEBIAN_LIVE";
         }
 
-        String cmdLineFileName = "/proc/cmdline";
         try {
-            String cmdLine = DLCopy.readOneLineFile(new File(cmdLineFileName));
-            persistenceBoot = cmdLine.contains(" persistence ");
-            LOGGER.log(Level.FINEST,
-                    "persistenceBoot: {0}", persistenceBoot);
+            persistenceBoot = DLCopy.isBootPersistent();
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE,
-                    "could not read \"" + cmdLineFileName + '\"', ex);
+            LOGGER.log(Level.SEVERE, "can't determine persistence mode", ex);
         }
 
         initComponents();
