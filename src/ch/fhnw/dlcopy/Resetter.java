@@ -596,7 +596,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
                 label = newExchangePartitionLabel;
             }
             DLCopy.formatExchangePartition(
-                    "/dev/" + exchangePartition.getDeviceAndNumber(),
+                    exchangePartition.getFullDeviceAndNumber(),
                     label, exchangePartitionFileSystem, dlCopyGUI);
         }
     }
@@ -618,7 +618,7 @@ public class Resetter extends SwingWorker<Boolean, Void> {
 
             // TODO: support encryption
             DLCopy.formatPersistencePartition(
-                    "/dev/" + dataPartition.getDeviceAndNumber(), false, null,
+                    dataPartition.getFullDeviceAndNumber(), false, null,
                     false, null, false, dataPartitionFileSystem, dlCopyGUI);
 
             cleanupRoot = dataPartition.mount().getMountPath() + "/rw";

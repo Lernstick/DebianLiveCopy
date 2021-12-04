@@ -611,7 +611,7 @@ public class Upgrader extends InstallerOrUpgrader {
         if (!(dataPartition.getIdLabel().equals(Partition.PERSISTENCE_LABEL))) {
             ProcessExecutor processExecutor = new ProcessExecutor();
             processExecutor.executeProcess("e2label",
-                    "/dev/" + dataPartition.getDeviceAndNumber(),
+                    dataPartition.getFullDeviceAndNumber(),
                     Partition.PERSISTENCE_LABEL);
         }
 
@@ -862,8 +862,7 @@ public class Upgrader extends InstallerOrUpgrader {
             long offset = neededEfiPartitionSize - efiPartition.getSize();
             DLCopy.moveExtPartitionOffsetForward(
                     efiPartition, nextPartition, offset);
-            DLCopy.formatEfiPartition(
-                    "/dev/" + efiPartition.getDeviceAndNumber());
+            DLCopy.formatEfiPartition(efiPartition.getFullDeviceAndNumber());
         } else if (efiUpgradeVariant == EfiUpgradeVariant.ENLARGE_BACKUP) {
 
             // backup
@@ -891,7 +890,7 @@ public class Upgrader extends InstallerOrUpgrader {
             storageDevice.createPrimaryPartition(efiPartition.getIdType(),
                     efiPartition.getOffset(), nextOffset - 1);
             String efiPartitionDevicePath
-                    = "/dev/" + efiPartition.getDeviceAndNumber();
+                    = efiPartition.getFullDeviceAndNumber();
             DLCopy.waitForDeviceNodes(Paths.get(efiPartitionDevicePath));
             DLCopy.formatEfiPartition(efiPartitionDevicePath);
 
@@ -901,7 +900,7 @@ public class Upgrader extends InstallerOrUpgrader {
             storageDevice.createPrimaryPartition(
                     nextPartition.getIdType(), nextOffset, nextEnd);
             String exchangePartitionDevicePath
-                    = "/dev/" + exchangePartition.getDeviceAndNumber();
+                    = exchangePartition.getFullDeviceAndNumber();
             DLCopy.waitForDeviceNodes(Paths.get(exchangePartitionDevicePath));
             DLCopy.formatExchangePartition(exchangePartitionDevicePath,
                     exchangePartition.getIdLabel(),
@@ -941,8 +940,7 @@ public class Upgrader extends InstallerOrUpgrader {
             if (!DLCopy.umount(dataPartition, dlCopyGUI)) {
                 return false;
             }
-            String dataDevPath
-                    = "/dev/" + dataPartition.getDeviceAndNumber();
+            String dataDevPath = dataPartition.getFullDeviceAndNumber();
             int returnValue = processExecutor.executeProcess(true, true,
                     "e2fsck", "-f", "-y", "-v", dataDevPath);
             // e2fsck return values:
@@ -1076,8 +1074,8 @@ public class Upgrader extends InstallerOrUpgrader {
             systemPartition = partitions.get(systemPartitionNumber - 1);
 
             DLCopy.formatEfiAndSystemPartition(
-                    "/dev/" + efiPartition.getDeviceAndNumber(),
-                    "/dev/" + systemPartition.getDeviceAndNumber());
+                    efiPartition.getFullDeviceAndNumber(),
+                    systemPartition.getFullDeviceAndNumber());
 
             // update boot flag
             efiPartition.setBootFlag(true);
@@ -1096,8 +1094,8 @@ public class Upgrader extends InstallerOrUpgrader {
             // the EFI partition has the label "EFI", has a boot flag but the
             // system partition has no boot flag.
             DLCopy.formatEfiAndSystemPartition(
-                    "/dev/" + efiPartition.getDeviceAndNumber(),
-                    "/dev/" + systemPartition.getDeviceAndNumber());
+                    efiPartition.getFullDeviceAndNumber(),
+                    systemPartition.getFullDeviceAndNumber());
 
             efiPartition.setBootFlag(true);
             systemPartition.setBootFlag(false);

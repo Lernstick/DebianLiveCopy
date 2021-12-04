@@ -526,7 +526,7 @@ public class DLCopy {
         } else {
             String errorMessage = STRINGS.getString("Error_Umount");
             errorMessage = MessageFormat.format(errorMessage,
-                    "/dev/" + partition.getDeviceAndNumber());
+                    partition.getFullDeviceAndNumber());
             dlCopyGUI.showErrorMessage(errorMessage);
             return false;
         }
@@ -1806,7 +1806,7 @@ public class DLCopy {
                 "\nprevious partition: {0}\npartition: {1}\ndelta: {2}",
                 new Object[]{previousPartition, partition, delta});
 
-        String partitionDeviceFile = "/dev/" + partition.getDeviceAndNumber();
+        String partitionDeviceFile = partition.getFullDeviceAndNumber();
         ProcessExecutor processExecutor = new ProcessExecutor(true);
 
         // run initial filesystem check
@@ -1863,8 +1863,8 @@ public class DLCopy {
         // partitions to reappear. Otherwise subsequent operations (like
         // formatting the EFI partition) might fail.
         waitForDeviceNodes(
-                Paths.get("/dev/" + previousPartition.getDeviceAndNumber()),
-                Paths.get("/dev/" + partition.getDeviceAndNumber()));
+                Paths.get(previousPartition.getFullDeviceAndNumber()),
+                Paths.get(partition.getFullDeviceAndNumber()));
     }
 
     /**

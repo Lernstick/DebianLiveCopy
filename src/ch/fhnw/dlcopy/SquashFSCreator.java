@@ -142,7 +142,7 @@ public class SquashFSCreator implements PropertyChangeListener {
             // temporarily remount the data partition in read-write mode
             ProcessExecutor processExecutor = new ProcessExecutor();
             processExecutor.executeProcess(true, true, "mount", "-o",
-                    "remount,rw", "/dev/" + dataPartition.getDeviceAndNumber());
+                    "remount,rw", dataPartition.getFullDeviceAndNumber());
             remountedReadWrite = true;
         }
 
@@ -226,7 +226,7 @@ public class SquashFSCreator implements PropertyChangeListener {
         } else if (remountedReadWrite) {
             ProcessExecutor processExecutor = new ProcessExecutor();
             processExecutor.executeProcess(true, true, "mount", "-o",
-                    "remount,ro", "/dev/" + dataPartition.getDeviceAndNumber());
+                    "remount,ro", dataPartition.getFullDeviceAndNumber());
         }
     }
 

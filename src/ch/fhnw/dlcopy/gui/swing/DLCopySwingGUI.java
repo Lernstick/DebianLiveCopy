@@ -1100,8 +1100,7 @@ public class DLCopySwingGUI extends JFrame
         }
 
         // ensure that the persistence partition is not mounted read-write
-        if (DLCopy.isMountedReadWrite(
-                "/dev/" + dataPartition.getDeviceAndNumber())) {
+        if (DLCopy.isMountedReadWrite(dataPartition.getFullDeviceAndNumber())) {
             if (persistenceBoot) {
                 // error and hint
                 String message = STRINGS.getString(
