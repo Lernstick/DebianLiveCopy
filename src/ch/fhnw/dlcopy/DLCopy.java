@@ -66,6 +66,9 @@ public class DLCopy {
      */
     public static final long EFI_PARTITION_SIZE = 200;
 
+    /**
+     * the known and supported data partition modes
+     */
     public static final String[] DATA_PARTITION_MODES = new String[]{
         STRINGS.getString("Read_Write"),
         STRINGS.getString("Read_Only"),
@@ -503,8 +506,8 @@ public class DLCopy {
      *
      * @param partition the given partition
      * @param dlCopyGUI the GUI to show error messages
-     * @return <tt>true</tt>, if unmounting was successfull, <tt>false</tt>
-     * otherwise
+     * @return <code>true</code>, if unmounting was successfull,
+     * <code>false</code> otherwise
      * @throws DBusException
      */
     public static boolean umount(Partition partition, DLCopyGUI dlCopyGUI)
@@ -1058,6 +1061,15 @@ public class DLCopy {
                 "/var/lib/live/config/openssh-server"));
     }
 
+    /**
+     * Checks if a device is mounted in read-write mode.
+     *
+     * @param device the device to check, e.g. /dev/sda1
+     * @return <code>true</code>, if the given device is mounted in read-write
+     * mode, <code>false</code> otherwise
+     * @throws IOException if an I/O error occurs while reading
+     * <code>/proc/mounts</code>
+     */
     public static boolean isMountedReadWrite(String device) throws IOException {
         List<String> mounts = LernstickFileTools.readFile(
                 new File("/proc/mounts"));
@@ -1855,6 +1867,13 @@ public class DLCopy {
                 Paths.get("/dev/" + partition.getDeviceAndNumber()));
     }
 
+    /**
+     * Wait for device nodes to appear.
+     *
+     * @param deviceNodes a list of device nodes (e.g. /dev/sda1) to wait for
+     * @return <code>true</code>, if all device nodes appeared,
+     * <code>false</code> otherwise
+     */
     public static boolean waitForDeviceNodes(Path... deviceNodes) {
 
         settleUdev();
@@ -1900,7 +1919,27 @@ public class DLCopy {
         return false;
     }
 
-    public static boolean transfer(StorageDevice sourceDevice,
+    /**
+     * Transfers certain data from a source storage device to a destination
+     * storage device.
+     *
+     * @param sourceDevice the source storage device
+     * @param destinationDevice the destination storage device
+     * @param transferExchange if the exchange partition should be transferred
+     * @param transferHome if the directory /home/ should be transferred
+     * @param transferNetwork if the NetworkManager settings should be
+     * transferred
+     * @param transferPrinter if the printer settings should be transferred
+     * @param transferFirewall if the firewall settings should be transferred
+     * @param checkCopies if the copies should be verified
+     * @param installer the Installer used during this transfer
+     * @param gui the GUI used during this transfer
+     * @throws IOException if an I/O error occurs
+     * @throws DBusException if a D-Bus exception occurs
+     * @throws NoSuchAlgorithmException if FileCopier can't load its message
+     * digest algorithm used for verification of the copies
+     */
+    public static void transfer(StorageDevice sourceDevice,
             StorageDevice destinationDevice, boolean transferExchange,
             boolean transferHome, boolean transferNetwork,
             boolean transferPrinter, boolean transferFirewall,
@@ -1925,10 +1964,13 @@ public class DLCopy {
             transferrer.transfer(transferHome, transferNetwork,
                     transferPrinter, transferFirewall);
         }
-
-        return true;
     }
 
+    /**
+     * Calls <code>udevadm settle</code> to wait for all current events of the
+     * udev event queue to be handled.
+     *
+     */
     public static void settleUdev() {
         ProcessExecutor processExecutor = new ProcessExecutor(true);
         processExecutor.executeProcess(true, true, "udevadm", "settle");

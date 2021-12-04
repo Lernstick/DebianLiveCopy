@@ -23,6 +23,13 @@ public class ExchangeTransferrer extends Transferrer {
     private MountInfo sourceMountInfo;
     private MountInfo destinationMountInfo;
 
+    /**
+     * Creates a new ExchangeTransferrer.
+     *
+     * @param gui the DLCopyGUI currently in use
+     * @param sourcePartition the source exchange partition
+     * @param destinationPartition the destination exchange partition
+     */
     public ExchangeTransferrer(DLCopyGUI gui,
             Partition sourcePartition, Partition destinationPartition) {
 
@@ -31,12 +38,21 @@ public class ExchangeTransferrer extends Transferrer {
         this.destinationPartition = destinationPartition;
     }
 
+    /**
+     * Transfers all data from one exchange partition to another.
+     *
+     * @param checkCopies if the file copies should be verified
+     * @throws IOException if an I/O error occurs
+     * @throws DBusException if a D-Bus exception occurs
+     * @throws NoSuchAlgorithmException if FileCopier can't load its message
+     * digest algorithm used for verification of the copies
+     */
     public void transfer(boolean checkCopies)
             throws IOException, DBusException, NoSuchAlgorithmException {
 
         FileCopier fileCopier = new FileCopier();
         gui.showInstallFileCopy(fileCopier);
-        
+
         mount();
 
         Source source = new Source(sourceMountInfo.getMountPath(), ".*");
