@@ -43,7 +43,7 @@
                 <RowConstraints minHeight="10.0" percentHeight="50.0" prefHeight="30.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="%global.dataexport" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="%global.dataExport" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
                 <Separator prefWidth="200.0" GridPane.rowIndex="1" />
                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%global.selection" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
                     <styleClass>
@@ -106,10 +106,10 @@
                 <Label fx:id="lblTargetDirectory" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%export.lblTargetDirectory" GridPane.columnIndex="1" GridPane.rowIndex="1" />
                 <Label fx:id="lblWriteable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%export.lblWriteable" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                 <Label fx:id="lblFreeSpace" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%export.lblFreeSpace" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%global.expertmode" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%global.expertMode" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                 <TextField fx:id="tfTargetDirectory" promptText="%export.tfTargetDirectory" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                <Label fx:id="lblWriteableDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="n/a" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                <Label fx:id="lblFreeSpaceDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="n/a" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                <Label fx:id="lblWriteableDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%global.notApplicable" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+                <Label fx:id="lblFreeSpaceDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%global.notApplicable" GridPane.columnIndex="2" GridPane.rowIndex="3" />
                 <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" GridPane.columnIndex="2" GridPane.rowIndex="4" />
                 <CheckBox fx:id="chbInformationDialog" mnemonicParsing="false" text="%export.chbInformationDialog" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="5" />
                 <CheckBox fx:id="chbInstallationProgram" mnemonicParsing="false" text="%export.chbInstallationProgram" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="6" />
