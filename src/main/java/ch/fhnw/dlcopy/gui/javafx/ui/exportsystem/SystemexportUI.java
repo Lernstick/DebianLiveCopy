@@ -171,15 +171,9 @@ public class SystemexportUI extends View{
 
     /**
      * see equivalent function in ch.fhnw.dlcopy.gui.swing.DLCopySwingGUI
-     * TODO: avoid code duplication
      */
     public boolean isUnmountedPersistenceAvailable()
             throws IOException, DBusException {
-
-        String cmdLineFileName = "/proc/cmdline";
-        String cmdLine = DLCopy.readOneLineFile(new File(cmdLineFileName));
-        boolean persistenceBoot = cmdLine.contains(" persistence ");
-        LOGGER.log(Level.FINEST, "persistenceBoot: {0}", persistenceBoot);
 
         // check that a persistence partition is available
         Partition dataPartition = runningSystemSource.getDataPartition();
@@ -191,10 +185,9 @@ public class SystemexportUI extends View{
         }
 
         // ensure that the persistence partition is not mounted read-write
-        String dataPartitionDevice
-                = "/dev/" + dataPartition.getDeviceAndNumber();
+        String dataPartitionDevice = dataPartition.getFullDeviceAndNumber();
         if (DLCopy.isMountedReadWrite(dataPartitionDevice)) {
-            if (persistenceBoot) {
+            if (DLCopy.isBootPersistent()) {
                 // error and hint
                 String message = STRINGS.getString(
                         "Warning_Persistence_Mounted") + "\n"
@@ -212,7 +205,7 @@ public class SystemexportUI extends View{
                 Optional<ButtonType> result = showConfirm(message);
                 if (result.isPresent() && result.get() == ButtonType.OK) {
                     LOGGER.log(Level.FINEST, result.get().getText());
-                    runningSystemSource.getDataPartition().umount();
+                    dataPartition.umount();
                     LOGGER.log(Level.WARNING, "Parition unmounted");
                     return isUnmountedPersistenceAvailable();
                 } else {
