@@ -42,6 +42,17 @@
     -fx-text-fill: #EEEEEE
 }
 
+.text-field {
+    -fx-background-color: #3C3C3C;
+    -fx-font-family: "Cantarell";
+    -fx-text-fill: #EEEEEE;
+}
+
+.text-field:focused {
+    -fx-background-color: #494949;
+    -fx-border-color: #1F76E1;
+}
+
 .text-area {
     -fx-font-family: "Cantarell";
     -fx-text-fill: #EEEEEE
