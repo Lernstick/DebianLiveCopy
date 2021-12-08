@@ -133,22 +133,27 @@
 .combo-box {
     -fx-text-fill: white;
     -fx-background-color: #3C3C3C;
-    -fx-background-radius: 1em;
-    -fx-border-radius: 1em;
+    -fx-border-color: #282828;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+}
+
+.combo-box:focused {
+    -fx-background-color: #494949;
+    -fx-border-color: #1F76E1;
 }
 
 .combo-box-popup {
     -fx-text-fill: #EEEEEE;
     -fx-background-color: #3C3C3C;
-    -fx-background-radius: 1em;
-    -fx-border-radius: 1em;
 }
 
 .combo-box-popup .list-view {
     -fx-text-fill: #EEEEEE;
     -fx-background-color: #3C3C3C;
-    -fx-background-radius: 1em;
-    -fx-border-radius: 1em;
+    -fx-border-color: #282828;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
 }
 
 .target-na, .target-ro {
