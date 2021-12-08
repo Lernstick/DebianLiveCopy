@@ -4,11 +4,11 @@
 
 .label {
     -fx-font-family: "Cantarell";
-    -fx-text-fill: #EEEEEE
+    -fx-text-fill: #EEEEEE;
 }
 
 .labelwraped {
-    -fx-wrap-text:true
+    -fx-wrap-text: true;
 }
 
 .labelcenter {
@@ -23,7 +23,7 @@
     -fx-background-color: #3C3C3C;
     -fx-text-fill: #EEEEEE;
     -fx-border-color: #282828;
-    -fx-border-width: 3;
+    -fx-border-width: 2;
     -fx-border-radius: 5;
 }
 
@@ -39,7 +39,7 @@
 
 .check-box {
     -fx-font-family: "Cantarell";
-    -fx-text-fill: #EEEEEE
+    -fx-text-fill: #EEEEEE;
 }
 
 .text-field {
@@ -55,13 +55,13 @@
 
 .text-area {
     -fx-font-family: "Cantarell";
-    -fx-text-fill: #EEEEEE
+    -fx-text-fill: #EEEEEE;
 }
 
 .text-area .content {
     -fx-background-color: #353535;
     -fx-font-family: "Cantarell";
-    -fx-text-fill: #EEEEEE
+    -fx-text-fill: #EEEEEE;
 }
 
 .pane {
