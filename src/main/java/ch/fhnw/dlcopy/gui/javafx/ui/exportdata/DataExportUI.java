@@ -101,12 +101,12 @@ public class DataExportUI extends View {
             lblWriteableDisplay.setText(
                     LernstickFileTools.getDataVolumeString(freeSpace, 1));
             if (tmpDir.canWrite()) {
-                lblFreeSpaceDisplay.setText(STRINGS.getString("Yes"));
+                lblFreeSpaceDisplay.setText(stringBundle.getString("global.yes"));
                 lblFreeSpaceDisplay.getStyleClass().clear();
                 lblFreeSpaceDisplay.getStyleClass().add("target-rw");
                 btnExport.setDisable(false);
             } else {
-                lblFreeSpaceDisplay.setText(STRINGS.getString("No"));
+                lblFreeSpaceDisplay.setText(stringBundle.getString("global.no"));
                 lblFreeSpaceDisplay.getStyleClass().clear();
                 lblFreeSpaceDisplay.getStyleClass().add("target-ro");
                 btnExport.setDisable(true);
