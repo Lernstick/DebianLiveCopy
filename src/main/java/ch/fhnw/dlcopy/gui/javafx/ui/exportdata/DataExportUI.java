@@ -87,7 +87,7 @@ public class DataExportUI extends View {
     private void selectDirectory() {
         DirectoryChooser folder = new DirectoryChooser();
         File selectedDirectory = folder.showDialog(btnTargetDirectory.getScene().getWindow());
-        folder.setTitle("Open Directory");
+        folder.setTitle(stringBundle.getString("export.chooseDirectory"));
         if (selectedDirectory != null) {
             tfTargetDirectory.setText(selectedDirectory.getAbsolutePath());
             checkFreeSpace();
