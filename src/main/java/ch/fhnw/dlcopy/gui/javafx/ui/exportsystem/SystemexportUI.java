@@ -135,7 +135,7 @@ public class SystemexportUI extends View{
         DirectoryChooser folder = new DirectoryChooser();
         File selectedDirectory = folder.showDialog(
             btnTargetDirectory.getScene().getWindow());
-        folder.setTitle("Open Directory");
+        folder.setTitle(stringBundle.getString("export.chooseDirectory"));
         if (selectedDirectory != null) {
             tfTargetDirectory.setText(selectedDirectory.getAbsolutePath());
             checkFreeSpace();
@@ -149,12 +149,12 @@ public class SystemexportUI extends View{
             lblFreeSpaceDisplay.setText(
                 LernstickFileTools.getDataVolumeString(freeSpace, 1));
             if (tmpDir.canWrite()) {
-                lblWriteable.setText(STRINGS.getString("Yes"));
+                lblWriteable.setText(stringBundle.getString("global.yes"));
                 lblWriteable.getStyleClass().clear();
                 lblWriteable.getStyleClass().add("target-rw");
                 btnExport.setDisable(false);
             } else {
-                lblWriteable.setText(STRINGS.getString("No"));
+                lblWriteable.setText(stringBundle.getString("global.no"));
                 lblWriteable.getStyleClass().clear();
                 lblWriteable.getStyleClass().add("target-ro");
                 btnExport.setDisable(true);
@@ -162,7 +162,7 @@ public class SystemexportUI extends View{
         } else {
             lblFreeSpaceDisplay.setText(null);
             lblWriteable.setText(
-                STRINGS.getString("Directory_Does_Not_Exist"));
+                stringBundle.getString("error.directoryDoesNotExist"));
             lblWriteable.getStyleClass().clear();
             lblWriteable.getStyleClass().add("target-na");
             btnExport.setDisable(true);
@@ -178,7 +178,7 @@ public class SystemexportUI extends View{
         // check that a persistence partition is available
         Partition dataPartition = runningSystemSource.getDataPartition();
         if (dataPartition == null) {
-            String message = STRINGS.getString("Error_No_Persistence");
+            String message = stringBundle.getString("error.noDataPartition");
             LOGGER.log(Level.WARNING, message);
             showError(message);
             return false;
@@ -189,18 +189,18 @@ public class SystemexportUI extends View{
         if (DLCopy.isMountedReadWrite(dataPartitionDevice)) {
             if (DLCopy.isBootPersistent()) {
                 // error and hint
-                String message = STRINGS.getString(
-                        "Warning_Persistence_Mounted") + "\n"
-                        + STRINGS.getString("Hint_Nonpersistent_Boot");
+                String message = stringBundle.getString(
+                        "warning.dataPartitionInUse") + "\n"
+                        + stringBundle.getString("hint.nonpersistentBoot");
                 LOGGER.log(Level.WARNING, message);
                 showError(message);
                 return false;
             } else {
                 // persistence partition was manually mounted
                 // warning and offer umount
-                String message = STRINGS.getString(
-                        "Warning_Persistence_Mounted") + "\n"
-                        + STRINGS.getString("Umount_Question");
+                String message = stringBundle.getString(
+                        "warning.dataPartitionInUse") + "\n"
+                        + stringBundle.getString("export.unmountQuestion");
                 LOGGER.log(Level.WARNING, message);
                 Optional<ButtonType> result = showConfirm(message);
                 if (result.isPresent() && result.get() == ButtonType.OK) {
@@ -225,8 +225,8 @@ public class SystemexportUI extends View{
 
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(STRINGS.getString("Error"));
-        alert.setHeaderText(STRINGS.getString("Error"));
+        alert.setTitle(stringBundle.getString("error.error"));
+        alert.setHeaderText(stringBundle.getString("error.error"));
         alert.setContentText(message);
         alert.showAndWait();
     }
