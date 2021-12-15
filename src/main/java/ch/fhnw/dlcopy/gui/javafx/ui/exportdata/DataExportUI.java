@@ -114,7 +114,7 @@ public class DataExportUI extends View {
         } else {
             lblWriteableDisplay.setText(null);
             lblFreeSpaceDisplay.setText(
-                STRINGS.getString("Directory_Does_Not_Exist"));
+                stringBundle.getString("error.directoryDoesNotExist"));
             lblFreeSpaceDisplay.getStyleClass().clear();
             lblFreeSpaceDisplay.getStyleClass().add("target-na");
             btnExport.setDisable(true);
@@ -139,8 +139,8 @@ public class DataExportUI extends View {
 
     private void showError(String message) {
         Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle(STRINGS.getString("Error"));
-        alert.setHeaderText(STRINGS.getString("Error"));
+        alert.setTitle(stringBundle.getString("error.error"));
+        alert.setHeaderText(stringBundle.getString("error.error"));
         alert.setContentText(message);
         alert.showAndWait();
     }
