@@ -142,11 +142,14 @@
 }
 
 .combo-box {
-    -fx-text-fill: white;
     -fx-background-color: #3C3C3C;
     -fx-border-color: #282828;
     -fx-background-radius: 5;
     -fx-border-radius: 5;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: #EEEEEE;
 }
 
 .combo-box:focused {
