@@ -1,6 +1,7 @@
 package ch.fhnw.dlcopy.gui.javafx.ui.install;
 
 import ch.fhnw.dlcopy.DLCopy;
+import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import ch.fhnw.util.StorageDevice;
 import java.util.List;
@@ -10,6 +11,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ListView;
 
 public class SelectDeviceUI extends View {
@@ -17,6 +19,8 @@ public class SelectDeviceUI extends View {
     private List<StorageDevice> devices;
     private final Timer listUpdateTimer = new Timer();
     
+    @FXML private Button btnBack;
+    @FXML private Button btnInstall;
     @FXML private ListView<StorageDevice> lvDevices;
     
     public SelectDeviceUI(){
@@ -49,5 +53,13 @@ public class SelectDeviceUI extends View {
             }
         };
         listUpdateTimer.scheduleAtFixedRate(listUpdater, 0, 1000L); // Starts the `lisstUpdater`-task each 1000ms (1sec)
+    }
+    
+    @Override
+    protected void setupEventHandlers(){
+        
+        btnBack.setOnAction(event -> {
+            context.setScene(new StartscreenUI());
+        });
     }
 }
