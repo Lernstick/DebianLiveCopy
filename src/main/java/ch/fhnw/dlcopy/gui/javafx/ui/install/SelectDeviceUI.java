@@ -17,12 +17,24 @@ import org.freedesktop.dbus.exceptions.DBusException;
 public class SelectDeviceUI extends View {
     
     private List<StorageDevice> devices;
+    private final Timer listUpdateTimer = new Timer();
     
     @FXML private ListView<StorageDevice> lvDevices;
     
     public SelectDeviceUI(){
         resourcePath = getClass().getResource("/fxml/install/selectdevice.fxml");
     }
+
+    @Override
+    /**
+     * This function is called, when the view should be deinitalized.
+     * It has to be called manually!
+     */
+    public void deinitialize() {
+        listUpdateTimer.cancel();
+    }
+    
+    
     
     protected void initControls(){
         TimerTask listUpdater = new TimerTask(){
@@ -39,8 +51,6 @@ public class SelectDeviceUI extends View {
                 }
             }
         };
-        
-        Timer listUpdateTimer = new Timer();
         listUpdateTimer.scheduleAtFixedRate(listUpdater, 0, 1000L); // Starts the `lisstUpdater`-task each 1000ms (1sec)
     }
 }

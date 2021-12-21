@@ -30,12 +30,15 @@ public class StorageMediaManagement
     private Scene scene;
     private PresentationModel model = PresentationModel.getInstance();
     private ResourceBundle stringBundle = ResourceBundle.getBundle("strings/Strings");
+    private View view;
 
     /**
      * A view calls this methode, when the scene should be cnaged to another view
      * @param view The target view to be displayed
      */
     public void setScene(View view){
+        this.view.deinitialize();
+        this.view = view;
         try {
             scene.setRoot(view.getRoot(this));
         } catch (IOException ex) {
@@ -44,8 +47,14 @@ public class StorageMediaManagement
     }
 
     @Override
+    public void stop() throws Exception {
+        view.deinitialize();
+    }
+    
+    @Override
     public void start(Stage stage) throws Exception {
-        Parent root = new StartscreenUI().getRoot(this);
+        view = new StartscreenUI();
+        Parent root = view.getRoot(this);
         scene = new Scene(root);
 
         stage.setScene(scene);

@@ -16,6 +16,12 @@ public abstract class View {
     protected URL resourcePath;
     protected ResourceBundle stringBundle = ResourceBundle.getBundle("strings/Strings");
     
+    /**
+     * This function is called, when the view should be deinitalized.
+     * It has to be called manually!
+     */
+    public void deinitialize(){}
+    
     @FXML
     public final void initialize(){
         initSelf();
