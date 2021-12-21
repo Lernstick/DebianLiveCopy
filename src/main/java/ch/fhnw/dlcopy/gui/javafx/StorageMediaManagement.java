@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ch.fhnw.dlcopy.gui.javafx;
 
 import ch.fhnw.dlcopy.Installer;
@@ -32,6 +27,7 @@ public class StorageMediaManagement
     private ResourceBundle stringBundle = ResourceBundle.getBundle("strings/Strings");
     private View view;
 
+    @Override
     /**
      * A view calls this methode, when the scene should be cnaged to another view
      * @param view The target view to be displayed
