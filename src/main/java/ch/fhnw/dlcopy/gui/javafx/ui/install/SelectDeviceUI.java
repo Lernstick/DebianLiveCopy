@@ -13,6 +13,7 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 
 public class SelectDeviceUI extends View {
@@ -67,6 +68,8 @@ public class SelectDeviceUI extends View {
             }
         };
         listUpdateTimer.scheduleAtFixedRate(listUpdater, 0, 1000L); // Starts the `lisstUpdater`-task each 1000ms (1sec)
+        
+        lvDevices.setPlaceholder(new Label(stringBundle.getString("install.lvDevices")));
     }
     
     @Override
