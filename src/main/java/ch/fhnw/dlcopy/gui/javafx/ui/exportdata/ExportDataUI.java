@@ -1,6 +1,5 @@
 package ch.fhnw.dlcopy.gui.javafx.ui.exportdata;
 
-import static ch.fhnw.dlcopy.DLCopy.STRINGS;
 import ch.fhnw.dlcopy.RunningSystemSource;
 import ch.fhnw.dlcopy.SquashFSCreator;
 import ch.fhnw.dlcopy.SystemSource;
@@ -24,7 +23,6 @@ import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import org.freedesktop.dbus.exceptions.DBusException;
 
@@ -65,10 +63,10 @@ public class ExportDataUI extends View {
     @Override
     protected void setupEventHandlers() {
 
-        switchBtn.getButton().setOnAction(event -> {
+        switchBtn.setOnAction(event -> {
             toggleExpertMode();
         });
-        
+
         btnTargetDirectory.setOnAction(event -> {
             selectDirectory();
         });
@@ -78,7 +76,7 @@ public class ExportDataUI extends View {
         });
 
         btnExport.setOnAction((ActionEvent event) -> {
-            if(tfTargetDirectory.getText().isBlank()){
+            if (tfTargetDirectory.getText().isBlank()) {
                 createDataPartiton();
             }
         });
@@ -143,11 +141,9 @@ public class ExportDataUI extends View {
         alert.setContentText(message);
         alert.showAndWait();
     }
-    
-    
-    private void toggleExpertMode(){
-        switchBtn.toggle();
-        for (Node n : new Node[]{chbInformationDialog,chbInstallationProgram}){
+
+    private void toggleExpertMode() {
+        for (Node n : new Node[]{chbInformationDialog, chbInstallationProgram}) {
             n.setVisible(switchBtn.isEnabled());
         }
     }

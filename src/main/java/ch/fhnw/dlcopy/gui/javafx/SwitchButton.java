@@ -2,9 +2,12 @@ package ch.fhnw.dlcopy.gui.javafx;
 
 import java.io.IOException;
 import java.net.URL;
+import javafx.beans.property.BooleanProperty;
 import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ObservableValue;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.property.StringProperty;
 import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.control.ContentDisplay;
@@ -20,21 +23,32 @@ import javafx.scene.control.ToggleButton;
  */
 public class SwitchButton extends Label {
 
-    @FXML
-    private ToggleButton switchBtn;
+    @FXML private ToggleButton switchBtn;
+    @FXML private final BooleanProperty enabled = new SimpleBooleanProperty(false);
+    @FXML private final StringProperty textOn = new SimpleStringProperty("ON");
+    @FXML private final StringProperty textOff = new SimpleStringProperty("OFF");
+    private EventHandler<ActionEvent> onAction;
 
-    private final SimpleBooleanProperty enabled = new SimpleBooleanProperty(true);
-    private String labelOn = "ON";
-    private String labelOff = "OFF";
-
+    /**
+     * Creates a button with default values.
+     *
+     * @throws IOException for unreadable ressources
+     */
     public SwitchButton() throws IOException {
         init();
     }
 
-    public SwitchButton(String labelOn, String labelOff) throws IOException {
-        this.labelOn = labelOn;
-        this.labelOff = labelOff;
+    /**
+     * Creats a button with predefined labels.
+     *
+     * @param textOn
+     * @param textOff
+     * @throws IOException for unreadable ressources
+     */
+    public SwitchButton(String textOn, String textOff) throws IOException {
         init();
+        setTextOn(textOn);
+        setTextOff(textOff);
     }
 
     private void init() throws IOException {
@@ -47,40 +61,121 @@ public class SwitchButton extends Label {
 
         switchBtn.setOnAction((ActionEvent event) -> {
             toggle();
-        });
-
-        setGraphic(switchBtn);
-
-        enabled.addListener((ObservableValue<? extends Boolean> ov,
-                Boolean t0, Boolean t1) -> {
-            getStyleClass().clear();
-            getStyleClass().add("switchButtonInline");
-            if (t1) {
-                setText(labelOn);
-                getStyleClass().add("switchButtonOn");
-                setContentDisplay(ContentDisplay.RIGHT);
-            } else {
-                setText(labelOff);
-                getStyleClass().add("switchButtonOff");
-                setContentDisplay(ContentDisplay.LEFT);
+            if (onAction != null) {
+                onAction.handle(event);
             }
         });
 
-        enabled.set(false);
+        setGraphic(switchBtn);
     }
 
+    /**
+     * Fetches the selected text property.
+     *
+     * @return textOn
+     */
     @FXML
-    public boolean isEnabled() {
+    public final StringProperty textOnProperty() {
+        return textOn;
+    }
+
+    /**
+     * Fetches the selected text.
+     *
+     * @return textOn
+     */
+    @FXML
+    public final String getTextOn() {
+        return textOn.get();
+    }
+
+    /**
+     * Sets the selected text.
+     *
+     * @param textOn
+     */
+    @FXML
+    public final void setTextOn(String textOn) {
+        this.textOn.set(textOn);
+    }
+
+    /**
+     * Fetches the deselected text property.
+     *
+     * @return textOff
+     */
+    @FXML
+    public final StringProperty textOffProperty() {
+        return textOff;
+    }
+
+    /**
+     * Fetches the deselected text.
+     *
+     * @return textOff
+     */
+    @FXML
+    public final String getTextOff() {
+        return textOff.get();
+    }
+
+    /**
+     * Sets the deselected text.
+     *
+     * @param textOff
+     */
+    @FXML
+    public final void setTextOff(String textOff) {
+        this.textOff.set(textOff);
+    }
+
+    /**
+     * Fetches the current value of the button.
+     *
+     * @return boolean enabled
+     */
+    @FXML
+    public final boolean isEnabled() {
         return enabled.get();
     }
 
+    /**
+     * Sets the on action event.
+     *
+     * @param event
+     */
     @FXML
-    public void toggle() {
-        enabled.set(!enabled.get());
+    public final void setOnAction(EventHandler<ActionEvent> event) {
+        this.onAction = event;
     }
-    
+
+    /**
+     * Fetches the on action event of the button.
+     *
+     * @return EventHandler, might be null.
+     */
     @FXML
-    public ToggleButton getButton() {
-        return switchBtn;
+    public final EventHandler<ActionEvent> getOnAction() {
+        return this.onAction;
+    }
+
+    /**
+     * Toggles the value of the button.
+     */
+    @FXML
+    public final void toggle() {
+        enabled.set(!enabled.get());
+
+        getStyleClass().clear();
+        getStyleClass().add("switchButtonInline");
+        if (enabled.get()) {
+            setText(textOn.get());
+            getStyleClass().add("switchButtonOn");
+            setContentDisplay(ContentDisplay.RIGHT);
+        } else {
+            setText(textOff.get());
+            getStyleClass().add("switchButtonOff");
+            setContentDisplay(ContentDisplay.LEFT);
+        }
     }
 }

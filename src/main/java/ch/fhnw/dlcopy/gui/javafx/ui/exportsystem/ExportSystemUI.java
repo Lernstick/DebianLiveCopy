@@ -33,7 +33,7 @@ import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import org.freedesktop.dbus.exceptions.DBusException;
 
-public class ExportSystemUI extends View{
+public class ExportSystemUI extends View {
 
     private String option_NotUsed = stringBundle.getString("global.notUsed");
     private String option_ReadOnly = stringBundle.getString("global.readWrite");
@@ -73,14 +73,14 @@ public class ExportSystemUI extends View{
     }
 
     @Override
-    protected void initControls(){
+    protected void initControls() {
         cmbDataPartitionMode.getItems().addAll(option_ReadWrite, option_ReadOnly, option_NotUsed);
         cmbDataPartitionMode.setValue(option_ReadWrite);
     }
 
     @Override
     protected void setupEventHandlers() {
-        switchBtn.getButton().setOnAction(event -> {
+        switchBtn.setOnAction(event -> {
             toggleExpertMode();
         });
         btnBack.setOnAction(event -> {
@@ -93,7 +93,7 @@ public class ExportSystemUI extends View{
 
         btnExport.setOnAction(event -> {
             try {
-                if(!(tfTargetDirectory.getText().isBlank() && tfDvdLabel.getText().isBlank())){
+                if (!(tfTargetDirectory.getText().isBlank() && tfDvdLabel.getText().isBlank())) {
                     return;
                 }
                 if (!isUnmountedPersistenceAvailable()) {
@@ -119,12 +119,12 @@ public class ExportSystemUI extends View{
 
     }
 
-    public DataPartitionMode getDataPartitionMode(){
+    public DataPartitionMode getDataPartitionMode() {
         if (option_NotUsed.equals(cmbDataPartitionMode.getValue())) {
             return DataPartitionMode.NOT_USED;
-        } else if (option_ReadWrite.equals(cmbDataPartitionMode.getValue())){
+        } else if (option_ReadWrite.equals(cmbDataPartitionMode.getValue())) {
             return DataPartitionMode.READ_WRITE;
-        } else if (option_ReadOnly.equals(cmbDataPartitionMode.getValue())){
+        } else if (option_ReadOnly.equals(cmbDataPartitionMode.getValue())) {
             return DataPartitionMode.READ_ONLY;
         } else {
             throw new IllegalArgumentException();
@@ -215,9 +215,8 @@ public class ExportSystemUI extends View{
         return true;
     }
 
-    private void toggleExpertMode(){
-        switchBtn.toggle();
-        for (Node n : new Node[]{chbInformationDialog,chbInstallationProgram}){
+    private void toggleExpertMode() {
+        for (Node n : new Node[]{chbInformationDialog, chbInstallationProgram}) {
             n.setVisible(switchBtn.isEnabled());
         }
     }

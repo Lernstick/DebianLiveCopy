@@ -121,7 +121,7 @@
                 <Label text="%export.lblDvdLabel" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                 <TextField fx:id="tfDvdLabel" promptText="%export.tfDvdLabel" GridPane.columnIndex="2" GridPane.rowIndex="2" />
                 <Label text="%export.lblDataPartitionMode" GridPane.columnIndex="1" GridPane.rowIndex="5" />
-                <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" GridPane.columnIndex="2" GridPane.rowIndex="6" />
+                <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" textOn="%global.on" textOff="%global.off" GridPane.columnIndex="2" GridPane.rowIndex="6" />
                 <CheckBox fx:id="chbInformationDialog" mnemonicParsing="false" text="%export.chbInformationDialog" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="7" />
                 <CheckBox fx:id="chbInstallationProgram" mnemonicParsing="false" text="%export.chbInstallationProgram" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="8" />
                 <Label text="%global.expertMode" GridPane.columnIndex="1" GridPane.rowIndex="6" />
