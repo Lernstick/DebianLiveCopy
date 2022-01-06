@@ -32,7 +32,7 @@ public class ExportDataUI extends View {
 
     private SystemSource runningSystemSource;
     private static final ProcessExecutor PROCESS_EXECUTOR = new ProcessExecutor();
-    private static final Logger LOGGER = Logger.getLogger(ExportDataUIclass.getName());
+    private static final Logger LOGGER = Logger.getLogger(ExportDataUI.class.getName());
 
     @FXML private Label lblTargetDirectory;
     @FXML private TextField tfTargetDirectory;
