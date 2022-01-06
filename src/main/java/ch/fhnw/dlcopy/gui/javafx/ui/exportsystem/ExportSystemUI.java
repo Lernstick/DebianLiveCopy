@@ -33,14 +33,14 @@ import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import org.freedesktop.dbus.exceptions.DBusException;
 
-public class SystemexportUI extends View{
+public class ExportSystemUI extends View{
 
     private String option_NotUsed = stringBundle.getString("global.notUsed");
     private String option_ReadOnly = stringBundle.getString("global.readWrite");
     private String option_ReadWrite = stringBundle.getString("global.readOnly");
     private SystemSource runningSystemSource;
 
-    private static final Logger LOGGER = Logger.getLogger(SystemexportUI.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ExportSystemUI.class.getName());
     private static final ProcessExecutor PROCESS_EXECUTOR = new ProcessExecutor();
 
     @FXML private Button btnBack;
@@ -57,7 +57,7 @@ public class SystemexportUI extends View{
     @FXML private TextField tfDvdLabel;
     @FXML private TextField tfTargetDirectory;
 
-    public SystemexportUI() {
+    public ExportSystemUI() {
         // prepare processExecutor to always use the POSIX locale
         Map<String, String> environment = new HashMap<>();
         environment.put("LC_ALL", "C");
@@ -69,7 +69,7 @@ public class SystemexportUI extends View{
             LOGGER.log(Level.SEVERE, null, ex);
         }
 
-        resourcePath = getClass().getResource("/fxml/exportSystem/systemexport.fxml");
+        resourcePath = getClass().getResource("/fxml/exportsystem/exportsystem.fxml");
     }
 
     @Override

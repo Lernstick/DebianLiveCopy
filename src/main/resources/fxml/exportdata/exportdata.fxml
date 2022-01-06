@@ -43,7 +43,7 @@
                 <RowConstraints minHeight="10.0" percentHeight="50.0" prefHeight="30.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="%global.dataExport" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="%global.exportData" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
                 <Separator prefWidth="200.0" GridPane.rowIndex="1" />
                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%global.selection" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
                     <styleClass>

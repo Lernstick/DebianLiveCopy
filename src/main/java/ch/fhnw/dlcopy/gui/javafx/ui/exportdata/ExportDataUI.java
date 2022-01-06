@@ -28,11 +28,11 @@ import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import org.freedesktop.dbus.exceptions.DBusException;
 
-public class DataExportUI extends View {
+public class ExportDataUI extends View {
 
     private SystemSource runningSystemSource;
     private static final ProcessExecutor PROCESS_EXECUTOR = new ProcessExecutor();
-    private static final Logger LOGGER = Logger.getLogger(DataExportUI.class.getName());
+    private static final Logger LOGGER = Logger.getLogger(ExportDataUIclass.getName());
 
     @FXML private Label lblTargetDirectory;
     @FXML private TextField tfTargetDirectory;
@@ -48,7 +48,7 @@ public class DataExportUI extends View {
     @FXML private Button btnBack;
     @FXML private SwitchButton switchBtn;
 
-    public DataExportUI() {
+    public ExportDataUI() {
         Map<String, String> environment = new HashMap<>();
         environment.put("LC_ALL", "C");
         PROCESS_EXECUTOR.setEnvironment(environment);
@@ -59,7 +59,7 @@ public class DataExportUI extends View {
             LOGGER.log(Level.SEVERE, null, ex);
         }
 
-        resourcePath = getClass().getResource("/fxml/exportData/dataexport.fxml");
+        resourcePath = getClass().getResource("/fxml/exportdata/exportdata.fxml");
     }
 
     @Override

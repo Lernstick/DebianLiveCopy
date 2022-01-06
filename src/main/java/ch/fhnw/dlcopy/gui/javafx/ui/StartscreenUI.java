@@ -1,7 +1,7 @@
 package ch.fhnw.dlcopy.gui.javafx.ui;
 
-import ch.fhnw.dlcopy.gui.javafx.ui.exportdata.DataExportUI;
-import ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.SystemexportUI;
+import ch.fhnw.dlcopy.gui.javafx.ui.exportdata.ExportDataUI;
+import ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.ExportSystemUI;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -47,11 +47,11 @@ public class StartscreenUI extends View {
         setupMenuButtonHandler(btnUpdate, panUpdate);
 
         btnExportData.setOnAction(event -> {
-            context.setScene(new DataExportUI());
+            context.setScene(new ExportDataUI());
         });
         
         btnExportSystem.setOnAction(event -> {
-            context.setScene(new SystemexportUI());
+            context.setScene(new ExportSystemUI());
         });
 
         imgDefault      .fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 2.16));
