@@ -13,7 +13,6 @@
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
-
 <?import ch.fhnw.dlcopy.gui.javafx.SwitchButton?>
 
 <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
@@ -106,9 +105,9 @@
                 <RowConstraints minHeight="10.0" percentHeight="50.0" prefHeight="30.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%export.lblTargetDirectory" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%export.lblWriteable" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%export.lblFreeSpace" GridPane.columnIndex="1" GridPane.rowIndex="4" />
+                <Label fx:id="lblTargetDirectory" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%export.lblTargetDirectory" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+                <Label fx:id="lblWriteable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%export.lblWriteable" GridPane.columnIndex="1" GridPane.rowIndex="3" />
+                <Label fx:id="lblFreeSpace" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%export.lblFreeSpace" GridPane.columnIndex="1" GridPane.rowIndex="4" />
                 <TextField fx:id="tfTargetDirectory" promptText="%export.tfTargetDirectory" GridPane.columnIndex="2" GridPane.rowIndex="1">
                     <opaqueInsets>
                         <Insets />
@@ -117,7 +116,7 @@
                         <Insets />
                     </GridPane.margin>
                 </TextField>
-                <Label fx:id="lblWriteable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%global.notApplicable" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+                <Label fx:id="lblWriteableDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%global.notApplicable" GridPane.columnIndex="2" GridPane.rowIndex="3" />
                 <Label fx:id="lblFreeSpaceDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%global.notApplicable" GridPane.columnIndex="2" GridPane.rowIndex="4" />
                 <Label text="%export.lblDvdLabel" GridPane.columnIndex="1" GridPane.rowIndex="2" />
                 <TextField fx:id="tfDvdLabel" promptText="%export.tfDvdLabel" GridPane.columnIndex="2" GridPane.rowIndex="2" />
