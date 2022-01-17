@@ -98,25 +98,25 @@ public class ExportDataUI extends View {
         File tmpDir = new File(tfTargetDirectory.getText());
         if (tmpDir.exists()) {
             long freeSpace = tmpDir.getFreeSpace();
-            lblWriteableDisplay.setText(
+            lblFreeSpaceDisplay.setText(
                     LernstickFileTools.getDataVolumeString(freeSpace, 1));
             if (tmpDir.canWrite()) {
-                lblFreeSpaceDisplay.setText(stringBundle.getString("global.yes"));
-                lblFreeSpaceDisplay.getStyleClass().clear();
-                lblFreeSpaceDisplay.getStyleClass().add("target-rw");
+                lblWriteableDisplay.setText(stringBundle.getString("global.yes"));
+                lblWriteableDisplay.getStyleClass().clear();
+                lblWriteableDisplay.getStyleClass().add("target-rw");
                 btnExport.setDisable(false);
             } else {
-                lblFreeSpaceDisplay.setText(stringBundle.getString("global.no"));
-                lblFreeSpaceDisplay.getStyleClass().clear();
-                lblFreeSpaceDisplay.getStyleClass().add("target-ro");
+                lblWriteableDisplay.setText(stringBundle.getString("global.no"));
+                lblWriteableDisplay.getStyleClass().clear();
+                lblWriteableDisplay.getStyleClass().add("target-ro");
                 btnExport.setDisable(true);
             }
         } else {
             lblWriteableDisplay.setText(null);
-            lblFreeSpaceDisplay.setText(
+            lblWriteableDisplay.setText(
                 stringBundle.getString("error.directoryDoesNotExist"));
-            lblFreeSpaceDisplay.getStyleClass().clear();
-            lblFreeSpaceDisplay.getStyleClass().add("target-na");
+            lblWriteableDisplay.getStyleClass().clear();
+            lblWriteableDisplay.getStyleClass().add("target-na");
             btnExport.setDisable(true);
         }
     }

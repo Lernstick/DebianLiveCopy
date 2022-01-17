@@ -51,7 +51,7 @@ public class ExportSystemUI extends View{
     @FXML private ComboBox<String> cmbDataPartitionMode;
     @FXML private ImageView imgTargetDirectory;
     @FXML private Label lblFreeSpaceDisplay;
-    @FXML private Label lblWriteable;
+    @FXML private Label lblWriteableDisplay;
     @FXML private Label lblInfo;
     @FXML private SwitchButton switchBtn;
     @FXML private TextField tfDvdLabel;
@@ -149,22 +149,22 @@ public class ExportSystemUI extends View{
             lblFreeSpaceDisplay.setText(
                 LernstickFileTools.getDataVolumeString(freeSpace, 1));
             if (tmpDir.canWrite()) {
-                lblWriteable.setText(stringBundle.getString("global.yes"));
-                lblWriteable.getStyleClass().clear();
-                lblWriteable.getStyleClass().add("target-rw");
+                lblWriteableDisplay.setText(stringBundle.getString("global.yes"));
+                lblWriteableDisplay.getStyleClass().clear();
+                lblWriteableDisplay.getStyleClass().add("target-rw");
                 btnExport.setDisable(false);
             } else {
-                lblWriteable.setText(stringBundle.getString("global.no"));
-                lblWriteable.getStyleClass().clear();
-                lblWriteable.getStyleClass().add("target-ro");
+                lblWriteableDisplay.setText(stringBundle.getString("global.no"));
+                lblWriteableDisplay.getStyleClass().clear();
+                lblWriteableDisplay.getStyleClass().add("target-ro");
                 btnExport.setDisable(true);
             }
         } else {
             lblFreeSpaceDisplay.setText(null);
-            lblWriteable.setText(
+            lblWriteableDisplay.setText(
                 stringBundle.getString("error.directoryDoesNotExist"));
-            lblWriteable.getStyleClass().clear();
-            lblWriteable.getStyleClass().add("target-na");
+            lblWriteableDisplay.getStyleClass().clear();
+            lblWriteableDisplay.getStyleClass().add("target-na");
             btnExport.setDisable(true);
         }
     }
