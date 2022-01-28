@@ -888,7 +888,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
 
         infoPanel.setLayout(new java.awt.GridBagLayout());
 
-        infoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/dvd2usb.png"))); // NOI18N
+        infoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/dvd2usb.png"))); // NOI18N
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings"); // NOI18N
         infoLabel.setText(bundle.getString("DLCopySwingGUI.infoLabel.text")); // NOI18N
         infoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -942,7 +942,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         gridBagConstraints.weightx = 1.0;
         sourcePanel.add(isoSourceTextField, gridBagConstraints);
 
-        isoSourceFileChooserButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/document-open-folder.png"))); // NOI18N
+        isoSourceFileChooserButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/document-open-folder.png"))); // NOI18N
         isoSourceFileChooserButton.setEnabled(false);
         isoSourceFileChooserButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         isoSourceFileChooserButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1012,7 +1012,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         basicsPanel.add(storageDeviceListScrollPane, gridBagConstraints);
 
         exchangeDefinitionLabel.setFont(exchangeDefinitionLabel.getFont().deriveFont(exchangeDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, exchangeDefinitionLabel.getFont().getSize()-1));
-        exchangeDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/yellow_box.png"))); // NOI18N
+        exchangeDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/yellow_box.png"))); // NOI18N
         exchangeDefinitionLabel.setText(bundle.getString("ExchangePartitionDefinition")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -1021,7 +1021,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         basicsPanel.add(exchangeDefinitionLabel, gridBagConstraints);
 
         dataDefinitionLabel.setFont(dataDefinitionLabel.getFont().deriveFont(dataDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, dataDefinitionLabel.getFont().getSize()-1));
-        dataDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/green_box.png"))); // NOI18N
+        dataDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/green_box.png"))); // NOI18N
         dataDefinitionLabel.setText(bundle.getString("DataPartitionDefinition")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -1030,7 +1030,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         basicsPanel.add(dataDefinitionLabel, gridBagConstraints);
 
         bootDefinitionLabel.setFont(bootDefinitionLabel.getFont().deriveFont(bootDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, bootDefinitionLabel.getFont().getSize()-1));
-        bootDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/dark_blue_box.png"))); // NOI18N
+        bootDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/dark_blue_box.png"))); // NOI18N
         bootDefinitionLabel.setText(bundle.getString("Boot_Definition")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
@@ -1038,7 +1038,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         basicsPanel.add(bootDefinitionLabel, gridBagConstraints);
 
         systemDefinitionLabel.setFont(systemDefinitionLabel.getFont().deriveFont(systemDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, systemDefinitionLabel.getFont().getSize()-1));
-        systemDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/blue_box.png"))); // NOI18N
+        systemDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/blue_box.png"))); // NOI18N
         systemDefinitionLabel.setText(bundle.getString("System_Definition")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -1310,7 +1310,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         encryptionPanel.add(personalPasswordField, gridBagConstraints);
 
-        personalPasswordToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/password-show-on.png"))); // NOI18N
+        personalPasswordToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/password-show-on.png"))); // NOI18N
         personalPasswordToggleButton.setToolTipText(bundle.getString("Encryption_ToolTipText")); // NOI18N
         personalPasswordToggleButton.setEnabled(false);
         personalPasswordToggleButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -1346,7 +1346,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         encryptionPanel.add(secondaryPasswordField, gridBagConstraints);
 
-        secondaryPasswordToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/password-show-on.png"))); // NOI18N
+        secondaryPasswordToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/password-show-on.png"))); // NOI18N
         secondaryPasswordToggleButton.setToolTipText(bundle.getString("SecondaryPassword_ToolTipText")); // NOI18N
         secondaryPasswordToggleButton.setEnabled(false);
         secondaryPasswordToggleButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -1472,7 +1472,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
 
         noMediaPanel.setLayout(new java.awt.GridBagLayout());
 
-        noMediaLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/messagebox_info.png"))); // NOI18N
+        noMediaLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/messagebox_info.png"))); // NOI18N
         noMediaLabel.setText(bundle.getString("Insert_Media")); // NOI18N
         noMediaLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         noMediaLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -1492,7 +1492,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
 
         noSourcePanel.setLayout(new java.awt.GridBagLayout());
 
-        noSouceLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/messagebox_info.png"))); // NOI18N
+        noSouceLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/messagebox_info.png"))); // NOI18N
         noSouceLabel.setText(bundle.getString("DLCopySwingGUI.installNoSouceLabel.text")); // NOI18N
         noSouceLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         noSouceLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -1757,11 +1757,11 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         if (toggleButton.isSelected()) {
             passwordField.setEchoChar((char) 0);
             toggleButton.setIcon(new ImageIcon(getClass().getResource(
-                    "/ch/fhnw/dlcopy/icons/16x16/password-show-off.png")));
+                    "/icons/16x16/password-show-off.png")));
         } else {
             passwordField.setEchoChar(originalPasswordEchoChar);
             toggleButton.setIcon(new ImageIcon(getClass().getResource(
-                    "/ch/fhnw/dlcopy/icons/16x16/password-show-on.png")));
+                    "/icons/16x16/password-show-on.png")));
         }
     }
 
@@ -1902,7 +1902,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
 
         if (StorageDevice.Type.USBFlashDrive == systemSource.getDeviceType()) {
             infoLabel.setIcon(new ImageIcon(getClass().getResource(
-                    "/ch/fhnw/dlcopy/icons/usb2usb.png")));
+                    "/icons/usb2usb.png")));
         }
     }
 

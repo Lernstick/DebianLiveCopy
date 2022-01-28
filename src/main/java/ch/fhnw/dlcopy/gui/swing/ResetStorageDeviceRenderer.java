@@ -30,25 +30,25 @@ public class ResetStorageDeviceRenderer extends JPanel
             = Logger.getLogger(DLCopySwingGUI.class.getName());
     private final static Icon BLUE_BOX = new ImageIcon(
             ResetStorageDeviceRenderer.class.getResource(
-                    "/ch/fhnw/dlcopy/icons/blue_box.png"));
+                    "/icons/blue_box.png"));
     private final static Icon GREEN_BOX = new ImageIcon(
             ResetStorageDeviceRenderer.class.getResource(
-                    "/ch/fhnw/dlcopy/icons/green_box.png"));
+                    "/icons/green_box.png"));
     private final static Icon YELLOW_BOX = new ImageIcon(
             ResetStorageDeviceRenderer.class.getResource(
-                    "/ch/fhnw/dlcopy/icons/yellow_box.png"));
+                    "/icons/yellow_box.png"));
     private final static Icon GRAY_BOX = new ImageIcon(
             ResetStorageDeviceRenderer.class.getResource(
-                    "/ch/fhnw/dlcopy/icons/gray_box.png"));
+                    "/icons/gray_box.png"));
     private final static Icon DARK_GRAY_BOX = new ImageIcon(
             ResetStorageDeviceRenderer.class.getResource(
-                    "/ch/fhnw/dlcopy/icons/dark_gray_box.png"));
+                    "/icons/dark_gray_box.png"));
     private final static Icon OK_ICON = new ImageIcon(
             ResetStorageDeviceRenderer.class.getResource(
-                    "/ch/fhnw/dlcopy/icons/16x16/dialog-ok-apply.png"));
+                    "/icons/16x16/dialog-ok-apply.png"));
     private final static Icon CANCEL_ICON = new ImageIcon(
             ResetStorageDeviceRenderer.class.getResource(
-                    "/ch/fhnw/dlcopy/icons/16x16/dialog-cancel.png"));
+                    "/icons/16x16/dialog-cancel.png"));
     private final Color LIGHT_BLUE = new Color(170, 170, 255);
     private long maxStorageDeviceSize;
     private StorageDevice storageDevice;
@@ -72,19 +72,19 @@ public class ResetStorageDeviceRenderer extends JPanel
         switch (deviceType) {
             case HardDrive:
                 iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                        "/ch/fhnw/dlcopy/icons/32x32/drive-harddisk.png")));
+                        "/icons/32x32/drive-harddisk.png")));
                 break;
             case SDMemoryCard:
                 iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                        "/ch/fhnw/dlcopy/icons/32x32/media-flash-sd-mmc.png")));
+                        "/icons/32x32/media-flash-sd-mmc.png")));
                 break;
             case USBFlashDrive:
                 iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                        "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media-usb-pendrive.png")));
+                        "/icons/32x32/drive-removable-media-usb-pendrive.png")));
                 break;
             default:
                 iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                        "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media.png")));
+                        "/icons/32x32/drive-removable-media.png")));
                 LOGGER.log(Level.WARNING,
                         "unsupported deviceType:{0}", deviceType);
         }
@@ -321,7 +321,7 @@ public class ResetStorageDeviceRenderer extends JPanel
 
         setLayout(new java.awt.GridBagLayout());
 
-        iconLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/32x32/drive-removable-media-usb-pendrive.png"))); // NOI18N
+        iconLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/32x32/drive-removable-media-usb-pendrive.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.insets = new java.awt.Insets(0, 3, 0, 0);

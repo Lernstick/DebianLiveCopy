@@ -99,19 +99,19 @@ public class InstallStorageDeviceRenderer extends JPanel
         switch (deviceType) {
             case HardDrive:
                 iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                        "/ch/fhnw/dlcopy/icons/32x32/drive-harddisk.png")));
+                        "/icons/32x32/drive-harddisk.png")));
                 break;
             case SDMemoryCard:
                 iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                        "/ch/fhnw/dlcopy/icons/32x32/media-flash-sd-mmc.png")));
+                        "/icons/32x32/media-flash-sd-mmc.png")));
                 break;
             case USBFlashDrive:
                 iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                        "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media-usb-pendrive.png")));
+                        "/icons/32x32/drive-removable-media-usb-pendrive.png")));
                 break;
             default:
                 iconLabel.setIcon(new ImageIcon(getClass().getResource(
-                        "/ch/fhnw/dlcopy/icons/32x32/drive-removable-media.png")));
+                        "/icons/32x32/drive-removable-media.png")));
                 LOGGER.log(Level.WARNING,
                         "unsupported deviceType:{0}", deviceType);
         }
@@ -392,7 +392,7 @@ public class InstallStorageDeviceRenderer extends JPanel
         setPreferredSize(new java.awt.Dimension(340, 70));
         setLayout(new java.awt.GridBagLayout());
 
-        iconLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/32x32/drive-removable-media-usb-pendrive.png"))); // NOI18N
+        iconLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/32x32/drive-removable-media-usb-pendrive.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
         gridBagConstraints.weightx = 1.0;

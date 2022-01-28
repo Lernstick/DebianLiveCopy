@@ -530,7 +530,7 @@ public class ResetterPanels
 
         infoPanel.setLayout(new java.awt.GridBagLayout());
 
-        resetInfoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/lernstick_reset.png"))); // NOI18N
+        resetInfoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/lernstick_reset.png"))); // NOI18N
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings"); // NOI18N
         resetInfoLabel.setText(bundle.getString("DLCopySwingGUI.resetInfoLabel.text")); // NOI18N
         resetInfoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -599,7 +599,7 @@ public class ResetterPanels
 
         noMediaPanel.setLayout(new java.awt.GridBagLayout());
 
-        noMediaLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/messagebox_info.png"))); // NOI18N
+        noMediaLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/messagebox_info.png"))); // NOI18N
         noMediaLabel.setText(bundle.getString("DLCopySwingGUI.resetNoMediaLabel.text")); // NOI18N
         noMediaLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         noMediaLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -648,7 +648,7 @@ public class ResetterPanels
         selectionDeviceListPanel.add(storageDeviceListScrollPane, gridBagConstraints);
 
         exchangeDefinitionLabel.setFont(exchangeDefinitionLabel.getFont().deriveFont(exchangeDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, exchangeDefinitionLabel.getFont().getSize()-1));
-        exchangeDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/yellow_box.png"))); // NOI18N
+        exchangeDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/yellow_box.png"))); // NOI18N
         exchangeDefinitionLabel.setText(bundle.getString("ExchangePartitionDefinition")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -657,7 +657,7 @@ public class ResetterPanels
         selectionDeviceListPanel.add(exchangeDefinitionLabel, gridBagConstraints);
 
         dataDefinitionLabel.setFont(dataDefinitionLabel.getFont().deriveFont(dataDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, dataDefinitionLabel.getFont().getSize()-1));
-        dataDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/green_box.png"))); // NOI18N
+        dataDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/green_box.png"))); // NOI18N
         dataDefinitionLabel.setText(bundle.getString("DataPartitionDefinition")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -666,7 +666,7 @@ public class ResetterPanels
         selectionDeviceListPanel.add(dataDefinitionLabel, gridBagConstraints);
 
         osDefinitionLabel.setFont(osDefinitionLabel.getFont().deriveFont(osDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, osDefinitionLabel.getFont().getSize()-1));
-        osDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/blue_box.png"))); // NOI18N
+        osDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/blue_box.png"))); // NOI18N
         osDefinitionLabel.setText(bundle.getString("DLCopySwingGUI.resetOsDefinitionLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -922,7 +922,7 @@ public class ResetterPanels
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 0);
         backupDestinationPanel.add(backupDestinationTextField, gridBagConstraints);
 
-        backupDestinationButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/fileopen.png"))); // NOI18N
+        backupDestinationButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/fileopen.png"))); // NOI18N
         backupDestinationButton.setEnabled(false);
         backupDestinationButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         backupDestinationButton.addActionListener(new java.awt.event.ActionListener() {
@@ -944,7 +944,7 @@ public class ResetterPanels
         backupDestinationSubdirectoryPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("DLCopySwingGUI.resetBackupSubdirectoryPanel.border.title"))); // NOI18N
         backupDestinationSubdirectoryPanel.setLayout(new java.awt.GridBagLayout());
 
-        moveUpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/arrow-up.png"))); // NOI18N
+        moveUpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/arrow-up.png"))); // NOI18N
         moveUpButton.setToolTipText(bundle.getString("DLCopySwingGUI.resetMoveUpButton.toolTipText")); // NOI18N
         moveUpButton.setEnabled(false);
         moveUpButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -959,7 +959,7 @@ public class ResetterPanels
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
         backupDestinationSubdirectoryPanel.add(moveUpButton, gridBagConstraints);
 
-        moveDownButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/arrow-down.png"))); // NOI18N
+        moveDownButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/arrow-down.png"))); // NOI18N
         moveDownButton.setToolTipText(bundle.getString("DLCopySwingGUI.resetMoveDownButton.toolTipText")); // NOI18N
         moveDownButton.setEnabled(false);
         moveDownButton.setMargin(new java.awt.Insets(2, 2, 2, 2));

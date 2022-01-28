@@ -41,7 +41,7 @@ public class StorageDeviceListUpdateDialog extends javax.swing.JDialog {
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings"); // NOI18N
         setTitle(bundle.getString("StorageDeviceListUpdateDialog.title")); // NOI18N
 
-        label.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/messagebox_info.png"))); // NOI18N
+        label.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/messagebox_info.png"))); // NOI18N
         label.setText(bundle.getString("StorageDeviceListUpdateDialog.label.text")); // NOI18N
 
         progressBar.setIndeterminate(true);

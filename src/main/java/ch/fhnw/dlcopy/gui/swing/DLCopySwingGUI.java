@@ -369,7 +369,7 @@ public class DLCopySwingGUI extends JFrame
         installButton.requestFocusInWindow();
 
         URL imageURL = getClass().getResource(
-                "/ch/fhnw/dlcopy/icons/usbpendrive_unmount.png");
+                "/icons/usbpendrive_unmount.png");
         setIconImage(new ImageIcon(imageURL).getImage());
 
         isoCreatorPanels.init(this);
@@ -827,7 +827,7 @@ public class DLCopySwingGUI extends JFrame
         // update main menu button
         if (StorageDevice.Type.USBFlashDrive == systemSource.getDeviceType()) {
             Icon usb2usbIcon = new ImageIcon(getClass().getResource(
-                    "/ch/fhnw/dlcopy/icons/usb2usb.png"));
+                    "/icons/usb2usb.png"));
             installButton.setIcon(usb2usbIcon);
         }
 
@@ -1284,7 +1284,7 @@ public class DLCopySwingGUI extends JFrame
 
         northWestPanel.setLayout(new java.awt.GridBagLayout());
 
-        installButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/dvd2usb.png"))); // NOI18N
+        installButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/dvd2usb.png"))); // NOI18N
         installButton.setText(bundle.getString("DLCopySwingGUI.installButton.text")); // NOI18N
         installButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         installButton.setName("installButton"); // NOI18N
@@ -1323,7 +1323,7 @@ public class DLCopySwingGUI extends JFrame
 
         northEastPanel.setLayout(new java.awt.GridBagLayout());
 
-        upgradeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/usbupgrade.png"))); // NOI18N
+        upgradeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/usbupgrade.png"))); // NOI18N
         upgradeButton.setText(bundle.getString("DLCopySwingGUI.upgradeButton.text")); // NOI18N
         upgradeButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         upgradeButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -1361,7 +1361,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         buttonGridPanel.add(northEastPanel, gridBagConstraints);
 
-        toISOButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/usb2dvd.png"))); // NOI18N
+        toISOButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/usb2dvd.png"))); // NOI18N
         toISOButton.setText(bundle.getString("DLCopySwingGUI.toISOButton.text")); // NOI18N
         toISOButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         toISOButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -1385,7 +1385,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.insets = new java.awt.Insets(15, 0, 0, 5);
         buttonGridPanel.add(toISOButton, gridBagConstraints);
 
-        resetButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/lernstick_reset.png"))); // NOI18N
+        resetButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/lernstick_reset.png"))); // NOI18N
         resetButton.setText(bundle.getString("DLCopySwingGUI.resetButton.text")); // NOI18N
         resetButton.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         resetButton.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -1491,7 +1491,7 @@ public class DLCopySwingGUI extends JFrame
 
         doneLabel.setFont(doneLabel.getFont().deriveFont(doneLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
         doneLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        doneLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/usbpendrive_unmount_tux.png"))); // NOI18N
+        doneLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/usbpendrive_unmount_tux.png"))); // NOI18N
         doneLabel.setText(bundle.getString("Installation_Done_Message_From_Removable_Boot_Device")); // NOI18N
         doneLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         doneLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -1546,7 +1546,7 @@ public class DLCopySwingGUI extends JFrame
 
         prevNextButtonPanel.setLayout(new java.awt.GridBagLayout());
 
-        previousButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/previous.png"))); // NOI18N
+        previousButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/previous.png"))); // NOI18N
         previousButton.setText(bundle.getString("DLCopySwingGUI.previousButton.text")); // NOI18N
         previousButton.setName("previousButton"); // NOI18N
         previousButton.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -1569,7 +1569,7 @@ public class DLCopySwingGUI extends JFrame
         gridBagConstraints.weightx = 1.0;
         prevNextButtonPanel.add(previousButton, gridBagConstraints);
 
-        nextButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/next.png"))); // NOI18N
+        nextButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/next.png"))); // NOI18N
         nextButton.setText(bundle.getString("DLCopySwingGUI.nextButton.text")); // NOI18N
         nextButton.setName("nextButton"); // NOI18N
         nextButton.addFocusListener(new java.awt.event.FocusAdapter() {
@@ -1987,7 +1987,7 @@ public class DLCopySwingGUI extends JFrame
 
     private void resetNextButton() {
         nextButton.setIcon(new ImageIcon(
-                getClass().getResource("/ch/fhnw/dlcopy/icons/next.png")));
+                getClass().getResource("/icons/next.png")));
         nextButton.setText(
                 STRINGS.getString("DLCopySwingGUI.nextButton.text"));
     }
@@ -2166,7 +2166,7 @@ public class DLCopySwingGUI extends JFrame
         previousButton.setEnabled(true);
         nextButton.setText(STRINGS.getString("Done"));
         nextButton.setIcon(new ImageIcon(getClass().getResource(
-                "/ch/fhnw/dlcopy/icons/exit.png")));
+                "/icons/exit.png")));
         nextButton.setEnabled(true);
         previousButton.requestFocusInWindow();
         getRootPane().setDefaultButton(previousButton);

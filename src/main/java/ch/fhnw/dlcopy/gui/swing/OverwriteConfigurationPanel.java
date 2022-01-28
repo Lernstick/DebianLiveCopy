@@ -115,7 +115,7 @@ public class OverwriteConfigurationPanel
 
         setLayout(new java.awt.GridBagLayout());
 
-        addButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/list-add.png"))); // NOI18N
+        addButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/list-add.png"))); // NOI18N
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings"); // NOI18N
         addButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeOverwriteAddButton.toolTipText")); // NOI18N
         addButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -130,7 +130,7 @@ public class OverwriteConfigurationPanel
         gridBagConstraints.insets = new java.awt.Insets(30, 5, 0, 0);
         add(addButton, gridBagConstraints);
 
-        removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/list-remove.png"))); // NOI18N
+        removeButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/list-remove.png"))); // NOI18N
         removeButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeOverwriteRemoveButton.toolTipText")); // NOI18N
         removeButton.setEnabled(false);
         removeButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -145,7 +145,7 @@ public class OverwriteConfigurationPanel
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
         add(removeButton, gridBagConstraints);
 
-        moveUpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/arrow-up.png"))); // NOI18N
+        moveUpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/arrow-up.png"))); // NOI18N
         moveUpButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeMoveUpButton.toolTipText")); // NOI18N
         moveUpButton.setEnabled(false);
         moveUpButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -160,7 +160,7 @@ public class OverwriteConfigurationPanel
         gridBagConstraints.insets = new java.awt.Insets(10, 5, 0, 0);
         add(moveUpButton, gridBagConstraints);
 
-        moveDownButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/arrow-down.png"))); // NOI18N
+        moveDownButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/arrow-down.png"))); // NOI18N
         moveDownButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeMoveDownButton.toolTipText")); // NOI18N
         moveDownButton.setEnabled(false);
         moveDownButton.setMargin(new java.awt.Insets(2, 2, 2, 2));

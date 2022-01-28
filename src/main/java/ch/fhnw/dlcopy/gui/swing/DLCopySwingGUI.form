@@ -81,7 +81,7 @@
                 <Component class="javax.swing.JButton" name="installButton">
                   <Properties>
                     <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                      <Image iconType="3" name="/ch/fhnw/dlcopy/icons/dvd2usb.png"/>
+                      <Image iconType="3" name="/icons/dvd2usb.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.installButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -132,7 +132,7 @@
                 <Component class="javax.swing.JButton" name="upgradeButton">
                   <Properties>
                     <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                      <Image iconType="3" name="/ch/fhnw/dlcopy/icons/usbupgrade.png"/>
+                      <Image iconType="3" name="/icons/usbupgrade.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -173,7 +173,7 @@
             <Component class="javax.swing.JButton" name="toISOButton">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/ch/fhnw/dlcopy/icons/usb2dvd.png"/>
+                  <Image iconType="3" name="/icons/usb2dvd.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.toISOButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -195,7 +195,7 @@
             <Component class="javax.swing.JButton" name="resetButton">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/ch/fhnw/dlcopy/icons/lernstick_reset.png"/>
+                  <Image iconType="3" name="/icons/lernstick_reset.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.resetButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -416,7 +416,7 @@
                     </Property>
                     <Property name="horizontalAlignment" type="int" value="0"/>
                     <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                      <Image iconType="3" name="/ch/fhnw/dlcopy/icons/usbpendrive_unmount_tux.png"/>
+                      <Image iconType="3" name="/icons/usbpendrive_unmount_tux.png"/>
                     </Property>
                     <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="Installation_Done_Message_From_Removable_Boot_Device" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -516,7 +516,7 @@
             <Component class="javax.swing.JButton" name="previousButton">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/ch/fhnw/dlcopy/icons/previous.png"/>
+                  <Image iconType="3" name="/icons/previous.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.previousButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -537,7 +537,7 @@
             <Component class="javax.swing.JButton" name="nextButton">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/ch/fhnw/dlcopy/icons/next.png"/>
+                  <Image iconType="3" name="/icons/next.png"/>
                 </Property>
                 <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.nextButton.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>

@@ -35,7 +35,7 @@
         <Component class="javax.swing.JLabel" name="infoLabel">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/ch/fhnw/dlcopy/icons/usbupgrade.png"/>
+              <Image iconType="3" name="/icons/usbupgrade.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeInfoLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -235,7 +235,7 @@
                           </FontInfo>
                         </Property>
                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/ch/fhnw/dlcopy/icons/yellow_box.png"/>
+                          <Image iconType="3" name="/icons/yellow_box.png"/>
                         </Property>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                           <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="ExchangePartitionDefinition" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -255,7 +255,7 @@
                           </FontInfo>
                         </Property>
                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/ch/fhnw/dlcopy/icons/green_box.png"/>
+                          <Image iconType="3" name="/icons/green_box.png"/>
                         </Property>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                           <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DataPartitionDefinition" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -275,7 +275,7 @@
                           </FontInfo>
                         </Property>
                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/ch/fhnw/dlcopy/icons/dark_blue_box.png"/>
+                          <Image iconType="3" name="/icons/dark_blue_box.png"/>
                         </Property>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                           <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeBootDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -295,7 +295,7 @@
                           </FontInfo>
                         </Property>
                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/ch/fhnw/dlcopy/icons/blue_box.png"/>
+                          <Image iconType="3" name="/icons/blue_box.png"/>
                         </Property>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                           <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeOsDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -321,7 +321,7 @@
                     <Component class="javax.swing.JLabel" name="noMediaLabel">
                       <Properties>
                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/ch/fhnw/dlcopy/icons/messagebox_info.png"/>
+                          <Image iconType="3" name="/icons/messagebox_info.png"/>
                         </Property>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                           <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="Insert_Media" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -513,7 +513,7 @@
                 <Component class="javax.swing.JButton" name="automaticBackupButton">
                   <Properties>
                     <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                      <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/document-open-folder.png"/>
+                      <Image iconType="3" name="/icons/16x16/document-open-folder.png"/>
                     </Property>
                     <Property name="enabled" type="boolean" value="false"/>
                     <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
@@ -658,7 +658,7 @@
             <Component class="javax.swing.JButton" name="moveUpButton">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/arrow-up.png"/>
+                  <Image iconType="3" name="/icons/16x16/arrow-up.png"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeMoveUpButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -680,7 +680,7 @@
             <Component class="javax.swing.JButton" name="moveDownButton">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/arrow-down.png"/>
+                  <Image iconType="3" name="/icons/16x16/arrow-down.png"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeMoveDownButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -702,7 +702,7 @@
             <Component class="javax.swing.JButton" name="sortAscendingButton">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/view-sort-ascending.png"/>
+                  <Image iconType="3" name="/icons/16x16/view-sort-ascending.png"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.sortAscendingButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -724,7 +724,7 @@
             <Component class="javax.swing.JButton" name="sortDescendingButton">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/view-sort-descending.png"/>
+                  <Image iconType="3" name="/icons/16x16/view-sort-descending.png"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.sortDescendingButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -769,7 +769,7 @@
             <Component class="javax.swing.JButton" name="overwriteAddButton">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/list-add.png"/>
+                  <Image iconType="3" name="/icons/16x16/list-add.png"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeOverwriteAddButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -790,7 +790,7 @@
             <Component class="javax.swing.JButton" name="overwriteEditButton">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/document-edit.png"/>
+                  <Image iconType="3" name="/icons/16x16/document-edit.png"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeOverwriteEditButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -812,7 +812,7 @@
             <Component class="javax.swing.JButton" name="overwriteRemoveButton">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/list-remove.png"/>
+                  <Image iconType="3" name="/icons/16x16/list-remove.png"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeOverwriteRemoveButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -834,7 +834,7 @@
             <Component class="javax.swing.JButton" name="overwriteExportButton">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/document-export.png"/>
+                  <Image iconType="3" name="/icons/16x16/document-export.png"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeOverwriteExportButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -855,7 +855,7 @@
             <Component class="javax.swing.JButton" name="overwriteImportButton">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/document-import.png"/>
+                  <Image iconType="3" name="/icons/16x16/document-import.png"/>
                 </Property>
                 <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                   <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.upgradeOverwriteImportButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>

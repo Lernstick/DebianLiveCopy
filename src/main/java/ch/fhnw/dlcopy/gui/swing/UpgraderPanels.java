@@ -635,7 +635,7 @@ public class UpgraderPanels extends JPanel implements ListDataListener {
 
         infoPanel.setLayout(new java.awt.GridBagLayout());
 
-        infoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/usbupgrade.png"))); // NOI18N
+        infoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/usbupgrade.png"))); // NOI18N
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings"); // NOI18N
         infoLabel.setText(bundle.getString("DLCopySwingGUI.upgradeInfoLabel.text")); // NOI18N
         infoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -742,7 +742,7 @@ public class UpgraderPanels extends JPanel implements ListDataListener {
         selectionDeviceListPanel.add(storageDeviceListScrollPane, gridBagConstraints);
 
         exchangeDefinitionLabel.setFont(exchangeDefinitionLabel.getFont().deriveFont(exchangeDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, exchangeDefinitionLabel.getFont().getSize()-1));
-        exchangeDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/yellow_box.png"))); // NOI18N
+        exchangeDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/yellow_box.png"))); // NOI18N
         exchangeDefinitionLabel.setText(bundle.getString("ExchangePartitionDefinition")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -751,7 +751,7 @@ public class UpgraderPanels extends JPanel implements ListDataListener {
         selectionDeviceListPanel.add(exchangeDefinitionLabel, gridBagConstraints);
 
         dataDefinitionLabel.setFont(dataDefinitionLabel.getFont().deriveFont(dataDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, dataDefinitionLabel.getFont().getSize()-1));
-        dataDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/green_box.png"))); // NOI18N
+        dataDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/green_box.png"))); // NOI18N
         dataDefinitionLabel.setText(bundle.getString("DataPartitionDefinition")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
@@ -760,14 +760,14 @@ public class UpgraderPanels extends JPanel implements ListDataListener {
         selectionDeviceListPanel.add(dataDefinitionLabel, gridBagConstraints);
 
         bootDefinitionLabel.setFont(bootDefinitionLabel.getFont().deriveFont(bootDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, bootDefinitionLabel.getFont().getSize()-1));
-        bootDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/dark_blue_box.png"))); // NOI18N
+        bootDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/dark_blue_box.png"))); // NOI18N
         bootDefinitionLabel.setText(bundle.getString("DLCopySwingGUI.upgradeBootDefinitionLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.insets = new java.awt.Insets(3, 10, 5, 0);
         selectionDeviceListPanel.add(bootDefinitionLabel, gridBagConstraints);
 
         osDefinitionLabel.setFont(osDefinitionLabel.getFont().deriveFont(osDefinitionLabel.getFont().getStyle() & ~java.awt.Font.BOLD, osDefinitionLabel.getFont().getSize()-1));
-        osDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/blue_box.png"))); // NOI18N
+        osDefinitionLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/blue_box.png"))); // NOI18N
         osDefinitionLabel.setText(bundle.getString("DLCopySwingGUI.upgradeOsDefinitionLabel.text")); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
@@ -778,7 +778,7 @@ public class UpgraderPanels extends JPanel implements ListDataListener {
 
         noMediaPanel.setLayout(new java.awt.GridBagLayout());
 
-        noMediaLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/messagebox_info.png"))); // NOI18N
+        noMediaLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/messagebox_info.png"))); // NOI18N
         noMediaLabel.setText(bundle.getString("Insert_Media")); // NOI18N
         noMediaLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         noMediaLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
@@ -897,7 +897,7 @@ public class UpgraderPanels extends JPanel implements ListDataListener {
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         backupDestinationPanel.add(automaticBackupTextField, gridBagConstraints);
 
-        automaticBackupButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/document-open-folder.png"))); // NOI18N
+        automaticBackupButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/document-open-folder.png"))); // NOI18N
         automaticBackupButton.setEnabled(false);
         automaticBackupButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         automaticBackupButton.addActionListener(new java.awt.event.ActionListener() {
@@ -969,7 +969,7 @@ public class UpgraderPanels extends JPanel implements ListDataListener {
         overwritePanel.setBorder(javax.swing.BorderFactory.createTitledBorder(""));
         overwritePanel.setLayout(new java.awt.GridBagLayout());
 
-        moveUpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/arrow-up.png"))); // NOI18N
+        moveUpButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/arrow-up.png"))); // NOI18N
         moveUpButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeMoveUpButton.toolTipText")); // NOI18N
         moveUpButton.setEnabled(false);
         moveUpButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -984,7 +984,7 @@ public class UpgraderPanels extends JPanel implements ListDataListener {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 0);
         overwritePanel.add(moveUpButton, gridBagConstraints);
 
-        moveDownButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/arrow-down.png"))); // NOI18N
+        moveDownButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/arrow-down.png"))); // NOI18N
         moveDownButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeMoveDownButton.toolTipText")); // NOI18N
         moveDownButton.setEnabled(false);
         moveDownButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -999,7 +999,7 @@ public class UpgraderPanels extends JPanel implements ListDataListener {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
         overwritePanel.add(moveDownButton, gridBagConstraints);
 
-        sortAscendingButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/view-sort-ascending.png"))); // NOI18N
+        sortAscendingButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/view-sort-ascending.png"))); // NOI18N
         sortAscendingButton.setToolTipText(bundle.getString("DLCopySwingGUI.sortAscendingButton.toolTipText")); // NOI18N
         sortAscendingButton.setEnabled(false);
         sortAscendingButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -1014,7 +1014,7 @@ public class UpgraderPanels extends JPanel implements ListDataListener {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 0);
         overwritePanel.add(sortAscendingButton, gridBagConstraints);
 
-        sortDescendingButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/view-sort-descending.png"))); // NOI18N
+        sortDescendingButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/view-sort-descending.png"))); // NOI18N
         sortDescendingButton.setToolTipText(bundle.getString("DLCopySwingGUI.sortDescendingButton.toolTipText")); // NOI18N
         sortDescendingButton.setEnabled(false);
         sortDescendingButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -1051,7 +1051,7 @@ public class UpgraderPanels extends JPanel implements ListDataListener {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
         overwritePanel.add(overwriteScrollPane, gridBagConstraints);
 
-        overwriteAddButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/list-add.png"))); // NOI18N
+        overwriteAddButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/list-add.png"))); // NOI18N
         overwriteAddButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeOverwriteAddButton.toolTipText")); // NOI18N
         overwriteAddButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         overwriteAddButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1065,7 +1065,7 @@ public class UpgraderPanels extends JPanel implements ListDataListener {
         gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
         overwritePanel.add(overwriteAddButton, gridBagConstraints);
 
-        overwriteEditButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/document-edit.png"))); // NOI18N
+        overwriteEditButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/document-edit.png"))); // NOI18N
         overwriteEditButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeOverwriteEditButton.toolTipText")); // NOI18N
         overwriteEditButton.setEnabled(false);
         overwriteEditButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -1080,7 +1080,7 @@ public class UpgraderPanels extends JPanel implements ListDataListener {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
         overwritePanel.add(overwriteEditButton, gridBagConstraints);
 
-        overwriteRemoveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/list-remove.png"))); // NOI18N
+        overwriteRemoveButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/list-remove.png"))); // NOI18N
         overwriteRemoveButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeOverwriteRemoveButton.toolTipText")); // NOI18N
         overwriteRemoveButton.setEnabled(false);
         overwriteRemoveButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
@@ -1095,7 +1095,7 @@ public class UpgraderPanels extends JPanel implements ListDataListener {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
         overwritePanel.add(overwriteRemoveButton, gridBagConstraints);
 
-        overwriteExportButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/document-export.png"))); // NOI18N
+        overwriteExportButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/document-export.png"))); // NOI18N
         overwriteExportButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeOverwriteExportButton.toolTipText")); // NOI18N
         overwriteExportButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         overwriteExportButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1109,7 +1109,7 @@ public class UpgraderPanels extends JPanel implements ListDataListener {
         gridBagConstraints.insets = new java.awt.Insets(5, 10, 0, 10);
         overwritePanel.add(overwriteExportButton, gridBagConstraints);
 
-        overwriteImportButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/16x16/document-import.png"))); // NOI18N
+        overwriteImportButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/document-import.png"))); // NOI18N
         overwriteImportButton.setToolTipText(bundle.getString("DLCopySwingGUI.upgradeOverwriteImportButton.toolTipText")); // NOI18N
         overwriteImportButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         overwriteImportButton.addActionListener(new java.awt.event.ActionListener() {

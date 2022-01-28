@@ -42,7 +42,7 @@
         <Component class="javax.swing.JLabel" name="resetInfoLabel">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/ch/fhnw/dlcopy/icons/lernstick_reset.png"/>
+              <Image iconType="3" name="/icons/lernstick_reset.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.resetInfoLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -171,7 +171,7 @@
                     <Component class="javax.swing.JLabel" name="noMediaLabel">
                       <Properties>
                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/ch/fhnw/dlcopy/icons/messagebox_info.png"/>
+                          <Image iconType="3" name="/icons/messagebox_info.png"/>
                         </Property>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                           <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.resetNoMediaLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -270,7 +270,7 @@
                           </FontInfo>
                         </Property>
                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/ch/fhnw/dlcopy/icons/yellow_box.png"/>
+                          <Image iconType="3" name="/icons/yellow_box.png"/>
                         </Property>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                           <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="ExchangePartitionDefinition" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -290,7 +290,7 @@
                           </FontInfo>
                         </Property>
                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/ch/fhnw/dlcopy/icons/green_box.png"/>
+                          <Image iconType="3" name="/icons/green_box.png"/>
                         </Property>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                           <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DataPartitionDefinition" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -310,7 +310,7 @@
                           </FontInfo>
                         </Property>
                         <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                          <Image iconType="3" name="/ch/fhnw/dlcopy/icons/blue_box.png"/>
+                          <Image iconType="3" name="/icons/blue_box.png"/>
                         </Property>
                         <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                           <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.resetOsDefinitionLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -780,7 +780,7 @@
                 <Component class="javax.swing.JButton" name="backupDestinationButton">
                   <Properties>
                     <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                      <Image iconType="3" name="/ch/fhnw/dlcopy/icons/fileopen.png"/>
+                      <Image iconType="3" name="/icons/fileopen.png"/>
                     </Property>
                     <Property name="enabled" type="boolean" value="false"/>
                     <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
@@ -819,7 +819,7 @@
                 <Component class="javax.swing.JButton" name="moveUpButton">
                   <Properties>
                     <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                      <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/arrow-up.png"/>
+                      <Image iconType="3" name="/icons/16x16/arrow-up.png"/>
                     </Property>
                     <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.resetMoveUpButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -841,7 +841,7 @@
                 <Component class="javax.swing.JButton" name="moveDownButton">
                   <Properties>
                     <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                      <Image iconType="3" name="/ch/fhnw/dlcopy/icons/16x16/arrow-down.png"/>
+                      <Image iconType="3" name="/icons/16x16/arrow-down.png"/>
                     </Property>
                     <Property name="toolTipText" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
                       <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.resetMoveDownButton.toolTipText" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>

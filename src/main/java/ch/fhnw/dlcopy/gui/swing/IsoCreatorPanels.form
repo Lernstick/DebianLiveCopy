@@ -32,7 +32,7 @@
         <Component class="javax.swing.JLabel" name="infoLabel">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/ch/fhnw/dlcopy/icons/usb2dvd.png"/>
+              <Image iconType="3" name="/icons/usb2dvd.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.toISOInfoLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -61,7 +61,7 @@
           <Properties>
             <Property name="horizontalAlignment" type="int" value="0"/>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/ch/fhnw/dlcopy/icons/file_temporary.png"/>
+              <Image iconType="3" name="/icons/file_temporary.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.tmpDriveInfoLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>
@@ -109,7 +109,7 @@
             <Component class="javax.swing.JButton" name="tmpDirSelectButton">
               <Properties>
                 <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-                  <Image iconType="3" name="/ch/fhnw/dlcopy/icons/fileopen.png"/>
+                  <Image iconType="3" name="/icons/fileopen.png"/>
                 </Property>
                 <Property name="margin" type="java.awt.Insets" editor="org.netbeans.beaninfo.editors.InsetsEditor">
                   <Insets value="[2, 2, 2, 2]"/>
@@ -371,7 +371,7 @@
         <Component class="javax.swing.JLabel" name="jLabel6">
           <Properties>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/ch/fhnw/dlcopy/icons/usb2dvd.png"/>
+              <Image iconType="3" name="/icons/usb2dvd.png"/>
             </Property>
           </Properties>
           <Constraints>
@@ -417,7 +417,7 @@
             </Property>
             <Property name="horizontalAlignment" type="int" value="0"/>
             <Property name="icon" type="javax.swing.Icon" editor="org.netbeans.modules.form.editors2.IconEditor">
-              <Image iconType="3" name="/ch/fhnw/dlcopy/icons/usb2dvd.png"/>
+              <Image iconType="3" name="/icons/usb2dvd.png"/>
             </Property>
             <Property name="text" type="java.lang.String" editor="org.netbeans.modules.i18n.form.FormI18nStringEditor">
               <ResourceString bundle="ch/fhnw/dlcopy/Strings.properties" key="DLCopySwingGUI.isoDoneLabel.text" replaceFormat="java.util.ResourceBundle.getBundle(&quot;{bundleNameSlashes}&quot;).getString(&quot;{key}&quot;)"/>

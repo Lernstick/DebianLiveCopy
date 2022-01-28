@@ -235,7 +235,7 @@ public class IsoCreatorPanels
 
         infoPanel.setLayout(new java.awt.GridBagLayout());
 
-        infoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/usb2dvd.png"))); // NOI18N
+        infoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/usb2dvd.png"))); // NOI18N
         java.util.ResourceBundle bundle = java.util.ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings"); // NOI18N
         infoLabel.setText(bundle.getString("DLCopySwingGUI.toISOInfoLabel.text")); // NOI18N
         infoLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
@@ -249,7 +249,7 @@ public class IsoCreatorPanels
         selectionPanel.setLayout(new java.awt.GridBagLayout());
 
         tmpDriveInfoLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        tmpDriveInfoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/file_temporary.png"))); // NOI18N
+        tmpDriveInfoLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/file_temporary.png"))); // NOI18N
         tmpDriveInfoLabel.setText(bundle.getString("DLCopySwingGUI.tmpDriveInfoLabel.text")); // NOI18N
         tmpDriveInfoLabel.setIconTextGap(15);
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -275,7 +275,7 @@ public class IsoCreatorPanels
         gridBagConstraints.insets = new java.awt.Insets(0, 5, 0, 0);
         gridBagPanel.add(tmpDirTextField, gridBagConstraints);
 
-        tmpDirSelectButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/fileopen.png"))); // NOI18N
+        tmpDirSelectButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/fileopen.png"))); // NOI18N
         tmpDirSelectButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
         tmpDirSelectButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -431,7 +431,7 @@ public class IsoCreatorPanels
 
         progressPanel.setLayout(new java.awt.GridBagLayout());
 
-        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/usb2dvd.png"))); // NOI18N
+        jLabel6.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/usb2dvd.png"))); // NOI18N
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         progressPanel.add(jLabel6, gridBagConstraints);
@@ -453,7 +453,7 @@ public class IsoCreatorPanels
 
         doneLabel.setFont(doneLabel.getFont().deriveFont(doneLabel.getFont().getStyle() & ~java.awt.Font.BOLD));
         doneLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        doneLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/ch/fhnw/dlcopy/icons/usb2dvd.png"))); // NOI18N
+        doneLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/usb2dvd.png"))); // NOI18N
         doneLabel.setText(bundle.getString("DLCopySwingGUI.isoDoneLabel.text")); // NOI18N
         doneLabel.setHorizontalTextPosition(javax.swing.SwingConstants.CENTER);
         doneLabel.setVerticalTextPosition(javax.swing.SwingConstants.BOTTOM);
