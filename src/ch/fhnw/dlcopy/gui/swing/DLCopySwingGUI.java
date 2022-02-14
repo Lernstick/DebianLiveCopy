@@ -686,6 +686,22 @@ public class DLCopySwingGUI extends JFrame
     }
 
     @Override
+    public void showSquashFSProgressMessage(String message) {
+        isoCreatorPanels.showProgressMessage(message);
+    }
+
+    @Override
+    public void showSquashFSProgressMessage(String message, int value) {
+        isoCreatorPanels.showProgressMessage(message, value);
+    }
+
+    @Override
+    public void squashFSCreationFinished(String isoPath, boolean success) {
+        isoCreatorPanels.isoCreationFinished(isoPath, success);
+        processDone();
+    }
+
+    @Override
     public void showResetProgress() {
         // DON'T (!) use invokeLater here or we might run into a timing issue so
         // that after a very quick reset the reset progress panel is still shown

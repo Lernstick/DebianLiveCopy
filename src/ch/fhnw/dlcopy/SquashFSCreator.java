@@ -73,7 +73,7 @@ public class SquashFSCreator implements PropertyChangeListener {
         inhibit = new LogindInhibit("Creating ISO");
 
         try {
-            dlCopyGUI.showIsoProgressMessage(
+            dlCopyGUI.showSquashFSProgressMessage(
                     STRINGS.getString("Copying_Files"));
 
             // create new temporary directory in selected directory
@@ -107,7 +107,7 @@ public class SquashFSCreator implements PropertyChangeListener {
                             "Compressing_Filesystem_Progress");
                     message = MessageFormat.format(
                             message, progress + "%");
-                    dlCopyGUI.showIsoProgressMessage(message, progress);
+                    dlCopyGUI.showSquashFSProgressMessage(message, progress);
                 } catch (NumberFormatException ex) {
                     LOGGER.log(Level.WARNING,
                             "could not parse mksquashfs progress", ex);
@@ -123,7 +123,7 @@ public class SquashFSCreator implements PropertyChangeListener {
     private void createSquashFS(String targetDirectory)
             throws IOException, DBusException {
 
-        dlCopyGUI.showIsoProgressMessage(
+        dlCopyGUI.showSquashFSProgressMessage(
                 STRINGS.getString("Mounting_Partitions"));
         // mount persistence (data partition)
         Partition dataPartition = systemSource.getDataPartition();
@@ -202,7 +202,7 @@ public class SquashFSCreator implements PropertyChangeListener {
 
         // create new squashfs image
         squashFsPath = targetDirectory + "/lernstick.squashfs";
-        dlCopyGUI.showIsoProgressMessage(
+        dlCopyGUI.showSquashFSProgressMessage(
                 STRINGS.getString("Compressing_Filesystem"));
         PROCESS_EXECUTOR.addPropertyChangeListener(this);
         int exitValue = PROCESS_EXECUTOR.executeProcess("mksquashfs",
