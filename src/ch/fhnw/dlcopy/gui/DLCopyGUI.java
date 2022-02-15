@@ -236,6 +236,30 @@ public interface DLCopyGUI {
     public void isoCreationFinished(String path, boolean success);
 
     /**
+     * shows a message regarding the SquashFS creation progress
+     *
+     * @param message the message to show
+     */
+    public void showSquashFSProgressMessage(String message);
+
+    /**
+     * shows a message and progress percentage value regarding the SquashFS creation
+     * progress
+     *
+     * @param message the message to show
+     * @param value the progress given in percent
+     */
+    public void showSquashFSProgressMessage(String message, int value);
+
+    /**
+     * called when creating the SquashFS file finished
+     *
+     * @param path the path to the created SquashFS
+     * @param success if creating the SquashFS was successfull
+     */
+    public void squashFSCreationFinished(String path, boolean success);
+
+    /**
      * shows the user interface for visualization of the reset progress
      */
     public void showResetProgress();

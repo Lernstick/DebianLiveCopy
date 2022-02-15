@@ -63,7 +63,7 @@ public class SquashFSCreatorSwingWorker extends SwingWorker<Boolean, String> {
     @Override
     protected void done() {
         try {
-            dlCopyGUI.isoCreationFinished(squashFSCreator.getSquashFsPath(), get());
+            dlCopyGUI.squashFSCreationFinished(squashFSCreator.getSquashFsPath(), get());
         } catch (InterruptedException | ExecutionException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
         }
