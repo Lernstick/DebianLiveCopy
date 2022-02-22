@@ -68,9 +68,9 @@
                       <TextField fx:id="tfTargetDirectory" minHeight="25.333" promptText="%export.tfTargetDirectory" />
                       <Label fx:id="lblWriteableDisplay" minHeight="25.333" text="%global.notApplicable" />
                       <Label fx:id="lblFreeSpaceDisplay" minHeight="25.333" text="%global.notApplicable" />
-                      <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" GridPane.columnIndex="2" GridPane.rowIndex="4" />
-                      <CheckBox fx:id="chbInformationDialog" minHeight="25.333" mnemonicParsing="false" text="%export.chbInformationDialog" />
-                      <CheckBox fx:id="chbInstallationProgram" minHeight="25.333" mnemonicParsing="false" text="%export.chbInstallationProgram" />
+                     <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                      <CheckBox fx:id="chbInformationDialog" minHeight="25.333" mnemonicParsing="false" text="%export.chbInformationDialog" visible="false" />
+                      <CheckBox fx:id="chbInstallationProgram" minHeight="25.333" mnemonicParsing="false" text="%export.chbInstallationProgram" visible="false" />
                </children>
                <HBox.margin>
                   <Insets left="20.0" right="20.0" top="40.0" />
@@ -103,12 +103,12 @@
             </VBox>
             <VBox HBox.hgrow="NEVER">
                <children>
-                      <Button fx:id="btnExport" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="%global.previous" />
+                      <Button fx:id="btnBack" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="%global.previous" />
                </children>
             </VBox>
             <VBox HBox.hgrow="NEVER">
                <children>
-                      <Button fx:id="btnBack" mnemonicParsing="false" text="%global.export">
+                      <Button fx:id="btnExport" mnemonicParsing="false" text="%global.export">
                      <VBox.margin>
                         <Insets right="20.0" />
                      </VBox.margin>
