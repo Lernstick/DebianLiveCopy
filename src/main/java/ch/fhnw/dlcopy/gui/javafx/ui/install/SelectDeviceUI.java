@@ -122,34 +122,34 @@ public class SelectDeviceUI extends View {
             });
             
             new Installer(
-                runningSystemSource,
-                lvDevices.getSelectionModel().getSelectedItems(),
-                "Austausch",
-                "exFat",
-                "ext4",
-                new HashMap<String, byte[]>(),
-                context,
-                0,
-                false,
-                "",
-                1,
-                1,
-                1,
-                false,
-                "",
-                false,
-                "",
-                false,
-                false,
-                DataPartitionMode.READ_WRITE,
-                null,
-                false,
-                false,
-                false,
-                false,
-                false,
-                false,
-                installLock
+                runningSystemSource,    // the system source
+                lvDevices.getSelectionModel().getSelectedItems(),   // the list of StorageDevices to install
+                "Austausch",     // the label of the exchange partition
+                "exFat",    // the file system of the exchange partition
+                "ext4", // the file system of the data partition
+                new HashMap<String, byte[]>(),  // a global digest cache for speeding up repeated file checks
+                context,    // the DLCopy GUI
+                0,  // the size of the exchange partition
+                false,  // if the exchange partition should be copied
+                "", // the auto numbering pattern
+                1,  // the auto numbering start value
+                1,  // the auto numbering increment
+                1,  // the minimal number of digits to use for auto numbering
+                false,  // f the data partition should be encrypted with a personal password
+                "", // the personal password for data partition encryption
+                false,  // if the data partition should be encrypted with a secondary password
+                "", // the secondary password for data partition encryption
+                false,  // if the data partition should be filled with random data before formatting
+                false,  // if the data partition should be copied
+                DataPartitionMode.READ_WRITE,   // the mode of the data partition to set in the bootloaders config
+                null,   // the device to transfer data from or null, if no data should be transferred
+                false,  // if the exchange partition should be transferred
+                false,  // if the home folder should be transferred
+                false,  // if the network settings should be transferred
+                false,  // if the printer settings should be transferred
+                false,  // if the firewall settings should be transferred
+                false,  // if copies should be checked for errors
+                installLock // the lock to aquire before executing in background
             );
         });
     }
