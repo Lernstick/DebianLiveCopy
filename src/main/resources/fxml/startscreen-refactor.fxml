@@ -38,7 +38,7 @@
                 <RowConstraints percentHeight="16.0" vgrow="SOMETIMES" />
             </rowConstraints>
             <children>
-                <Button fx:id="btnInstall" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" styleClass="h2" text="test" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
+                <Button fx:id="btnInstall" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" styleClass="h2" text="%global.install" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
                 <Button fx:id="btnExportData" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" styleClass="h2" text="%global.dataExport" GridPane.rowIndex="2" />
                 <Button fx:id="btnExportSystem" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" styleClass="h2" text="%global.systemExport" GridPane.rowIndex="4" />
                 <Button fx:id="btnUpdate" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" mnemonicParsing="false" styleClass="h2" text="%global.update" GridPane.rowIndex="6" />
