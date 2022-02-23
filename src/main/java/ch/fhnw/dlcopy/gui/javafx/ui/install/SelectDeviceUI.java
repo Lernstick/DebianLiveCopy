@@ -8,7 +8,6 @@ import ch.fhnw.dlcopy.RunningSystemSource;
 import ch.fhnw.dlcopy.SystemSource;
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
-import ch.fhnw.dlcopy.utility.checker.DeviceInstallationChecker;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
 import java.io.IOException;
@@ -113,13 +112,6 @@ public class SelectDeviceUI extends View {
         });
         
         btnInstall.setOnAction(event -> {
-            
-            lvDevices.getSelectionModel().getSelectedItems().forEach(device -> {
-                DeviceInstallationChecker deviceInstallationChecker = new DeviceInstallationChecker();
-                if (!deviceInstallationChecker.check(device)){
-                    showError(deviceInstallationChecker.getErrorMessage());
-                }
-            });
             
             new Installer(
                 runningSystemSource,    // the system source
