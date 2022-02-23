@@ -160,7 +160,6 @@ public class ExportSystemUI extends View{
                 btnExport.setDisable(true);
             }
         } else {
-            lblFreeSpaceDisplay.setText(null);
             lblWriteableDisplay.setText(
                 stringBundle.getString("error.directoryDoesNotExist"));
             lblWriteableDisplay.getStyleClass().clear();
