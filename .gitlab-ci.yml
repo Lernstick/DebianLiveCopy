@@ -15,6 +15,21 @@ checkspell:
   script:
     - checkstyle -c config/checkstyle/checks.xml src/
 
+lineendings:
+  image: alpine
+  stage: lint
+  script:
+   - apk add --no-cache file findutils
+   - ! find -regex '.*\.\(f?xml\|java\|md\|properties\|svg\|txt\)$' -type f -exec file '{}' \; | grep -F 'CRLF'
+
+xmllint:
+  image: alpine
+  stage: lint
+  script:
+   - apk add --no-cache findutils libxml2-utils
+   - ! find -regex '.*\.f?xml$' -type f -exec xmllint --format --noout '{}' \;
+   - find src/main/resources/fxml -not \( -name controls -prune \) -type f -name '*.fxml' | xargs -t -L1 xmllint --xpath '/*[namespace-uri()="http://javafx.com/javafx/11"]' > /dev/null
+
 .prepare:
   before_script:
     - mkdir -p nbproject/private
@@ -94,9 +109,9 @@ sonarqube:
   stage: test
   image:
     name: sonarsource/sonar-scanner-cli
-    entrypoint: [""]
+    entrypoint: ['']
   variables:
-    GIT_DEPTH: "0"
+    GIT_DEPTH: '0'
     SONAR_HOST_URL: ${CI_SONARQUBE_HOST_URL}
     SONAR_PROJECT: ${CI_SONARQUBE_PROJECT}
     SONAR_TOKEN: ${CI_SONARQUBE_TOKEN}
