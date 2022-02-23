@@ -38,7 +38,7 @@ public class SwitchButton extends Label {
     }
 
     private void init() throws IOException {
-        URL resourcePath = getClass().getResource("/fxml/controls/SwitchButton.fxml");
+        URL resourcePath = getClass().getResource("/fxml/controls/switchbutton.fxml");
         FXMLLoader loader = new FXMLLoader(resourcePath);
         getStylesheets().add("/fxml/css/global.css");
         loader.setRoot(this);
