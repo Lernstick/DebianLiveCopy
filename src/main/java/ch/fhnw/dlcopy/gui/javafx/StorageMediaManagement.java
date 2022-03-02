@@ -223,12 +223,12 @@ public class StorageMediaManagement
 
     @Override
     public void showIsoProgressMessage(String message) {
-        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.LoadUI());
+        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.LoadUI(message));
     }
 
     @Override
     public void showIsoProgressMessage(String message, int value) {
-        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.LoadUI());
+        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.LoadUI(message, value));
     }
 
     @Override
@@ -238,12 +238,12 @@ public class StorageMediaManagement
 
     @Override
     public void showSquashFSProgressMessage(String message) {
-        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportdata.LoadUI());
+        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportdata.LoadUI(message));
     }
 
     @Override
     public void showSquashFSProgressMessage(String message, int value) {
-        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportdata.LoadUI());
+        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportdata.LoadUI(message, value));
     }
 
     @Override
