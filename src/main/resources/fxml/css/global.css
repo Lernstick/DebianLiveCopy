@@ -159,11 +159,6 @@
     -fx-border-width: 2;
 }
 
-.check-box:selected .box {
-    -fx-background-color: #494949;
-    -fx-border-color: #282828;
-}
-
 .combo-box {
     -fx-background-color: #3C3C3C;
     -fx-border-color: #282828;
