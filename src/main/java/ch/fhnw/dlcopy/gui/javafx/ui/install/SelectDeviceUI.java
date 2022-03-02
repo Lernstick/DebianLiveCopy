@@ -79,7 +79,7 @@ public class SelectDeviceUI extends View {
                     List<StorageDevice> removedDevices = new ArrayList<>();
                     List<StorageDevice> addedDevices = new ArrayList<>();
                     for (StorageDevice device : pluggedDevices) {
-                        if(!lvDevices.getItems().contains(device)){
+                        if(!lvDevices.getItems().contains(device)) {
                             // Plugged deice is not shown yet
                             addedDevices.add(device);
                         }
