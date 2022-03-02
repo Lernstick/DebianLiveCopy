@@ -58,7 +58,7 @@ public class SwitchButton extends Label {
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
-        
+
         updateText();
 
         switchBtn.setOnAction((ActionEvent event) -> {
@@ -181,8 +181,8 @@ public class SwitchButton extends Label {
             setContentDisplay(ContentDisplay.LEFT);
         }
     }
-    
-    private final void updateText(){
+
+    private final void updateText() {
         if (enabled.get()) {
             setText(textOn.get());
         } else {
