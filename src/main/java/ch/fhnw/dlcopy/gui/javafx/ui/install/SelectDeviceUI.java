@@ -45,7 +45,7 @@ public class SelectDeviceUI extends View {
     @FXML private Button btnInstall;
     @FXML private ListView<StorageDevice> lvDevices;
     
-    public SelectDeviceUI(){  
+    public SelectDeviceUI() {
         
         Map<String, String> environment = new HashMap<>();
         environment.put("LC_ALL", "C");
