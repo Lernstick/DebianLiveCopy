@@ -70,7 +70,7 @@ public class SelectDeviceUI extends View {
     }
     
     @Override
-    protected void initControls(){
+    protected void initControls() {
         TimerTask listUpdater = new TimerTask(){
             @Override
             public void run() {
