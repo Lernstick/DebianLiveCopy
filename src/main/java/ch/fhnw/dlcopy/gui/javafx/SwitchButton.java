@@ -58,6 +58,8 @@ public class SwitchButton extends Label {
         loader.setRoot(this);
         loader.setController(this);
         loader.load();
+        
+        updateText();
 
         switchBtn.setOnAction((ActionEvent event) -> {
             toggle();
@@ -97,6 +99,7 @@ public class SwitchButton extends Label {
     @FXML
     public final void setTextOn(String textOn) {
         this.textOn.set(textOn);
+        updateText();
     }
 
     /**
@@ -127,6 +130,7 @@ public class SwitchButton extends Label {
     @FXML
     public final void setTextOff(String textOff) {
         this.textOff.set(textOff);
+        updateText();
     }
 
     /**
@@ -168,14 +172,21 @@ public class SwitchButton extends Label {
 
         getStyleClass().clear();
         getStyleClass().add("switchButtonInline");
+        updateText();
         if (enabled.get()) {
-            setText(textOn.get());
             getStyleClass().add("switchButtonOn");
             setContentDisplay(ContentDisplay.RIGHT);
         } else {
-            setText(textOff.get());
             getStyleClass().add("switchButtonOff");
             setContentDisplay(ContentDisplay.LEFT);
+        }
+    }
+    
+    private final void updateText(){
+        if (enabled.get()) {
+            setText(textOn.get());
+        } else {
+            setText(textOff.get());
         }
     }
 }
