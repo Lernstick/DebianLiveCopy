@@ -223,32 +223,32 @@ public class StorageMediaManagement
 
     @Override
     public void showIsoProgressMessage(String message) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.LoadUI());
     }
 
     @Override
     public void showIsoProgressMessage(String message, int value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.LoadUI());
     }
 
     @Override
     public void isoCreationFinished(String path, boolean success) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.InfoUI());
     }
 
     @Override
     public void showSquashFSProgressMessage(String message) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportdata.LoadUI());
     }
 
     @Override
     public void showSquashFSProgressMessage(String message, int value) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportdata.LoadUI());
     }
 
     @Override
     public void squashFSCreationFinished(String path, boolean success) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportdata.InfoUI());
     }
 
     @Override
