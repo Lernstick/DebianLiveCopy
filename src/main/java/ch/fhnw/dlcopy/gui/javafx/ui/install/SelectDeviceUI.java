@@ -60,11 +60,11 @@ public class SelectDeviceUI extends View {
         resourcePath = getClass().getResource("/fxml/install/selectdevice.fxml");
     }
 
-    @Override
     /**
      * This function is called, when the view should be deinitalized.
      * It has to be called manually!
      */
+    @Override
     public void deinitialize() {
         listUpdateTimer.cancel();
     }
