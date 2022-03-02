@@ -15,9 +15,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<?import ch.fhnw.dlcopy.gui.javafx.SwitchButton?>
+<!--<?import ch.fhnw.dlcopy.gui.javafx.SwitchButton?>-->
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints hgrow="NEVER" />
         <ColumnConstraints hgrow="SOMETIMES" percentWidth="1.0" />
@@ -31,7 +31,7 @@
     <children>
       <VBox fillWidth="false" spacing="5.0">
          <children>
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.dataExport" />
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.exportData" />
             <Separator />
                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="%global.selection">
                <styleClass>
@@ -68,7 +68,7 @@
                       <TextField fx:id="tfTargetDirectory" minHeight="25.333" promptText="%export.tfTargetDirectory" />
                       <Label fx:id="lblWriteableDisplay" minHeight="25.333" text="%global.notApplicable" />
                       <Label fx:id="lblFreeSpaceDisplay" minHeight="25.333" text="%global.notApplicable" />
-                      <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" textOn="%global.on" textOff="%global.off" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                      <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" textOn="%global.on" textOff="%global.off"  />
                       <CheckBox fx:id="chbInformationDialog" minHeight="25.333" mnemonicParsing="false" text="%export.chbInformationDialog" />
                       <CheckBox fx:id="chbInstallationProgram" minHeight="25.333" mnemonicParsing="false" text="%export.chbInstallationProgram" />
                </children>
