@@ -233,7 +233,7 @@ public class StorageMediaManagement
 
     @Override
     public void isoCreationFinished(String path, boolean success) {
-        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.InfoUI());
+        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.InfoUI(path, success));
     }
 
     @Override
@@ -248,7 +248,7 @@ public class StorageMediaManagement
 
     @Override
     public void squashFSCreationFinished(String path, boolean success) {
-        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportdata.InfoUI());
+        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportdata.InfoUI(path, success));
     }
 
     @Override
