@@ -105,7 +105,7 @@ public class SelectDeviceUI extends View {
     }
     
     @Override
-    protected void setupEventHandlers(){
+    protected void setupEventHandlers() {
         
         btnBack.setOnAction(event -> {
             context.setScene(new StartscreenUI());
