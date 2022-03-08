@@ -126,4 +126,5 @@
             <Insets bottom="30.0" top="30.0" />
          </padding>
       </HBox>
+    </children>
 </GridPane>
