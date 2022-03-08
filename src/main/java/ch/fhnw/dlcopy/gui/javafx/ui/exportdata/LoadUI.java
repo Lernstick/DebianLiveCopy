@@ -9,7 +9,7 @@ public class LoadUI extends View{
     @FXML private ImageView imgExportFile;
     
     public LoadUI(){
-        resourcePath = getClass().getResource("/fxml/exportData/load-responsive.fxml");
+        resourcePath = getClass().getResource("/fxml/exportData/load.fxml");
     }
     
     @Override

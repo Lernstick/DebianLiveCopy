@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
@@ -10,119 +11,119 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
 <?import ch.fhnw.dlcopy.gui.javafx.SwitchButton?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="19.0" prefWidth="100.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="1.0" prefWidth="100.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="80.0" prefWidth="100.0" />
+        <ColumnConstraints hgrow="NEVER" />
+        <ColumnConstraints hgrow="SOMETIMES" percentWidth="1.0" />
+        <ColumnConstraints hgrow="ALWAYS" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="10.0" percentHeight="85.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" percentHeight="1.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" percentHeight="14.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints vgrow="ALWAYS" />
+        <RowConstraints vgrow="SOMETIMES" />
+        <RowConstraints vgrow="SOMETIMES" />
     </rowConstraints>
     <children>
-        <GridPane>
-            <columnConstraints>
-                <ColumnConstraints halignment="LEFT" minWidth="10.0" prefWidth="100.0" />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints maxHeight="1.7976931348623157E308" minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="2.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="50.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            </rowConstraints>
-            <children>
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="%global.exportData" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
-                <Separator prefWidth="200.0" GridPane.rowIndex="1" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%global.selection" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS">
-                    <styleClass>
-                        <String fx:value="labelcenter" />
-                        <String fx:value="labelselected" />
-                    </styleClass>
+      <VBox fillWidth="false" spacing="5.0">
+         <children>
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.dataExport" />
+            <Separator />
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="%global.selection">
+               <styleClass>
+                  <String fx:value="labelcenter" />
+                  <String fx:value="labelselected" />
+               </styleClass>
                 </Label>
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="%global.export" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="%global.finish" GridPane.rowIndex="4" />
-            </children>
-        </GridPane>
-        <Separator orientation="VERTICAL" prefHeight="200.0" GridPane.columnIndex="1" />
-        <Separator orientation="VERTICAL" prefHeight="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <Separator orientation="VERTICAL" prefHeight="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-        <Separator prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-        <Separator prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <GridPane GridPane.columnIndex="2" GridPane.rowIndex="2">
-            <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="55.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="14.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="3.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="14.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints minHeight="10.0" percentHeight="33.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="33.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="33.3" prefHeight="30.0" vgrow="SOMETIMES" />
-            </rowConstraints>
-            <children>
-                <Label fx:id="lblInfo" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Info" textAlignment="CENTER" GridPane.columnIndex="1" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
-                <Button fx:id="btnBack" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="%global.previous" GridPane.columnIndex="3" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
-                <Button fx:id="btnExport" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="%global.export" GridPane.columnIndex="5" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
-            </children>
-        </GridPane>
-        <GridPane GridPane.columnIndex="2">
-            <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints minHeight="10.0" percentHeight="7.6" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="50.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            </rowConstraints>
-            <children>
-                <Label fx:id="lblTargetDirectory" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%export.lblTargetDirectory" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-                <Label fx:id="lblWriteable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%export.lblWriteable" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                <Label fx:id="lblFreeSpace" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%export.lblFreeSpace" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%global.expertMode" GridPane.columnIndex="1" GridPane.rowIndex="4" />
-                <TextField fx:id="tfTargetDirectory" promptText="%export.tfTargetDirectory" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-                <Label fx:id="lblWriteableDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%global.notApplicable" GridPane.columnIndex="2" GridPane.rowIndex="2" />
-                <Label fx:id="lblFreeSpaceDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%global.notApplicable" GridPane.columnIndex="2" GridPane.rowIndex="3" />
-                <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" textOn="%global.on" textOff="%global.off"  GridPane.columnIndex="2" GridPane.rowIndex="4" />
-                <CheckBox fx:id="chbInformationDialog" mnemonicParsing="false" text="%export.chbInformationDialog" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="5" />
-                <CheckBox fx:id="chbInstallationProgram" mnemonicParsing="false" text="%export.chbInstallationProgram" visible="false" GridPane.columnIndex="2" GridPane.rowIndex="6" />
-                <Button fx:id="btnTargetDirectory" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" GridPane.columnIndex="4" GridPane.rowIndex="1">
-                    <graphic>
-                        <ImageView fx:id="imgTargetDirectory" fitHeight="16.0" fitWidth="20.0" pickOnBounds="true">
-                            <image>
-                                <Image url="@../../new_icons/open-file-folder-white.png" />
-                            </image>
-                        </ImageView>
-                    </graphic>
-                </Button>
-            </children>
-        </GridPane>
-    </children>
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.export" />
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.finish" />
+         </children>
+         <padding>
+            <Insets left="5.0" right="5.0" top="10.0" />
+         </padding>
+      </VBox>
+        <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="1" />
+        <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+      <HBox GridPane.columnIndex="2">
+         <children>
+            <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+               <children>
+                      <Label fx:id="lblTargetDirectory" minHeight="25.333" text="%export.lblTargetDirectory" />
+                      <Label fx:id="lblWriteable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="25.333" text="%export.lblWriteable" />
+                      <Label fx:id="lblFreeSpace" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="25.333" text="%export.lblFreeSpace" />
+                      <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="25.333" text="%global.expertMode" />
+               </children>
+               <HBox.margin>
+                  <Insets left="20.0" top="40.0" />
+               </HBox.margin>
+            </VBox>
+            <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+               <children>
+                      <TextField fx:id="tfTargetDirectory" minHeight="25.333" promptText="%export.tfTargetDirectory" />
+                      <Label fx:id="lblWriteableDisplay" minHeight="25.333" text="%global.notApplicable" />
+                      <Label fx:id="lblFreeSpaceDisplay" minHeight="25.333" text="%global.notApplicable" />
+                      <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" textOn="%global.on" textOff="%global.off" GridPane.columnIndex="2" GridPane.rowIndex="4" />
+                      <CheckBox fx:id="chbInformationDialog" minHeight="25.333" mnemonicParsing="false" text="%export.chbInformationDialog" />
+                      <CheckBox fx:id="chbInstallationProgram" minHeight="25.333" mnemonicParsing="false" text="%export.chbInstallationProgram" />
+               </children>
+               <HBox.margin>
+                  <Insets left="20.0" right="20.0" top="40.0" />
+               </HBox.margin>
+            </VBox>
+            <VBox HBox.hgrow="ALWAYS">
+               <children>
+                      <Button fx:id="btnTargetDirectory" mnemonicParsing="false">
+                          <graphic>
+                              <ImageView fx:id="imgTargetDirectory" fitHeight="16.0" fitWidth="20.0" pickOnBounds="true">
+                                  <image>
+                                      <Image url="@../../new_icons/open-file-folder-white.png" />
+                                  </image>
+                              </ImageView>
+                          </graphic>
+                      </Button>
+               </children>
+               <HBox.margin>
+                  <Insets right="20.0" top="40.0" />
+               </HBox.margin>
+            </VBox>
+         </children>
+      </HBox>
+      <HBox GridPane.columnIndex="2" GridPane.rowIndex="2">
+         <children>
+            <VBox HBox.hgrow="ALWAYS">
+               <children>
+                      <Label fx:id="lblInfo" text="Info" textAlignment="CENTER" />
+               </children>
+            </VBox>
+            <VBox HBox.hgrow="NEVER">
+               <children>
+                      <Button fx:id="btnExport" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="%global.previous" />
+               </children>
+            </VBox>
+            <VBox HBox.hgrow="NEVER">
+               <children>
+                      <Button fx:id="btnBack" mnemonicParsing="false" text="%global.export">
+                     <VBox.margin>
+                        <Insets right="20.0" />
+                     </VBox.margin>
+                  </Button>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="30.0" top="30.0" />
+         </padding>
+      </HBox>
 </GridPane>

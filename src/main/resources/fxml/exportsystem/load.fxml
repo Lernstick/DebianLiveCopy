@@ -10,99 +10,91 @@
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="19.0" prefWidth="100.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="1.0" prefWidth="100.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="80.0" prefWidth="100.0" />
+        <ColumnConstraints hgrow="NEVER" />
+        <ColumnConstraints hgrow="SOMETIMES" percentWidth="1.0" />
+        <ColumnConstraints hgrow="ALWAYS" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="10.0" percentHeight="85.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" percentHeight="1.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" percentHeight="14.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints vgrow="ALWAYS" />
+        <RowConstraints vgrow="SOMETIMES" />
+        <RowConstraints vgrow="SOMETIMES" />
     </rowConstraints>
     <children>
-        <GridPane>
-            <columnConstraints>
-                <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="2.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="50.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            </rowConstraints>
-            <children>
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="%global.exportSystem" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
-                <Separator prefWidth="200.0" GridPane.rowIndex="1" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="%global.selection" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%global.export" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS">
-                    <styleClass>
-                        <String fx:value="labelcenter" />
-                        <String fx:value="labelselected" />
-                    </styleClass>
-                </Label>
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="%global.finish" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
-            </children>
-        </GridPane>
-        <Separator orientation="VERTICAL" prefHeight="200.0" GridPane.columnIndex="1" />
-        <Separator orientation="VERTICAL" prefHeight="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <Separator orientation="VERTICAL" prefHeight="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-        <Separator prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-        <Separator prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <GridPane GridPane.columnIndex="2" GridPane.rowIndex="2">
-            <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="60.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="14.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="3.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="14.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints minHeight="10.0" percentHeight="33.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="33.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="33.3" prefHeight="30.0" vgrow="SOMETIMES" />
-            </rowConstraints>
-            <children>
-                <Label fx:id="lblInfo" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Info" textAlignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
-                <Button fx:id="btnNext" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="%global.next" GridPane.columnIndex="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
-            </children>
-        </GridPane>
-        <GridPane GridPane.columnIndex="2">
-            <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="60.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="20.0" prefWidth="100.0" />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints minHeight="10.0" percentHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="20.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="30.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            </rowConstraints>
-            <children>
-                <ImageView fx:id="imgExportFile" cache="true" fitHeight="97.0" fitWidth="92.0" pickOnBounds="true" preserveRatio="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
-                    <image>
+      <VBox fillWidth="false" spacing="5.0">
+         <children>
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.systemExport" />
+            <Separator />
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.selection" />
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="%global.export">
+               <styleClass>
+                  <String fx:value="labelcenter" />
+                  <String fx:value="labelselected" />
+               </styleClass></Label>
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.finish" />
+         </children>
+         <padding>
+            <Insets left="5.0" right="5.0" top="10.0" />
+         </padding>
+      </VBox>
+        <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="1" />
+        <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="1" GridPane.rowIndex="1" />
+        <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="1" GridPane.rowIndex="2" />
+        <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+      <HBox spacing="20.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+         <children>
+            <VBox alignment="CENTER" spacing="20.0" HBox.hgrow="ALWAYS">
+               <children>
+                  <ImageView fx:id="imgExportFile" cache="true" fitHeight="99.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="SOMETIMES">
+                     <image>
                         <Image url="@../../new_icons/export-file-white.png" />
-                    </image>
-                    <GridPane.margin>
-                        <Insets />
-                    </GridPane.margin>
-                </ImageView>
-                <ProgressBar fx:id="pbStatus" maxWidth="1.7976931348623157E308" progress="0.49" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-                <Label fx:id="lblStatusInfo" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="Label" GridPane.columnIndex="1" GridPane.rowIndex="3" />
-            </children>
-        </GridPane>
+                     </image>
+                  </ImageView>
+                  <ProgressBar fx:id="pbStatus" maxWidth="1.7976931348623157E308" progress="0.49" VBox.vgrow="ALWAYS" />
+                  <Label fx:id="IblStatusInfo" styleClass="labelcenter" text="Label" />
+               </children>
+            </VBox>
+         </children>
+         <opaqueInsets>
+            <Insets />
+         </opaqueInsets>
+         <GridPane.margin>
+            <Insets bottom="20.0" left="40.0" right="40.0" top="20.0" />
+         </GridPane.margin>
+      </HBox>
+      <HBox GridPane.columnIndex="2" GridPane.rowIndex="2">
+         <children>
+            <VBox HBox.hgrow="ALWAYS">
+               <children>
+                      <Label fx:id="lblInfo" text="Info" textAlignment="CENTER" />
+               </children>
+            </VBox>
+            <VBox HBox.hgrow="NEVER" />
+            <VBox HBox.hgrow="NEVER">
+               <children>
+                      <Button fx:id="btnBack" mnemonicParsing="false" text="%global.next">
+                     <VBox.margin>
+                        <Insets right="20.0" />
+                     </VBox.margin>
+                  </Button>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="30.0" top="30.0" />
+         </padding>
+      </HBox>
     </children>
 </GridPane>
