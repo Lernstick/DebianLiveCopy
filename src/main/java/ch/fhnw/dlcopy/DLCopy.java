@@ -111,11 +111,11 @@ public class DLCopy {
             startFX(args);
         }
     }
-    
+
     public static void startFX(final String args[]){
         StorageMediaManagement.launchFX(args);
     }
-    
+
     public static void startSwing(final String args[]){
         java.awt.EventQueue.invokeLater(() -> {
             DLCopySwingGUI gui = new DLCopySwingGUI(args);

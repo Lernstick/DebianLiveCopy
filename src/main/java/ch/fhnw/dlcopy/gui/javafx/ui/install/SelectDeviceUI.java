@@ -4,13 +4,16 @@ import ch.fhnw.dlcopy.DLCopy;
 import static ch.fhnw.dlcopy.DLCopy.STRINGS;
 import ch.fhnw.dlcopy.DataPartitionMode;
 import ch.fhnw.dlcopy.Installer;
+import ch.fhnw.dlcopy.PartitionState;
 import ch.fhnw.dlcopy.RunningSystemSource;
 import ch.fhnw.dlcopy.SystemSource;
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
+import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
 import java.io.IOException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -22,6 +25,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -30,23 +34,23 @@ import javafx.scene.control.ListView;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 public class SelectDeviceUI extends View {
-    
+
     private static final Logger LOGGER = Logger.getLogger(SelectDeviceUI.class.getName());
     private static final ProcessExecutor PROCESS_EXECUTOR = new ProcessExecutor();
-    
+
     private final Timer listUpdateTimer = new Timer();
     private SystemSource runningSystemSource;
-    
+
     // some locks to synchronize the Installer, Upgrader and Resetter with their
     // corresponding StorageDeviceAdder
     private Lock installLock = new ReentrantLock();
-    
+
     @FXML private Button btnBack;
     @FXML private Button btnInstall;
     @FXML private ListView<StorageDevice> lvDevices;
-    
+
     public SelectDeviceUI() {
-        
+
         Map<String, String> environment = new HashMap<>();
         environment.put("LC_ALL", "C");
         PROCESS_EXECUTOR.setEnvironment(environment);
@@ -56,8 +60,8 @@ public class SelectDeviceUI extends View {
         } catch (DBusException | IOException ex) {
             LOGGER.log(Level.SEVERE, null, ex);
         }
-        
-        resourcePath = getClass().getResource("/fxml/install/selectdevice.fxml");
+
+        resourcePath = getClass().getResource("/fxml/install/selectDevice.fxml");
     }
 
     /**
@@ -68,7 +72,7 @@ public class SelectDeviceUI extends View {
     public void deinitialize() {
         listUpdateTimer.cancel();
     }
-    
+
     @Override
     protected void initControls() {
         TimerTask listUpdater = new TimerTask() {
@@ -100,19 +104,20 @@ public class SelectDeviceUI extends View {
             }
         };
         listUpdateTimer.scheduleAtFixedRate(listUpdater, 0, 1000L); // Starts the `lisstUpdater`-task each 1000ms (1sec)
-        
+
         lvDevices.setPlaceholder(new Label(stringBundle.getString("install.lvDevices")));
     }
-    
+
     @Override
     protected void setupEventHandlers() {
-        
+
         btnBack.setOnAction(event -> {
             context.setScene(new StartscreenUI());
         });
-        
+
+        // TODO: add setSystemSource event to select source btn
+
         btnInstall.setOnAction(event -> {
-            
             new Installer(
                 runningSystemSource,    // the system source
                 lvDevices.getSelectionModel().getSelectedItems(),   // the list of StorageDevices to install
@@ -146,7 +151,74 @@ public class SelectDeviceUI extends View {
             context.setScene(new InstallationReportUI());
         });
     }
-    
+
+    public void updateInstallSelectionCountAndExchangeInfo() {
+        // check all selected storage devices
+        long minOverhead = Long.MAX_VALUE;
+        boolean exchange = true;
+        ObservableList<StorageDevice> selectedIndices = lvDevices.getSelectionModel().getSelectedItems();
+
+        if (selectedIndices.isEmpty()) {
+            minOverhead = 0;
+            exchange = false;
+        } else {
+            if (runningSystemSource == null) {
+                LOGGER.warning("No valid system source selected!");
+            } else {
+                long enlargedSystemSize = DLCopy.getEnlargedSystemSize(
+                        runningSystemSource.getSystemSize());
+
+                for (StorageDevice device : selectedIndices) {
+                    long overhead = device.getSize()
+                            - (DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA)
+                            - enlargedSystemSize;
+
+                    minOverhead = Math.min(minOverhead, overhead);
+
+                    PartitionState partitionState = DLCopy.getPartitionState(
+                            device.getSize(),
+                            (DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA)
+                            + enlargedSystemSize);
+
+                    if (partitionState != PartitionState.EXCHANGE) {
+                        exchange = false;
+                        break; // for
+                    }
+                }
+            }
+        }
+
+        // TODO: update all other parts of the UI
+        // see ch.fhnw.dlcopy.gui.swing.InstallerPanels
+    }
+
+    private void setSystemSource(SystemSource systemSource) {
+        // early return
+        if (systemSource == null) {
+            return;
+        }
+
+        // update source dependend strings and states
+        long enlargedSystemSize
+                = DLCopy.getEnlargedSystemSize(systemSource.getSystemSize());
+        String sizeString
+                = LernstickFileTools.getDataVolumeString(enlargedSystemSize, 1);
+
+
+        // TODO: define UI elements
+        /*
+        lblSelectionHeaderLabel.setText(MessageFormat.format(
+                STRINGS.getString("Select_Install_Target_Storage_Media"),
+                sizeString));
+
+        lblSystemDefinition.setText(MessageFormat.format(
+                STRINGS.getString("System_Definition"), sizeString));
+        */
+
+        // TODO: update all other parts of the UI
+        // see ch.fhnw.dlcopy.gui.swing.InstallerPanels
+    }
+
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(STRINGS.getString("Error"));
