@@ -4,6 +4,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
@@ -55,22 +56,26 @@
             <VBox spacing="10.0" HBox.hgrow="ALWAYS">
                <children>
                       <Label fx:id="lblTargetDirectory" minHeight="25.333" text="%export.lblTargetDirectory" />
-                      <Label fx:id="lblWriteable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="25.333" text="%export.lblWriteable" />
-                      <Label fx:id="lblFreeSpace" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="25.333" text="%export.lblFreeSpace" />
-                      <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="25.333" text="%global.expertMode" />
+                  <Label minHeight="25.333" text="%export.lblDvdLabel" />
+                      <Label fx:id="lblWriteable" maxHeight="1.7976931348623157E308" minHeight="25.333" text="%export.lblWriteable" />
+                      <Label fx:id="lblFreeSpace" maxHeight="1.7976931348623157E308" minHeight="25.333" text="%export.lblFreeSpace" />
+                  <Label minHeight="25.333" text="%export.lblDataPartitionMode" />
+                      <Label maxHeight="1.7976931348623157E308" minHeight="25.333" text="%global.expertMode" />
                </children>
                <HBox.margin>
                   <Insets left="20.0" top="40.0" />
                </HBox.margin>
             </VBox>
-            <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+            <VBox minWidth="10.0" spacing="10.0" HBox.hgrow="ALWAYS">
                <children>
-                      <TextField fx:id="tfTargetDirectory" minHeight="25.333" promptText="%export.tfTargetDirectory" />
-                      <Label fx:id="lblWriteableDisplay" minHeight="25.333" text="%sdffg" />
-                      <Label fx:id="lblFreeSpaceDisplay" minHeight="25.333" text="%global.notApplicable" />
+                      <TextField fx:id="tfTargetDirectory" maxHeight="1.7976931348623157E308" minHeight="25.333" promptText="%export.tfTargetDirectory" />
+                  <TextField fx:id="tfDvdLabel" minHeight="25.333" promptText="%export.tfDvdLabel" />
+                      <Label fx:id="lblWriteableDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="25.333" text="%sdffg" />
+                      <Label fx:id="lblFreeSpaceDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="25.333" text="%global.notApplicable" />
+                  <ComboBox fx:id="cmbDataPartitionMode" maxHeight="0.0" minHeight="25.333" />
                       <!-- <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" GridPane.columnIndex="2" GridPane.rowIndex="4" /> -->
-                      <CheckBox fx:id="chbInformationDialog" minHeight="25.333" mnemonicParsing="false" text="%export.chbInformationDialog" />
-                      <CheckBox fx:id="chbInstallationProgram" minHeight="25.333" mnemonicParsing="false" text="%export.chbInstallationProgram" />
+                      <CheckBox fx:id="chbInformationDialog" minHeight="25.333" mnemonicParsing="false" text="%export.chbInformationDialog" visible="false" />
+                      <CheckBox fx:id="chbInstallationProgram" minHeight="25.333" mnemonicParsing="false" text="%export.chbInstallationProgram" visible="false" />
                </children>
                <HBox.margin>
                   <Insets left="20.0" right="20.0" top="40.0" />
