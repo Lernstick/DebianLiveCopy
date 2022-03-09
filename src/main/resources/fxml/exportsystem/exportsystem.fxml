@@ -55,12 +55,12 @@
          <children>
             <VBox spacing="10.0" HBox.hgrow="ALWAYS">
                <children>
-                      <Label fx:id="lblTargetDirectory" minHeight="28.0" text="%export.lblTargetDirectory" />
-                  <Label minHeight="28.0" text="%export.lblDvdLabel" />
-                      <Label fx:id="lblWriteable" maxHeight="1.7976931348623157E308" minHeight="28.0" text="%export.lblWriteable" />
-                      <Label fx:id="lblFreeSpace" maxHeight="1.7976931348623157E308" minHeight="28.0" text="%export.lblFreeSpace" />
-                  <Label minHeight="28.0" text="%export.lblDataPartitionMode" />
-                      <Label maxHeight="1.7976931348623157E308" minHeight="28.0" text="%global.expertMode" />
+                      <Label fx:id="lblTargetDirectory" minHeight="32.0" text="%export.lblTargetDirectory" />
+                  <Label minHeight="32.0" text="%export.lblDvdLabel" />
+                      <Label fx:id="lblWriteable" maxHeight="1.7976931348623157E308" minHeight="32.0" text="%export.lblWriteable" />
+                      <Label fx:id="lblFreeSpace" maxHeight="1.7976931348623157E308" minHeight="32.0" text="%export.lblFreeSpace" />
+                  <Label minHeight="32.0" text="%export.lblDataPartitionMode" />
+                      <Label maxHeight="1.7976931348623157E308" minHeight="32.0" text="%global.expertMode" />
                </children>
                <HBox.margin>
                   <Insets left="20.0" top="40.0" />
@@ -68,14 +68,14 @@
             </VBox>
             <VBox minWidth="10.0" spacing="10.0" HBox.hgrow="ALWAYS">
                <children>
-                      <TextField fx:id="tfTargetDirectory" maxHeight="1.7976931348623157E308" minHeight="28.0" promptText="%export.tfTargetDirectory" />
-                  <TextField fx:id="tfDvdLabel" minHeight="28.0" promptText="%export.tfDvdLabel" />
-                      <Label fx:id="lblWriteableDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="28.0" text="%global.notApplicable" />
-                      <Label fx:id="lblFreeSpaceDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="28.0" text="%global.notApplicable" />
-                  <ComboBox fx:id="cmbDataPartitionMode" maxHeight="0.0" minHeight="25.333" />
+                      <TextField fx:id="tfTargetDirectory" maxHeight="1.7976931348623157E308" minHeight="32.0" promptText="%export.tfTargetDirectory" />
+                  <TextField fx:id="tfDvdLabel" minHeight="32.0" promptText="%export.tfDvdLabel" />
+                      <Label fx:id="lblWriteableDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%global.notApplicable" />
+                      <Label fx:id="lblFreeSpaceDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%global.notApplicable" />
+                  <ComboBox fx:id="cmbDataPartitionMode" maxHeight="0.0" minHeight="32.0" />
                       <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" textOn="%global.on" textOff="%global.off" />
-                      <CheckBox fx:id="chbInformationDialog" minHeight="28.0" mnemonicParsing="false" text="%export.chbInformationDialog" visible="false" />
-                      <CheckBox fx:id="chbInstallationProgram" minHeight="28.0" mnemonicParsing="false" text="%export.chbInstallationProgram" visible="false" />
+                      <CheckBox fx:id="chbInformationDialog" minHeight="32.0" mnemonicParsing="false" text="%export.chbInformationDialog" visible="false" />
+                      <CheckBox fx:id="chbInstallationProgram" minHeight="32.0" mnemonicParsing="false" text="%export.chbInstallationProgram" visible="false" />
                </children>
                <HBox.margin>
                   <Insets left="20.0" right="20.0" top="40.0" />
