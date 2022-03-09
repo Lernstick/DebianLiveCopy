@@ -61,6 +61,11 @@ public class ExportDataUI extends View {
     }
 
     @Override
+    protected void initControls() {
+        btnExport.setDisable(true);
+    }
+
+    @Override
     protected void setupEventHandlers() {
 
         switchBtn.setOnAction(event -> {
@@ -77,8 +82,10 @@ public class ExportDataUI extends View {
 
         btnExport.setOnAction((ActionEvent event) -> {
             if (tfTargetDirectory.getText().isBlank()) {
-                createDataPartiton();
+                LOGGER.log(Level.WARNING, "No directory choosen.");
+                return;
             }
+            createDataPartiton();
         });
     }
 
@@ -120,7 +127,6 @@ public class ExportDataUI extends View {
 
     private void createDataPartiton() {
         try {
-            context.setScene(new LoadUI());
             new SquashFSCreator(
                 context,
                 runningSystemSource,

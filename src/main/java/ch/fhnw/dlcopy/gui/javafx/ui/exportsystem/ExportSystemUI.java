@@ -76,6 +76,7 @@ public class ExportSystemUI extends View {
     protected void initControls() {
         cmbDataPartitionMode.getItems().addAll(option_ReadWrite, option_ReadOnly, option_NotUsed);
         cmbDataPartitionMode.setValue(option_ReadWrite);
+        btnExport.setDisable(true);
     }
 
     @Override
@@ -92,31 +93,20 @@ public class ExportSystemUI extends View {
         });
 
         btnExport.setOnAction(event -> {
-            try {
-                if (!(tfTargetDirectory.getText().isBlank() && tfDvdLabel.getText().isBlank())) {
-                    return;
-                }
-                if (!isUnmountedPersistenceAvailable()) {
-                    btnExport.setDisable(true);
-                    return;
-                }
-                context.setScene(new LoadUI());
-                new IsoCreator(
-                    context,
-                    runningSystemSource,
-                    false,                               // Only boot medium
-                    tfTargetDirectory.getText(),         // tmpDirectory
-                    getDataPartitionMode(),              // Data Partition mode
-                    chbInformationDialog.isSelected(),   // showNotUsedDialog
-                    chbInstallationProgram.isSelected(), // autoStartInstaller
-                    tfDvdLabel.getText()                 // partition label
-                ).createISO();
-            } catch (Exception ex) {
-                LOGGER.log(Level.SEVERE, "", ex);
-                showError(ex.getLocalizedMessage());
+            boolean isIncomplete = false; // To log all errors at the same time
+            if (tfTargetDirectory.getText().isBlank()) {
+                LOGGER.log(Level.WARNING, "No directory choosen.");
+                isIncomplete = true;
             }
+            if (tfDvdLabel.getText().isBlank()) {
+                LOGGER.log(Level.WARNING, "No label choosen.");
+                isIncomplete = true;
+            }
+            if (isIncomplete) {
+                return;
+            }
+            createIso();
         });
-
     }
 
     public DataPartitionMode getDataPartitionMode() {
@@ -213,6 +203,28 @@ public class ExportSystemUI extends View {
             }
         }
         return true;
+    }
+
+    private void createIso() {
+        try {
+            if (!isUnmountedPersistenceAvailable()) {
+                btnExport.setDisable(true);
+                return;
+            }
+            new IsoCreator(
+                context,
+                runningSystemSource,
+                false,                               // Only boot medium
+                tfTargetDirectory.getText(),         // tmpDirectory
+                getDataPartitionMode(),              // Data Partition mode
+                chbInformationDialog.isSelected(),   // showNotUsedDialog
+                chbInstallationProgram.isSelected(), // autoStartInstaller
+                tfDvdLabel.getText()                 // partition label
+            ).createISO();
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+            showError(ex.getLocalizedMessage());
+        }
     }
 
     private void toggleExpertMode() {
