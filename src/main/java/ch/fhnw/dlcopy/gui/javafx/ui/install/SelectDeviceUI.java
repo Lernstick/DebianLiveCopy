@@ -143,6 +143,7 @@ public class SelectDeviceUI extends View {
                 false,  // if copies should be checked for errors
                 installLock // the lock to aquire before executing in background
             );
+            context.setScene(new InstallationReportUI());
         });
     }
     
