@@ -87,10 +87,10 @@
                       <TableColumn fx:id="colNumber" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.number" />
                         <TableColumn fx:id="colMountpoint" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.mountpoint" />
                         <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.mounted" />
-                        <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.vendor" />
-                        <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.model" />
-                        <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.serial" />
-                        <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.size" />
+                        <TableColumn fx:id="colVendor" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.vendor" />
+                        <TableColumn fx:id="colModel" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.model" />
+                        <TableColumn fx:id="colSerial" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.serial" />
+                        <TableColumn fx:id="colSize" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.size" />
                         <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.start" />
                         <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.finish" />
                         <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.duration" />
