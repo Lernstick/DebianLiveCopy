@@ -82,10 +82,10 @@
         <content>
           <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" nodeOrientation="LEFT_TO_RIGHT">
                <children>
-                  <TableView prefHeight="460.0">
+                  <TableView id="tvReport" fx:id="tvReport" prefHeight="460.0">
                     <columns>
-                      <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.number" />
-                        <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.mountpoint" />
+                      <TableColumn fx:id="colNumber" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.number" />
+                        <TableColumn fx:id="colMountpoint" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.mountpoint" />
                         <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.mounted" />
                         <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.vendor" />
                         <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.model" />

@@ -142,7 +142,7 @@ public class SelectDeviceUI extends View {
                 false,  // if the firewall settings should be transferred
                 false,  // if copies should be checked for errors
                 installLock // the lock to aquire before executing in background
-            );
+            ).execute();
             context.setScene(new InstallationReportUI());
         });
     }

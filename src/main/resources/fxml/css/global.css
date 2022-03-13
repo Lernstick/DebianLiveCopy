@@ -5,8 +5,6 @@
 .cell {
     -fx-background-color: #3C3C3C;
     -fx-border-color: #282828;
-    -fx-border-width: 3;
-    -fx-border-radius: 5;
     -fx-text-fill: #EEEEEE;
 }
 
