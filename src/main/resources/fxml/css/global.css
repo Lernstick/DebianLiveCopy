@@ -2,6 +2,14 @@
     -fx-background-color: #353535;
 }
 
+.cell {
+    -fx-background-color: #3C3C3C;
+    -fx-border-color: #282828;
+    -fx-border-width: 3;
+    -fx-border-radius: 5;
+    -fx-text-fill: #EEEEEE;
+}
+
 .label {
     -fx-font-family: "Cantarell";
     -fx-text-fill: #EEEEEE;
@@ -60,8 +68,22 @@
     -fx-border-color: #1F76E1;
 }
 
-.check-box {
+.check-box {    
     -fx-font-family: "Cantarell";
+    -fx-text-fill: #EEEEEE;
+}
+
+.table-view {
+    -fx-background-color: #3C3C3C;
+    -fx-border-color: #282828;
+    -fx-border-width: 3;
+    -fx-border-radius: 5;
+    -fx-text-fill: #EEEEEE;
+}
+
+.table-view .column-header {
+    -fx-background-color: #3C3C3C;
+    -fx-border-color: #282828;
     -fx-text-fill: #EEEEEE;
 }
 
