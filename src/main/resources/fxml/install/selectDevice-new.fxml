@@ -4,10 +4,9 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.Separator?>
-<?import javafx.scene.control.TextArea?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -30,13 +29,14 @@
          <children>
                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.installSystem" />
             <Separator />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.selection" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.install" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="%global.finish">
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="%global.selection">
                <styleClass>
                   <String fx:value="labelcenter" />
                   <String fx:value="labelselected" />
-               </styleClass></Label>
+               </styleClass>
+                </Label>
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.install" />
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.finish" />
          </children>
          <padding>
             <Insets left="5.0" right="5.0" top="10.0" />
@@ -46,25 +46,39 @@
         <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="1" GridPane.rowIndex="1" />
         <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="1" GridPane.rowIndex="2" />
         <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-      <HBox spacing="20.0" GridPane.columnIndex="2" GridPane.halignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.valignment="CENTER" GridPane.vgrow="ALWAYS">
+      <HBox GridPane.columnIndex="2">
          <children>
-            <VBox alignment="CENTER" spacing="20.0" HBox.hgrow="ALWAYS">
+            <VBox maxWidth="1.7976931348623157E308" minWidth="-Infinity" HBox.hgrow="ALWAYS">
                <children>
-                  <ImageView fx:id="imgExportFile" cache="true" fitHeight="99.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" VBox.vgrow="SOMETIMES">
-                     <image>
-                        <Image url="@../../new_icons/install-software-download-white.png" />
-                     </image>
-                  </ImageView>
-                  <TextArea fx:id="taExtraInfo" VBox.vgrow="ALWAYS" />
+                  <VBox fx:id="lblSourceSelection" maxWidth="-Infinity" spacing="10.0">
+                     <children>
+                        <Label fx:id="lblSourceSelection" text="%install.lblSourceSelection" />
+                        <RadioButton fx:id="rdbCurrentSystem" mnemonicParsing="false" text="%install.rdbCurrentSystem">
+                           <toggleGroup>
+                              <ToggleGroup fx:id="selectDevice" />
+                           </toggleGroup>
+                        </RadioButton>
+                        <RadioButton fx:id="rdbIsoImage" mnemonicParsing="false" text="%install.rdbIsoImage" toggleGroup="$selectDevice" />
+                     </children>
+                     <padding>
+                        <Insets bottom="10.0" left="20.0" top="10.0" />
+                     </padding>
+                  </VBox>
+                  <Separator />
+                  <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
+                     <children>
+                        <Label fx:id="lblInstallationTarget" text="%install.lblInstallationTarget" />
+                     </children>
+                     <opaqueInsets>
+                        <Insets />
+                     </opaqueInsets>
+                     <padding>
+                        <Insets left="20.0" top="10.0" />
+                     </padding>
+                  </VBox>
                </children>
             </VBox>
          </children>
-         <opaqueInsets>
-            <Insets />
-         </opaqueInsets>
-         <GridPane.margin>
-            <Insets bottom="20.0" left="40.0" right="40.0" top="20.0" />
-         </GridPane.margin>
       </HBox>
       <HBox GridPane.columnIndex="2" GridPane.rowIndex="2">
          <children>
@@ -75,7 +89,12 @@
             </VBox>
             <VBox HBox.hgrow="NEVER">
                <children>
-                      <Button fx:id="btnBack" mnemonicParsing="false" text="%global.finish">
+                      <Button fx:id="btnBack" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="%global.previous" />
+               </children>
+            </VBox>
+            <VBox HBox.hgrow="NEVER">
+               <children>
+                      <Button fx:id="btnExport" mnemonicParsing="false" text="%global.install">
                      <VBox.margin>
                         <Insets right="20.0" />
                      </VBox.margin>

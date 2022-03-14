@@ -4,6 +4,7 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextArea?>
 <?import javafx.scene.image.Image?>
@@ -26,17 +27,17 @@
         <RowConstraints vgrow="SOMETIMES" />
     </rowConstraints>
     <children>
-      <VBox fillWidth="false" spacing="5.0">
+     <VBox fillWidth="false" spacing="5.0">
          <children>
                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.installSystem" />
             <Separator />
                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.selection" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.install" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="%global.finish">
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="%global.install">
                <styleClass>
                   <String fx:value="labelcenter" />
                   <String fx:value="labelselected" />
                </styleClass></Label>
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.finish" />
          </children>
          <padding>
             <Insets left="5.0" right="5.0" top="10.0" />
@@ -55,7 +56,8 @@
                         <Image url="@../../new_icons/install-software-download-white.png" />
                      </image>
                   </ImageView>
-                  <TextArea fx:id="taExtraInfo" VBox.vgrow="ALWAYS" />
+                  <ProgressBar fx:id="pbStatus" maxWidth="1.7976931348623157E308" progress="0.49" VBox.vgrow="ALWAYS" />
+                  <TextArea fx:id="taExtraInfo" />
                </children>
             </VBox>
          </children>
@@ -75,7 +77,7 @@
             </VBox>
             <VBox HBox.hgrow="NEVER">
                <children>
-                      <Button fx:id="btnBack" mnemonicParsing="false" text="%global.finish">
+                      <Button fx:id="btnBack" mnemonicParsing="false" text="%global.next">
                      <VBox.margin>
                         <Insets right="20.0" />
                      </VBox.margin>

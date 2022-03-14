@@ -71,6 +71,38 @@
     -fx-text-fill: #EEEEEE;
 }
 
+.check-box .box {
+    -fx-background-color: #3C3C3C;
+    -fx-border-color: #282828;
+    -fx-border-width: 2;
+}
+
+.check-box:selected .box {
+    -fx-text-fill: #EEEEEE;
+    -fx-background-color: #494949;
+    -fx-border-color: #282828;
+}
+
+.radio-button{
+    -fx-font-family: "Cantarell";
+    -fx-text-fill: #EEEEEE;
+}
+
+.radio-button .radio{
+    -fx-background-color: #494949;
+}
+
+.radio-button:selected .radio{
+    -fx-text-fill: #EEEEEE;
+    -fx-background-color: #494949;
+    -fx-background-insets: 0;
+}
+
+.radio-button:selected .radio .dot{
+    -fx-background-color: #EEEEEE;
+    -fx-background-insets: 0;
+}
+
 .table-view {
     -fx-background-color: #3C3C3C;
     -fx-border-color: #282828;
@@ -159,24 +191,12 @@
     -fx-text-fill: #EEEEEE;
 }
 
-.check-box:selected .box {
-    -fx-text-fill: #EEEEEE;
-    -fx-background-color: #494949;
-    -fx-border-color: #282828;
-}
-
 .switchButtonOn {
     -fx-background-color: #1F76E1;
 }
 
 .switchButtonOff {
     -fx-background-color: #3C3C3C;
-}
-
-.check-box .box {
-    -fx-background-color: #3C3C3C;
-    -fx-border-color: #282828;
-    -fx-border-width: 2;
 }
 
 .combo-box {
