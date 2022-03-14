@@ -68,6 +68,12 @@
                   <VBox prefHeight="200.0" prefWidth="100.0" spacing="10.0">
                      <children>
                         <Label fx:id="lblInstallationTarget" text="%install.lblInstallationTarget" />
+                        <HBox spacing="10.0">
+                           <children>
+                              <Label fx:id="lblRequiredDiskspaceInfo" text="%install.lblRequiredDiskspaceInfo" />
+                              <Label fx:id="lblRequiredDiskspace" text="Label" />
+                           </children>
+                        </HBox>
                      </children>
                      <opaqueInsets>
                         <Insets />
