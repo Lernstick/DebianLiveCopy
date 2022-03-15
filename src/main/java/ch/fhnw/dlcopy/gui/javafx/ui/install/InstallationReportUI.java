@@ -24,7 +24,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 public class InstallationReportUI extends View{
     
     HashMap <StorageDeviceResult, SimpleStringProperty> durations = new HashMap<>();
-    private final Timer durationUpdateTimer = new Timer();
+    private final Timer tableRefresheTimer = new Timer();
     
     @FXML TableColumn<StorageDeviceResult, String> colDuration;
     @FXML TableColumn<StorageDeviceResult, String> colFinish;
@@ -47,31 +47,19 @@ public class InstallationReportUI extends View{
      */
     @Override
     public void deinitialize() {
-        durationUpdateTimer.cancel();
+        tableRefresheTimer.cancel();
     }
 
     @Override
     protected void initSelf() {
-        TimerTask durationUpdater = new TimerTask() {
+        TimerTask tableRefresher = new TimerTask() {
             @Override
             public void run() {
                 
-                durations.forEach((storageDeviceResult, duartionString) -> {
-                    Duration duration = Duration.between(storageDeviceResult.getStartTime(), LocalTime.now());
-                    
-                    if (duration == null){
-                        // Operation still ongoing
-                        duration = Duration.between(storageDeviceResult.getStartTime(), LocalTime.now());
-                    }
-
-                    String result = duration.toHours() + ":" + duration.toMinutes() + ":" + duration.toSeconds();
-                    
-                    duartionString.unbind();
-                    duartionString.bind(new SimpleStringProperty(result));
-                });
+                tvReport.refresh();
             }
         };
-        durationUpdateTimer.scheduleAtFixedRate(durationUpdater, 0, 1000L); // Starts the `lisstUpdater`-task each 1000ms (1sec)
+        tableRefresheTimer.scheduleAtFixedRate(tableRefresher, 0, 1000L); // Starts the `lisstUpdater`-task each 1000ms (1sec)
     }
     
     

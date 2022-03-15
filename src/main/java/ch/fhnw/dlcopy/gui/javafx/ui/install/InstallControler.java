@@ -34,7 +34,6 @@ public class InstallControler implements DLCopyGUI{
 
     @Override
     public void installingDeviceStarted(StorageDevice storageDevice) {
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> TRACE: STSRT INSTALLATION");
         report.add(new StorageDeviceResult(storageDevice));
     }
 
@@ -82,8 +81,7 @@ public class InstallControler implements DLCopyGUI{
 
     @Override
     public void installingDeviceFinished(String errorMessage, int autoNumberStart) {
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> TRACE: installingDeviceFinished\t Error: " + errorMessage);
-        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        report.get(report.size() -1 ).finish();
     }
 
     @Override
