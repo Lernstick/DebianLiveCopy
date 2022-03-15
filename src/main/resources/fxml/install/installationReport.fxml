@@ -90,7 +90,7 @@
                   <TableColumn fx:id="colSize" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.size" />
                   <TableColumn fx:id="colStart" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.start" />
                   <TableColumn fx:id="colFinish" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.finish" />
-                  <TableColumn editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.duration" />
+                  <TableColumn fx:id="colDuration" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.duration" />
                   <TableColumn editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.status" />
                   <TableColumn editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.error" />
               </columns>

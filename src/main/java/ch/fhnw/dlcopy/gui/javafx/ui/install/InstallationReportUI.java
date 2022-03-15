@@ -13,9 +13,11 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 public class InstallationReportUI extends View{
     
+    @FXML TableColumn<StorageDeviceResult, String> colDuration;
     @FXML TableColumn<StorageDeviceResult, String> colFinish;
     @FXML TableColumn<StorageDeviceResult, String> colModel;
     @FXML TableColumn<StorageDeviceResult, String> colMountpoint;
+    @FXML TableColumn<StorageDeviceResult, String> colNumber;
     @FXML TableColumn<StorageDeviceResult, String> colSerial;
     @FXML TableColumn<StorageDeviceResult, String> colSize;
     @FXML TableColumn<StorageDeviceResult, String> colStart;
@@ -28,6 +30,9 @@ public class InstallationReportUI extends View{
 
     @Override
     protected void initControls() {
+        colDuration.setCellValueFactory(cell -> {
+            return new SimpleStringProperty("Duration");
+        });
         colFinish.setCellValueFactory(cell -> {
             LocalTime finishTime = cell.getValue().getFinishTime();
             String result = (finishTime == null ? "" : finishTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
@@ -35,6 +40,11 @@ public class InstallationReportUI extends View{
         });
         colModel.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStorageDevice().getModel()));
         colMountpoint.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStorageDevice().getFullDevice()));
+        colNumber.setCellValueFactory(cell -> {
+            StorageDeviceResult result = cell.getValue();
+            int index = InstallControler.getInstance().getReport().indexOf(result);
+            return new SimpleStringProperty(String.valueOf(index + 1));
+        });
         colSerial.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStorageDevice().getSerial()));
         colSize.setCellValueFactory(cell -> new SimpleStringProperty(String.valueOf(cell.getValue().getStorageDevice().getSize())));
         colStart.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStartTime().format(DateTimeFormatter.ISO_LOCAL_TIME)));
