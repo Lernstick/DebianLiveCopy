@@ -3,6 +3,7 @@ package ch.fhnw.dlcopy.gui.javafx.ui.install;
 import ch.fhnw.dlcopy.StorageDeviceResult;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import ch.fhnw.util.StorageDevice;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -12,6 +13,7 @@ import javafx.scene.control.cell.PropertyValueFactory;
 
 public class InstallationReportUI extends View{
     
+    @FXML TableColumn<StorageDeviceResult, String> colFinish;
     @FXML TableColumn<StorageDeviceResult, String> colModel;
     @FXML TableColumn<StorageDeviceResult, String> colMountpoint;
     @FXML TableColumn<StorageDeviceResult, String> colSerial;
@@ -26,6 +28,11 @@ public class InstallationReportUI extends View{
 
     @Override
     protected void initControls() {
+        colFinish.setCellValueFactory(cell -> {
+            LocalTime finishTime = cell.getValue().getFinishTime();
+            String result = (finishTime == null ? "" : finishTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
+            return new SimpleStringProperty(result);
+        });
         colModel.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStorageDevice().getModel()));
         colMountpoint.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStorageDevice().getFullDevice()));
         colSerial.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStorageDevice().getSerial()));
