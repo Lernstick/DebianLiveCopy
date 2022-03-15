@@ -77,7 +77,7 @@
                 <Button fx:id="btnInstall" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="%global.finish" GridPane.columnIndex="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
             </children>
         </GridPane>
-      <ScrollPane fitToHeight="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2">
+      <ScrollPane fitToWidth="true"  fitToHeight="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2">
          <content>
             <TableView id="tvReport" fx:id="tvReport" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
               <columns>
