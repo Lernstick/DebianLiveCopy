@@ -120,7 +120,7 @@ public class SelectDeviceUI extends View {
                 "exFat",    // the file system of the exchange partition
                 "ext4", // the file system of the data partition
                 new HashMap<String, byte[]>(),  // a global digest cache for speeding up repeated file checks
-                context,    // the DLCopy GUI
+                InstallControler.getInstance(),    // the DLCopy GUI
                 0,  // the size of the exchange partition
                 false,  // if the exchange partition should be copied
                 "", // the auto numbering pattern

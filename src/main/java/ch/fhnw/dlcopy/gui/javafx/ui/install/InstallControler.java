@@ -28,7 +28,8 @@ public class InstallControler implements DLCopyGUI{
 
     @Override
     public void showInstallProgress() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> TRACE: showInstallProgress");
+        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
@@ -39,47 +40,56 @@ public class InstallControler implements DLCopyGUI{
 
     @Override
     public void showInstallCreatingFileSystems() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> TRACE: showInstallCreatingFileSystems");
+        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void showInstallOverwritingDataPartitionWithRandomData(long done, long size) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> TRACE: showInstallOverwritingDataPartitionWithRandomData");
+        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void showInstallFileCopy(FileCopier fileCopier) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> TRACE: showInstallFileCopy");
+        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void showInstallPersistencyCopy(Installer installer, String copyScript, String sourcePath) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> TRACE: showInstallPersistencyCopy");
+        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void setInstallCopyLine(String line) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> TRACE: setInstallCopyLine");
+        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void showInstallUnmounting() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> TRACE: showInstallUnmounting");
+        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void showInstallWritingBootSector() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> TRACE: showInstallWritingBootSector");
+        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void installingDeviceFinished(String errorMessage, int autoNumberStart) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> TRACE: installingDeviceFinished\t Error: " + errorMessage);
+        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void installingListFinished() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> TRACE: installingListFinished");
+        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
