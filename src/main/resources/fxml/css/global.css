@@ -181,9 +181,7 @@
 
 .combo-box {
     -fx-background-color: #3C3C3C;
-    -fx-border-color: #282828;
-    -fx-background-radius: 5;
-    -fx-border-radius: 5;
+    -fx-border-color: transparent;
 }
 
 .combo-box:focused {
@@ -194,19 +192,11 @@
 .combo-box .list-cell {
     -fx-text-fill: #EEEEEE;
     -fx-background-color: #3C3C3C;
+    -fx-border-color: transparent;
 }
 
 .combo-box .list-cell:hover {
     -fx-background-color: #494949;
-}
-
-
-.combo-box-popup .list-view {
-    -fx-text-fill: #EEEEEE;
-    -fx-background-color: #3C3C3C;
-    -fx-border-color: #282828;
-    -fx-background-radius: 5;
-    -fx-border-radius: 5;
 }
 
 .target-na, .target-ro {
