@@ -6,7 +6,6 @@
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TableColumn?>
 <?import javafx.scene.control.TableView?>
-<?import javafx.scene.layout.AnchorPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.RowConstraints?>
@@ -78,29 +77,25 @@
                 <Button fx:id="btnInstall" disable="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="%global.finish" GridPane.columnIndex="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
             </children>
         </GridPane>
-      <ScrollPane prefHeight="200.0" prefWidth="200.0" vbarPolicy="NEVER" GridPane.columnIndex="2">
-        <content>
-          <AnchorPane maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="0.0" minWidth="0.0" nodeOrientation="LEFT_TO_RIGHT">
-               <children>
-                  <TableView id="tvReport" fx:id="tvReport" prefHeight="460.0">
-                    <columns>
-                      <TableColumn fx:id="colNumber" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.number" />
-                        <TableColumn fx:id="colMountpoint" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.mountpoint" />
-                        <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.mounted" />
-                        <TableColumn fx:id="colVendor" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.vendor" />
-                        <TableColumn fx:id="colModel" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.model" />
-                        <TableColumn fx:id="colSerial" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.serial" />
-                        <TableColumn fx:id="colSize" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.size" />
-                        <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.start" />
-                        <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.finish" />
-                        <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.duration" />
-                        <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.status" />
-                        <TableColumn maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.error" />
-                    </columns>
-                  </TableView>
-               </children>
-            </AnchorPane>
-        </content>
+      <ScrollPane fitToHeight="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2">
+         <content>
+            <TableView id="tvReport" fx:id="tvReport" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
+              <columns>
+                <TableColumn fx:id="colNumber" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.number" />
+                  <TableColumn fx:id="colMountpoint" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.mountpoint" />
+                  <TableColumn editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.mounted" />
+                  <TableColumn fx:id="colVendor" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.vendor" />
+                  <TableColumn fx:id="colModel" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.model" />
+                  <TableColumn fx:id="colSerial" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.serial" />
+                  <TableColumn fx:id="colSize" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.size" />
+                  <TableColumn editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.start" />
+                  <TableColumn editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.finish" />
+                  <TableColumn editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.duration" />
+                  <TableColumn editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.status" />
+                  <TableColumn editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.error" />
+              </columns>
+            </TableView>
+         </content>
       </ScrollPane>
     </children>
 </GridPane>
