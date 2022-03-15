@@ -1,10 +1,20 @@
 package ch.fhnw.dlcopy.gui.javafx.ui.install;
 
+import ch.fhnw.dlcopy.DLCopy;
 import ch.fhnw.dlcopy.StorageDeviceResult;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import ch.fhnw.util.StorageDevice;
+import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
@@ -12,6 +22,9 @@ import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
 
 public class InstallationReportUI extends View{
+    
+    HashMap <StorageDeviceResult, SimpleStringProperty> durations = new HashMap<>();
+    private final Timer durationUpdateTimer = new Timer();
     
     @FXML TableColumn<StorageDeviceResult, String> colDuration;
     @FXML TableColumn<StorageDeviceResult, String> colFinish;
@@ -27,11 +40,59 @@ public class InstallationReportUI extends View{
     public InstallationReportUI(){
         resourcePath = getClass().getResource("/fxml/install/installationReport.fxml");
     }
+    
+    /**
+     * This function is called, when the view should be deinitalized.
+     * It has to be called manually!
+     */
+    @Override
+    public void deinitialize() {
+        durationUpdateTimer.cancel();
+    }
+
+    @Override
+    protected void initSelf() {
+        TimerTask durationUpdater = new TimerTask() {
+            @Override
+            public void run() {
+                
+                durations.forEach((storageDeviceResult, duartionString) -> {
+                    Duration duration = Duration.between(storageDeviceResult.getStartTime(), LocalTime.now());
+                    
+                    if (duration == null){
+                        // Operation still ongoing
+                        duration = Duration.between(storageDeviceResult.getStartTime(), LocalTime.now());
+                    }
+
+                    String result = duration.toHours() + ":" + duration.toMinutes() + ":" + duration.toSeconds();
+                    
+                    duartionString.unbind();
+                    duartionString.bind(new SimpleStringProperty(result));
+                });
+            }
+        };
+        durationUpdateTimer.scheduleAtFixedRate(durationUpdater, 0, 1000L); // Starts the `lisstUpdater`-task each 1000ms (1sec)
+    }
+    
+    
 
     @Override
     protected void initControls() {
         colDuration.setCellValueFactory(cell -> {
-            return new SimpleStringProperty("Duration");
+            Duration duration = cell.getValue().getDuration();
+            
+            if (duration == null){
+                // Operation still ongoing
+                duration = Duration.between(cell.getValue().getStartTime(), LocalTime.now());
+            }
+            
+            String result = duration.toHours() + ":" + duration.toMinutes() + ":" + duration.toSeconds();
+            
+            SimpleStringProperty value = new SimpleStringProperty(result);
+            
+            durations.put(cell.getValue(), value);
+            
+            return value;
         });
         colFinish.setCellValueFactory(cell -> {
             LocalTime finishTime = cell.getValue().getFinishTime();
