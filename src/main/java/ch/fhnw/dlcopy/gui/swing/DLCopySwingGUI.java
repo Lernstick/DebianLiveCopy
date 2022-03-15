@@ -261,7 +261,7 @@ public class DLCopySwingGUI extends JFrame
         try {
             persistenceBoot = DLCopy.isBootPersistent();
         } catch (IOException ex) {
-            LOGGER.log(Level.SEVERE, "can't determine persistence mode", ex);
+            LOGGER.log(Level.SEVERE, "can\'t determine persistence mode", ex);
         }
 
         initComponents();
