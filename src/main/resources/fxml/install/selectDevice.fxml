@@ -55,7 +55,7 @@
                         <Label fx:id="lblSourceSelection" text="%install.lblSourceSelection" />
                         <RadioButton fx:id="rdbCurrentSystem" mnemonicParsing="false" text="%install.rdbCurrentSystem">
                            <toggleGroup>
-                              <ToggleGroup fx:id="selectDevice" />
+                              <ToggleGroup fx:id="tgSelectDevice" />
                            </toggleGroup>
                         </RadioButton>
                         <RadioButton fx:id="rdbIsoImage" mnemonicParsing="false" text="%install.rdbIsoImage" toggleGroup="$selectDevice" />
