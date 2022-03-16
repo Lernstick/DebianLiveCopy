@@ -105,7 +105,7 @@
             </VBox>
             <VBox HBox.hgrow="NEVER">
                <children>
-                      <Button fx:id="btnExport" mnemonicParsing="false" text="%global.install">
+                      <Button fx:id="btnInstall" mnemonicParsing="false" text="%global.install">
                      <VBox.margin>
                         <Insets right="20.0" />
                      </VBox.margin>
