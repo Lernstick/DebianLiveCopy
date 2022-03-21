@@ -12,7 +12,6 @@ public class LoadUI extends View{
     @FXML private ProgressBar pbStatus;
     @FXML private Label lblStatusInfo;
 
-    
     private String tmpMessage;
     private int tmpProgress = -1;
 
@@ -28,7 +27,6 @@ public class LoadUI extends View{
         this();
         tmpMessage = message;
         tmpProgress = progress;
-        //TODO add Text to dictionary.
     }
 
     @Override
