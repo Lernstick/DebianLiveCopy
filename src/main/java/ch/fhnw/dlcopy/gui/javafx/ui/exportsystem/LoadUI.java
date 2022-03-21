@@ -1,4 +1,4 @@
-package ch.fhnw.dlcopy.gui.javafx.ui.exportdata;
+package ch.fhnw.dlcopy.gui.javafx.ui.exportsystem;
 
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import javafx.beans.binding.Bindings;
@@ -7,7 +7,8 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
 
-public class LoadUI extends View{
+public class LoadUI extends View {
+
     @FXML private ImageView imgExportFile;
     @FXML private ProgressBar pbStatus;
     @FXML private Label lblStatusInfo;
@@ -15,8 +16,8 @@ public class LoadUI extends View{
     private String tmpMessage;
     private int tmpProgress = -1;
 
-    public LoadUI(){
-        resourcePath = getClass().getResource("/fxml/exportData/load.fxml");
+    public LoadUI() {
+        resourcePath = getClass().getResource("/fxml/exportsystem/load.fxml");
     }
 
     public LoadUI(String message) {
