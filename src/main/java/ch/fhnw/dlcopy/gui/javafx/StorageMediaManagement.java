@@ -77,10 +77,9 @@ public class StorageMediaManagement
         launch(args);
     }
 
-    @Override
+        @Override
     public void showInstallProgress() {
-        System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>> TRACE: SHOW INSTALLATION PROGRESS");
-        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.install.LoadUI());
     }
 
     @Override
@@ -90,12 +89,12 @@ public class StorageMediaManagement
 
     @Override
     public void showInstallCreatingFileSystems() {
-        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.install.LoadUI("Creating_File_Systems"));
     }
 
     @Override
     public void showInstallOverwritingDataPartitionWithRandomData(long done, long size) {
-        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.install.LoadUI(done,size));
     }
 
     @Override
@@ -115,13 +114,14 @@ public class StorageMediaManagement
 
     @Override
     public void showInstallUnmounting() {
-        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.install.LoadUI("Unmounting_File_Systems")); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void showInstallWritingBootSector() {
-        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+         setScene(new ch.fhnw.dlcopy.gui.javafx.ui.install.LoadUI("Writing_Boot_Sector"));
     }
+
 
     @Override
     public void installingDeviceFinished(String errorMessage, int autoNumberStart) {

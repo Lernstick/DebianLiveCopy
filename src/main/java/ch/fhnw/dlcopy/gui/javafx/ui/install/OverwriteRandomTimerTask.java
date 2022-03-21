@@ -2,7 +2,7 @@ package ch.fhnw.dlcopy.gui.javafx.ui.install;
 
 import ch.fhnw.dlcopy.gui.swing.*;
 import ch.fhnw.dlcopy.DLCopy;
-import ch.fhnw.util.LernstickFileTools;
+import static ch.fhnw.dlcopy.DLCopy.STRINGS;
 import javafx.event.EventHandler;
 import java.text.MessageFormat;
 import java.util.Timer;
@@ -10,31 +10,32 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.event.Event;
+import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 
 /**
- * Collets the progress of overwriting the data partition with random data and
+ * Collects the progress of overwriting the data partition with random data and
  * updates the progress bar from time to time.
  *
- * @author Ronny Standtke <ronny.standtke@gmx.net>
  */
 public class OverwriteRandomTimerTask extends TimerTask {
 
     private static final Logger LOGGER = Logger.getLogger(OverwriteRandomTimerTask.class.getName());
 
+    private final String taskName;  
+    private final Label progressInfo;    
+;    
     private final ProgressBar progressBar;
+
     private final long size;
     private long done;
 
-    /**
-     * creates a new OverwriteRandomTimerTask
-     *
-     * @param progressBar the progress bar to update
-     * @param size the size of the data partition
-     */
-    public OverwriteRandomTimerTask(ProgressBar progressBar, long size) {
+    public OverwriteRandomTimerTask(ProgressBar progressBar, Label progressInfo, String taskName, long size) {
         this.progressBar = progressBar;
         this.size = size;
+        this.progressInfo = progressInfo;       
+        this.taskName = taskName;
+
     }
 
 
@@ -58,6 +59,6 @@ public class OverwriteRandomTimerTask extends TimerTask {
                 LernstickFileTools.getDataVolumeString(size, 1)));
 */
         progressBar.setProgress((int) ((100 * done) / size));
+        progressInfo.setText(STRINGS.getString(taskName)  + " " + (int) ((100 * done) / size));
     }
 }
-
