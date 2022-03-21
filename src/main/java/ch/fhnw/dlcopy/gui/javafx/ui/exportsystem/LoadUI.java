@@ -12,6 +12,8 @@ import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
+import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
@@ -19,78 +21,92 @@ public class LoadUI extends View {
 
     @FXML private ImageView imgExportFile;
     @FXML private ProgressBar pbStatus;
-    @FXML private Label taExtraInfo;    
+    @FXML private TextFlow tfExtraInfo;    
     @FXML private Button btnBack;    
-    //TODO private Textflow bPStatus;
+    @FXML private Label lblProgressInfo;
 
-
-
+    
     private String tmpMessage;
+    
+    //Both need to be > 0 for indeterminate time
+    private long indetValue;
+    private long indetMax; 
+    
+    
+    
     private Timer overwriteTimer;
     private OverwriteRandomTimerTask overwriteRandomTimerTask;
     private int tmpProgress = -1;
-    private List<Label> bulletPoint;
+    private List<Text>  bulletpoints = new ArrayList<Text>();
+
     private Label currBP;
 
     public LoadUI() {
-<<<<<<< HEAD
         resourcePath = getClass().getResource("/fxml/exportsystem/load.fxml");
     }
 
     public LoadUI(String message) {
         this(message, -1);
-=======
-        resourcePath = getClass().getResource("/fxml/exportSystem/load.fxml");
+        resourcePath = getClass().getResource("/fxml/install/load.fxml");
         btnBack.setVisible(false);
         //set BtnNextToVisible
->>>>>>> 6475ba1c (feat: progress bar + progressinfo)
     }
 
     public LoadUI(String message, int progress) {
         this();
         tmpMessage = message;
         tmpProgress = progress;
+        //TODO add Text to dictionary.
     }
+    
     
     //indeterminate
     public LoadUI(String message) {
         this(message, -1);
-        showIndeterminateProgressBar(message);
     }
   
     
     //determinate
     public LoadUI(long value, long maximum) {
         this();
-        showOverwriteRandomProgressBar(value, maximum);
-    
+        indetMax = maximum; 
+        indetValue = value; 
+
     }
+    
+    
+    public void initBulletPoints(){
+        bulletpoints.add(new Text(STRINGS.getString("Creating_File_Systems")));
+        bulletpoints.add(new Text("\n"));
+        bulletpoints.add(new Text(STRINGS.getString("Writing_Boot_Sector")));     
+        bulletpoints.add(new Text("\n"));
+        bulletpoints.add(new Text(STRINGS.getString("Unmounting_File_Systems")));
+        bulletpoints.add(new Text("\n"));
+            
+        
+        for (Text bp : bulletpoints){
+            tfExtraInfo.getChildren().add(bp);
+        }
+    }
+   
 
     
     public void setBulletpoint(String bPStr) {
         TextFlow textFlow = new TextFlow();
         //TODO add to dictionary.
-        List<String>  bulletpoints = new ArrayList<String>();
-        //TODO add to dictionary.
-        bulletpoints.add("Creating_File_Systems");
-        bulletpoints.add("Writing_Boot_Sector");
-        bulletpoints.add("Unmounting_File_Systems");
-                
-        for (String s : bulletpoints){
-            Text bPText= new Text(s);
-            if (bPStr == s){
-                bPText.setStyle("-fx-font-color: grey");
+        for (Text s : bulletpoints){
+            if (STRINGS.getString(bPStr).equals(s.getText())){
+                s.setFill(Color.BLUE);                
+            } else {
+                s.setFill(Color.BLACK);
             }
-            textFlow.getChildren().add(bPText);
         }
-        
-        
     }
     
     public void showOverwriteRandomProgressBar(long value, long maximum) {
         if (overwriteTimer == null) {
             overwriteTimer = new Timer();
-            overwriteTimer.schedule(new OverwriteRandomTimerTask(pbStatus, value), 0,1000);
+            overwriteTimer.schedule(new OverwriteRandomTimerTask(pbStatus, lblProgressInfo, "Overwrite data",  value), 0,1000);
         }
         overwriteRandomTimerTask.setDone(value);
     }
@@ -102,7 +118,7 @@ public class LoadUI extends View {
             overwriteTimer = null;
         }
 
-        taExtraInfo.setText(STRINGS.getString(text));
+        lblProgressInfo.setText(STRINGS.getString(text));
     }
     
     public void finished(){
@@ -114,10 +130,15 @@ public class LoadUI extends View {
 
     @Override
     protected void initSelf() {
-        if (tmpMessage != null) {
-            taExtraInfo.setText(tmpMessage);
+        if(indetValue != 0 &&  indetMax != 0) {
+            showOverwriteRandomProgressBar(indetValue, indetMax);
+        } else if (tmpMessage != null){
+            initBulletPoints();
+            setBulletpoint(tmpMessage);
+            showIndeterminateProgressBar(tmpMessage);
         }
-        bulletPoint = new ArrayList<Label>();
+
+        btnBack.setVisible(false);
         double percent = Math.max(tmpProgress, 100) / 100;
         pbStatus.setProgress(percent);
     }
@@ -137,7 +158,6 @@ AC-2
 AC-3
 The progress in % is shown, if provided.
 The name of the ongoing task is shown (if from the backend provided)
-The single steps are shown as bulletpoints witch change the colour when fullfilled
 */
     
     
@@ -149,4 +169,3 @@ The single steps are shown as bulletpoints witch change the colour when fullfill
     how should the progressbar->event communication happen? Static Progressbar?
 */
 }
-
