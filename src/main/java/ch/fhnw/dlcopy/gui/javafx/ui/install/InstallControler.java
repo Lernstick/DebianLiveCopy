@@ -81,6 +81,7 @@ public class InstallControler implements DLCopyGUI{
 
     @Override
     public void installingDeviceFinished(String errorMessage, int autoNumberStart) {
+        report.get(report.size() -1 ).setErrorMessage(errorMessage);
         report.get(report.size() -1 ).finish();
     }
 

@@ -27,6 +27,7 @@ public class InstallationReportUI extends View{
     private final Timer tableRefresheTimer = new Timer();
     
     @FXML TableColumn<StorageDeviceResult, String> colDuration;
+    @FXML TableColumn<StorageDeviceResult, String> colError;
     @FXML TableColumn<StorageDeviceResult, String> colFinish;
     @FXML TableColumn<StorageDeviceResult, String> colModel;
     @FXML TableColumn<StorageDeviceResult, String> colMountpoint;
@@ -82,6 +83,7 @@ public class InstallationReportUI extends View{
             
             return value;
         });
+        colError.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getErrorMessage()));
         colFinish.setCellValueFactory(cell -> {
             LocalTime finishTime = cell.getValue().getFinishTime();
             String result = (finishTime == null ? "" : finishTime.format(DateTimeFormatter.ISO_LOCAL_TIME));

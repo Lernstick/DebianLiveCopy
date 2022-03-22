@@ -92,7 +92,7 @@
                   <TableColumn fx:id="colFinish" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.finish" />
                   <TableColumn fx:id="colDuration" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.duration" />
                   <TableColumn editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.status" />
-                  <TableColumn editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.error" />
+                  <TableColumn fx:id="colError" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.error" />
               </columns>
             </TableView>
          </content>
