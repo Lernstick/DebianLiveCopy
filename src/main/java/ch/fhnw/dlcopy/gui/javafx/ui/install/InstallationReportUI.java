@@ -35,6 +35,7 @@ public class InstallationReportUI extends View{
     @FXML TableColumn<StorageDeviceResult, String> colSerial;
     @FXML TableColumn<StorageDeviceResult, String> colSize;
     @FXML TableColumn<StorageDeviceResult, String> colStart;
+    @FXML TableColumn<StorageDeviceResult, String> colStatus;
     @FXML TableColumn<StorageDeviceResult, String> colVendor;
     @FXML TableView<StorageDeviceResult> tvReport;
     
@@ -99,6 +100,17 @@ public class InstallationReportUI extends View{
         colSerial.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStorageDevice().getSerial()));
         colSize.setCellValueFactory(cell -> new SimpleStringProperty(String.valueOf(cell.getValue().getStorageDevice().getSize())));
         colStart.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStartTime().format(DateTimeFormatter.ISO_LOCAL_TIME)));
+        colStatus.setCellValueFactory(cell -> {
+            if (cell.getValue().getStartTime() == null){
+                return new SimpleStringProperty(stringBundle.getString("install.waiting"));
+            } else if (cell.getValue().getFinishTime() == null){
+                return new SimpleStringProperty(stringBundle.getString("install.installing"));
+            } else if (cell.getValue().getErrorMessage() != null && !cell.getValue().getErrorMessage().isBlank()) {
+                return new SimpleStringProperty(stringBundle.getString("install.error"));
+            } else {
+                return new SimpleStringProperty(stringBundle.getString("install.success"));
+            }
+        });
         colVendor.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStorageDevice().getVendor()));
         
         tvReport.setItems(InstallControler.getInstance().getReport());
