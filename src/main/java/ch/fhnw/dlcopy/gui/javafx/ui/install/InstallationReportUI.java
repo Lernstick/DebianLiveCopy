@@ -4,6 +4,7 @@ import ch.fhnw.dlcopy.DLCopy;
 import ch.fhnw.dlcopy.StorageDeviceResult;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import ch.fhnw.util.StorageDevice;
+import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -20,6 +21,7 @@ import javafx.fxml.FXML;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
+import org.freedesktop.dbus.exceptions.DBusException;
 
 public class InstallationReportUI extends View{
     
@@ -30,6 +32,7 @@ public class InstallationReportUI extends View{
     @FXML TableColumn<StorageDeviceResult, String> colError;
     @FXML TableColumn<StorageDeviceResult, String> colFinish;
     @FXML TableColumn<StorageDeviceResult, String> colModel;
+    @FXML TableColumn<StorageDeviceResult, String> colMounted;
     @FXML TableColumn<StorageDeviceResult, String> colMountpoint;
     @FXML TableColumn<StorageDeviceResult, String> colNumber;
     @FXML TableColumn<StorageDeviceResult, String> colSerial;
@@ -91,6 +94,18 @@ public class InstallationReportUI extends View{
             return new SimpleStringProperty(result);
         });
         colModel.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStorageDevice().getModel()));
+        colMounted.setCellValueFactory(cell -> {
+            try {
+                if (DLCopy.getStorageDevices(false, false, "bootDeviceName").contains(cell.getValue().getStorageDevice())) {
+                    // Device is sitll in the plugged devices
+                    return new SimpleStringProperty(stringBundle.getString("global.yes"));
+                }
+                return new SimpleStringProperty(stringBundle.getString("global.no"));
+            } catch (IOException | DBusException ex) {
+                Logger.getLogger(InstallationReportUI.class.getName()).log(Level.SEVERE, null, ex);
+                return new SimpleStringProperty("unknown");
+            }
+        });
         colMountpoint.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStorageDevice().getFullDevice()));
         colNumber.setCellValueFactory(cell -> {
             StorageDeviceResult result = cell.getValue();

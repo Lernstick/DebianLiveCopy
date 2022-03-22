@@ -83,7 +83,7 @@
               <columns>
                 <TableColumn fx:id="colNumber" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.number" />
                   <TableColumn fx:id="colMountpoint" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.mountpoint" />
-                  <TableColumn editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.mounted" />
+                  <TableColumn fx:id="colMounted" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.mounted" />
                   <TableColumn fx:id="colVendor" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.vendor" />
                   <TableColumn fx:id="colModel" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.model" />
                   <TableColumn fx:id="colSerial" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.serial" />
