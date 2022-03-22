@@ -99,7 +99,11 @@ public class InstallationReportUI extends View{
         });
         colSerial.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStorageDevice().getSerial()));
         colSize.setCellValueFactory(cell -> new SimpleStringProperty(String.valueOf(cell.getValue().getStorageDevice().getSize())));
-        colStart.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStartTime().format(DateTimeFormatter.ISO_LOCAL_TIME)));
+        colStart.setCellValueFactory(cell -> {
+            LocalTime startTime = cell.getValue().getStartTime();
+            String result = (startTime == null ? "" : startTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
+            return new SimpleStringProperty(result);
+        });
         colStatus.setCellValueFactory(cell -> {
             if (cell.getValue().getStartTime() == null){
                 return new SimpleStringProperty(stringBundle.getString("install.waiting"));
