@@ -47,6 +47,7 @@ public class SelectDeviceUI extends View {
 
     @FXML private Button btnBack;
     @FXML private Button btnInstall;
+    @FXML private Label lblRequiredDiskspace;
     @FXML private ListView<StorageDevice> lvDevices;
 
     public SelectDeviceUI() {
@@ -204,16 +205,12 @@ public class SelectDeviceUI extends View {
         String sizeString
                 = LernstickFileTools.getDataVolumeString(enlargedSystemSize, 1);
 
-
-        // TODO: define UI elements
-        /*
-        lblSelectionHeaderLabel.setText(MessageFormat.format(
+        lblRequiredDiskspace.setText(MessageFormat.format(
                 STRINGS.getString("Select_Install_Target_Storage_Media"),
                 sizeString));
 
-        lblSystemDefinition.setText(MessageFormat.format(
+        lblRequiredDiskspace.setText(MessageFormat.format(
                 STRINGS.getString("System_Definition"), sizeString));
-        */
 
         // TODO: update all other parts of the UI
         // see ch.fhnw.dlcopy.gui.swing.InstallerPanels
