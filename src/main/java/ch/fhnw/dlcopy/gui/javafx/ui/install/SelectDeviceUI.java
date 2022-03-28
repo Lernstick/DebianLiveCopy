@@ -107,6 +107,16 @@ public class SelectDeviceUI extends View {
         listUpdateTimer.scheduleAtFixedRate(listUpdater, 0, 1000L); // Starts the `lisstUpdater`-task each 1000ms (1sec)
 
         lvDevices.setPlaceholder(new Label(stringBundle.getString("install.lvDevices")));
+
+
+        // use running system as initial value
+        long enlargedSystemSize
+                = DLCopy.getEnlargedSystemSize(runningSystemSource.getSystemSize());
+        String sizeString
+                = LernstickFileTools.getDataVolumeString(enlargedSystemSize, 1);
+        lblRequiredDiskspace.setText(MessageFormat.format(
+                stringBundle.getString("install.select_install_target_storage_media"),
+                sizeString));
     }
 
     @Override
@@ -206,11 +216,13 @@ public class SelectDeviceUI extends View {
                 = LernstickFileTools.getDataVolumeString(enlargedSystemSize, 1);
 
         lblRequiredDiskspace.setText(MessageFormat.format(
-                STRINGS.getString("Select_Install_Target_Storage_Media"),
+                stringBundle.getString("install.select_install_target_storage_media"),
                 sizeString));
 
-        lblRequiredDiskspace.setText(MessageFormat.format(
-                STRINGS.getString("System_Definition"), sizeString));
+        // TODO: define fxid for device list legend
+        //lblRequiredDiskspace.setText(MessageFormat.format(
+        //        stringBundle.getString("install.system_definition"),
+        //        sizeString));
 
         // TODO: update all other parts of the UI
         // see ch.fhnw.dlcopy.gui.swing.InstallerPanels
@@ -218,8 +230,8 @@ public class SelectDeviceUI extends View {
 
     private void showError(String message) {
         Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(STRINGS.getString("Error"));
-        alert.setHeaderText(STRINGS.getString("Error"));
+        alert.setTitle(stringBundle.getString("error"));
+        alert.setHeaderText(stringBundle.getString("error"));
         alert.setContentText(message);
         alert.showAndWait();
     }
