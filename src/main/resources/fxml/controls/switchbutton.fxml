@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ToggleButton?>
+<?import javafx.scene.effect.DropShadow?>
+
+<fx:root type="javafx.scene.control.Label" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+    <ToggleButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton">
+        <effect>
+            <DropShadow />
+        </effect>
+        <opaqueInsets>
+            <Insets />
+        </opaqueInsets>
+    </ToggleButton>
+</fx:root>

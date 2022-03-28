@@ -1,0 +1,180 @@
+.root {
+    -fx-background-color: #353535;
+}
+
+.label {
+    -fx-font-family: "Cantarell";
+    -fx-text-fill: #EEEEEE;
+}
+
+.labelwraped {
+    -fx-wrap-text: true;
+}
+
+.labelcenter {
+    -fx-alignment: center;
+}
+
+.labelselected {
+    -fx-background-color: #494949;
+}
+
+.button {
+    -fx-background-color: #3C3C3C;
+    -fx-text-fill: #EEEEEE;
+    -fx-border-color: #282828;
+    -fx-border-width: 2;
+    -fx-border-radius: 5;
+}
+
+.button:hover {
+    -fx-background-color: #494949;
+    -fx-border-color: #282828;
+}
+
+.button:pressed {
+    -fx-background-color: #494949;
+    -fx-border-color: #1F76E1;
+}
+
+.check-box {
+    -fx-font-family: "Cantarell";
+    -fx-text-fill: #EEEEEE;
+}
+
+.text-field {
+    -fx-background-color: #3C3C3C;
+    -fx-font-family: "Cantarell";
+    -fx-text-fill: #EEEEEE;
+}
+
+.text-field:focused {
+    -fx-background-color: #494949;
+    -fx-border-color: #1F76E1;
+}
+
+.text-area {
+    -fx-font-family: "Cantarell";
+    -fx-text-fill: #EEEEEE;
+}
+
+.text-area .content {
+    -fx-background-color: #353535;
+    -fx-font-family: "Cantarell";
+    -fx-text-fill: #EEEEEE;
+}
+
+.pane {
+    -fx-border-width: 3;
+    -fx-border-color: #282828;
+    -fx-border-radius: 5;
+}
+
+.borderpane {
+    -fx-background-color: #353535;
+}
+
+.navigation {
+    -fx-alignment: center;
+}
+
+.navigationfocused {
+    -fx-alignment: center;
+    -fx-background-color: #494949;
+}
+
+.separator *.line {
+    -fx-border-style: solid;
+    -fx-border-width: 1px;
+    -fx-border-color: #3C3C3C;
+}
+
+.toggle-button {
+    -fx-background-color: #3C3C3C;
+    -fx-border-color: #282828;
+    -fx-border-width: 2;
+}
+
+.toggle-button:selected {
+    -fx-background-color: #494949;
+    -fx-border-color: #282828;
+}
+
+.switchButton {
+    -fx-background-color: #3C3C3C;
+    -fx-background-radius: 1em;
+    -fx-border-radius: 1em;
+}
+
+.switchButton:selected {
+    -fx-background-color: #1F76E1;
+}
+
+.switchButtonInline {
+    -fx-background-radius: 1em;
+    -fx-background-color: #1F76E1;
+    -fx-text-fill: #EEEEEE;
+}
+
+.check-box:selected .box {
+    -fx-text-fill: #EEEEEE;
+    -fx-background-color: #494949;
+    -fx-border-color: #282828;
+}
+
+.switchButtonOn {
+    -fx-background-color: #1F76E1;
+}
+
+.switchButtonOff {
+    -fx-background-color: #3C3C3C;
+}
+
+.check-box .box {
+    -fx-background-color: #3C3C3C;
+    -fx-border-color: #282828;
+    -fx-border-width: 2;
+}
+
+.check-box:selected .box {
+    -fx-background-color: #494949;
+    -fx-border-color: #282828;
+}
+
+.combo-box {
+    -fx-background-color: #3C3C3C;
+    -fx-border-color: #282828;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+}
+
+.combo-box:focused {
+    -fx-background-color: #494949;
+    -fx-border-color: #1F76E1;
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: #EEEEEE;
+    -fx-background-color: #3C3C3C;
+}
+
+.combo-box .list-cell:hover {
+    -fx-background-color: #494949;
+}
+
+
+.combo-box-popup .list-view {
+    -fx-text-fill: #EEEEEE;
+    -fx-background-color: #3C3C3C;
+    -fx-border-color: #282828;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+}
+
+.target-na, .target-ro {
+    -fx-text-fill: #E03F1F;
+}
+
+.target-rw {
+    -fx-text-fill: #26BF0B;
+}

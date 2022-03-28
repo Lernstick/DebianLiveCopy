@@ -1,0 +1,121 @@
+stages:
+  - docker
+  - lint
+  - dependencies
+  - build
+  - test
+
+default:
+  image: $CI_REGISTRY_IMAGE:latest
+  tags:
+    - IP34-21vt_Lernstick
+
+checkspell:
+  stage: lint
+  script:
+    - checkstyle -c config/checkstyle/checks.xml src/
+
+.prepare:
+  before_script:
+    - mkdir -p nbproject/private
+    - |
+      cat << EOF > nbproject/private/private.properties
+      project.JBackpack=jbackpack
+      project.lernstickTools=lernstickTools
+      reference.lernstickTools.jar=\${project.lernstickTools}/build/libs/lernstickTools.jar
+      EOF
+
+ci:
+  image: docker
+  stage: docker
+  variables:
+    CI_REGISTRY: cr.gitlab.fhnw.ch
+    IMAGE_TAG: $CI_REGISTRY_IMAGE:latest
+  services:
+    - name: docker:dind
+      alias: docker
+  before_script:
+        - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin
+  script:
+    - docker build --pull -t $IMAGE_TAG ci
+    - docker images
+    - docker push $IMAGE_TAG
+  only:
+    - schedules
+
+build:lernstickTools:
+  extends: .prepare
+  stage: dependencies
+  script:
+    - git clone --depth=10 https://github.com/Lernstick/lernstickTools
+    - cd lernstickTools
+    - gradle build
+  artifacts:
+    paths:
+      - lernstickTools/build/libs/lernstickTools.jar
+
+build:jbackpack:
+  extends: .prepare
+  stage: dependencies
+  script:
+    - git clone --depth=10 https://github.com/Lernstick/jbackpack
+    - cd jbackpack
+    - ant jar
+  artifacts:
+    paths:
+      - jbackpack/dist
+
+build:storage-media-management:
+  extends: .prepare
+  stage: build
+  script:
+    - ant jar
+  dependencies:
+    - build:lernstickTools
+    - build:jbackpack
+  artifacts:
+    paths:
+      - dist
+      - build/classes
+
+build:storage-media-management:javadoc:
+  extends: .prepare
+  stage: build
+  script:
+    - ant javadoc
+  dependencies:
+    - build:lernstickTools
+    - build:jbackpack
+  artifacts:
+    paths:
+      - dist/javadoc
+
+sonarqube:
+  stage: test
+  image:
+    name: sonarsource/sonar-scanner-cli
+    entrypoint: [""]
+  variables:
+    GIT_DEPTH: "0"
+    SONAR_HOST_URL: ${CI_SONARQUBE_HOST_URL}
+    SONAR_PROJECT: ${CI_SONARQUBE_PROJECT}
+    SONAR_TOKEN: ${CI_SONARQUBE_TOKEN}
+    SONAR_USER_HOME: "${CI_PROJECT_DIR}/.sonar"
+  cache:
+    key: "${CI_JOB_NAME}"
+    paths:
+      - .sonar/cache
+  dependencies:
+    - build:storage-media-management
+  script:
+    - >
+      sonar-scanner
+      -Dsonar.gitlab.commit_sha=$CI_BUILD_REF
+      -Dsonar.gitlab.ref_name=$CI_BUILD_REF_NAME
+      -Dsonar.host.url="${CI_SONARQUBE_HOST_URL}"
+      -Dsonar.java.binaries=build/classes
+      -Dsonar.login="${CI_SONARQUBE_TOKEN}"
+      -Dsonar.projectKey="${CI_SONARQUBE_PROJECT}"
+      -Dsonar.qualitygate.wait=true
+      -Dsonar.sources=src
+  allow_failure: true
