@@ -5,6 +5,7 @@ import ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.*;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
 import java.util.Timer;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -24,7 +25,10 @@ public class LoadUI extends View {
     @FXML private TextFlow tfExtraInfo;    
     @FXML private Button btnBack;    
     @FXML private Label lblProgressInfo;
-
+    
+    
+    
+    private ResourceBundle stringBundle = ResourceBundle.getBundle("strings/Strings");
     
     private String tmpMessage;
     
@@ -43,7 +47,6 @@ public class LoadUI extends View {
 
     public LoadUI() {
         resourcePath = getClass().getResource("/fxml/install/load.fxml");
-        //set BtnNextToVisible
 
     }
 
@@ -51,7 +54,6 @@ public class LoadUI extends View {
         this();
         tmpMessage = message;
         tmpProgress = progress;
-        //TODO add Text to dictionary.
     }
     
     
@@ -71,13 +73,12 @@ public class LoadUI extends View {
     
     
     public void initBulletPoints(){
-        bulletpoints.add(new Text(STRINGS.getString("Creating_File_Systems")));
+        bulletpoints.add(new Text(stringBundle.getString("global.unmount_file_systems")));
         bulletpoints.add(new Text("\n"));
-        bulletpoints.add(new Text(STRINGS.getString("Writing_Boot_Sector")));     
+        bulletpoints.add(new Text(stringBundle.getString("global.writing_boot_sector")));     
         bulletpoints.add(new Text("\n"));
-        bulletpoints.add(new Text(STRINGS.getString("Unmounting_File_Systems")));
+        bulletpoints.add(new Text(stringBundle.getString("global.creating_file_systems")));
         bulletpoints.add(new Text("\n"));
-            
         
         for (Text bp : bulletpoints){
             tfExtraInfo.getChildren().add(bp);
@@ -88,9 +89,8 @@ public class LoadUI extends View {
     
     public void setBulletpoint(String bPStr) {
         TextFlow textFlow = new TextFlow();
-        //TODO add to dictionary.
         for (Text s : bulletpoints){
-            if (STRINGS.getString(bPStr).equals(s.getText())){
+            if (bPStr.equals(s.getText())){
                 s.setFill(Color.BLUE);                
             } else {
                 s.setFill(Color.BLACK);
@@ -113,13 +113,12 @@ public class LoadUI extends View {
             overwriteTimer = null;
         }
 
-        lblProgressInfo.setText(STRINGS.getString(text));
+        lblProgressInfo.setText(text);
     }
     
     public void finished(){
         pbStatus.setVisible(false);
-        btnBack.setVisible(true);
-        //TODO set next Button to visible, once implemented..
+        btnBack.setDisable(false);
     }
     
 
@@ -133,7 +132,7 @@ public class LoadUI extends View {
             showIndeterminateProgressBar(tmpMessage);
         }
 
-        btnBack.setVisible(false);
+        btnBack.setDisable(true);
         double percent = Math.max(tmpProgress, 100) / 100;
         pbStatus.setProgress(percent);
     }

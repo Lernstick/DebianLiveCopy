@@ -77,7 +77,7 @@ public class StorageMediaManagement
         launch(args);
     }
 
-        @Override
+    @Override
     public void showInstallProgress() {
         setScene(new ch.fhnw.dlcopy.gui.javafx.ui.install.LoadUI());
     }
@@ -89,7 +89,7 @@ public class StorageMediaManagement
 
     @Override
     public void showInstallCreatingFileSystems() {
-        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.install.LoadUI("Creating_File_Systems"));
+        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.install.LoadUI(stringBundle.getString("global.creating_file_systems")));
     }
 
     @Override
@@ -114,12 +114,12 @@ public class StorageMediaManagement
 
     @Override
     public void showInstallUnmounting() {
-        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.install.LoadUI("Unmounting_File_Systems")); //To change body of generated methods, choose Tools | Templates.
+        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.install.LoadUI(stringBundle.getString("global.unmount_file_systems"))); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void showInstallWritingBootSector() {
-         setScene(new ch.fhnw.dlcopy.gui.javafx.ui.install.LoadUI("Writing_Boot_Sector"));
+         setScene(new ch.fhnw.dlcopy.gui.javafx.ui.install.LoadUI(stringBundle.getString("global.writing_boot_sector")));
     }
 
 
