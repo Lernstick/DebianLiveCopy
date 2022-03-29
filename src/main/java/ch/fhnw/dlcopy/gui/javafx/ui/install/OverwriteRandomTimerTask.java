@@ -2,7 +2,6 @@ package ch.fhnw.dlcopy.gui.javafx.ui.install;
 
 import ch.fhnw.dlcopy.gui.swing.*;
 import ch.fhnw.dlcopy.DLCopy;
-import static ch.fhnw.dlcopy.DLCopy.STRINGS;
 import javafx.event.EventHandler;
 import java.text.MessageFormat;
 import java.util.Timer;
