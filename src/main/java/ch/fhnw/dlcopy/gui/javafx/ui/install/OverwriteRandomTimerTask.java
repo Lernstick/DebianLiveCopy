@@ -1,6 +1,5 @@
 package ch.fhnw.dlcopy.gui.javafx.ui.install;
 
-import ch.fhnw.dlcopy.gui.swing.*;
 import ch.fhnw.dlcopy.DLCopy;
 import javafx.event.EventHandler;
 import java.text.MessageFormat;
