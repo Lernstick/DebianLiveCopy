@@ -131,9 +131,9 @@ public class SelectDeviceUI extends View {
         btnInstall.setOnAction(event ->
             showError(stringBundle.getString("install.installWarning"))
         );
-        btnBack.setOnAction(event ->
+        btnBack.setOnAction(event -> {
             context.setScene(new StartscreenUI());
-        );
+        });
     }
 
     private void install() {
