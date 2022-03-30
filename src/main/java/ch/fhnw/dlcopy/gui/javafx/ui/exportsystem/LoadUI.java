@@ -17,7 +17,7 @@ public class LoadUI extends View {
     private int tmpProgress = -1;
 
     public LoadUI() {
-        resourcePath = getClass().getResource("/fxml/exportSystem/load.fxml");
+        resourcePath = getClass().getResource("/fxml/exportsystem/load.fxml");
     }
 
     public LoadUI(String message) {

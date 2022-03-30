@@ -23,7 +23,7 @@ public class InfoUI extends View {
     private boolean tmpSuccess = false;
 
     public InfoUI() {
-        resourcePath = getClass().getResource("/fxml/exportData/info.fxml");
+        resourcePath = getClass().getResource("/fxml/exportdata/info.fxml");
     }
 
     public InfoUI(String path, boolean success) {
