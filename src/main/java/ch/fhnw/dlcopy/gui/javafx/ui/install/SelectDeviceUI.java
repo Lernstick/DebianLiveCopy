@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.locks.Lock;
@@ -26,11 +27,17 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
+import javafx.event.ActionEvent;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
+import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.text.Text;
+import javafx.stage.Popup;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 public class SelectDeviceUI extends View {
@@ -128,39 +135,40 @@ public class SelectDeviceUI extends View {
 
         // TODO: add setSystemSource event to select source btn
 
-        btnInstall.setOnAction(event -> {
-            new Installer(
-                runningSystemSource,    // the system source
-                lvDevices.getSelectionModel().getSelectedItems(),   // the list of StorageDevices to install
-                "Austausch",     // the label of the exchange partition
-                "exFat",    // the file system of the exchange partition
-                "ext4", // the file system of the data partition
-                new HashMap<String, byte[]>(),  // a global digest cache for speeding up repeated file checks
-                InstallControler.getInstance(),    // the DLCopy GUI
-                0,  // the size of the exchange partition
-                false,  // if the exchange partition should be copied
-                "", // the auto numbering pattern
-                1,  // the auto numbering start value
-                1,  // the auto numbering increment
-                1,  // the minimal number of digits to use for auto numbering
-                false,  // f the data partition should be encrypted with a personal password
-                "", // the personal password for data partition encryption
-                false,  // if the data partition should be encrypted with a secondary password
-                "", // the secondary password for data partition encryption
-                false,  // if the data partition should be filled with random data before formatting
-                false,  // if the data partition should be copied
-                DataPartitionMode.READ_WRITE,   // the mode of the data partition to set in the bootloaders config
-                null,   // the device to transfer data from or null, if no data should be transferred
-                false,  // if the exchange partition should be transferred
-                false,  // if the home folder should be transferred
-                false,  // if the network settings should be transferred
-                false,  // if the printer settings should be transferred
-                false,  // if the firewall settings should be transferred
-                false,  // if copies should be checked for errors
-                installLock // the lock to aquire before executing in background
-            ).execute();
-            context.setScene(new InstallationReportUI());
-        });
+        btnInstall.setOnAction(event -> showError(stringBundle.getString("install.installWarning")));
+    }
+
+    private void install() {
+        new Installer(
+            runningSystemSource,    // the system source
+            lvDevices.getSelectionModel().getSelectedItems(),   // the list of StorageDevices to install
+            "Austausch",     // the label of the exchange partition
+            "exFat",    // the file system of the exchange partition
+            "ext4", // the file system of the data partition
+            new HashMap<String, byte[]>(),  // a global digest cache for speeding up repeated file checks
+            InstallControler.getInstance(),    // the DLCopy GUI
+            0,  // the size of the exchange partition
+            false,  // if the exchange partition should be copied
+            "", // the auto numbering pattern
+            1,  // the auto numbering start value
+            1,  // the auto numbering increment
+            1,  // the minimal number of digits to use for auto numbering
+            false,  // f the data partition should be encrypted with a personal password
+            "", // the personal password for data partition encryption
+            false,  // if the data partition should be encrypted with a secondary password
+            "", // the secondary password for data partition encryption
+            false,  // if the data partition should be filled with random data before formatting
+            false,  // if the data partition should be copied
+            DataPartitionMode.READ_WRITE,   // the mode of the data partition to set in the bootloaders config
+            null,   // the device to transfer data from or null, if no data should be transferred
+            false,  // if the exchange partition should be transferred
+            false,  // if the home folder should be transferred
+            false,  // if the network settings should be transferred
+            false,  // if the printer settings should be transferred
+            false,  // if the firewall settings should be transferred
+            false,  // if copies should be checked for errors
+            installLock // the lock to aquire before executing in background
+        ).execute();
     }
 
     public void updateInstallSelectionCountAndExchangeInfo() {
@@ -229,10 +237,15 @@ public class SelectDeviceUI extends View {
     }
 
     private void showError(String message) {
-        Alert alert = new Alert(Alert.AlertType.ERROR);
-        alert.setTitle(stringBundle.getString("error"));
-        alert.setHeaderText(stringBundle.getString("error"));
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setHeaderText(stringBundle.getString("install.warningDataLoss"));
+        alert.setTitle(stringBundle.getString("global.confirm"));
         alert.setContentText(message);
-        alert.showAndWait();
+        Text text = new Text(message);
+        text.setWrappingWidth(300);
+        alert.getDialogPane().setContent(text);
+        alert.showAndWait()
+            .filter(response -> response == ButtonType.OK)
+            .ifPresent(response -> install());
     }
 }
