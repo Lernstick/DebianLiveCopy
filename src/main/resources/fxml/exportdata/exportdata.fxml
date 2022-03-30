@@ -69,8 +69,8 @@
                       <Label fx:id="lblWriteableDisplay" minHeight="25.333" text="%global.notApplicable" />
                       <Label fx:id="lblFreeSpaceDisplay" minHeight="25.333" text="%global.notApplicable" />
                       <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" textOn="%global.on" textOff="%global.off"  />
-                      <CheckBox fx:id="chbInformationDialog" minHeight="25.333" mnemonicParsing="false" text="%export.chbInformationDialog" />
-                      <CheckBox fx:id="chbInstallationProgram" minHeight="25.333" mnemonicParsing="false" text="%export.chbInstallationProgram" />
+                      <CheckBox fx:id="chbInformationDialog" minHeight="25.333" mnemonicParsing="false" text="%export.chbInformationDialog" visible="false" />
+                      <CheckBox fx:id="chbInstallationProgram" minHeight="25.333" mnemonicParsing="false" text="%export.chbInstallationProgram" visible="false" />
                </children>
                <HBox.margin>
                   <Insets left="20.0" right="20.0" top="40.0" />
