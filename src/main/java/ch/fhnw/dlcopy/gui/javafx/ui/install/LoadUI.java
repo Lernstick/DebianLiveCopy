@@ -28,7 +28,6 @@ public class LoadUI extends View {
     
     
     
-    private ResourceBundle stringBundle = ResourceBundle.getBundle("strings/Strings");
     
     private String tmpMessage;
     
