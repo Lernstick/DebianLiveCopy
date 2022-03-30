@@ -57,6 +57,6 @@ public class OverwriteRandomTimerTask extends TimerTask {
                 LernstickFileTools.getDataVolumeString(size, 1)));
 */
         progressBar.setProgress((int) ((100 * done) / size));
-        progressInfo.setText(STRINGS.getString(taskName)  + " " + (int) ((100 * done) / size));
+        progressInfo.setText(taskName  + " " + (int) ((100 * done) / size));
     }
 }
