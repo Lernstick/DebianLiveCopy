@@ -151,3 +151,11 @@ sonarqube-warn:
       -Dsonar.sources=src
   # fine graded options are a paid feature.
   allow_failure: true
+
+testfx:
+  extends: .prepare
+  stage: test
+  script:
+    - apt-get update
+    - apt-get install -y --no-install-recommends xauth xvfb
+    - xvfb-run ant test
