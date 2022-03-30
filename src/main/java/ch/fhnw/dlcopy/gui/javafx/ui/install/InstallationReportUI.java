@@ -125,7 +125,7 @@ public class InstallationReportUI extends View{
             } else if (cell.getValue().getFinishTime() == null){
                 return new SimpleStringProperty(stringBundle.getString("install.installing"));
             } else if (cell.getValue().getErrorMessage() != null && !cell.getValue().getErrorMessage().isBlank()) {
-                return new SimpleStringProperty(stringBundle.getString("install.error"));
+                return new SimpleStringProperty(stringBundle.getString("error.error"));
             } else {
                 return new SimpleStringProperty(stringBundle.getString("install.success"));
             }
