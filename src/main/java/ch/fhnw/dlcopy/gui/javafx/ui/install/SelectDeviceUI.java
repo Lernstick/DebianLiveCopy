@@ -128,14 +128,12 @@ public class SelectDeviceUI extends View {
 
     @Override
     protected void setupEventHandlers() {
-
-        btnBack.setOnAction(event -> {
+        btnInstall.setOnAction(event ->
+            showError(stringBundle.getString("install.installWarning"))
+        );
+        btnBack.setOnAction(event ->
             context.setScene(new StartscreenUI());
-        });
-
-        // TODO: add setSystemSource event to select source btn
-
-        btnInstall.setOnAction(event -> showError(stringBundle.getString("install.installWarning")));
+        );
     }
 
     private void install() {
