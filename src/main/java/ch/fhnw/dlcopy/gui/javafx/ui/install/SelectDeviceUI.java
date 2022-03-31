@@ -30,6 +30,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.text.Text;
@@ -49,6 +50,7 @@ public class SelectDeviceUI extends View {
 
     @FXML private Button btnBack;
     @FXML private Button btnInstall;
+    @FXML private ComboBox cmbDataParitionMode;
     @FXML private Label lblRequiredDiskspace;
     @FXML private ListView<StorageDevice> lvDevices;
     @FXML private CheckBox chbCopyDataPartition;
@@ -79,6 +81,7 @@ public class SelectDeviceUI extends View {
     }
 
     @Override
+    @SuppressWarnings("unchecked") // cmbDataParitionMode items' type safety does not need validation, as they are the same raw type.
     protected void initControls() {
         TimerTask listUpdater = new TimerTask() {
             @Override
@@ -121,6 +124,12 @@ public class SelectDeviceUI extends View {
         lblRequiredDiskspace.setText(MessageFormat.format(
                 stringBundle.getString("install.select_install_target_storage_media"),
                 sizeString));
+
+        cmbDataParitionMode.getItems().addAll(
+        stringBundle.getString("install.dataPartitionModeN"),
+        stringBundle.getString("install.dataPartitionModeR"),
+        stringBundle.getString("install.dataPartitionModeRW"));
+
     }
 
     @Override
@@ -154,7 +163,7 @@ public class SelectDeviceUI extends View {
             "", // the secondary password for data partition encryption
             false,  // if the data partition should be filled with random data before formatting
             chbCopyDataPartition.isSelected(),  // if the data partition should be copied
-            DataPartitionMode.READ_WRITE,   // the mode of the data partition to set in the bootloaders config
+            getDataPartitionMode(),   // the mode of the data partition to set in the bootloaders config
             null,   // the device to transfer data from or null, if no data should be transferred
             false,  // if the exchange partition should be transferred
             false,  // if the home folder should be transferred
@@ -242,5 +251,12 @@ public class SelectDeviceUI extends View {
         alert.showAndWait()
             .filter(response -> response == ButtonType.OK)
             .ifPresent(response -> install());
+    }
+
+    private DataPartitionMode getDataPartitionMode() {
+        String cmbValue = cmbDataParitionMode.getValue().toString();
+        if (cmbValue == stringBundle.getString("install.dataPartitionModeRW")){ return DataPartitionMode.READ_WRITE;}
+        else if (cmbValue == stringBundle.getString("install.dataPartitionModeR")){ return DataPartitionMode.READ_ONLY;}
+        else { return DataPartitionMode.NOT_USED;}
     }
 }
