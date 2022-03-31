@@ -129,7 +129,7 @@ public class SelectDeviceUI extends View {
     @Override
     protected void setupEventHandlers() {
         btnInstall.setOnAction(event ->
-            showError(stringBundle.getString("install.installWarning"))
+            showInstallConfirmation(stringBundle.getString("install.installWarning"))
         );
         btnBack.setOnAction(event -> {
             context.setScene(new StartscreenUI());
@@ -234,7 +234,7 @@ public class SelectDeviceUI extends View {
         // see ch.fhnw.dlcopy.gui.swing.InstallerPanels
     }
 
-    private void showError(String message) {
+    private void showInstallConfirmation(String message) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setHeaderText(stringBundle.getString("install.warningDataLoss"));
         alert.setTitle(stringBundle.getString("global.confirm"));
