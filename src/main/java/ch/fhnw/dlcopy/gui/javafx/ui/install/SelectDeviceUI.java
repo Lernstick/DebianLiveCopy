@@ -1,7 +1,6 @@
 package ch.fhnw.dlcopy.gui.javafx.ui.install;
 
 import ch.fhnw.dlcopy.DLCopy;
-import static ch.fhnw.dlcopy.DLCopy.STRINGS;
 import ch.fhnw.dlcopy.DataPartitionMode;
 import ch.fhnw.dlcopy.Installer;
 import ch.fhnw.dlcopy.PartitionState;
@@ -18,7 +17,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.locks.Lock;
@@ -27,17 +25,14 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
-import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.text.Text;
-import javafx.stage.Popup;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 public class SelectDeviceUI extends View {
@@ -56,6 +51,8 @@ public class SelectDeviceUI extends View {
     @FXML private Button btnInstall;
     @FXML private Label lblRequiredDiskspace;
     @FXML private ListView<StorageDevice> lvDevices;
+    @FXML private CheckBox chbCopyDataPartition;
+    @FXML private CheckBox chbCopyExchangePartition;
 
     public SelectDeviceUI() {
 
@@ -146,7 +143,7 @@ public class SelectDeviceUI extends View {
             new HashMap<String, byte[]>(),  // a global digest cache for speeding up repeated file checks
             InstallControler.getInstance(),    // the DLCopy GUI
             0,  // the size of the exchange partition
-            false,  // if the exchange partition should be copied
+            chbCopyExchangePartition.isSelected(),  // if the exchange partition should be copied
             "", // the auto numbering pattern
             1,  // the auto numbering start value
             1,  // the auto numbering increment
@@ -156,7 +153,7 @@ public class SelectDeviceUI extends View {
             false,  // if the data partition should be encrypted with a secondary password
             "", // the secondary password for data partition encryption
             false,  // if the data partition should be filled with random data before formatting
-            false,  // if the data partition should be copied
+            chbCopyDataPartition.isSelected(),  // if the data partition should be copied
             DataPartitionMode.READ_WRITE,   // the mode of the data partition to set in the bootloaders config
             null,   // the device to transfer data from or null, if no data should be transferred
             false,  // if the exchange partition should be transferred
