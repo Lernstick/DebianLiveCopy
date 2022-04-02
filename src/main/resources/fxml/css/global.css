@@ -226,3 +226,16 @@
 .target-rw {
     -fx-text-fill: #26BF0B;
 }
+
+.tab-pane .tab-header-area .tab-header-background {
+    -fx-opacity: 0;
+}
+
+.tab-pane .tab{
+    -fx-background-color: #494949 ;
+}
+
+.tab-pane .tab-label{
+    -fx-text-fill: #EEEEEE;
+}
+
