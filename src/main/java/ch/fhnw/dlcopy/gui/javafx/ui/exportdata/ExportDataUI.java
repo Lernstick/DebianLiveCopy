@@ -64,10 +64,11 @@ public class ExportDataUI extends View {
     protected void initControls() {
         btnExport.setDisable(true);
         
-        setTooltip(tfTargetDirectory, "Info: Please select the directory, where the exportet file should be stored.");
-        setTooltip(switchBtn, "Info: Show advenced options. Only for experts recomended.");
+        setTooltip(lblFreeSpace, "Info: Shows if there is enought space in the selected directory");
         setTooltip(lblWriteable, "Info: Shows if the program can writte in the selected directory");
         setTooltip(lblWriteableDisplay, "Info: Shows if the program can writte in the selected directory");
+        setTooltip(switchBtn, "Info: Show advenced options. Only for experts recomended.");
+        setTooltip(tfTargetDirectory, "Info: Please select the directory, where the exportet file should be stored.");
     }
 
     @Override
