@@ -8,6 +8,7 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Label;
 
 public abstract class View {
 
@@ -15,6 +16,8 @@ public abstract class View {
     protected PresentationModel model = PresentationModel.getInstance();
     protected URL resourcePath;
     protected ResourceBundle stringBundle = ResourceBundle.getBundle("strings/Strings");
+    
+    @FXML protected Label lblInfo;
     
     /**
      * This function is called, when the view should be deinitalized.
@@ -24,6 +27,7 @@ public abstract class View {
     
     @FXML
     public final void initialize(){
+        printInfo("");
         initSelf();
         initControls();
         layoutControls();
@@ -43,6 +47,16 @@ public abstract class View {
     protected void setupEventHandlers(){}
 
     protected void setupValueChangedListeners(){}
+    
+    /**
+     * Prints the given information on the bottem of the view
+     * @param info The information to be printed
+     */
+    protected final void printInfo(String info){
+        if (lblInfo != null){
+            lblInfo.setText(info);
+        }
+    }
   
     /**
     * Returns the root parent. This parent can be displayed in a FX-scene

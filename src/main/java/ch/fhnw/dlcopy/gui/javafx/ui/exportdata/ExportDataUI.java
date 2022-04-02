@@ -39,7 +39,6 @@ public class ExportDataUI extends View {
     @FXML private Label lblWriteableDisplay;
     @FXML private Label lblFreeSpace;
     @FXML private Label lblFreeSpaceDisplay;
-    @FXML private Label lblInfo;
     @FXML private CheckBox chbInformationDialog;
     @FXML private CheckBox chbInstallationProgram;
     @FXML private Button btnExport;
