@@ -7,6 +7,7 @@ import java.net.URL;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
 
@@ -17,7 +18,8 @@ public abstract class View {
     protected URL resourcePath;
     protected ResourceBundle stringBundle = ResourceBundle.getBundle("strings/Strings");
     
-    @FXML protected Label lblInfo;
+    @FXML private Label lblInfo;
+    private String defaultInfo = "";
     
     /**
      * This function is called, when the view should be deinitalized.
@@ -49,11 +51,29 @@ public abstract class View {
     protected void setupValueChangedListeners(){}
     
     /**
+     * Sets a tooltip, witch is shown on the bottom of the view, when the node is hovered
+     * @param node The node witch has to be hovered for showing the tooltip
+     * @param tooltip The tooltip to be shown
+     */
+    protected final void setTooltip(Node node, String tooltip){
+        node.hoverProperty().addListener((value, hadFocus, hasFocus) -> {
+            if (hasFocus) {
+                // tfTarget is now focused
+                lblInfo.setText(tooltip);
+            } else {
+                // tfTarget is not focused anymore
+                lblInfo.setText(defaultInfo);
+            }
+        });
+    }
+    
+    /**
      * Prints the given information on the bottem of the view
      * @param info The information to be printed
      */
     protected final void printInfo(String info){
         if (lblInfo != null){
+            defaultInfo = info;
             lblInfo.setText(info);
         }
     }

@@ -45,16 +45,6 @@ public class ExportDataUI extends View {
     @FXML private Button btnExport;
     @FXML private Button btnBack;
     @FXML private SwitchButton switchBtn;
-    
-    private ChangeListener<Boolean> infoTfTargetDirectory = (value, hadFocus, hasFocus) -> {
-            if (hasFocus) {
-                // tfTarget is now focused
-                printInfo("Info: Please select the directory, where the exportet file should be stored.");
-            } else {
-                // tfTarget is not focused anymore
-                printInfo("");
-            }
-        };
 
     public ExportDataUI() {
         Map<String, String> environment = new HashMap<>();
@@ -73,6 +63,9 @@ public class ExportDataUI extends View {
     @Override
     protected void initControls() {
         btnExport.setDisable(true);
+        
+        setTooltip(tfTargetDirectory, "Info: Please select the directory, where the exportet file should be stored.");
+        setTooltip(switchBtn, "Info: Show advenced options. Only for experts recomended.");
     }
 
     @Override
@@ -97,16 +90,7 @@ public class ExportDataUI extends View {
             }
             createDataPartiton();
         });
-    }
-
-    @Override
-    protected void setupValueChangedListeners() {
-        // Event Listener for when the tfTargetDirectory has changes on the focus or is hovered
-        tfTargetDirectory.focusedProperty().addListener(infoTfTargetDirectory);
-        tfTargetDirectory.hoverProperty().addListener(infoTfTargetDirectory);
-    }
-    
-    
+    }  
 
     private void selectDirectory() {
         DirectoryChooser folder = new DirectoryChooser();
