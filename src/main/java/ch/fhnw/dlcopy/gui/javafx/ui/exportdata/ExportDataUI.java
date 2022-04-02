@@ -64,16 +64,16 @@ public class ExportDataUI extends View {
     protected void initControls() {
         btnExport.setDisable(true);
         
-        setTooltip(btnTargetDirectory, "Info: Select the dirctory, where the exported files should be stored.");
-        setTooltip(chbInformationDialog, "Info: Should a information dialog pop up, each time the exported system starts up in read-only");
-        setTooltip(chbInstallationProgram, "Info: Should the installation program pop up, each time the exported system starts up");
-        setTooltip(lblFreeSpace, "Info: Shows if there is enought space in the selected directory");
-        setTooltip(lblTargetDirectory, "Info: Select the dirctory, where the exported files should be stored.");
-        setTooltip(lblFreeSpaceDisplay, "Info: Shows if there is enought space in the selected directory");
-        setTooltip(lblWriteable, "Info: Shows if the program can writte in the selected directory");
-        setTooltip(lblWriteableDisplay, "Info: Shows if the program can writte in the selected directory");
-        setTooltip(switchBtn, "Info: Show advenced options. Only for experts recomended.");
-        setTooltip(tfTargetDirectory, "Info: Please select the directory, where the exportet file should be stored.");
+        setTooltip(btnTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
+        setTooltip(chbInformationDialog, stringBundle.getString("export.tooltip.informationDialog"));
+        setTooltip(chbInstallationProgram, stringBundle.getString("export.tooltip.installationProgram"));
+        setTooltip(lblFreeSpace, stringBundle.getString("export.tooltip.freeSpace"));
+        setTooltip(lblTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
+        setTooltip(lblFreeSpaceDisplay, stringBundle.getString("export.tooltip.freeSpace"));
+        setTooltip(lblWriteable, stringBundle.getString("export.tooltip.writeable"));
+        setTooltip(lblWriteableDisplay, stringBundle.getString("export.tooltip.writeable"));
+        setTooltip(switchBtn, stringBundle.getString("global.tooltip.expertMode"));
+        setTooltip(tfTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
     }
 
     @Override

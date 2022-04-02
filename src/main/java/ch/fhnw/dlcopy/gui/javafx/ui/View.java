@@ -59,7 +59,7 @@ public abstract class View {
         node.hoverProperty().addListener((value, hadFocus, hasFocus) -> {
             if (hasFocus) {
                 // tfTarget is now focused
-                lblInfo.setText(tooltip);
+                lblInfo.setText(stringBundle.getString("global.info") + tooltip);
             } else {
                 // tfTarget is not focused anymore
                 lblInfo.setText(defaultInfo);
