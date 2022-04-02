@@ -64,6 +64,7 @@ public class ExportDataUI extends View {
     protected void initControls() {
         btnExport.setDisable(true);
         
+        setTooltip(chbInformationDialog, "Info: Should a information dialog pop up, each time the exported system starts up in read-only");
         setTooltip(lblFreeSpace, "Info: Shows if there is enought space in the selected directory");
         setTooltip(lblFreeSpaceDisplay, "Info: Shows if there is enought space in the selected directory");
         setTooltip(lblWriteable, "Info: Shows if the program can writte in the selected directory");
