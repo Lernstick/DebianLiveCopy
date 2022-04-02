@@ -126,6 +126,7 @@ public class ExportDataUI extends View {
                 lblWriteableDisplay.getStyleClass().clear();
                 lblWriteableDisplay.getStyleClass().add("target-ro");
                 btnExport.setDisable(true);
+                printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.notWriteable"));
             }
         } else {
             lblWriteableDisplay.setText(
