@@ -43,7 +43,7 @@ public class InstallationReportUI extends View{
     @FXML TableView<StorageDeviceResult> tvReport;
     
     public InstallationReportUI(){
-        resourcePath = getClass().getResource("/fxml/install/installationReport.fxml");
+        resourcePath = getClass().getResource("/fxml/install/installationreport.fxml");
     }
     
     /**
