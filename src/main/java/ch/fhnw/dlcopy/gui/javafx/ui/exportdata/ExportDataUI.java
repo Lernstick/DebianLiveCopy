@@ -65,6 +65,7 @@ public class ExportDataUI extends View {
         btnExport.setDisable(true);
         
         setTooltip(lblFreeSpace, "Info: Shows if there is enought space in the selected directory");
+        setTooltip(lblFreeSpaceDisplay, "Info: Shows if there is enought space in the selected directory");
         setTooltip(lblWriteable, "Info: Shows if the program can writte in the selected directory");
         setTooltip(lblWriteableDisplay, "Info: Shows if the program can writte in the selected directory");
         setTooltip(switchBtn, "Info: Show advenced options. Only for experts recomended.");
