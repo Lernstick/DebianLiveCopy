@@ -255,8 +255,8 @@ public class SelectDeviceUI extends View {
 
     private DataPartitionMode getDataPartitionMode() {
         String cmbValue = cmbDataParitionMode.getValue().toString();
-        if (cmbValue == stringBundle.getString("install.dataPartitionModeRW")){ return DataPartitionMode.READ_WRITE;}
-        else if (cmbValue == stringBundle.getString("install.dataPartitionModeR")){ return DataPartitionMode.READ_ONLY;}
+        if (cmbValue.equals(stringBundle.getString("install.dataPartitionModeRW"))){ return DataPartitionMode.READ_WRITE;}
+        else if (cmbValue.equals(stringBundle.getString("install.dataPartitionModeR"))){ return DataPartitionMode.READ_ONLY;}
         else { return DataPartitionMode.NOT_USED;}
     }
 }
