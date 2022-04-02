@@ -68,6 +68,7 @@ public class ExportDataUI extends View {
         setTooltip(chbInformationDialog, "Info: Should a information dialog pop up, each time the exported system starts up in read-only");
         setTooltip(chbInstallationProgram, "Info: Should the installation program pop up, each time the exported system starts up");
         setTooltip(lblFreeSpace, "Info: Shows if there is enought space in the selected directory");
+        setTooltip(lblTargetDirectory, "Info: Select the dirctory, where the exported files should be stored.");
         setTooltip(lblFreeSpaceDisplay, "Info: Shows if there is enought space in the selected directory");
         setTooltip(lblWriteable, "Info: Shows if the program can writte in the selected directory");
         setTooltip(lblWriteableDisplay, "Info: Shows if the program can writte in the selected directory");
