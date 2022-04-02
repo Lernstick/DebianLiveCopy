@@ -108,7 +108,7 @@ public class SelectDeviceUI extends View {
                         lvDevices.getItems().removeAll(removedDevices);
                         lvDevices.getItems().addAll(addedDevices);
                     });
-                } catch (Exception ex) {
+                } catch (IOException | DBusException ex) {
                     Logger.getLogger(SelectDeviceUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
@@ -127,10 +127,19 @@ public class SelectDeviceUI extends View {
                 stringBundle.getString("install.select_install_target_storage_media"),
                 sizeString));
 
+        setTooltip(chbCopyExchangePartition, stringBundle.getString("install.tooltip.copyExchangePartition"));
+        setTooltip(cmbDataPartitionMode, stringBundle.getString("global.tooltip.dataPartitionMode"));
+        setTooltip(lblRequiredDiskspace, stringBundle.getString("install.tooltip.requiredDiskSpace"));
+        setTooltip(chbCopyDataPartition, stringBundle.getString("install.tooltip.copyDataPartition"));
+
+        chbCopyDataPartition.setDisable(runningSystemSource.getDataPartition() == null);
+        chbCopyExchangePartition.setDisable(!runningSystemSource.hasExchangePartition());
+
         ObservableList<DataPartionModeEntry> dpmeList = FXCollections.observableArrayList();
         dpmeList.add(new DataPartionModeEntry(1, "install.dataPartitionModeRW"));
         dpmeList.add(new DataPartionModeEntry(2, "install.dataPartitionModeR"));
         dpmeList.add(new DataPartionModeEntry(3, "install.dataPartitionModeN"));
+
         cmbDataPartitionMode.setItems(dpmeList);
         cmbDataPartitionMode.getSelectionModel().selectFirst();
 
@@ -138,11 +147,6 @@ public class SelectDeviceUI extends View {
         epmeList.addAll(DLCopy.EXCHANGE_PARTITION_FS);
         cmbExchangePartitionMode.setItems(epmeList);
         cmbExchangePartitionMode.getSelectionModel().selectFirst();
-
-        setTooltip(cmbDataPartitionMode, stringBundle.getString("global.tooltip.dataPartitionMode"));
-        setTooltip(lblRequiredDiskspace, stringBundle.getString("install.tooltip.requiredDiskSpace"));
-        setTooltip(chbCopyDataPartition, stringBundle.getString("install.tooltip.copyDataPartition"));
-        setTooltip(chbCopyExchangePartition, stringBundle.getString("install.tooltip.copyExchangePartition"));
     }
 
     @Override
@@ -165,7 +169,7 @@ public class SelectDeviceUI extends View {
             new HashMap<String, byte[]>(),  // a global digest cache for speeding up repeated file checks
             InstallControler.getInstance(),    // the DLCopy GUI
             0,  // the size of the exchange partition
-            chbCopyExchangePartition.isSelected(),  // if the exchange partition should be copied
+            valChb(chbCopyExchangePartition),  // if the exchange partition should be copied
             "", // the auto numbering pattern
             1,  // the auto numbering start value
             1,  // the auto numbering increment
@@ -175,7 +179,7 @@ public class SelectDeviceUI extends View {
             false,  // if the data partition should be encrypted with a secondary password
             "", // the secondary password for data partition encryption
             false,  // if the data partition should be filled with random data before formatting
-            chbCopyDataPartition.isSelected(),  // if the data partition should be copied
+            valChb(chbCopyDataPartition),  // if the data partition should be copied
             getDataPartitionMode(),   // the mode of the data partition to set in the bootloaders config
             null,   // the device to transfer data from or null, if no data should be transferred
             false,  // if the exchange partition should be transferred
@@ -251,6 +255,16 @@ public class SelectDeviceUI extends View {
 
         // TODO: update all other parts of the UI
         // see ch.fhnw.dlcopy.gui.swing.InstallerPanels
+    }
+
+    /**
+     * Validates a checkbox filed.
+     *
+     * @param chb
+     * @return true if selected and enabled.
+     */
+    private boolean valChb(CheckBox chb) {
+        return chb.isSelected() && !chb.isDisabled();
     }
 
     private void showInstallConfirmation(String message) {
