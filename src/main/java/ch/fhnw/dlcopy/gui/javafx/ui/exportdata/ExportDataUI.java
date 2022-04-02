@@ -66,6 +66,7 @@ public class ExportDataUI extends View {
         
         setTooltip(tfTargetDirectory, "Info: Please select the directory, where the exportet file should be stored.");
         setTooltip(switchBtn, "Info: Show advenced options. Only for experts recomended.");
+        setTooltip(lblWriteable, "Info: Shows if the program can writte in the selected directory");
     }
 
     @Override
