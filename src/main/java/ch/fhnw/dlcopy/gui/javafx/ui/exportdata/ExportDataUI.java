@@ -66,7 +66,7 @@ public class ExportDataUI extends View {
 
     @Override
     protected void setupEventHandlers() {
-
+        
         switchBtn.setOnAction(event -> {
             toggleExpertMode();
         });
@@ -87,6 +87,22 @@ public class ExportDataUI extends View {
             createDataPartiton();
         });
     }
+
+    @Override
+    protected void setupValueChangedListeners() {
+        // Event Listener for when the tfTargetDirectory has changes on the focus
+        tfTargetDirectory.focusedProperty().addListener((observable, hadFocus, hasFocus) -> {
+            if (hasFocus) {
+                // tfTarget is now focused
+                printInfo("Info: Please select the directory, where the exportet file should be stored.");
+            } else {
+                // tfTarget is not focused anymore
+                printInfo("");
+            }
+        });
+    }
+    
+    
 
     private void selectDirectory() {
         DirectoryChooser folder = new DirectoryChooser();
