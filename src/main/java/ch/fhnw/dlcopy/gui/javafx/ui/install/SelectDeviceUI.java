@@ -34,6 +34,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import org.freedesktop.dbus.exceptions.DBusException;
 
@@ -44,6 +45,7 @@ public class SelectDeviceUI extends View {
 
     private final Timer listUpdateTimer = new Timer();
     private SystemSource runningSystemSource;
+    private int exchangePartitionSize = -1;
 
     // some locks to synchronize the Installer, Upgrader and Resetter with their
     // corresponding StorageDeviceAdder
@@ -57,6 +59,7 @@ public class SelectDeviceUI extends View {
     @FXML private ListView<StorageDevice> lvDevices;
     @FXML private CheckBox chbCopyDataPartition;
     @FXML private CheckBox chbCopyExchangePartition;
+    @FXML private TextField tfExchangePartitionSize;
 
     public SelectDeviceUI() {
 
@@ -150,6 +153,14 @@ public class SelectDeviceUI extends View {
     }
 
     @Override
+    protected void setupBindings() {
+        tfExchangePartitionSize.textProperty().addListener(event -> {
+            exchangePartitionSize = valExPartSize(tfExchangePartitionSize.getText().trim());
+            btnInstall.setDisable(exchangePartitionSize < 0);
+        });
+    }
+
+    @Override
     protected void setupEventHandlers() {
         btnInstall.setOnAction(event ->
             showInstallConfirmation(stringBundle.getString("install.installWarning"))
@@ -168,7 +179,7 @@ public class SelectDeviceUI extends View {
             "ext4", // the file system of the data partition
             new HashMap<String, byte[]>(),  // a global digest cache for speeding up repeated file checks
             InstallControler.getInstance(),    // the DLCopy GUI
-            0,  // the size of the exchange partition
+            exchangePartitionSize,  // the size of the exchange partition
             valChb(chbCopyExchangePartition),  // if the exchange partition should be copied
             "", // the auto numbering pattern
             1,  // the auto numbering start value
@@ -265,6 +276,20 @@ public class SelectDeviceUI extends View {
      */
     private boolean valChb(CheckBox chb) {
         return chb.isSelected() && !chb.isDisabled();
+    }
+
+    /**
+     * Validate exchange partition size.
+     *
+     * @param size
+     * @return positive number if valid, else -1
+     */
+    private int valExPartSize(String size) {
+        try {
+            return Integer.parseInt(size);
+        } catch (NumberFormatException e) {
+            return -1;
+        }
     }
 
     private void showInstallConfirmation(String message) {
