@@ -64,6 +64,7 @@ public class ExportDataUI extends View {
     protected void initControls() {
         btnExport.setDisable(true);
         
+        setTooltip(btnTargetDirectory, "Info: Select the dirctory, where the exported files should be stored.");
         setTooltip(chbInformationDialog, "Info: Should a information dialog pop up, each time the exported system starts up in read-only");
         setTooltip(chbInstallationProgram, "Info: Should the installation program pop up, each time the exported system starts up");
         setTooltip(lblFreeSpace, "Info: Shows if there is enought space in the selected directory");
