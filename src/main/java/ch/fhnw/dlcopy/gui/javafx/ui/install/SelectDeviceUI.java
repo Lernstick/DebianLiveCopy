@@ -24,6 +24,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
@@ -125,11 +126,11 @@ public class SelectDeviceUI extends View {
                 stringBundle.getString("install.select_install_target_storage_media"),
                 sizeString));
 
-        cmbDataParitionMode.getItems().addAll(
-        stringBundle.getString("install.dataPartitionModeN"),
-        stringBundle.getString("install.dataPartitionModeR"),
-        stringBundle.getString("install.dataPartitionModeRW"));
-
+        ObservableList<DataPartionModeEntry> dpmeList = FXCollections.observableArrayList();
+        dpmeList.add(new DataPartionModeEntry(1, "install.dataPartitionModeRW"));
+        dpmeList.add(new DataPartionModeEntry(2, "install.dataPartitionModeR"));
+        dpmeList.add(new DataPartionModeEntry(3, "install.dataPartitionModeN"));
+        cmbDataParitionMode.setItems(dpmeList);
     }
 
     @Override
