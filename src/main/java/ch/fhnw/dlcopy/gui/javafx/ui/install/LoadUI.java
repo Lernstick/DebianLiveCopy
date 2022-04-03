@@ -24,20 +24,18 @@ public class LoadUI extends View {
     @FXML private Button btnReport;
     @FXML private ImageView imgExportFile;
     @FXML private ProgressBar pbStatus;
-    @FXML private TextFlow tfExtraInfo;    
-    @FXML private Button btnBack;    
+    @FXML private TextFlow tfExtraInfo;
+    @FXML private Button btnBack;
     @FXML private Label lblProgressInfo;
-    
-    
-    
+
+
     private String tmpMessage;
-    
+
     //Both need to be > 0 for indeterminate time
     private long indetValue;
-    private long indetMax; 
-    
-    
-    
+    private long indetMax;
+
+
     private Timer overwriteTimer;
     private OverwriteRandomTimerTask overwriteRandomTimerTask;
     private int tmpProgress = -1;
@@ -55,49 +53,48 @@ public class LoadUI extends View {
         tmpMessage = message;
         tmpProgress = progress;
     }
-    
-    
+
+
     //indeterminate
     public LoadUI(String message) {
         this(message, -1);
     }
-  
-    
+
+
     //determinate
     public LoadUI(long value, long maximum) {
         this();
-        indetMax = maximum; 
-        indetValue = value; 
+        indetMax = maximum;
+        indetValue = value;
 
     }
-    
-    
+
+
     public void initBulletPoints(){
         bulletpoints.add(new Text(stringBundle.getString("global.unmount_file_systems")));
         bulletpoints.add(new Text("\n"));
-        bulletpoints.add(new Text(stringBundle.getString("global.writing_boot_sector")));     
+        bulletpoints.add(new Text(stringBundle.getString("global.writing_boot_sector")));
         bulletpoints.add(new Text("\n"));
         bulletpoints.add(new Text(stringBundle.getString("global.creating_file_systems")));
         bulletpoints.add(new Text("\n"));
-        
+
         for (Text bp : bulletpoints){
             tfExtraInfo.getChildren().add(bp);
         }
     }
-   
 
-    
+
     public void setBulletpoint(String bPStr) {
         TextFlow textFlow = new TextFlow();
         for (Text s : bulletpoints){
             if (bPStr.equals(s.getText())){
-                s.setFill(Color.BLUE);                
+                s.setFill(Color.BLUE);
             } else {
                 s.setFill(Color.BLACK);
             }
         }
     }
-    
+
     public void showOverwriteRandomProgressBar(long value, long maximum) {
         if (overwriteTimer == null) {
             overwriteTimer = new Timer();
@@ -105,7 +102,7 @@ public class LoadUI extends View {
         }
         overwriteRandomTimerTask.setDone(value);
     }
-    
+
     public void showIndeterminateProgressBar(final String text) {
 
         if (overwriteTimer != null) {
@@ -115,12 +112,12 @@ public class LoadUI extends View {
 
         lblProgressInfo.setText(text);
     }
-    
+
     public void finished(){
         pbStatus.setVisible(false);
         btnBack.setDisable(false);
     }
-    
+
 
     @Override
     protected void initSelf() {
@@ -133,7 +130,7 @@ public class LoadUI extends View {
         }
 
         btnBack.setDisable(true);
-        double percent = Math.max(tmpProgress, 100) / 100;
+        double percent = Math.max(tmpProgress, 100) / 100d;
         pbStatus.setProgress(percent);
     }
 
