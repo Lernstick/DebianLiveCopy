@@ -104,7 +104,7 @@
                                     <Label text="%global.dataPartition" />
                                     <HBox spacing="20.0">
                                        <children>
-                                          <CheckBox fx:id="chbCopyDataPartition" disable="true" maxHeight="1.7976931348623157E308" mnemonicParsing="false" text="%install.chbcopy" />
+                                          <CheckBox fx:id="chbCopyDataPartition" maxHeight="1.7976931348623157E308" mnemonicParsing="false" text="%install.chbcopy" />
                                           <Separator orientation="VERTICAL" />
                                           <Label maxHeight="1.7976931348623157E308" text="%global.mode" />
                                           <ComboBox fx:id="cmbDataParitionMode" />
