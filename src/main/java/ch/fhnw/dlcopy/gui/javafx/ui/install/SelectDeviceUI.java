@@ -132,10 +132,12 @@ public class SelectDeviceUI extends View {
         dpmeList.add(new DataPartionModeEntry(2, "install.dataPartitionModeR"));
         dpmeList.add(new DataPartionModeEntry(3, "install.dataPartitionModeN"));
         cmbDataPartitionMode.setItems(dpmeList);
+        cmbDataPartitionMode.getSelectionModel().selectFirst();
 
         ObservableList<String> epmeList = FXCollections.observableArrayList();
         epmeList.addAll(DLCopy.EXCHANGE_PARTITION_FS);
         cmbExchangePartitionMode.setItems(epmeList);
+        cmbExchangePartitionMode.getSelectionModel().selectFirst();
 
         setTooltip(cmbDataPartitionMode, stringBundle.getString("global.tooltip.dataPartitionMode"));
         setTooltip(lblRequiredDiskspace, stringBundle.getString("install.tooltip.requiredDiskSpace"));
