@@ -138,11 +138,10 @@ public class SelectDeviceUI extends View {
         chbCopyDataPartition.setDisable(runningSystemSource.getDataPartition() == null);
         chbCopyExchangePartition.setDisable(!runningSystemSource.hasExchangePartition());
 
-        ObservableList<DataPartionModeEntry> dpmeList = FXCollections.observableArrayList();
-        dpmeList.add(new DataPartionModeEntry(1, "install.dataPartitionModeRW"));
-        dpmeList.add(new DataPartionModeEntry(2, "install.dataPartitionModeR"));
-        dpmeList.add(new DataPartionModeEntry(3, "install.dataPartitionModeN"));
-
+        ObservableList<DataPartitionModeEntry> dpmeList = FXCollections.observableArrayList();
+        dpmeList.add(new DataPartitionModeEntry(DataPartitionMode.READ_WRITE, "install.dataPartitionModeRW"));
+        dpmeList.add(new DataPartitionModeEntry(DataPartitionMode.READ_ONLY, "install.dataPartitionModeR"));
+        dpmeList.add(new DataPartitionModeEntry(DataPartitionMode.NOT_USED, "install.dataPartitionModeN"));
         cmbDataPartitionMode.setItems(dpmeList);
         cmbDataPartitionMode.getSelectionModel().selectFirst();
 
@@ -306,9 +305,7 @@ public class SelectDeviceUI extends View {
     }
 
     private DataPartitionMode getDataPartitionMode() {
-        String cmbValue = cmbDataPartitionMode.getValue().toString();
-        if (cmbValue.equals(stringBundle.getString("install.dataPartitionModeRW"))){ return DataPartitionMode.READ_WRITE;}
-        else if (cmbValue.equals(stringBundle.getString("install.dataPartitionModeR"))){ return DataPartitionMode.READ_ONLY;}
-        else { return DataPartitionMode.NOT_USED;}
+        DataPartitionModeEntry selection = (DataPartitionModeEntry) cmbDataPartitionMode.getValue();
+        return selection.getMode();
     }
 }
