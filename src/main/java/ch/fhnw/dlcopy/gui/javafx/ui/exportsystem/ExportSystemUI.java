@@ -50,9 +50,11 @@ public class ExportSystemUI extends View {
     @FXML private CheckBox chbInstallationProgram;
     @FXML private ComboBox<String> cmbDataPartitionMode;
     @FXML private ImageView imgTargetDirectory;
+    @FXML private Label lblFreeSpace;
     @FXML private Label lblFreeSpaceDisplay;
+    @FXML private Label lblTargetDirectory;
+    @FXML private Label lblWriteable;
     @FXML private Label lblWriteableDisplay;
-    @FXML private Label lblInfo;
     @FXML private SwitchButton switchBtn;
     @FXML private TextField tfDvdLabel;
     @FXML private TextField tfTargetDirectory;
@@ -77,6 +79,19 @@ public class ExportSystemUI extends View {
         cmbDataPartitionMode.getItems().addAll(option_ReadWrite, option_ReadOnly, option_NotUsed);
         cmbDataPartitionMode.setValue(option_ReadWrite);
         btnExport.setDisable(true);
+        
+        setTooltip(btnTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
+        setTooltip(chbInformationDialog, stringBundle.getString("export.tooltip.informationDialog"));
+        setTooltip(chbInstallationProgram, stringBundle.getString("export.tooltip.installationProgram"));
+        setTooltip(cmbDataPartitionMode, stringBundle.getString("export.tooltip.dataPartitionMode"));
+        setTooltip(lblFreeSpace, stringBundle.getString("export.tooltip.freeSpace"));
+        setTooltip(lblTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
+        setTooltip(lblFreeSpaceDisplay, stringBundle.getString("export.tooltip.freeSpace"));
+        setTooltip(lblWriteable, stringBundle.getString("export.tooltip.writeable"));
+        setTooltip(lblWriteableDisplay, stringBundle.getString("export.tooltip.writeable"));
+        setTooltip(switchBtn, stringBundle.getString("global.tooltip.expertMode"));
+        setTooltip(tfDvdLabel, stringBundle.getString("export.tooltip.dvdLabel"));
+        setTooltip(tfTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
     }
 
     @Override
