@@ -83,7 +83,7 @@ public class ExportSystemUI extends View {
         setTooltip(btnTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
         setTooltip(chbInformationDialog, stringBundle.getString("export.tooltip.informationDialog"));
         setTooltip(chbInstallationProgram, stringBundle.getString("export.tooltip.installationProgram"));
-        setTooltip(cmbDataPartitionMode, stringBundle.getString("export.tooltip.dataPartitionMode"));
+        setTooltip(cmbDataPartitionMode, stringBundle.getString("global.tooltip.dataPartitionMode"));
         setTooltip(lblFreeSpace, stringBundle.getString("export.tooltip.freeSpace"));
         setTooltip(lblTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
         setTooltip(lblFreeSpaceDisplay, stringBundle.getString("export.tooltip.freeSpace"));

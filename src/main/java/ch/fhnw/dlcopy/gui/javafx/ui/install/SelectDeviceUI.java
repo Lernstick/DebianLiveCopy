@@ -131,6 +131,11 @@ public class SelectDeviceUI extends View {
         dpmeList.add(new DataPartionModeEntry(2, "install.dataPartitionModeR"));
         dpmeList.add(new DataPartionModeEntry(3, "install.dataPartitionModeN"));
         cmbDataParitionMode.setItems(dpmeList);
+        
+        setTooltip(cmbDataParitionMode, stringBundle.getString("global.tooltip.dataPartitionMode"));
+        setTooltip(lblRequiredDiskspace, stringBundle.getString("install.tooltip.requiredDiskSpace"));
+        setTooltip(chbCopyDataPartition, stringBundle.getString("install.tooltip.copyDataPartition"));
+        setTooltip(chbCopyExchangePartition, stringBundle.getString("install.tooltip.copyExchangePartition"));
     }
 
     @Override
