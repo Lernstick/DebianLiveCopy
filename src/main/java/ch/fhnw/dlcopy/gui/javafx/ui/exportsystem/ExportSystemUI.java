@@ -163,6 +163,7 @@ public class ExportSystemUI extends View {
                 lblWriteableDisplay.getStyleClass().clear();
                 lblWriteableDisplay.getStyleClass().add("target-ro");
                 btnExport.setDisable(true);
+                printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.notWriteable"));
             }
         } else {
             lblWriteableDisplay.setText(
@@ -170,6 +171,7 @@ public class ExportSystemUI extends View {
             lblWriteableDisplay.getStyleClass().clear();
             lblWriteableDisplay.getStyleClass().add("target-na");
             btnExport.setDisable(true);
+            printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.directoryDoesNotExist"));
         }
     }
 
@@ -185,6 +187,7 @@ public class ExportSystemUI extends View {
             String message = stringBundle.getString("error.noDataPartition");
             LOGGER.log(Level.WARNING, message);
             showError(message);
+            printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.noDataPartition"));
             return false;
         }
 
