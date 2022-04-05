@@ -51,7 +51,8 @@ public class SelectDeviceUI extends View {
 
     @FXML private Button btnBack;
     @FXML private Button btnInstall;
-    @FXML private ComboBox cmbDataParitionMode;
+    @FXML private ComboBox cmbDataPartitionMode;
+    @FXML private ComboBox cmbExchangePartitionMode;
     @FXML private Label lblRequiredDiskspace;
     @FXML private ListView<StorageDevice> lvDevices;
     @FXML private CheckBox chbCopyDataPartition;
@@ -82,7 +83,7 @@ public class SelectDeviceUI extends View {
     }
 
     @Override
-    @SuppressWarnings("unchecked") // cmbDataParitionMode items' type safety does not need validation, as they are the same raw type.
+    @SuppressWarnings("unchecked") // cmbDataPartitionMode items' type safety does not need validation, as they are the same raw type.
     protected void initControls() {
         TimerTask listUpdater = new TimerTask() {
             @Override
@@ -130,9 +131,13 @@ public class SelectDeviceUI extends View {
         dpmeList.add(new DataPartionModeEntry(1, "install.dataPartitionModeRW"));
         dpmeList.add(new DataPartionModeEntry(2, "install.dataPartitionModeR"));
         dpmeList.add(new DataPartionModeEntry(3, "install.dataPartitionModeN"));
-        cmbDataParitionMode.setItems(dpmeList);
-        
-        setTooltip(cmbDataParitionMode, stringBundle.getString("global.tooltip.dataPartitionMode"));
+        cmbDataPartitionMode.setItems(dpmeList);
+
+        ObservableList<String> epmeList = FXCollections.observableArrayList();
+        epmeList.addAll(DLCopy.EXCHANGE_PARTITION_FS);
+        cmbExchangePartitionMode.setItems(epmeList);
+
+        setTooltip(cmbDataPartitionMode, stringBundle.getString("global.tooltip.dataPartitionMode"));
         setTooltip(lblRequiredDiskspace, stringBundle.getString("install.tooltip.requiredDiskSpace"));
         setTooltip(chbCopyDataPartition, stringBundle.getString("install.tooltip.copyDataPartition"));
         setTooltip(chbCopyExchangePartition, stringBundle.getString("install.tooltip.copyExchangePartition"));
@@ -153,7 +158,7 @@ public class SelectDeviceUI extends View {
             runningSystemSource,    // the system source
             lvDevices.getSelectionModel().getSelectedItems(),   // the list of StorageDevices to install
             "Austausch",     // the label of the exchange partition
-            "exFat",    // the file system of the exchange partition
+            cmbExchangePartitionMode.getSelectionModel().getSelectedItem().toString(),    // the file system of the exchange partition
             "ext4", // the file system of the data partition
             new HashMap<String, byte[]>(),  // a global digest cache for speeding up repeated file checks
             InstallControler.getInstance(),    // the DLCopy GUI
@@ -260,7 +265,7 @@ public class SelectDeviceUI extends View {
     }
 
     private DataPartitionMode getDataPartitionMode() {
-        String cmbValue = cmbDataParitionMode.getValue().toString();
+        String cmbValue = cmbDataPartitionMode.getValue().toString();
         if (cmbValue.equals(stringBundle.getString("install.dataPartitionModeRW"))){ return DataPartitionMode.READ_WRITE;}
         else if (cmbValue.equals(stringBundle.getString("install.dataPartitionModeR"))){ return DataPartitionMode.READ_ONLY;}
         else { return DataPartitionMode.NOT_USED;}

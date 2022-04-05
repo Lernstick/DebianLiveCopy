@@ -98,7 +98,7 @@
                                           <CheckBox fx:id="chbCopyExchangePartition" disable="true" maxHeight="1.7976931348623157E308" mnemonicParsing="false" text="%install.chbcopy" />
                                           <Separator orientation="VERTICAL" />
                                           <Label maxHeight="1.7976931348623157E308" text="%global.size" />
-                                          <TextField fx:id="tfExchangeParitionSize" />
+                                          <TextField fx:id="tfExchangePartitionSize" />
                                        </children>
                                     </HBox>
                                     <Label text="%global.dataPartition" />
@@ -107,7 +107,7 @@
                                           <CheckBox fx:id="chbCopyDataPartition" maxHeight="1.7976931348623157E308" mnemonicParsing="false" text="%install.chbcopy" />
                                           <Separator orientation="VERTICAL" />
                                           <Label maxHeight="1.7976931348623157E308" text="%global.mode" />
-                                          <ComboBox fx:id="cmbDataParitionMode" />
+                                          <ComboBox fx:id="cmbDataPartitionMode" />
                                        </children>
                                     </HBox>
                                  </children>
@@ -146,7 +146,7 @@
                                                 <HBox spacing="20.0">
                                                    <children>
                                                       <Label maxHeight="1.7976931348623157E308" text="%global.fileSystem" />
-                                                      <ComboBox fx:id="cmbExchangeParitionMode" />
+                                                      <ComboBox fx:id="cmbExchangePartitionMode" />
                                                    </children>
                                                 </HBox>
                                              </children>
