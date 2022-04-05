@@ -160,7 +160,7 @@ public class SelectDeviceUI extends View {
             runningSystemSource,    // the system source
             lvDevices.getSelectionModel().getSelectedItems(),   // the list of StorageDevices to install
             "Austausch",     // the label of the exchange partition
-            cmbExchangePartitionMode.getSelectionModel().getSelectedItem().toString(),    // the file system of the exchange partition
+            cmbExchangePartitionMode.getValue().toString(),    // the file system of the exchange partition
             "ext4", // the file system of the data partition
             new HashMap<String, byte[]>(),  // a global digest cache for speeding up repeated file checks
             InstallControler.getInstance(),    // the DLCopy GUI
