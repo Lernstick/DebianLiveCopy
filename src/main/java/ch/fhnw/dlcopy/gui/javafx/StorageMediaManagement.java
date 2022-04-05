@@ -1,6 +1,7 @@
 package ch.fhnw.dlcopy.gui.javafx;
 
 import ch.fhnw.dlcopy.Installer;
+import ch.fhnw.dlcopy.StorageDeviceResult;
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import ch.fhnw.dlcopy.gui.javafx.ui.install.InstallControler;
@@ -14,6 +15,7 @@ import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Application;
+import javafx.collections.ObservableList;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.image.Image;
@@ -84,7 +86,7 @@ public class StorageMediaManagement
 
     @Override
     public void installingDeviceStarted(StorageDevice storageDevice) {
-        InstallControler.getInstance().installingDeviceStarted(storageDevice);
+        InstallControler.getInstance().getReport().add(new StorageDeviceResult(storageDevice));
     }
 
     @Override
@@ -125,7 +127,9 @@ public class StorageMediaManagement
 
     @Override
     public void installingDeviceFinished(String errorMessage, int autoNumberStart) {
-        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        ObservableList<StorageDeviceResult> report = InstallControler.getInstance().getReport();
+        report.get(report.size() -1 ).setErrorMessage(errorMessage);
+        report.get(report.size() -1 ).finish();
     }
 
     @Override

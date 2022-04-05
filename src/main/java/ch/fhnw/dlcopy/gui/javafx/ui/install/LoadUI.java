@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.ResourceBundle;
 import java.util.Timer;
 import javafx.beans.binding.Bindings;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -20,12 +21,12 @@ import javafx.scene.text.TextFlow;
 
 public class LoadUI extends View {
 
+    @FXML private Button btnReport;
     @FXML private ImageView imgExportFile;
     @FXML private ProgressBar pbStatus;
     @FXML private TextFlow tfExtraInfo;    
     @FXML private Button btnBack;    
     @FXML private Label lblProgressInfo;
-    
     
     
     
@@ -138,6 +139,11 @@ public class LoadUI extends View {
 
     @Override
     protected void setupEventHandlers() {
+        btnReport.setOnAction((ActionEvent event) -> {
+            context.setScene(new InstallationReportUI());
+            // context.setScene(new InstallationReportUI());
+        });
+        
         imgExportFile.fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 5.869));
         imgExportFile.fitWidthProperty().bind(Bindings.divide(model.widthProperty(), 9.8969));
     }

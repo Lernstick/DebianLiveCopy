@@ -18,6 +18,7 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -28,6 +29,7 @@ public class InstallationReportUI extends View{
     HashMap <StorageDeviceResult, SimpleStringProperty> durations = new HashMap<>();
     private final Timer tableRefresheTimer = new Timer();
     
+    @FXML Button btnProgress;
     @FXML TableColumn<StorageDeviceResult, String> colDuration;
     @FXML TableColumn<StorageDeviceResult, String> colError;
     @FXML TableColumn<StorageDeviceResult, String> colFinish;
@@ -67,8 +69,6 @@ public class InstallationReportUI extends View{
         tableRefresheTimer.scheduleAtFixedRate(tableRefresher, 0, 1000L); // Starts the `lisstUpdater`-task each 1000ms (1sec)
     }
     
-    
-
     @Override
     protected void initControls() {
         colDuration.setCellValueFactory(cell -> {
@@ -133,6 +133,13 @@ public class InstallationReportUI extends View{
         colVendor.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStorageDevice().getVendor()));
         
         tvReport.setItems(InstallControler.getInstance().getReport());
+    }
+
+    @Override
+    protected void setupEventHandlers() {
+        btnProgress.setOnAction(event -> {
+            context.setScene(new LoadUI());
+        });
     }
     
     
