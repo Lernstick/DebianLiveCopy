@@ -56,7 +56,7 @@
          <children>
             <VBox HBox.hgrow="ALWAYS">
                <children>
-                  <VBox fx:id="lblSourceSelection" spacing="10.0">
+                  <VBox spacing="10.0">
                      <children>
                         <Label fx:id="lblSourceSelection" text="%install.lblSourceSelection" />
                         <RadioButton fx:id="rdbCurrentSystem" mnemonicParsing="false" selected="true" text="%install.rdbCurrentSystem">
@@ -136,7 +136,7 @@
                                              <children>
                                                 <HBox>
                                                    <children>
-                                                      <Label fx:id="lblInstallationTarget11" text="%global.exchangepartition" HBox.hgrow="ALWAYS" />
+                                                      <Label text="%global.exchangepartition" HBox.hgrow="ALWAYS" />
                                                       <Separator maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
                                                    </children>
                                                    <padding>
@@ -155,7 +155,7 @@
                                              <children>
                                                 <HBox>
                                                    <children>
-                                                      <Label fx:id="lblInstallationTarget112" text="%global.dataPartition" HBox.hgrow="ALWAYS" />
+                                                      <Label text="%global.dataPartition" HBox.hgrow="ALWAYS" />
                                                       <Separator maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
                                                    </children>
                                                    <padding>
@@ -184,7 +184,7 @@
                                        <children>
                                           <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="ALWAYS">
                                              <children>
-                                                <Label fx:id="lblInstallationTarget111" maxHeight="-Infinity" maxWidth="-Infinity" text="%install.lblInstallationTarget" HBox.hgrow="ALWAYS" />
+                                                <Label maxHeight="-Infinity" maxWidth="-Infinity" text="%install.lblInstallationTarget" HBox.hgrow="ALWAYS" />
                                                 <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
                                              </children>
                                              <padding>
