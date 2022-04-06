@@ -83,17 +83,17 @@
          <content>
             <TableView id="tvReport" fx:id="tvReport" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308">
               <columns>
-                <TableColumn fx:id="colNumber" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.number" />
-                  <TableColumn fx:id="colMountpoint" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.mountpoint" />
-                  <TableColumn fx:id="colMounted" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.mounted" />
-                  <TableColumn fx:id="colVendor" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.vendor" />
-                  <TableColumn fx:id="colModel" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.model" />
-                  <TableColumn fx:id="colSerial" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.serial" />
-                  <TableColumn fx:id="colSize" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.size" />
-                  <TableColumn fx:id="colStart" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.start" />
-                  <TableColumn fx:id="colFinish" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.finish" />
-                  <TableColumn fx:id="colDuration" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.duration" />
-                  <TableColumn fx:id="colStatus" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.status" />
+                <TableColumn fx:id="colNumber" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.colNumber" />
+                  <TableColumn fx:id="colMountpoint" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.colMountpoint" />
+                  <TableColumn fx:id="colMounted" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.colMounted" />
+                  <TableColumn fx:id="colVendor" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.colVendor" />
+                  <TableColumn fx:id="colModel" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.colModel" />
+                  <TableColumn fx:id="colSerial" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.colSerial" />
+                  <TableColumn fx:id="colSize" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.colSize" />
+                  <TableColumn fx:id="colStart" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.colStart" />
+                  <TableColumn fx:id="colFinish" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.colFinish" />
+                  <TableColumn fx:id="colDuration" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.colDuration" />
+                  <TableColumn fx:id="colStatus" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%install.colStatus" />
                   <TableColumn fx:id="colError" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" text="%error.error" />
               </columns>
             </TableView>
