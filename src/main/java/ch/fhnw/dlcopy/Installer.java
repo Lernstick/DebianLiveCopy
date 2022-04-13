@@ -199,11 +199,11 @@ public class Installer extends InstallerOrUpgrader
 
         // the following try-catch block is needed to log otherwise invisible
         // runtime exceptions
-        try {
-            get();
-        } catch (Exception ex) {
-            LOGGER.log(Level.WARNING, "", ex);
-        }
+//        try {
+//            get();
+//        } catch (Exception ex) {
+//            LOGGER.log(Level.WARNING, "", ex);
+//        }
 
         dlCopyGUI.installingListFinished();
     }
