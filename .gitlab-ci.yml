@@ -105,6 +105,22 @@ build:storage-media-management:javadoc:
     paths:
       - dist/javadoc
 
+build:storage-media-management:deb:
+  extends: .prepare
+  stage: build
+  script:
+    - apt-get update
+    - apt-get install -y --no-install-recommends build-essential debhelper junit
+    - dpkg-buildpackage --no-sign
+    - mkdir dpkg
+    - mv ../dlcopy* dpkg/
+  dependencies:
+    - build:lernstickTools
+    - build:jbackpack
+  artifacts:
+    paths:
+      - dpkg
+
 sonarqube:
   stage: test
   image:
