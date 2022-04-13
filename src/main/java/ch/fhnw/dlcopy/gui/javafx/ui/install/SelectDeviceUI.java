@@ -186,7 +186,8 @@ public class SelectDeviceUI extends View {
             cmbExchangePartitionFilesystem.getValue().toString(),    // the file system of the exchange partition
             "ext4", // the file system of the data partition
             new HashMap<String, byte[]>(),  // a global digest cache for speeding up repeated file checks
-            InstallControler.getInstance(),    // the DLCopy GUI
+            // Register the InstallControler as Callback-Class
+            InstallControler.getInstance(),    // the DLCopyGUI
             exchangePartitionSize,  // the size of the exchange partition
             valChb(chbCopyExchangePartition),  // if the exchange partition should be copied
             "", // the auto numbering pattern
