@@ -157,6 +157,5 @@ testfx:
   stage: test
   script:
     - apt-get update
-    - apt-get install -y libmockito-java
-    - apt-get install -y --no-install-recommends xauth xvfb
+    - apt-get install -y --no-install-recommends junit libmockito-java xauth xvfb
     - xvfb-run ant test
