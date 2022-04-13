@@ -1414,6 +1414,13 @@ public class DLCopy {
         // repartition device
         String[] commandArray = partedCommandList.toArray(
                 new String[partedCommandList.size()]);
+        
+        System.out.print(">>>>>>>>>>>>>>> DEBUG: commandArray: ");
+        for (int i = 0; i < commandArray.length; i++){
+            System.out.print(commandArray[i] + " ");
+        }
+        System.out.print("\n");
+        
         exitValue = PROCESS_EXECUTOR.executeProcess(commandArray);
         if (exitValue != 0) {
             String errorMessage = STRINGS.getString("Error_Repartitioning");
