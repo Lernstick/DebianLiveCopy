@@ -152,6 +152,9 @@ public class SelectDeviceUI extends View {
         epmeList.addAll(DLCopy.EXCHANGE_PARTITION_FS);
         cmbExchangePartitionFilesystem.setItems(epmeList);
         cmbExchangePartitionFilesystem.getSelectionModel().selectFirst();
+
+        // Install Button should be disabled, till a valid exchangePartition size is choosen.
+        btnInstall.setDisable(true);
     }
 
     @Override
