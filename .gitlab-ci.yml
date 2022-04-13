@@ -121,7 +121,7 @@ build:storage-media-management:deb:
     paths:
       - dpkg
 
-sonarqube:
+sonarqube-warn:
   stage: test
   image:
     name: sonarsource/sonar-scanner-cli
@@ -149,4 +149,5 @@ sonarqube:
       -Dsonar.projectKey="${CI_SONARQUBE_PROJECT}"
       -Dsonar.qualitygate.wait=true
       -Dsonar.sources=src
+  # fine graded options are a paid feature.
   allow_failure: true
