@@ -27,6 +27,6 @@ public class StartscreenUITest extends ApplicationTest {
     
     @Test public void hasAButton() {
         // expect:
-        verifyThat("#btnInstall", hasText("Installieren"));
+        verifyThat("#btnInstall", hasText("Install"));
     }
 }
