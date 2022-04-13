@@ -205,13 +205,15 @@ public class SquashFSCreator implements PropertyChangeListener {
         dlCopyGUI.showSquashFSProgressMessage(
                 STRINGS.getString("Compressing_Filesystem"));
         PROCESS_EXECUTOR.addPropertyChangeListener(this);
-        int exitValue = PROCESS_EXECUTOR.executeProcess("mksquashfs",
+        int exitValue = PROCESS_EXECUTOR.executeProcess(true, true, "mksquashfs",
                 dataPartitionPath, squashFsPath,
                 "-comp", "zstd", "-Xcompression-level", "22", "-wildcards",
                 "-ef", excludeFile.getPath());
+            LOGGER.log(Level.FINEST, PROCESS_EXECUTOR.getStdOut());
         if (exitValue != 0) {
+            LOGGER.log(Level.SEVERE, PROCESS_EXECUTOR.getStdErr());
             throw new IOException(
-                    STRINGS.getString("Error_Creating_Squashfs"));
+                    STRINGS.getString("Error_Creating_Squashfs: " + exitValue));
         }
         PROCESS_EXECUTOR.removePropertyChangeListener(this);
 

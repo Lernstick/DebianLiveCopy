@@ -383,9 +383,11 @@ public class IsoCreator implements PropertyChangeListener {
         int exitValue = PROCESS_EXECUTOR.executeProcess(true, true, "mksquashfs",
                 cowPath, targetDirectory + "/live/filesystem.squashfs",
                 "-comp", "zstd", "-Xcompression-level", "22");
+            LOGGER.log(Level.FINEST, PROCESS_EXECUTOR.getStdOut());
         if (exitValue != 0) {
+            LOGGER.log(Level.SEVERE, PROCESS_EXECUTOR.getStdErr());
             throw new IOException(
-                    STRINGS.getString("Error_Creating_Squashfs"));
+                    STRINGS.getString("Error_Creating_Squashfs: " + exitValue));
         }
         PROCESS_EXECUTOR.removePropertyChangeListener(this);
 
