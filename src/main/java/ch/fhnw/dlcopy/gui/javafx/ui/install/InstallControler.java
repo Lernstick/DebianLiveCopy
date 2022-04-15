@@ -132,7 +132,6 @@ public class InstallControler implements DLCopyGUI {
     @Override
     public void installingDeviceFinished(String errorMessage, int autoNumberStart) {
         // Update the status
-        System.out.println(">>>>>>>>>>>>>>> TRACE: `installingDeviceFinished()` is called.");
         if (errorMessage == null) {
             // No error occured
             currentInstallation.setStatus(OperationStatus.SUCCESSFULL);
@@ -146,8 +145,8 @@ public class InstallControler implements DLCopyGUI {
     @Override
     public void installingListFinished() {
         System.out.println(">>>>>>>>>>>>>>> TRACE: `installingListFinished()` is called.");
-        currentInstallation.setStatus(OperationStatus.SUCCESSFULL);
-        // TODO: Switch to end screen
+        currentInstallation.setStatus(OperationStatus.SUCCESSFULL); // It's possible thant for the last device no installing Device finished is called
+        context.setScene(new InfoUI());
     }
     
     /**
