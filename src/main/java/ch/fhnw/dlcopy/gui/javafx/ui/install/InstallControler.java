@@ -3,6 +3,7 @@ package ch.fhnw.dlcopy.gui.javafx.ui.install;
 import ch.fhnw.dlcopy.Installer;
 import ch.fhnw.dlcopy.StorageDeviceResult;
 import ch.fhnw.dlcopy.gui.DLCopyGUI;
+import ch.fhnw.dlcopy.gui.javafx.SceneContext;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.StorageDevice;
 import javafx.collections.FXCollections;
@@ -26,15 +27,22 @@ public class InstallControler implements DLCopyGUI {
     private ObservableList<StorageDeviceResult> installations = FXCollections.observableArrayList();
     
     /**
+     * The scene context, witch is used to switch the scene
+     */
+    private static SceneContext context;
+    
+    /**
      * Mark the constructor <c>private</c>, so it is not accessable from outside
      */
     private InstallControler() {}
     
     /**
      * A thread save lacy constructor for the singleton
+     * @param context The scene context, witch will be used to switch the scene.
      * @return The instance of the singleton
      */
-    public static synchronized InstallControler getInstance(){
+    public static synchronized InstallControler getInstance(SceneContext context){
+        InstallControler.context = context;
         if (instance == null) {
             instance = new InstallControler();
         }
@@ -46,9 +54,12 @@ public class InstallControler implements DLCopyGUI {
     }
     
     @Override
+    /**
+     * This methode is called, when installation starts.
+     * It will show initial the load ui. 
+     */
     public void showInstallProgress() {
-        System.out.println(">>>>>>>>>>>>>>> TRACE: `showInstallProgress()` is called.");
-        // setScene(new ch.fhnw.dlcopy.gui.javafx.ui.install.LoadUI());
+        context.setScene(new LoadUI());
     }
 
     @Override

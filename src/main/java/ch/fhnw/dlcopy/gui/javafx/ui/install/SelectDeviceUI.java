@@ -187,7 +187,7 @@ public class SelectDeviceUI extends View {
             "ext4", // the file system of the data partition
             new HashMap<String, byte[]>(),  // a global digest cache for speeding up repeated file checks
             // Register the InstallControler as Callback-Class
-            InstallControler.getInstance(),    // the DLCopyGUI
+            InstallControler.getInstance(context),    // the DLCopyGUI
             exchangePartitionSize,  // the size of the exchange partition
             valChb(chbCopyExchangePartition),  // if the exchange partition should be copied
             "", // the auto numbering pattern

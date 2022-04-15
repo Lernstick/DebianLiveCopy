@@ -107,11 +107,14 @@ public class InstallationReportUI extends View{
             }
         });
         colMountpoint.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStorageDevice().getFullDevice()));
+        /*
+        TODO:
         colNumber.setCellValueFactory(cell -> {
             StorageDeviceResult result = cell.getValue();
             int index = InstallControler.getInstance().getReport().indexOf(result);
             return new SimpleStringProperty(String.valueOf(index + 1));
         });
+        */
         colSerial.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStorageDevice().getSerial()));
         colSize.setCellValueFactory(cell -> new SimpleStringProperty(String.valueOf(cell.getValue().getStorageDevice().getSize())));
         colStart.setCellValueFactory(cell -> {
@@ -132,7 +135,7 @@ public class InstallationReportUI extends View{
         });
         colVendor.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getStorageDevice().getVendor()));
         
-        tvReport.setItems(InstallControler.getInstance().getReport());
+        // TODO: tvReport.setItems(InstallControler.getInstance().getReport());
     }
 
     @Override
