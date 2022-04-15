@@ -1415,7 +1415,6 @@ public class DLCopy {
         String[] commandArray = partedCommandList.toArray(
                 new String[partedCommandList.size()]);
         
-        System.out.print(">>>>>>>>>>>>>>> DEBUG: commandArray: ");
         for (int i = 0; i < commandArray.length; i++){
             System.out.print(commandArray[i] + " ");
         }
