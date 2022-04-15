@@ -1,12 +1,15 @@
 package ch.fhnw.dlcopy.gui.javafx.ui.install;
 
 import ch.fhnw.dlcopy.Installer;
-import ch.fhnw.dlcopy.StorageDeviceResult;
 import ch.fhnw.dlcopy.gui.DLCopyGUI;
 import ch.fhnw.dlcopy.gui.javafx.SceneContext;
+import ch.fhnw.dlcopy.model.install.Installation;
+import ch.fhnw.dlcopy.model.install.InstallationStatus;
+import ch.fhnw.dlcopy.model.install.OperationStatus;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.StorageDevice;
-import javafx.collections.FXCollections;
+import java.util.List;
+import javafx.beans.property.SimpleListProperty;
 import javafx.collections.ObservableList;
 
 /**
@@ -16,25 +19,30 @@ import javafx.collections.ObservableList;
  */
 public class InstallControler implements DLCopyGUI {
     
+    private Installation currentInstallation = null;
+    
     /**
      * The singleton instance of the class
      */
     private static InstallControler instance = null;
     
     /**
-     * A list of all installations (pending, ongoing, failed and succeeded)
+     * A list of all selected devices
+     * On each of this devices a installation is planed
      */
-    private ObservableList<StorageDeviceResult> installations = FXCollections.observableArrayList();
+    private final ObservableList<Installation> installations = new SimpleListProperty<>();
     
     /**
      * The scene context, witch is used to switch the scene
      */
-    private static SceneContext context;
+    private final SceneContext context;
     
     /**
      * Mark the constructor <c>private</c>, so it is not accessable from outside
      */
-    private InstallControler() {}
+    private InstallControler(SceneContext context) {
+        this.context = context;
+    }
     
     /**
      * A thread save lacy constructor for the singleton
@@ -42,86 +50,123 @@ public class InstallControler implements DLCopyGUI {
      * @return The instance of the singleton
      */
     public static synchronized InstallControler getInstance(SceneContext context){
-        InstallControler.context = context;
         if (instance == null) {
-            instance = new InstallControler();
+            instance = new InstallControler(context);
         }
         return instance;
     }
     
-    public ObservableList<StorageDeviceResult> getReport() {
-        return installations;
+    /**
+     * Generates the `installations` list from the given list
+     * All installations will have the status `PENDING`
+     * @param devices A list of all selected devices. On each device a installation will take place.
+     * @param start The start value of the autonumbering
+     * @param increment The amount, the numbering should increase per device
+     */
+    public void createInstallationList(List<StorageDevice> devices, int start, int increment) {
+        int currentNumber = start;
+        for (StorageDevice device : devices){
+            installations.add(new Installation(device, currentNumber));
+            currentNumber += increment;
+        }
     }
     
-    @Override
     /**
      * This methode is called, when installation starts.
      * It will show initial the load ui. 
      */
+    @Override
     public void showInstallProgress() {
         context.setScene(new LoadUI());
     }
 
+    /**
+     * This methode is called, when the installation on the given device starts
+     * @param storageDevice 
+     */
     @Override
     public void installingDeviceStarted(StorageDevice storageDevice) {
-        System.out.println(String.format(">>>>>>>>>>>>>>> TRACE: `installingDeviceStarted()` with %s as StorageDevice is called.", storageDevice.toString()));
-        // InstallControler.getInstance().getReport().add(new StorageDeviceResult(storageDevice));
+        currentInstallation = getInstallationFor(storageDevice);
+        currentInstallation.setStatus(OperationStatus.ONGOING);
     }
 
     @Override
     public void showInstallCreatingFileSystems() {
-        System.out.println(">>>>>>>>>>>>>>> TRACE: `showInstallCreatingFileSystems()` is called.");
-        // setScene(new ch.fhnw.dlcopy.gui.javafx.ui.install.LoadUI(stringBundle.getString("global.creating_file_systems")));
+        currentInstallation.setDetailStatus(InstallationStatus.CREATE_FILE_SYSTEMS);
     }
 
     @Override
     public void showInstallOverwritingDataPartitionWithRandomData(long done, long size) {
-        System.out.println(String.format(">>>>>>>>>>>>>>> TRACE: `showInstallOverwritingDataPartitionWithRandomData()` with %d as done and %d as size is called.", done, size));
-        // setScene(new ch.fhnw.dlcopy.gui.javafx.ui.install.LoadUI(done,size));
+        currentInstallation.setDetailStatus(InstallationStatus.OVERWRITE_DATA_PARTITION_WITH_RANDOM_DATA);
     }
 
     @Override
     public void showInstallFileCopy(FileCopier fileCopier) {
-        System.out.println(String.format(">>>>>>>>>>>>>>> TRACE: `showInstallFileCopy()` with %s as FileCopier is called.", fileCopier.toString()));
-        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        currentInstallation.setDetailStatus(InstallationStatus.COPY_FILES);
+        
     }
 
     @Override
     public void showInstallPersistencyCopy(Installer installer, String copyScript, String sourcePath) {
-        System.out.println(String.format(">>>>>>>>>>>>>>> TRACE: `showInstallPersistencyCopy()` with %s as Installer, %s as copyScript and %s as sourcePath is called.", installer.toString(), copyScript, sourcePath));
-        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        currentInstallation.setDetailStatus(InstallationStatus.COPY_PERSISTENCY_PARTITION);
     }
 
     @Override
     public void setInstallCopyLine(String line) {
+        // TODO: What does this function do?
         System.out.println(String.format(">>>>>>>>>>>>>>> TRACE: `setInstallCopyLine()` with %s as line is called.", line));
-        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
     public void showInstallUnmounting() {
-        System.out.println(">>>>>>>>>>>>>>> TRACE: `showInstallUnmounting()` is called.");
-        // setScene(new ch.fhnw.dlcopy.gui.javafx.ui.install.LoadUI(stringBundle.getString("global.unmount_file_systems"))); //To change body of generated methods, choose Tools | Templates.
+        currentInstallation.setDetailStatus(InstallationStatus.UNMOUNTING);
     }
 
     @Override
     public void showInstallWritingBootSector() {
-        System.out.println(">>>>>>>>>>>>>>> TRACE: `showInstallWritingBootSector()` is called.");
-        // setScene(new ch.fhnw.dlcopy.gui.javafx.ui.install.LoadUI(stringBundle.getString("global.writing_boot_sector")));
+        currentInstallation.setDetailStatus(InstallationStatus.WRITE_BOOT_SECTOR);
     }
 
 
     @Override
     public void installingDeviceFinished(String errorMessage, int autoNumberStart) {
-        System.out.println(String.format(">>>>>>>>>>>>>>> TRACE: `installingDeviceFinished()` with %s as StorageDevice and %d as autoNumberStart is called.", errorMessage, autoNumberStart));
-        // ObservableList<StorageDeviceResult> report = InstallControler.getInstance().getReport();
-        // report.get(report.size() -1 ).setErrorMessage(errorMessage);
-        // report.get(report.size() -1 ).finish();
+        // Update the status
+        if (errorMessage == null) {
+            // No error occured
+            currentInstallation.setStatus(OperationStatus.SUCCESSFULL);
+        } else {
+            // An error occured
+            currentInstallation.setError(errorMessage);
+            currentInstallation.setStatus(OperationStatus.FAILED);
+        }
     }
 
     @Override
     public void installingListFinished() {
         System.out.println(">>>>>>>>>>>>>>> TRACE: `installingListFinished()` is called.");
-        // throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // TODO: Switch to end screen
+    }
+    
+    /**
+     * Returns the list of installations
+     * @return The list of all installations
+     */
+    public ObservableList<Installation> getInstallations() {
+        return installations;
+    }
+    
+    /**
+     * Finds the current installation for the given device
+     * @param device The device, for witch the installation should be searched
+     * @return The installation for the given device
+     */
+    public Installation getInstallationFor(StorageDevice device){
+        for (int i = 0; i < installations.size(); i++) {
+            Installation installation = installations.get(i);
+            if (installation.getDevice().equals(device)) {
+                return installation;
+            }
+        }
+        return null;
     }
 }

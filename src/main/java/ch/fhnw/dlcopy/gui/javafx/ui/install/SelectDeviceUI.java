@@ -179,15 +179,20 @@ public class SelectDeviceUI extends View {
     }
 
     private void install() {
+        // Register the selected devices for the installation report
+        InstallControler installcontroller = InstallControler.getInstance(context);
+        List<StorageDevice> devices = lvDevices.getSelectionModel().getSelectedItems();
+        installcontroller.createInstallationList(devices, 1, 1);
+        
         new Installer(
             runningSystemSource,    // the system source
-            lvDevices.getSelectionModel().getSelectedItems(),   // the list of StorageDevices to install
+            devices,   // the list of StorageDevices to install
             "Austausch",     // the label of the exchange partition
             cmbExchangePartitionFilesystem.getValue().toString(),    // the file system of the exchange partition
             "ext4", // the file system of the data partition
             new HashMap<String, byte[]>(),  // a global digest cache for speeding up repeated file checks
             // Register the InstallControler as Callback-Class
-            InstallControler.getInstance(context),    // the DLCopyGUI
+            installcontroller,    // the DLCopyGUI
             exchangePartitionSize,  // the size of the exchange partition
             valChb(chbCopyExchangePartition),  // if the exchange partition should be copied
             "", // the auto numbering pattern
