@@ -8,8 +8,9 @@ import ch.fhnw.dlcopy.model.install.InstallationStatus;
 import ch.fhnw.dlcopy.model.install.OperationStatus;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.StorageDevice;
+import java.util.ArrayList;
 import java.util.List;
-import javafx.beans.property.SimpleListProperty;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
 /**
@@ -30,7 +31,7 @@ public class InstallControler implements DLCopyGUI {
      * A list of all selected devices
      * On each of this devices a installation is planed
      */
-    private final ObservableList<Installation> installations = new SimpleListProperty<>();
+    private final List<Installation> installations = new ArrayList<>();
     
     /**
      * The scene context, witch is used to switch the scene
@@ -131,6 +132,7 @@ public class InstallControler implements DLCopyGUI {
     @Override
     public void installingDeviceFinished(String errorMessage, int autoNumberStart) {
         // Update the status
+        System.out.println(">>>>>>>>>>>>>>> TRACE: `installingDeviceFinished()` is called.");
         if (errorMessage == null) {
             // No error occured
             currentInstallation.setStatus(OperationStatus.SUCCESSFULL);
@@ -144,6 +146,7 @@ public class InstallControler implements DLCopyGUI {
     @Override
     public void installingListFinished() {
         System.out.println(">>>>>>>>>>>>>>> TRACE: `installingListFinished()` is called.");
+        currentInstallation.setStatus(OperationStatus.SUCCESSFULL);
         // TODO: Switch to end screen
     }
     
@@ -152,7 +155,7 @@ public class InstallControler implements DLCopyGUI {
      * @return The list of all installations
      */
     public ObservableList<Installation> getInstallations() {
-        return installations;
+        return FXCollections.observableList(installations);
     }
     
     /**
