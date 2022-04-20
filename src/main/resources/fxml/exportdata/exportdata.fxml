@@ -76,22 +76,6 @@
                   <Insets left="20.0" right="20.0" top="40.0" />
                </HBox.margin>
             </VBox>
-            <VBox HBox.hgrow="ALWAYS">
-               <children>
-                      <Button fx:id="btnTargetDirectory" mnemonicParsing="false">
-                          <graphic>
-                              <ImageView fx:id="imgTargetDirectory" fitHeight="16.0" fitWidth="20.0" pickOnBounds="true">
-                                  <image>
-                                      <Image url="@../../new_icons/open-file-folder-white.png" />
-                                  </image>
-                              </ImageView>
-                          </graphic>
-                      </Button>
-               </children>
-               <HBox.margin>
-                  <Insets right="20.0" top="40.0" />
-               </HBox.margin>
-            </VBox>
          </children>
       </HBox>
       <HBox GridPane.columnIndex="2" GridPane.rowIndex="2">

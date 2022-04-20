@@ -45,7 +45,6 @@ public class ExportSystemUI extends View {
 
     @FXML private Button btnBack;
     @FXML private Button btnExport;
-    @FXML private Button btnTargetDirectory;
     @FXML private CheckBox chbInformationDialog;
     @FXML private CheckBox chbInstallationProgram;
     @FXML private ComboBox<String> cmbDataPartitionMode;
@@ -103,7 +102,7 @@ public class ExportSystemUI extends View {
             context.setScene(new StartscreenUI());
         });
 
-        btnTargetDirectory.setOnAction(event -> {
+        tfTargetDirectory.setOnMouseClicked(event -> {
             selectDirectory();
         });
 
@@ -139,7 +138,7 @@ public class ExportSystemUI extends View {
     private void selectDirectory() {
         DirectoryChooser folder = new DirectoryChooser();
         File selectedDirectory = folder.showDialog(
-            btnTargetDirectory.getScene().getWindow());
+            tfTargetDirectory.getScene().getWindow());
         folder.setTitle(stringBundle.getString("export.chooseDirectory"));
         if (selectedDirectory != null) {
             tfTargetDirectory.setText(selectedDirectory.getAbsolutePath());

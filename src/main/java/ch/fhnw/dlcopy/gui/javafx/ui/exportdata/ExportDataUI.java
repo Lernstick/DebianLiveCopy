@@ -35,7 +35,6 @@ public class ExportDataUI extends View {
 
     @FXML private Label lblTargetDirectory;
     @FXML private TextField tfTargetDirectory;
-    @FXML private Button btnTargetDirectory;
     @FXML private Label lblWriteable;
     @FXML private Label lblWriteableDisplay;
     @FXML private Label lblFreeSpace;
@@ -83,7 +82,7 @@ public class ExportDataUI extends View {
             toggleExpertMode();
         });
 
-        btnTargetDirectory.setOnAction(event -> {
+        tfTargetDirectory.setOnMouseClicked(event -> {
             selectDirectory();
         });
 
@@ -102,7 +101,7 @@ public class ExportDataUI extends View {
 
     private void selectDirectory() {
         DirectoryChooser folder = new DirectoryChooser();
-        File selectedDirectory = folder.showDialog(btnTargetDirectory.getScene().getWindow());
+        File selectedDirectory = folder.showDialog(tfTargetDirectory.getScene().getWindow());
         folder.setTitle(stringBundle.getString("export.chooseDirectory"));
         if (selectedDirectory != null) {
             tfTargetDirectory.setText(selectedDirectory.getAbsolutePath());
