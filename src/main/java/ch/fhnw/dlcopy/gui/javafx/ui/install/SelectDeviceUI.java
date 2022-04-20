@@ -54,7 +54,7 @@ public class SelectDeviceUI extends View {
     @FXML private Button btnBack;
     @FXML private Button btnInstall;
     @FXML private ComboBox cmbDataPartitionMode;
-    @FXML private ComboBox cmbExchangePartitionMode;
+    @FXML private ComboBox cmbExchangePartitionFilesystem;
     @FXML private Label lblRequiredDiskspace;
     @FXML private ListView<StorageDevice> lvDevices;
     @FXML private CheckBox chbCopyDataPartition;
@@ -147,8 +147,8 @@ public class SelectDeviceUI extends View {
 
         ObservableList<String> epmeList = FXCollections.observableArrayList();
         epmeList.addAll(DLCopy.EXCHANGE_PARTITION_FS);
-        cmbExchangePartitionMode.setItems(epmeList);
-        cmbExchangePartitionMode.getSelectionModel().selectFirst();
+        cmbExchangePartitionFilesystem.setItems(epmeList);
+        cmbExchangePartitionFilesystem.getSelectionModel().selectFirst();
     }
 
     @Override
@@ -174,7 +174,7 @@ public class SelectDeviceUI extends View {
             runningSystemSource,    // the system source
             lvDevices.getSelectionModel().getSelectedItems(),   // the list of StorageDevices to install
             "Austausch",     // the label of the exchange partition
-            cmbExchangePartitionMode.getValue().toString(),    // the file system of the exchange partition
+            cmbExchangePartitionFilesystem.getValue().toString(),    // the file system of the exchange partition
             "ext4", // the file system of the data partition
             new HashMap<String, byte[]>(),  // a global digest cache for speeding up repeated file checks
             InstallControler.getInstance(),    // the DLCopy GUI
