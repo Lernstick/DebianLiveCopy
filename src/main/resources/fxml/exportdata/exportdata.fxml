@@ -7,8 +7,6 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
@@ -52,7 +50,7 @@
         <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="1" />
       <HBox GridPane.columnIndex="2">
          <children>
-            <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+            <VBox spacing="10.0">
                <children>
                       <Label fx:id="lblTargetDirectory" minHeight="25.333" text="%export.lblTargetDirectory" />
                       <Label fx:id="lblWriteable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="25.333" text="%export.lblWriteable" />
@@ -63,7 +61,7 @@
                   <Insets left="20.0" top="40.0" />
                </HBox.margin>
             </VBox>
-            <VBox spacing="10.0" HBox.hgrow="ALWAYS">
+            <VBox spacing="10.0" HBox.hgrow="SOMETIMES">
                <children>
                       <TextField fx:id="tfTargetDirectory" minHeight="25.333" promptText="%export.tfTargetDirectory" />
                       <Label fx:id="lblWriteableDisplay" minHeight="25.333" text="%global.notApplicable" />
