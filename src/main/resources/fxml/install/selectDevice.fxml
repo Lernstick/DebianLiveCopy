@@ -313,7 +313,7 @@
                                     </HBox>
                                     <HBox>
                                        <children>
-                                          <CheckBox mnemonicParsing="false" text="%install.checkCopies" />
+                                          <CheckBox fx:id="chbCheckCopies" mnemonicParsing="false" text="%install.checkCopies" />
                                        </children>
                                     </HBox>
                                  </children>

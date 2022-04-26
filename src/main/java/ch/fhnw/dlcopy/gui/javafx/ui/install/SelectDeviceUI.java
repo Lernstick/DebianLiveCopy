@@ -58,6 +58,7 @@ public class SelectDeviceUI extends View {
     @FXML private ComboBox cmbExchangePartitionFilesystem;
     @FXML private Label lblRequiredDiskspace;
     @FXML private ListView<StorageDevice> lvDevices;
+    @FXML private CheckBox chbCheckCopies;
     @FXML private CheckBox chbCopyDataPartition;
     @FXML private CheckBox chbCopyExchangePartition;
     @FXML private CheckBox chbShowHarddisk;
@@ -202,7 +203,7 @@ public class SelectDeviceUI extends View {
             false,  // if the network settings should be transferred
             false,  // if the printer settings should be transferred
             false,  // if the firewall settings should be transferred
-            false,  // if copies should be checked for errors
+            valChb(chbCheckCopies),  // if copies should be checked for errors
             installLock // the lock to aquire before executing in background
         ).execute();
     }
