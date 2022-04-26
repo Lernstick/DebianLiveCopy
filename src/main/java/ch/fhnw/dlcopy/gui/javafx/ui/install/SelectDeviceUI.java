@@ -46,6 +46,7 @@ public class SelectDeviceUI extends View {
     private final Timer listUpdateTimer = new Timer();
     private SystemSource runningSystemSource;
     private int exchangePartitionSize = -1;
+    private boolean showHarddisks = false;
 
     // some locks to synchronize the Installer, Upgrader and Resetter with their
     // corresponding StorageDeviceAdder
@@ -59,6 +60,7 @@ public class SelectDeviceUI extends View {
     @FXML private ListView<StorageDevice> lvDevices;
     @FXML private CheckBox chbCopyDataPartition;
     @FXML private CheckBox chbCopyExchangePartition;
+    @FXML private CheckBox chbShowHarddisk;
     @FXML private TextField tfExchangePartitionSize;
 
     public SelectDeviceUI() {
@@ -92,7 +94,7 @@ public class SelectDeviceUI extends View {
             @Override
             public void run() {
                 try {
-                    List<StorageDevice> pluggedDevices = DLCopy.getStorageDevices(false, false, "bootDeviceName");
+                    List<StorageDevice> pluggedDevices = DLCopy.getStorageDevices(showHarddisks, false, "bootDeviceName");
                     List<StorageDevice> removedDevices = new ArrayList<>();
                     List<StorageDevice> addedDevices = new ArrayList<>();
                     for (StorageDevice device : pluggedDevices) {
@@ -167,6 +169,9 @@ public class SelectDeviceUI extends View {
         btnBack.setOnAction(event -> {
             context.setScene(new StartscreenUI());
         });
+        chbShowHarddisk.setOnAction(event -> {
+            showHarddisks = valChb(chbShowHarddisk);
+        });
     }
 
     private void install() {
@@ -184,7 +189,7 @@ public class SelectDeviceUI extends View {
             1,  // the auto numbering start value
             1,  // the auto numbering increment
             1,  // the minimal number of digits to use for auto numbering
-            false,  // f the data partition should be encrypted with a personal password
+            false,  // if the data partition should be encrypted with a personal password
             "", // the personal password for data partition encryption
             false,  // if the data partition should be encrypted with a secondary password
             "", // the secondary password for data partition encryption
