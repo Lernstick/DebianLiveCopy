@@ -36,10 +36,10 @@ public class InfoUI extends View {
     protected void initSelf() {
         String message;
         if (tmpSuccess) {
-            message = STRINGS.getString("DLCopySwingGUI.isoDoneLabel.text");
+            message = stringBundle.getString("export.isoDoneLabel.text");
             message = MessageFormat.format(message, tmpPath);
         } else {
-            message = STRINGS.getString("export.error.isoCreation");
+            message = stringBundle.getString("export.error.isoCreation");
         }
         btnFinish.setText(message);
     }
