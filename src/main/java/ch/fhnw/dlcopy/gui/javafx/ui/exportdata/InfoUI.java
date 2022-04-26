@@ -39,7 +39,7 @@ public class InfoUI extends View {
             message = STRINGS.getString("DLCopySwingGUI.isoDoneLabel.text");
             message = MessageFormat.format(message, tmpPath);
         } else {
-            message = STRINGS.getString("Error_ISO_Creation");
+            message = STRINGS.getString("export.error.isoCreation");
         }
         btnFinish.setText(message);
     }
