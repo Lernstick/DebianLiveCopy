@@ -3,12 +3,14 @@ package ch.fhnw.dlcopy.gui.javafx.ui.exportsystem;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
 
 public class LoadUI extends View {
 
+    @FXML private Button btnNext;
     @FXML private ImageView imgExportFile;
     @FXML private ProgressBar pbStatus;
     @FXML private Label lblStatusInfo;
@@ -41,6 +43,10 @@ public class LoadUI extends View {
 
     @Override
     protected void setupEventHandlers() {
+        btnNext.setOnAction(event -> {
+            context.setScene(new InfoUI());
+        });
+
         imgExportFile.fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 5.869));
         imgExportFile.fitWidthProperty().bind(Bindings.divide(model.widthProperty(), 9.8969));
     }
