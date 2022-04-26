@@ -1,6 +1,5 @@
 package ch.fhnw.dlcopy.gui.javafx.ui.exportdata;
 
-import static ch.fhnw.dlcopy.DLCopy.STRINGS;
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import java.text.MessageFormat;
@@ -9,6 +8,7 @@ import java.util.logging.Logger;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 
 /**
@@ -17,6 +17,7 @@ import javafx.scene.image.ImageView;
 public class InfoUI extends View {
     @FXML private Button btnFinish;
     @FXML private ImageView imgExportFile;
+    @FXML private TextArea lblExtraInfo;
 
     private static final Logger LOGGER = Logger.getLogger(InfoUI.class.getName());
     private String tmpPath;
@@ -41,7 +42,7 @@ public class InfoUI extends View {
         } else {
             message = stringBundle.getString("export.error.isoCreation");
         }
-        btnFinish.setText(message);
+        lblExtraInfo.setText(message);
     }
 
     @Override
