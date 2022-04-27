@@ -22,7 +22,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints />
         <ColumnConstraints hgrow="NEVER" />
@@ -57,7 +57,7 @@
         <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="2" GridPane.rowIndex="2" />
         <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="2" GridPane.rowIndex="3" />
         <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-      <ScrollPane GridPane.columnIndex="3" GridPane.rowIndex="1">
+      <ScrollPane fitToWidth="true" GridPane.columnIndex="3" GridPane.rowIndex="1">
          <GridPane.margin>
             <Insets left="20.0" right="20.0" />
          </GridPane.margin>
@@ -313,7 +313,7 @@
                               </Tab>
                               <Tab text="%global.datatransfer">
                                  <content>
-                                    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0" visible="false">
+                                    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0">
                                        <opaqueInsets>
                                           <Insets />
                                        </opaqueInsets>
