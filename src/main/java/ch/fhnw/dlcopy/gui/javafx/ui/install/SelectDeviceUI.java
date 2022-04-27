@@ -145,6 +145,9 @@ public class SelectDeviceUI extends View {
         setTooltip(cmbDataPartitionMode, stringBundle.getString("global.tooltip.dataPartitionMode"));
         setTooltip(lblRequiredDiskspace, stringBundle.getString("install.tooltip.requiredDiskSpace"));
         setTooltip(chbCopyDataPartition, stringBundle.getString("install.tooltip.copyDataPartition"));
+        setTooltip(chbDataPartitionPersonalPassword, stringBundle.getString("install.tooltip.encryption"));
+        setTooltip(chbDataPartitionOverwrite, stringBundle.getString("install.tooltip.randomFill"));
+        setTooltip(chbDataPartitionSecondaryPassword, stringBundle.getString("install.tooltip.secondaryPassword"));
 
         chbCopyDataPartition.setDisable(runningSystemSource.getDataPartition() == null);
         chbCopyExchangePartition.setDisable(!runningSystemSource.hasExchangePartition());
@@ -183,9 +186,15 @@ public class SelectDeviceUI extends View {
 
     @Override
     protected void setupEventHandlers() {
-        btnInstall.setOnAction(event ->
-            showInstallConfirmation(stringBundle.getString("install.installWarning"))
-        );
+        btnInstall.setOnAction(event -> {
+            if (valChb(chbDataPartitionPersonalPassword) && pfDataPartitionPersonalPassword.getPromptText().length() == 0) {
+                showError(stringBundle.getString("install.error.noPassword"));
+            }
+            if (valChb(chbDataPartitionSecondaryPassword) && pfDataPartitionSecondaryPassword.getPromptText().length() == 0) {
+                showError(stringBundle.getString("install.error.noPassword"));
+            }
+            showInstallConfirmation(stringBundle.getString("install.installWarning"));
+        });
         btnBack.setOnAction(event -> {
             context.setScene(new StartscreenUI());
         });
@@ -337,6 +346,14 @@ public class SelectDeviceUI extends View {
         } catch (NumberFormatException e) {
             return -1;
         }
+    }
+
+    private void showError(String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(stringBundle.getString("error.error"));
+        alert.setHeaderText(stringBundle.getString("error.error"));
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 
     private void showInstallConfirmation(String message) {
