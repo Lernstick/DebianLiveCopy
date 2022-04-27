@@ -189,9 +189,11 @@ public class SelectDeviceUI extends View {
         btnInstall.setOnAction(event -> {
             if (valChb(chbDataPartitionPersonalPassword) && pfDataPartitionPersonalPassword.getPromptText().length() == 0) {
                 showError(stringBundle.getString("install.error.noPassword"));
+                return;
             }
             if (valChb(chbDataPartitionSecondaryPassword) && pfDataPartitionSecondaryPassword.getPromptText().length() == 0) {
                 showError(stringBundle.getString("install.error.noPassword"));
+                return;
             }
             showInstallConfirmation(stringBundle.getString("install.installWarning"));
         });
