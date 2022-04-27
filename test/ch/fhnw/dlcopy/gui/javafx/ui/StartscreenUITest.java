@@ -1,23 +1,25 @@
 
 package ch.fhnw.dlcopy.gui.javafx.ui;
 
+import static org.mockito.Mockito.*;
+import static org.testfx.api.FxAssert.*;
+import static org.testfx.matcher.base.NodeMatchers.*;
+import static org.testfx.matcher.control.LabeledMatchers.*;
+
 import ch.fhnw.dlcopy.gui.javafx.SceneContext;
 import ch.fhnw.dlcopy.model.PresentationModel;
 import java.util.Locale;
-import static org.mockito.Mockito.*;
-import static org.testfx.api.FxAssert.verifyThat;
-import static org.testfx.matcher.control.LabeledMatchers.hasText;
-
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
+import org.testfx.robot.Motion;
+import org.junit.jupiter.params.ParameterizedTest;
 
 public class StartscreenUITest extends ApplicationTest {
     
-    private PresentationModel model = PresentationModel.getInstance();
+    private final PresentationModel model = PresentationModel.getInstance();
     
     @Override public void start(Stage stage) throws Exception {
         SceneContext sceneContext = mock(SceneContext.class);
@@ -40,6 +42,18 @@ public class StartscreenUITest extends ApplicationTest {
         //Assert
         verifyThat("#btnExportData", hasText("Daten exportieren"));
     }
+    
+    @Test public void hoverExportDataButton() {
+        
+        // Arrange
+        
+        // Act
+        moveTo("#btnExportData");
+        
+        //Assert
+        verifyThat("#imgExportData", isVisible());
+        verifyThat("#panExportData .label", isVisible());
+    }
         
     @Test public void hasExportSystemButton_de() {
         
@@ -50,6 +64,18 @@ public class StartscreenUITest extends ApplicationTest {
         
         //Assert
         verifyThat("#btnExportSystem", hasText("System exportieren"));
+    }
+    
+    @Test public void hoverExportSystemButton() {
+        
+        // Arrange
+        
+        // Act
+        moveTo("#btnExportSystem");
+        
+        //Assert
+        verifyThat("#imgExportSystem", isVisible());
+        verifyThat("#panExportSystem .label", isVisible());
     }
     
     @Test public void hasInstallButton_de() {
@@ -63,6 +89,18 @@ public class StartscreenUITest extends ApplicationTest {
         verifyThat("#btnInstall", hasText("Installieren"));
     }
     
+    @Test public void hoverInstallButton() {
+        
+        // Arrange
+        
+        // Act
+        moveTo("#btnInstall");
+        
+        //Assert
+        verifyThat("#imgInstall", isVisible());
+        verifyThat("#panInstall .label", isVisible());
+    }
+    
     @Test public void hasResetButton_de() {
         
         // Arrange
@@ -74,6 +112,18 @@ public class StartscreenUITest extends ApplicationTest {
         verifyThat("#btnReset", hasText("Zurücksetzten"));
     }
     
+    @Test public void hoverResetButton() {
+        
+        // Arrange
+        
+        // Act
+        moveTo("#btnReset");
+        
+        //Assert
+        verifyThat("#imgReset", isVisible());
+        verifyThat("#panReset .label", isVisible());
+    }
+    
     @Test public void hasUpdateButton_de() {
         
         // Arrange
@@ -83,5 +133,17 @@ public class StartscreenUITest extends ApplicationTest {
         
         //Assert
         verifyThat("#btnUpdate", hasText("Aktuallisieren"));
+    }
+    
+    @Test public void hoverUpdateButton() {
+        
+        // Arrange
+        
+        // Act
+        moveTo("#btnUpdate");
+        
+        //Assert
+        verifyThat("#imgUpdate", isVisible());
+        verifyThat("#panUpdate .label", isVisible());
     }
 }   
