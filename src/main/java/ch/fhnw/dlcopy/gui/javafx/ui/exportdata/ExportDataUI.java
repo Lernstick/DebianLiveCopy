@@ -63,7 +63,7 @@ public class ExportDataUI extends View {
     protected void initControls() {
         btnExport.setDisable(true);
         
-        setTooltip(btnTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
+        setTooltip(tfTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
         setTooltip(chbInformationDialog, stringBundle.getString("export.tooltip.informationDialog"));
         setTooltip(chbInstallationProgram, stringBundle.getString("export.tooltip.installationProgram"));
         setTooltip(lblFreeSpace, stringBundle.getString("export.tooltip.freeSpace"));

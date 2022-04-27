@@ -79,7 +79,7 @@ public class ExportSystemUI extends View {
         cmbDataPartitionMode.setValue(option_ReadWrite);
         btnExport.setDisable(true);
         
-        setTooltip(btnTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
+        setTooltip(tfTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
         setTooltip(chbInformationDialog, stringBundle.getString("export.tooltip.informationDialog"));
         setTooltip(chbInstallationProgram, stringBundle.getString("export.tooltip.installationProgram"));
         setTooltip(cmbDataPartitionMode, stringBundle.getString("global.tooltip.dataPartitionMode"));
