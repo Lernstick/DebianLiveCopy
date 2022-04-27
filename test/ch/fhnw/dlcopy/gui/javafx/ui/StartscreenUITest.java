@@ -2,6 +2,8 @@
 package ch.fhnw.dlcopy.gui.javafx.ui;
 
 import ch.fhnw.dlcopy.gui.javafx.SceneContext;
+import ch.fhnw.dlcopy.model.PresentationModel;
+import java.util.Locale;
 import static org.mockito.Mockito.*;
 import static org.testfx.api.FxAssert.verifyThat;
 import static org.testfx.matcher.control.LabeledMatchers.hasText;
@@ -9,10 +11,13 @@ import static org.testfx.matcher.control.LabeledMatchers.hasText;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 
 public class StartscreenUITest extends ApplicationTest {
+    
+    private PresentationModel model = PresentationModel.getInstance();
     
     @Override public void start(Stage stage) throws Exception {
         SceneContext sceneContext = mock(SceneContext.class);
@@ -25,8 +30,14 @@ public class StartscreenUITest extends ApplicationTest {
         stage.show();
     }
     
-    @Test public void hasAButton() {
-        // expect:
-        verifyThat("#btnInstall", hasText("Install"));
+    @Test public void hasAButton_de() {
+        
+        // Arrange
+        model.setLanguage(Locale.GERMAN);
+        
+        // Act
+        
+        //Assert
+        verifyThat("#btnInstall", hasText("Installieren"));
     }
 }

@@ -109,7 +109,7 @@ public class SelectDeviceUI extends View {
      * It has to be called manually!
      */
     @Override
-    public void deinitialize() {
+    protected void deinitialize_override() {
         listUpdateTimer.cancel();
     }
 

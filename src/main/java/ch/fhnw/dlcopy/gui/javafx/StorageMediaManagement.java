@@ -2,8 +2,12 @@ package ch.fhnw.dlcopy.gui.javafx;
 
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
+import ch.fhnw.dlcopy.model.LanguageObserver;
 import ch.fhnw.dlcopy.model.PresentationModel;
 import java.io.IOException;
+import java.nio.file.Path;
+import java.util.List;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -15,11 +19,12 @@ import javafx.stage.Stage;
 
 public class StorageMediaManagement
         extends Application
-        implements SceneContext {
+        implements SceneContext
+        , LanguageObserver{
 
     private Scene scene;
     private PresentationModel model = PresentationModel.getInstance();
-    private ResourceBundle stringBundle = ResourceBundle.getBundle("strings/Strings");
+    private ResourceBundle stringBundle = ResourceBundle.getBundle("strings/Strings", model.getLanguage());
     private View view;
 
     @Override
@@ -40,10 +45,13 @@ public class StorageMediaManagement
     @Override
     public void stop() throws Exception {
         view.deinitialize();
+        model.removeLanguageObserver(this);
     }
     
     @Override
     public void start(Stage stage) throws Exception {
+        model.addLanguageObserver(this);
+        
         view = new StartscreenUI();
         Parent root = view.getRoot(this);
         scene = new Scene(root);
@@ -69,5 +77,15 @@ public class StorageMediaManagement
      */
     public static void launchFX(String[] args) {
         launch(args);
+    }
+    
+    /**
+     * This methode gets called, when the language has changed.
+     * @param oldLanguage The old language
+     * @param newLanguage The new set language
+     */
+    @Override
+    public void languageChanged(Locale oldLanguage, Locale newLanguage){
+        stringBundle = ResourceBundle.getBundle("strings/Strings", model.getLanguage());
     }
 }

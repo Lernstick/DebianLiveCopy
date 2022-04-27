@@ -1,9 +1,11 @@
 package ch.fhnw.dlcopy.gui.javafx.ui;
 
 import ch.fhnw.dlcopy.gui.javafx.SceneContext;
+import ch.fhnw.dlcopy.model.LanguageObserver;
 import ch.fhnw.dlcopy.model.PresentationModel;
 import java.io.IOException;
 import java.net.URL;
+import java.util.Locale;
 import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
@@ -12,12 +14,12 @@ import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.Tooltip;
 
-public abstract class View {
+public abstract class View implements LanguageObserver{
 
     protected SceneContext context;
     protected PresentationModel model = PresentationModel.getInstance();
     protected URL resourcePath;
-    protected ResourceBundle stringBundle = ResourceBundle.getBundle("strings/Strings");
+    protected ResourceBundle stringBundle = ResourceBundle.getBundle("strings/Strings", model.getLanguage());
     
     @FXML private Label lblInfo;
     private String defaultInfo = "";
@@ -26,10 +28,19 @@ public abstract class View {
      * This function is called, when the view should be deinitalized.
      * It has to be called manually!
      */
-    public void deinitialize(){}
+    public final void deinitialize(){
+        deinitialize_override();
+        model.removeLanguageObserver(this);
+    }
+    
+    /**
+     * This function is called durring the deinitalize procedure.
+     */
+    protected void deinitialize_override(){}
     
     @FXML
     public final void initialize(){
+        model.addLanguageObserver(this);
         initSelf();
         initControls();
         layoutControls();
@@ -82,5 +93,15 @@ public abstract class View {
         loader.setController(this);
         loader.setResources(stringBundle);
         return loader.load();
+    }
+    
+    /**
+     * This methode gets called, when the language has changed.
+     * @param oldLanguage The old language
+     * @param newLanguage The new set language
+     */
+    @Override
+    public void languageChanged(Locale oldLanguage, Locale newLanguage){
+        stringBundle = ResourceBundle.getBundle("strings/Strings", model.getLanguage());
     }
  }
