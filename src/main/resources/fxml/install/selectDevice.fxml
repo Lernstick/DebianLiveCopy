@@ -10,6 +10,7 @@
 <?import javafx.scene.control.ListView?>
 <?import javafx.scene.control.PasswordField?>
 <?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
@@ -56,291 +57,295 @@
         <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="2" GridPane.rowIndex="2" />
         <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="2" GridPane.rowIndex="3" />
         <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="3" GridPane.rowIndex="2" />
-      <HBox GridPane.columnIndex="3" GridPane.rowIndex="1">
-         <children>
-            <VBox HBox.hgrow="ALWAYS">
+      <ScrollPane GridPane.columnIndex="3" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets left="20.0" right="20.0" />
+         </GridPane.margin>
+         <content>
+            <HBox>
                <children>
-                  <VBox spacing="10.0">
+                  <VBox HBox.hgrow="ALWAYS">
                      <children>
-                        <Label fx:id="lblSourceSelection" text="%install.lblSourceSelection" />
-                        <RadioButton fx:id="rdbCurrentSystem" mnemonicParsing="false" selected="true" text="%install.rdbCurrentSystem">
-                           <toggleGroup>
-                              <ToggleGroup fx:id="tgSelectDevice" />
-                           </toggleGroup>
-                        </RadioButton>
-                        <RadioButton fx:id="rdbIsoImage" mnemonicParsing="false" text="%install.rdbIsoImage" toggleGroup="$tgSelectDevice" />
-                     </children>
-                     <padding>
-                        <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
-                     </padding>
-                  </VBox>
-                  <HBox>
-                     <children>
-                        <Label fx:id="lblInstallationTarget1" text="%install.lblInstallationTarget" />
-                        <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
-                     </children>
-                     <padding>
-                        <Insets bottom="5.0" top="5.0" />
-                     </padding>
-                  </HBox>
-                  <HBox spacing="10.0">
-                     <children>
-                        <VBox HBox.hgrow="SOMETIMES">
+                        <VBox spacing="10.0">
                            <children>
-                              <Label text="%install.lblRequiredDiskspaceInfo" />
-                           </children>
-                        </VBox>
-                        <VBox HBox.hgrow="ALWAYS">
-                           <children>
-                              <Label fx:id="lblRequiredDiskspace" text="Label" />
-                           </children>
-                        </VBox>
-                        <VBox>
-                           <children>
-                              <CheckBox fx:id="chbShowHarddisk" alignment="CENTER_RIGHT" minHeight="32.0" mnemonicParsing="false" text="%install.showHarddisk" />
+                              <Label fx:id="lblSourceSelection" text="%install.lblSourceSelection" />
+                              <RadioButton fx:id="rdbCurrentSystem" mnemonicParsing="false" selected="true" text="%install.rdbCurrentSystem">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="tgSelectDevice" />
+                                 </toggleGroup>
+                              </RadioButton>
+                              <RadioButton fx:id="rdbIsoImage" mnemonicParsing="false" text="%install.rdbIsoImage" toggleGroup="$tgSelectDevice" />
                            </children>
                            <padding>
-                              <Insets right="40.0" />
+                              <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
                            </padding>
                         </VBox>
-                     </children>
-                  </HBox>
-                  <TabPane tabClosingPolicy="UNAVAILABLE">
-                    <tabs>
-                      <Tab text="%global.selection">
-                           <content>
-                              <VBox spacing="10.0">
+                        <HBox>
+                           <children>
+                              <Label fx:id="lblInstallationTarget1" text="%install.lblInstallationTarget" />
+                              <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" top="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox spacing="10.0">
+                           <children>
+                              <VBox HBox.hgrow="SOMETIMES">
                                  <children>
-                                    <ListView fx:id="lvDevices" maxHeight="200.0" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
-                                    <Label text="%global.exchangepartition" />
-                                    <HBox spacing="20.0">
-                                       <children>
-                                          <CheckBox fx:id="chbCopyExchangePartition" disable="true" maxHeight="1.7976931348623157E308" minHeight="32.0" mnemonicParsing="false" text="%install.chbcopy" />
-                                          <Separator orientation="VERTICAL" />
-                                          <Label maxHeight="1.7976931348623157E308" minHeight="32.0" text="%global.size" />
-                                          <TextField fx:id="tfExchangePartitionSize" minHeight="32.0" />
-                                       </children>
-                                    </HBox>
-                                    <Label text="%global.dataPartition" />
-                                    <HBox spacing="20.0">
-                                       <children>
-                                          <CheckBox fx:id="chbCopyDataPartition" maxHeight="1.7976931348623157E308" minHeight="32.0" mnemonicParsing="false" text="%install.chbcopy" />
-                                          <Separator orientation="VERTICAL" />
-                                          <Label maxHeight="1.7976931348623157E308" minHeight="32.0" text="%global.mode" />
-                                          <ComboBox fx:id="cmbDataPartitionMode" minHeight="32.0" />
-                                       </children>
-                                    </HBox>
+                                    <Label text="%install.lblRequiredDiskspaceInfo" />
                                  </children>
-                                 <opaqueInsets>
-                                    <Insets />
-                                 </opaqueInsets>
+                              </VBox>
+                              <VBox HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label fx:id="lblRequiredDiskspace" text="Label" />
+                                 </children>
+                              </VBox>
+                              <VBox>
+                                 <children>
+                                    <CheckBox fx:id="chbShowHarddisk" alignment="CENTER_RIGHT" minHeight="32.0" mnemonicParsing="false" text="%install.showHarddisk" />
+                                 </children>
                                  <padding>
-                                    <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
+                                    <Insets right="40.0" />
                                  </padding>
                               </VBox>
-                           </content>
-                        </Tab>
-                      <Tab text="%global.details">
-                           <content>
-                              <VBox spacing="10.0">
-                                 <children>
-                                    <HBox>
+                           </children>
+                        </HBox>
+                        <TabPane tabClosingPolicy="UNAVAILABLE">
+                          <tabs>
+                            <Tab text="%global.selection">
+                                 <content>
+                                    <VBox spacing="10.0">
                                        <children>
-                                          <Label text="%global.exchangepartition" HBox.hgrow="ALWAYS" />
-                                          <Separator maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
-                                       </children>
-                                       <padding>
-                                          <Insets bottom="5.0" top="5.0" />
-                                       </padding>
-                                    </HBox>
-                                    <HBox spacing="20.0">
-                                       <children>
-                                          <VBox spacing="10.0">
-                                             <opaqueInsets>
-                                                <Insets />
-                                             </opaqueInsets>
-                                             <padding>
-                                                <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
-                                             </padding>
+                                          <ListView fx:id="lvDevices" maxHeight="200.0" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
+                                          <Label text="%global.exchangepartition" />
+                                          <HBox spacing="20.0">
                                              <children>
-                                                <HBox spacing="20.0">
-                                                   <children>
-                                                      <VBox alignment="CENTER_LEFT" spacing="11.0">
-                                                         <children>
-                                                            <Label minHeight="32.0" text="%global.fileSystem" />
-                                                            <Label minHeight="32.0" text="%install.label" />
-                                                         </children>
-                                                      </VBox>
-                                                      <VBox spacing="10.0">
-                                                         <children>
-                                                            <ComboBox fx:id="cmbExchangePartitionFilesystem" minHeight="32.0" />
-                                                            <TextField fx:id="tfExchangePartitionLabel" minHeight="32.0" />
-                                                         </children>
-                                                      </VBox>
-                                                   </children>
-                                                </HBox>
+                                                <CheckBox fx:id="chbCopyExchangePartition" disable="true" maxHeight="1.7976931348623157E308" minHeight="32.0" mnemonicParsing="false" text="%install.chbcopy" />
+                                                <Separator orientation="VERTICAL" />
+                                                <Label maxHeight="1.7976931348623157E308" minHeight="32.0" text="%global.size" />
+                                                <TextField fx:id="tfExchangePartitionSize" minHeight="32.0" />
                                              </children>
-                                          </VBox>
-                                          <Separator orientation="VERTICAL" />
-                                          <VBox>
+                                          </HBox>
+                                          <Label text="%global.dataPartition" />
+                                          <HBox spacing="20.0">
                                              <children>
-                                                <HBox>
-                                                   <children>
-                                                      <Label text="%install.automaticNumbering" HBox.hgrow="ALWAYS" />
-                                                      <Separator maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
-                                                   </children>
+                                                <CheckBox fx:id="chbCopyDataPartition" maxHeight="1.7976931348623157E308" minHeight="32.0" mnemonicParsing="false" text="%install.chbcopy" />
+                                                <Separator orientation="VERTICAL" />
+                                                <Label maxHeight="1.7976931348623157E308" minHeight="32.0" text="%global.mode" />
+                                                <ComboBox fx:id="cmbDataPartitionMode" minHeight="32.0" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                       <padding>
+                                          <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
+                                       </padding>
+                                    </VBox>
+                                 </content>
+                              </Tab>
+                            <Tab text="%global.details">
+                                 <content>
+                                    <VBox spacing="10.0">
+                                       <children>
+                                          <HBox>
+                                             <children>
+                                                <Label text="%global.exchangepartition" HBox.hgrow="ALWAYS" />
+                                                <Separator maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                                             </children>
+                                             <padding>
+                                                <Insets bottom="5.0" top="5.0" />
+                                             </padding>
+                                          </HBox>
+                                          <HBox spacing="20.0">
+                                             <children>
+                                                <VBox spacing="10.0">
+                                                   <opaqueInsets>
+                                                      <Insets />
+                                                   </opaqueInsets>
                                                    <padding>
-                                                      <Insets bottom="5.0" top="5.0" />
+                                                      <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
                                                    </padding>
-                                                </HBox>
-                                                <VBox>
                                                    <children>
-                                                      <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.prefixText" />
-                                                      <TextField minHeight="32.0" />
                                                       <HBox spacing="20.0">
                                                          <children>
-                                                            <VBox>
+                                                            <VBox alignment="CENTER_LEFT" spacing="11.0">
                                                                <children>
-                                                                  <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.startPattern" />
-                                                                  <TextField minHeight="32.0" />
+                                                                  <Label minHeight="32.0" text="%global.fileSystem" />
+                                                                  <Label minHeight="32.0" text="%install.label" />
                                                                </children>
                                                             </VBox>
-                                                            <VBox>
+                                                            <VBox spacing="10.0">
                                                                <children>
-                                                                  <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.steps" />
-                                                                  <TextField minHeight="32.0" />
+                                                                  <ComboBox fx:id="cmbExchangePartitionFilesystem" minHeight="32.0" />
+                                                                  <TextField fx:id="tfExchangePartitionLabel" minHeight="32.0" />
                                                                </children>
                                                             </VBox>
                                                          </children>
                                                       </HBox>
                                                    </children>
                                                 </VBox>
-                                             </children>
-                                          </VBox>
-                                       </children>
-                                    </HBox>
-                                    <HBox>
-                                       <children>
-                                          <Label text="%global.dataPartition" HBox.hgrow="ALWAYS" />
-                                          <Separator maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
-                                       </children>
-                                       <padding>
-                                          <Insets bottom="5.0" top="5.0" />
-                                       </padding>
-                                    </HBox>
-                                    <HBox spacing="20.0">
-                                       <children>
-                                          <VBox HBox.hgrow="SOMETIMES">
-                                             <children>
-                                                <HBox>
+                                                <Separator orientation="VERTICAL" />
+                                                <VBox>
                                                    <children>
-                                                      <Label text="%install.encryption" HBox.hgrow="ALWAYS" />
-                                                      <Separator maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
-                                                   </children>
-                                                   <padding>
-                                                      <Insets bottom="5.0" left="20.0" top="5.0" />
-                                                   </padding>
-                                                </HBox>
-                                                <HBox spacing="20.0">
-                                                   <children>
-                                                      <VBox alignment="CENTER_LEFT" spacing="10.0">
+                                                      <HBox>
                                                          <children>
-                                                            <CheckBox fx:id="chbDataPartitionPersonalPassword" minHeight="32.0" mnemonicParsing="false" text="%install.personalPassword" />
-                                                            <CheckBox fx:id="chbDataPartitionSecondaryPassword" disable="true" minHeight="32.0" mnemonicParsing="false" text="%install.secondaryPassword" />
+                                                            <Label text="%install.automaticNumbering" HBox.hgrow="ALWAYS" />
+                                                            <Separator maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
                                                          </children>
-                                                      </VBox>
-                                                      <VBox spacing="10.0">
+                                                         <padding>
+                                                            <Insets bottom="5.0" top="5.0" />
+                                                         </padding>
+                                                      </HBox>
+                                                      <VBox>
                                                          <children>
-                                                            <PasswordField fx:id="pfDataPartitionPersonalPassword" minHeight="32.0" />
-                                                            <PasswordField fx:id="pfDataPartitionSecondaryPassword" disable="true" minHeight="32.0" />
-                                                         </children>
-                                                      </VBox>
-                                                      <VBox spacing="5.0">
-                                                         <children>
-                                                            <Button fx:id="btnDataPartitionShowPersonalPassword" minHeight="32.0" mnemonicParsing="false" text="Button" />
-                                                            <Button fx:id="btnDataPartitionShowSecondaryPassword" disable="true" minHeight="32.0" mnemonicParsing="false" text="Button" />
+                                                            <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.prefixText" />
+                                                            <TextField minHeight="32.0" />
+                                                            <HBox spacing="20.0">
+                                                               <children>
+                                                                  <VBox>
+                                                                     <children>
+                                                                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.startPattern" />
+                                                                        <TextField minHeight="32.0" />
+                                                                     </children>
+                                                                  </VBox>
+                                                                  <VBox>
+                                                                     <children>
+                                                                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.steps" />
+                                                                        <TextField minHeight="32.0" />
+                                                                     </children>
+                                                                  </VBox>
+                                                               </children>
+                                                            </HBox>
                                                          </children>
                                                       </VBox>
                                                    </children>
-                                                   <padding>
-                                                      <Insets left="20.0" />
-                                                   </padding>
-                                                </HBox>
-                                                <HBox>
-                                                   <children>
-                                                      <CheckBox fx:id="chbDataPartitionOverwrite" disable="true" minHeight="32.0" mnemonicParsing="false" text="%install.overwriteWithRandomData" />
-                                                   </children>
-                                                   <padding>
-                                                      <Insets left="20.0" top="10.0" />
-                                                   </padding>
-                                                </HBox>
+                                                </VBox>
                                              </children>
-                                          </VBox>
-                                          <Separator orientation="VERTICAL" />
-                                          <VBox HBox.hgrow="ALWAYS">
+                                          </HBox>
+                                          <HBox>
                                              <children>
-                                                <HBox>
-                                                   <children>
-                                                      <Label text="%global.fileSystem" HBox.hgrow="ALWAYS" />
-                                                      <Separator maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
-                                                   </children>
-                                                   <padding>
-                                                      <Insets bottom="5.0" top="5.0" />
-                                                   </padding>
-                                                </HBox>
-                                                <ComboBox fx:id="cmbDataPartitionFilesystem" minHeight="32.0" />
-                                             </children>
-                                             <HBox.margin>
-                                                <Insets />
-                                             </HBox.margin>
-                                          </VBox>
-                                       </children>
-                                    </HBox>
-                                    <HBox>
-                                       <children>
-                                          <CheckBox fx:id="chbCheckCopies" minHeight="32.0" mnemonicParsing="false" text="%install.checkCopies" />
-                                       </children>
-                                    </HBox>
-                                 </children>
-                              </VBox>
-                           </content>
-                        </Tab>
-                        <Tab text="%global.datatransfer">
-                           <content>
-                              <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0" visible="false">
-                                 <opaqueInsets>
-                                    <Insets />
-                                 </opaqueInsets>
-                                 <padding>
-                                    <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
-                                 </padding>
-                                 <children>
-                                    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="ALWAYS">
-                                       <children>
-                                          <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="ALWAYS">
-                                             <children>
-                                                <Label maxHeight="-Infinity" maxWidth="-Infinity" text="%install.lblInstallationTarget" HBox.hgrow="ALWAYS" />
-                                                <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                                                <Label text="%global.dataPartition" HBox.hgrow="ALWAYS" />
+                                                <Separator maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
                                              </children>
                                              <padding>
                                                 <Insets bottom="5.0" top="5.0" />
                                              </padding>
                                           </HBox>
+                                          <HBox spacing="20.0">
+                                             <children>
+                                                <VBox HBox.hgrow="SOMETIMES">
+                                                   <children>
+                                                      <HBox>
+                                                         <children>
+                                                            <Label text="%install.encryption" HBox.hgrow="ALWAYS" />
+                                                            <Separator maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                                                         </children>
+                                                         <padding>
+                                                            <Insets bottom="5.0" left="20.0" top="5.0" />
+                                                         </padding>
+                                                      </HBox>
+                                                      <HBox spacing="20.0">
+                                                         <children>
+                                                            <VBox alignment="CENTER_LEFT" spacing="10.0">
+                                                               <children>
+                                                                  <CheckBox fx:id="chbDataPartitionPersonalPassword" minHeight="32.0" mnemonicParsing="false" text="%install.personalPassword" />
+                                                                  <CheckBox fx:id="chbDataPartitionSecondaryPassword" disable="true" minHeight="32.0" mnemonicParsing="false" text="%install.secondaryPassword" />
+                                                               </children>
+                                                            </VBox>
+                                                            <VBox spacing="10.0">
+                                                               <children>
+                                                                  <PasswordField fx:id="pfDataPartitionPersonalPassword" minHeight="32.0" />
+                                                                  <PasswordField fx:id="pfDataPartitionSecondaryPassword" disable="true" minHeight="32.0" />
+                                                               </children>
+                                                            </VBox>
+                                                            <VBox spacing="5.0">
+                                                               <children>
+                                                                  <Button fx:id="btnDataPartitionShowPersonalPassword" minHeight="32.0" mnemonicParsing="false" text="Button" />
+                                                                  <Button fx:id="btnDataPartitionShowSecondaryPassword" disable="true" minHeight="32.0" mnemonicParsing="false" text="Button" />
+                                                               </children>
+                                                            </VBox>
+                                                         </children>
+                                                         <padding>
+                                                            <Insets left="20.0" />
+                                                         </padding>
+                                                      </HBox>
+                                                      <HBox>
+                                                         <children>
+                                                            <CheckBox fx:id="chbDataPartitionOverwrite" disable="true" minHeight="32.0" mnemonicParsing="false" text="%install.overwriteWithRandomData" />
+                                                         </children>
+                                                         <padding>
+                                                            <Insets left="20.0" top="10.0" />
+                                                         </padding>
+                                                      </HBox>
+                                                   </children>
+                                                </VBox>
+                                                <Separator orientation="VERTICAL" />
+                                                <VBox HBox.hgrow="ALWAYS">
+                                                   <children>
+                                                      <HBox>
+                                                         <children>
+                                                            <Label text="%global.fileSystem" HBox.hgrow="ALWAYS" />
+                                                            <Separator maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                                                         </children>
+                                                         <padding>
+                                                            <Insets bottom="5.0" top="5.0" />
+                                                         </padding>
+                                                      </HBox>
+                                                      <ComboBox fx:id="cmbDataPartitionFilesystem" minHeight="32.0" />
+                                                   </children>
+                                                   <HBox.margin>
+                                                      <Insets />
+                                                   </HBox.margin>
+                                                </VBox>
+                                             </children>
+                                          </HBox>
+                                          <HBox>
+                                             <children>
+                                                <CheckBox fx:id="chbCheckCopies" minHeight="32.0" mnemonicParsing="false" text="%install.checkCopies" />
+                                             </children>
+                                          </HBox>
                                        </children>
                                     </VBox>
-                                 </children>
-                              </VBox>
-                           </content>
-                        </Tab>
-                    </tabs>
-                  </TabPane>
+                                 </content>
+                              </Tab>
+                              <Tab text="%global.datatransfer">
+                                 <content>
+                                    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0" visible="false">
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                       <padding>
+                                          <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
+                                       </padding>
+                                       <children>
+                                          <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="ALWAYS">
+                                             <children>
+                                                <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="ALWAYS">
+                                                   <children>
+                                                      <Label maxHeight="-Infinity" maxWidth="-Infinity" text="%install.lblInstallationTarget" HBox.hgrow="ALWAYS" />
+                                                      <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                                                   </children>
+                                                   <padding>
+                                                      <Insets bottom="5.0" top="5.0" />
+                                                   </padding>
+                                                </HBox>
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </Tab>
+                          </tabs>
+                        </TabPane>
+                     </children>
+                  </VBox>
                </children>
-            </VBox>
-         </children>
-         <GridPane.margin>
-            <Insets left="20.0" right="20.0" />
-         </GridPane.margin>
-      </HBox>
+            </HBox>
+         </content>
+      </ScrollPane>
       <HBox GridPane.columnIndex="3" GridPane.rowIndex="3">
          <children>
             <VBox HBox.hgrow="ALWAYS">
