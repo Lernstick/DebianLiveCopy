@@ -82,6 +82,10 @@ public class ExportDataUI extends View {
             toggleExpertMode();
         });
 
+        tfTargetDirectory.setOnAction(event -> {
+            selectDirectory();
+        });
+        
         tfTargetDirectory.setOnMouseClicked(event -> {
             selectDirectory();
         });

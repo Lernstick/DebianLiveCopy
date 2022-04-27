@@ -105,6 +105,10 @@ public class ExportSystemUI extends View {
         tfTargetDirectory.setOnMouseClicked(event -> {
             selectDirectory();
         });
+        
+        tfTargetDirectory.setOnAction(event -> {
+            selectDirectory();
+        });
 
         btnExport.setOnAction(event -> {
             boolean isIncomplete = false; // To log all errors at the same time
