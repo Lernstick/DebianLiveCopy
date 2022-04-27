@@ -83,6 +83,10 @@
     -fx-border-color: #282828;
 }
 
+.check-box:pressed .box{
+    -fx-border-color: #1F76E1;
+}
+
 .radio-button{
     -fx-font-family: "Cantarell";
     -fx-text-fill: #EEEEEE;
@@ -250,3 +254,10 @@
     -fx-background-color:transparent;
 }
 
+.scroll-bar .thumb{
+    -fx-background-color: #8c8c8b
+}
+
+.tab-pane:focused>.tab-header-area>.headers-region>.tab:selected .focus-indicator {
+    -fx-border-color: #1F76E1;
+}
