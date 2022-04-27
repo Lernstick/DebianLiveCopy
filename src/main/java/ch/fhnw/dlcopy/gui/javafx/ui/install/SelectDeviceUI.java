@@ -34,6 +34,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.text.Text;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -54,6 +55,8 @@ public class SelectDeviceUI extends View {
 
     @FXML private Button btnBack;
     @FXML private Button btnInstall;
+    @FXML private Button btnDataPartitionShowPersonalPassword;
+    @FXML private Button btnDataPartitionShowSecondaryPassword;
     @FXML private ComboBox cmbDataPartitionMode;
     @FXML private ComboBox cmbExchangePartitionFilesystem;
     @FXML private Label lblRequiredDiskspace;
@@ -62,6 +65,11 @@ public class SelectDeviceUI extends View {
     @FXML private CheckBox chbCopyDataPartition;
     @FXML private CheckBox chbCopyExchangePartition;
     @FXML private CheckBox chbShowHarddisk;
+    @FXML private CheckBox chbDataPartitionPersonalPassword;
+    @FXML private CheckBox chbDataPartitionSecondaryPassword;
+    @FXML private CheckBox chbDataPartitionOverwrite;
+    @FXML private PasswordField pfDataPartitionPersonalPassword;
+    @FXML private PasswordField pfDataPartitionSecondaryPassword;
     @FXML private TextField tfExchangePartitionSize;
 
     public SelectDeviceUI() {
@@ -155,6 +163,14 @@ public class SelectDeviceUI extends View {
 
         // Install Button should be disabled, till a valid exchangePartition size is choosen.
         btnInstall.setDisable(true);
+
+        chbDataPartitionPersonalPassword.setDisable(false);
+        pfDataPartitionPersonalPassword.setDisable(true);
+        chbDataPartitionSecondaryPassword.setDisable(true);
+        pfDataPartitionSecondaryPassword.setDisable(true);
+        chbDataPartitionOverwrite.setDisable(true);
+        btnDataPartitionShowPersonalPassword.setDisable(true);
+        btnDataPartitionShowSecondaryPassword.setDisable(true);
     }
 
     @Override
@@ -175,6 +191,23 @@ public class SelectDeviceUI extends View {
         });
         chbShowHarddisk.setOnAction(event -> {
             showHarddisks = valChb(chbShowHarddisk);
+        });
+        chbDataPartitionPersonalPassword.setOnAction(event -> {
+            // other options are only available if encryption is enabled
+            boolean notEnc = !valChb(chbDataPartitionPersonalPassword);
+            chbDataPartitionOverwrite.setDisable(notEnc);
+            pfDataPartitionPersonalPassword.setDisable(notEnc);
+            btnDataPartitionShowPersonalPassword.setDisable(notEnc);
+            chbDataPartitionSecondaryPassword.setDisable(notEnc);
+            boolean noSnd = !valChb(chbDataPartitionSecondaryPassword);
+            pfDataPartitionSecondaryPassword.setDisable(noSnd);
+            btnDataPartitionShowSecondaryPassword.setDisable(noSnd);
+        });
+        chbDataPartitionSecondaryPassword.setOnAction(event -> {
+            boolean notEnc = !valChb(chbDataPartitionPersonalPassword);
+            boolean noSnd = !valChb(chbDataPartitionSecondaryPassword);
+            pfDataPartitionSecondaryPassword.setDisable(notEnc || noSnd);
+            btnDataPartitionShowSecondaryPassword.setDisable(notEnc || noSnd);
         });
     }
 
@@ -199,11 +232,11 @@ public class SelectDeviceUI extends View {
             1,  // the auto numbering start value
             1,  // the auto numbering increment
             1,  // the minimal number of digits to use for auto numbering
-            false,  // if the data partition should be encrypted with a personal password
-            "", // the personal password for data partition encryption
-            false,  // if the data partition should be encrypted with a secondary password
-            "", // the secondary password for data partition encryption
-            false,  // if the data partition should be filled with random data before formatting
+            valChb(chbDataPartitionPersonalPassword),  // if the data partition should be encrypted with a personal password
+            pfDataPartitionPersonalPassword.getPromptText(), // the personal password for data partition encryption
+            valChb(chbDataPartitionSecondaryPassword),  // if the data partition should be encrypted with a secondary password
+            pfDataPartitionSecondaryPassword.getPromptText(), // the secondary password for data partition encryption
+            valChb(chbDataPartitionOverwrite),  // if the data partition should be filled with random data before formatting
             valChb(chbCopyDataPartition),  // if the data partition should be copied
             getDataPartitionMode(),   // the mode of the data partition to set in the bootloaders config
             null,   // the device to transfer data from or null, if no data should be transferred
