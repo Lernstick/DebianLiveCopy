@@ -40,7 +40,6 @@ public class StartscreenUITest extends ApplicationTest {
         //Assert
         verifyThat("#btnExportData", hasText("Daten exportieren"));
     }
-    
         
     @Test public void hasExportSystemButton_de() {
         
