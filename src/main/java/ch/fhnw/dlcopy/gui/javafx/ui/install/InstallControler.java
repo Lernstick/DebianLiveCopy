@@ -10,6 +10,12 @@ import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.StorageDevice;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.ResourceBundle;
+import javafx.beans.property.Property;
+import javafx.beans.property.SimpleDoubleProperty;
+import javafx.beans.property.SimpleStringProperty;
+import javafx.beans.value.ObservableDoubleValue;
+import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -21,6 +27,7 @@ import javafx.collections.ObservableList;
 public class InstallControler implements DLCopyGUI {
     
     private Installation currentInstallation = null;
+    protected ResourceBundle stringBundle = ResourceBundle.getBundle("strings/Strings");
     
     /**
      * The singleton instance of the class
@@ -37,6 +44,9 @@ public class InstallControler implements DLCopyGUI {
      * The scene context, witch is used to switch the scene
      */
     private final SceneContext context;
+    
+    private final Property<String> installationStep = new SimpleStringProperty();
+    private final Property<Number> progress = new SimpleDoubleProperty(-1);
     
     /**
      * Mark the constructor <c>private</c>, so it is not accessable from outside
@@ -94,22 +104,29 @@ public class InstallControler implements DLCopyGUI {
     @Override
     public void showInstallCreatingFileSystems() {
         currentInstallation.setDetailStatus(InstallationStatus.CREATE_FILE_SYSTEMS);
+        installationStep.setValue(stringBundle.getString("install.create_fs"));
+        progress.setValue(-1);
     }
 
     @Override
     public void showInstallOverwritingDataPartitionWithRandomData(long done, long size) {
         currentInstallation.setDetailStatus(InstallationStatus.OVERWRITE_DATA_PARTITION_WITH_RANDOM_DATA);
+        installationStep.setValue(stringBundle.getString("install.overwritte"));
+        progress.setValue(done / size);
     }
 
     @Override
     public void showInstallFileCopy(FileCopier fileCopier) {
         currentInstallation.setDetailStatus(InstallationStatus.COPY_FILES);
+        installationStep.setValue(stringBundle.getString("install.copy"));
+        progress.setValue(-1);
         
     }
 
     @Override
     public void showInstallPersistencyCopy(Installer installer, String copyScript, String sourcePath) {
         currentInstallation.setDetailStatus(InstallationStatus.COPY_PERSISTENCY_PARTITION);
+        progress.setValue(-1);
     }
 
     @Override
@@ -121,11 +138,15 @@ public class InstallControler implements DLCopyGUI {
     @Override
     public void showInstallUnmounting() {
         currentInstallation.setDetailStatus(InstallationStatus.UNMOUNTING);
+        installationStep.setValue(stringBundle.getString("install.unmounting"));
+        progress.setValue(-1);
     }
 
     @Override
     public void showInstallWritingBootSector() {
         currentInstallation.setDetailStatus(InstallationStatus.WRITE_BOOT_SECTOR);
+        installationStep.setValue(stringBundle.getString("install.writing_boot_sector"));
+        progress.setValue(-1);
     }
 
 
@@ -135,11 +156,14 @@ public class InstallControler implements DLCopyGUI {
         if (errorMessage == null) {
             // No error occured
             currentInstallation.setStatus(OperationStatus.SUCCESSFULL);
+            installationStep.setValue(stringBundle.getString("install.success"));
         } else {
             // An error occured
             currentInstallation.setError(errorMessage);
             currentInstallation.setStatus(OperationStatus.FAILED);
+            installationStep.setValue(stringBundle.getString("error.error") + ": " + errorMessage);
         }
+        progress.setValue(1);
     }
 
     @Override
@@ -154,6 +178,14 @@ public class InstallControler implements DLCopyGUI {
      */
     public ObservableList<Installation> getInstallations() {
         return FXCollections.observableList(installations);
+    }
+    
+    public Property<String> getInstallationStep(){
+        return installationStep;
+    }
+    
+    public Property<Number> getProgress(){
+        return progress;
     }
     
     /**

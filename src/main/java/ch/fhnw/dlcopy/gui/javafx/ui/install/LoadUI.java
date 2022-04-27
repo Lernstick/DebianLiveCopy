@@ -21,56 +21,20 @@ import javafx.scene.text.TextFlow;
 
 public class LoadUI extends View {
 
+    @FXML private Button btnBack;
     @FXML private Button btnReport;
     @FXML private ImageView imgExportFile;
+    @FXML private Label lblProgressInfo;
     @FXML private ProgressBar pbStatus;
     @FXML private TextFlow tfExtraInfo;
-    @FXML private Button btnBack;
-    @FXML private Label lblProgressInfo;
-
-
-    private String tmpMessage;
-
-    //Both need to be > 0 for indeterminate time
-    private long indetValue;
-    private long indetMax;
-
-
-    private Timer overwriteTimer;
-    private OverwriteRandomTimerTask overwriteRandomTimerTask;
-    private int tmpProgress = -1;
-    private List<Text>  bulletpoints = new ArrayList<Text>();
-
-    private Label currBP;
 
     public LoadUI() {
         resourcePath = getClass().getResource("/fxml/install/load.fxml");
-
     }
-
-    public LoadUI(String message, int progress) {
-        this();
-        tmpMessage = message;
-        tmpProgress = progress;
-    }
-
-
-    //indeterminate
-    public LoadUI(String message) {
-        this(message, -1);
-    }
-
-
-    //determinate
-    public LoadUI(long value, long maximum) {
-        this();
-        indetMax = maximum;
-        indetValue = value;
-
-    }
-
 
     public void initBulletPoints(){
+        List<Text>  bulletpoints = new ArrayList<Text>();
+        
         bulletpoints.add(new Text(stringBundle.getString("global.unmount_file_systems")));
         bulletpoints.add(new Text("\n"));
         bulletpoints.add(new Text(stringBundle.getString("global.writing_boot_sector")));
@@ -83,62 +47,24 @@ public class LoadUI extends View {
         }
     }
 
-
-    public void setBulletpoint(String bPStr) {
-        TextFlow textFlow = new TextFlow();
-        for (Text s : bulletpoints){
-            if (bPStr.equals(s.getText())){
-                s.setFill(Color.BLUE);
-            } else {
-                s.setFill(Color.BLACK);
-            }
-        }
-    }
-
-    public void showOverwriteRandomProgressBar(long value, long maximum) {
-        if (overwriteTimer == null) {
-            overwriteTimer = new Timer();
-            overwriteTimer.schedule(new OverwriteRandomTimerTask(pbStatus, lblProgressInfo, "Overwrite data",  value), 0,1000);
-        }
-        overwriteRandomTimerTask.setDone(value);
-    }
-
-    public void showIndeterminateProgressBar(final String text) {
-
-        if (overwriteTimer != null) {
-            overwriteTimer.cancel();
-            overwriteTimer = null;
-        }
-
-        lblProgressInfo.setText(text);
-    }
-
-    public void finished(){
-        pbStatus.setVisible(false);
-        btnBack.setDisable(false);
-    }
-
-
     @Override
-    protected void initSelf() {
-        if(indetValue != 0 &&  indetMax != 0) {
-            showOverwriteRandomProgressBar(indetValue, indetMax);
-        } else if (tmpMessage != null){
-            initBulletPoints();
-            setBulletpoint(tmpMessage);
-            showIndeterminateProgressBar(tmpMessage);
-        }
-
+    protected void initControls() {
         btnBack.setDisable(true);
-        double percent = Math.max(tmpProgress, 100) / 100d;
-        pbStatus.setProgress(percent);
+        initBulletPoints();
+    }
+    
+    @Override
+    protected void setupBindings(){
+        InstallControler controller = InstallControler.getInstance(context);
+        
+        pbStatus.progressProperty().bind(controller.getProgress());
+        lblProgressInfo.textProperty().bind(controller.getInstallationStep());
     }
 
     @Override
     protected void setupEventHandlers() {
         btnReport.setOnAction((ActionEvent event) -> {
             context.setScene(new InstallationReportUI());
-            // context.setScene(new InstallationReportUI());
         });
         
         imgExportFile.fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 5.869));
