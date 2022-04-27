@@ -30,7 +30,30 @@ public class StartscreenUITest extends ApplicationTest {
         stage.show();
     }
     
-    @Test public void hasAButton_de() {
+    @Test public void hasExportDataButton_de() {
+        
+        // Arrange
+        model.setLanguage(Locale.GERMAN);
+        
+        // Act
+        
+        //Assert
+        verifyThat("#btnExportData", hasText("Daten exportieren"));
+    }
+    
+        
+    @Test public void hasExportSystemButton_de() {
+        
+        // Arrange
+        model.setLanguage(Locale.GERMAN);
+        
+        // Act
+        
+        //Assert
+        verifyThat("#btnExportSystem", hasText("System exportieren"));
+    }
+    
+    @Test public void hasInstallButton_de() {
         
         // Arrange
         model.setLanguage(Locale.GERMAN);
@@ -40,4 +63,26 @@ public class StartscreenUITest extends ApplicationTest {
         //Assert
         verifyThat("#btnInstall", hasText("Installieren"));
     }
-}
+    
+    @Test public void hasResetButton_de() {
+        
+        // Arrange
+        model.setLanguage(Locale.GERMAN);
+        
+        // Act
+        
+        //Assert
+        verifyThat("#btnReset", hasText("Zurücksetzten"));
+    }
+    
+    @Test public void hasUpdateButton_de() {
+        
+        // Arrange
+        model.setLanguage(Locale.GERMAN);
+        
+        // Act
+        
+        //Assert
+        verifyThat("#btnUpdate", hasText("Aktuallisieren"));
+    }
+}   
