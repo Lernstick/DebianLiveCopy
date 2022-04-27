@@ -9,17 +9,15 @@
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
-<?import javafx.scene.image.Image?>
-<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<!--<?import ch.fhnw.dlcopy.gui.javafx.SwitchButton?>-->
+<?import ch.fhnw.dlcopy.gui.javafx.SwitchButton?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints hgrow="NEVER" />
         <ColumnConstraints hgrow="SOMETIMES" percentWidth="1.0" />
@@ -54,7 +52,7 @@
         <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="1" />
       <HBox GridPane.columnIndex="2">
          <children>
-            <VBox spacing="10.0" >
+            <VBox spacing="10.0">
                <children>
                       <Label fx:id="lblTargetDirectory" minHeight="32.0" text="%export.lblTargetDirectory" />
                   <Label minHeight="32.0" text="%export.lblDvdLabel" />
@@ -74,32 +72,35 @@
                       <Label fx:id="lblWriteableDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%global.notApplicable" />
                       <Label fx:id="lblFreeSpaceDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%global.notApplicable" />
                   <ComboBox fx:id="cmbDataPartitionMode" maxHeight="0.0" minHeight="32.0" />
-                      <!--<SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" textOn="%global.on" textOff="%global.off" />-->
+                      <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" textOn="%global.on" textOff="%global.off" />
                       <CheckBox fx:id="chbInformationDialog" minHeight="32.0" mnemonicParsing="false" text="%export.chbInformationDialog" visible="false" />
                       <CheckBox fx:id="chbInstallationProgram" minHeight="32.0" mnemonicParsing="false" text="%export.chbInstallationProgram" visible="false" />
                </children>
                <HBox.margin>
-                  <Insets left="20.0" right="20.0" top="40.0" />
+                  <Insets left="20.0" top="40.0" />
                </HBox.margin>
             </VBox>
          </children>
+         <padding>
+            <Insets right="20.0" />
+         </padding>
       </HBox>
       <HBox GridPane.columnIndex="2" GridPane.rowIndex="2">
          <children>
             <VBox HBox.hgrow="ALWAYS">
                <children>
-                      <Label fx:id="lblInfo" text="Info" textAlignment="CENTER" />
+                      <Label fx:id="lblInfo" textAlignment="CENTER" />
                </children>
             </VBox>
             <ButtonBar buttonMinWidth="0.0">
               <buttons>
-                      <Button fx:id="btnBack" mnemonicParsing="false" text="%global.previous" />
-                      <Button fx:id="btnExport" mnemonicParsing="false" text="%global.export" />
+                      <Button fx:id="btnBack" minHeight="32.0" mnemonicParsing="false" text="%global.previous" />
+                      <Button fx:id="btnExport" minHeight="32.0" mnemonicParsing="false" text="%global.export" />
               </buttons>
             </ButtonBar>
          </children>
          <padding>
-            <Insets bottom="30.0" top="30.0" />
+            <Insets bottom="30.0" left="20.0" right="20.0" top="30.0" />
          </padding>
       </HBox>
     </children>

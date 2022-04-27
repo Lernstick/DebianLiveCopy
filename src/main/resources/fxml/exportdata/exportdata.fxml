@@ -14,9 +14,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<!--<?import ch.fhnw.dlcopy.gui.javafx.SwitchButton?>-->
+<?import ch.fhnw.dlcopy.gui.javafx.SwitchButton?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints hgrow="NEVER" />
         <ColumnConstraints hgrow="SOMETIMES" percentWidth="1.0" />
@@ -53,10 +53,10 @@
          <children>
             <VBox spacing="10.0">
                <children>
-                      <Label fx:id="lblTargetDirectory" minHeight="25.333" text="%export.lblTargetDirectory" />
-                      <Label fx:id="lblWriteable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="25.333" text="%export.lblWriteable" />
-                      <Label fx:id="lblFreeSpace" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="25.333" text="%export.lblFreeSpace" />
-                      <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="25.333" text="%global.expertMode" />
+                      <Label fx:id="lblTargetDirectory" minHeight="32.0" text="%export.lblTargetDirectory" />
+                      <Label fx:id="lblWriteable" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%export.lblWriteable" />
+                      <Label fx:id="lblFreeSpace" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%export.lblFreeSpace" />
+                      <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%global.expertMode" />
                </children>
                <HBox.margin>
                   <Insets left="20.0" top="40.0" />
@@ -64,35 +64,38 @@
             </VBox>
             <VBox spacing="10.0" HBox.hgrow="SOMETIMES">
                <children>
-                      <TextField fx:id="tfTargetDirectory" minHeight="25.333" promptText="%export.tfTargetDirectory" />
-                      <Label fx:id="lblWriteableDisplay" minHeight="25.333" text="%global.notApplicable" />
-                      <Label fx:id="lblFreeSpaceDisplay" minHeight="25.333" text="%global.notApplicable" />
-                      <!--<SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" textOn="%global.on" textOff="%global.off"  />-->
+                      <TextField fx:id="tfTargetDirectory" minHeight="32.0" promptText="%export.tfTargetDirectory" />
+                      <Label fx:id="lblWriteableDisplay" minHeight="32.0" text="%global.notApplicable" />
+                      <Label fx:id="lblFreeSpaceDisplay" minHeight="32.0" text="%global.notApplicable" />
+                      <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" textOn="%global.on" textOff="%global.off"  />
                       <CheckBox fx:id="chbInformationDialog" minHeight="25.333" mnemonicParsing="false" text="%export.chbInformationDialog" visible="false" />
                       <CheckBox fx:id="chbInstallationProgram" minHeight="25.333" mnemonicParsing="false" text="%export.chbInstallationProgram" visible="false" />
                </children>
                <HBox.margin>
-                  <Insets left="20.0" right="20.0" top="40.0" />
+                  <Insets left="20.0" top="40.0" />
                </HBox.margin>
             </VBox>
          </children>
+         <padding>
+            <Insets right="20.0" />
+         </padding>
       </HBox>
       <HBox GridPane.columnIndex="2" GridPane.rowIndex="2">
          <children>
             <VBox HBox.hgrow="ALWAYS">
                <children>
-                      <Label fx:id="lblInfo" text="Info" textAlignment="CENTER" />
+                      <Label fx:id="lblInfo" textAlignment="CENTER" />
                </children>
             </VBox>
             <ButtonBar buttonMinWidth="0.0">
               <buttons>
-                      <Button fx:id="btnBack" mnemonicParsing="false" text="%global.previous" />
-                      <Button fx:id="btnExport" mnemonicParsing="false" text="%global.export" />
+                      <Button fx:id="btnBack" minHeight="32.0" mnemonicParsing="false" text="%global.previous" />
+                      <Button fx:id="btnExport" minHeight="32.0" mnemonicParsing="false" text="%global.export" />
               </buttons>
             </ButtonBar>
          </children>
          <padding>
-            <Insets bottom="30.0" top="30.0" />
+            <Insets bottom="30.0" left="20.0" right="20.0" top="30.0" />
          </padding>
       </HBox>
     </children>

@@ -14,7 +14,6 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-
 <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints hgrow="NEVER" />
@@ -65,7 +64,7 @@
             <Insets />
          </opaqueInsets>
          <GridPane.margin>
-            <Insets bottom="20.0" left="40.0" right="40.0" top="20.0" />
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
          </GridPane.margin>
       </HBox>
       <HBox GridPane.columnIndex="2" GridPane.rowIndex="2">
@@ -80,7 +79,7 @@
                <children>
                       <Button fx:id="btnNext" mnemonicParsing="false" text="%global.next">
                      <VBox.margin>
-                        <Insets right="20.0" />
+                        <Insets />
                      </VBox.margin>
                   </Button>
                </children>
@@ -93,7 +92,7 @@
             </VBox>
          </children>
          <padding>
-            <Insets bottom="30.0" top="30.0" />
+            <Insets bottom="30.0" left="20.0" right="20.0" top="30.0" />
          </padding>
       </HBox>
     </children>

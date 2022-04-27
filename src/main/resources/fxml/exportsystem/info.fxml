@@ -63,21 +63,21 @@
             <Insets />
          </opaqueInsets>
          <GridPane.margin>
-            <Insets bottom="20.0" left="40.0" right="40.0" top="20.0" />
+            <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
          </GridPane.margin>
       </HBox>
       <HBox GridPane.columnIndex="2" GridPane.rowIndex="2">
          <children>
             <VBox HBox.hgrow="ALWAYS">
                <children>
-                      <Label fx:id="lblInfo" text="Info" textAlignment="CENTER" />
+                      <Label fx:id="lblInfo" textAlignment="CENTER" />
                </children>
             </VBox>
             <VBox HBox.hgrow="NEVER">
                <children>
                       <Button fx:id="btnFinish" mnemonicParsing="false" text="%global.finish">
                      <VBox.margin>
-                        <Insets right="20.0" />
+                        <Insets />
                      </VBox.margin>
                   </Button>
                </children>
@@ -90,7 +90,7 @@
             </VBox>
          </children>
          <padding>
-            <Insets bottom="30.0" top="30.0" />
+            <Insets bottom="30.0" left="20.0" right="20.0" top="30.0" />
          </padding>
       </HBox>
     </children>

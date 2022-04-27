@@ -21,7 +21,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints />
         <ColumnConstraints hgrow="NEVER" />
@@ -97,7 +97,7 @@
                         </VBox>
                         <VBox>
                            <children>
-                              <CheckBox fx:id="chbShowHarddisk" alignment="CENTER_RIGHT" mnemonicParsing="false" text="%install.showHarddisk" />
+                              <CheckBox fx:id="chbShowHarddisk" alignment="CENTER_RIGHT" minHeight="32.0" mnemonicParsing="false" text="%install.showHarddisk" />
                            </children>
                            <padding>
                               <Insets right="40.0" />
@@ -115,19 +115,19 @@
                                     <Label text="%global.exchangepartition" />
                                     <HBox spacing="20.0">
                                        <children>
-                                          <CheckBox fx:id="chbCopyExchangePartition" disable="true" maxHeight="1.7976931348623157E308" mnemonicParsing="false" text="%install.chbcopy" />
+                                          <CheckBox fx:id="chbCopyExchangePartition" disable="true" maxHeight="1.7976931348623157E308" minHeight="32.0" mnemonicParsing="false" text="%install.chbcopy" />
                                           <Separator orientation="VERTICAL" />
-                                          <Label maxHeight="1.7976931348623157E308" text="%global.size" />
-                                          <TextField fx:id="tfExchangePartitionSize" />
+                                          <Label maxHeight="1.7976931348623157E308" minHeight="32.0" text="%global.size" />
+                                          <TextField fx:id="tfExchangePartitionSize" minHeight="32.0" />
                                        </children>
                                     </HBox>
                                     <Label text="%global.dataPartition" />
                                     <HBox spacing="20.0">
                                        <children>
-                                          <CheckBox fx:id="chbCopyDataPartition" maxHeight="1.7976931348623157E308" mnemonicParsing="false" text="%install.chbcopy" />
+                                          <CheckBox fx:id="chbCopyDataPartition" maxHeight="1.7976931348623157E308" minHeight="32.0" mnemonicParsing="false" text="%install.chbcopy" />
                                           <Separator orientation="VERTICAL" />
-                                          <Label maxHeight="1.7976931348623157E308" text="%global.mode" />
-                                          <ComboBox fx:id="cmbDataPartitionMode" />
+                                          <Label maxHeight="1.7976931348623157E308" minHeight="32.0" text="%global.mode" />
+                                          <ComboBox fx:id="cmbDataPartitionMode" minHeight="32.0" />
                                        </children>
                                     </HBox>
                                  </children>
@@ -165,16 +165,16 @@
                                              <children>
                                                 <HBox spacing="20.0">
                                                    <children>
-                                                      <VBox alignment="CENTER_LEFT" spacing="15.0">
+                                                      <VBox alignment="CENTER_LEFT" spacing="11.0">
                                                          <children>
-                                                            <Label text="%global.fileSystem" />
-                                                            <Label text="%install.label" />
+                                                            <Label minHeight="32.0" text="%global.fileSystem" />
+                                                            <Label minHeight="32.0" text="%install.label" />
                                                          </children>
                                                       </VBox>
                                                       <VBox spacing="10.0">
                                                          <children>
-                                                            <ComboBox fx:id="cmbExchangePartitionFilesystem" maxHeight="25.0" minHeight="25.0" />
-                                                            <TextField fx:id="tfExchangePartitionLabel" />
+                                                            <ComboBox fx:id="cmbExchangePartitionFilesystem" minHeight="32.0" />
+                                                            <TextField fx:id="tfExchangePartitionLabel" minHeight="32.0" />
                                                          </children>
                                                       </VBox>
                                                    </children>
@@ -193,44 +193,28 @@
                                                       <Insets bottom="5.0" top="5.0" />
                                                    </padding>
                                                 </HBox>
-                                                <HBox spacing="20.0">
+                                                <VBox>
                                                    <children>
-                                                      <VBox>
+                                                      <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.prefixText" />
+                                                      <TextField minHeight="32.0" />
+                                                      <HBox spacing="20.0">
                                                          <children>
-                                                            <HBox spacing="20.0">
+                                                            <VBox>
                                                                <children>
-                                                                  <Label maxHeight="1.7976931348623157E308" text="%install.pattern" />
-                                                                  <TextField fx:id="tfExchangePartitionPattern" />
+                                                                  <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.startPattern" />
+                                                                  <TextField minHeight="32.0" />
                                                                </children>
-                                                            </HBox>
-                                                         </children>
-                                                      </VBox>
-                                                      <VBox>
-                                                         <children>
-                                                            <HBox spacing="20.0">
+                                                            </VBox>
+                                                            <VBox>
                                                                <children>
-                                                                  <VBox alignment="CENTER_LEFT" spacing="18.0">
-                                                                     <children>
-                                                                        <Label text="%install.startValue" />
-                                                                        <Label text="%install.increment" />
-                                                                        <Label text="%install.minimalDigits" />
-                                                                     </children></VBox>
-                                                                  <VBox maxHeight="50.0" spacing="10.0">
-                                                                     <children>
-                                                                        <TextField fx:id="tfExchangePartitionStart" maxWidth="50.0" VBox.vgrow="NEVER" />
-                                                                        <TextField fx:id="tfExchangePartitionIncrement" maxWidth="50.0" />
-                                                                        <TextField fx:id="tfExchangePartitionDigits" maxWidth="50.0" />
-                                                                     </children>
-                                                                  </VBox>
+                                                                  <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.steps" />
+                                                                  <TextField minHeight="32.0" />
                                                                </children>
-                                                            </HBox>
+                                                            </VBox>
                                                          </children>
-                                                      </VBox>
+                                                      </HBox>
                                                    </children>
-                                                   <VBox.margin>
-                                                      <Insets right="20.0" />
-                                                   </VBox.margin>
-                                                </HBox>
+                                                </VBox>
                                              </children>
                                           </VBox>
                                        </children>
@@ -259,22 +243,22 @@
                                                 </HBox>
                                                 <HBox spacing="20.0">
                                                    <children>
-                                                      <VBox alignment="CENTER_LEFT" spacing="14.0">
+                                                      <VBox alignment="CENTER_LEFT" spacing="10.0">
                                                          <children>
-                                                            <CheckBox fx:id="chbDataPartitionPersonalPassword" mnemonicParsing="false" text="%install.personalPassword" />
-                                                            <CheckBox fx:id="chbDataPartitionSecondaryPassword" disable="true" mnemonicParsing="false" text="%install.secondaryPassword" />
+                                                            <CheckBox fx:id="chbDataPartitionPersonalPassword" minHeight="32.0" mnemonicParsing="false" text="%install.personalPassword" />
+                                                            <CheckBox fx:id="chbDataPartitionSecondaryPassword" disable="true" minHeight="32.0" mnemonicParsing="false" text="%install.secondaryPassword" />
                                                          </children>
                                                       </VBox>
                                                       <VBox spacing="10.0">
                                                          <children>
-                                                            <PasswordField fx:id="pfDataPartitionPersonalPassword" />
-                                                            <PasswordField fx:id="pfDataPartitionSecondaryPassword" disable="true" />
+                                                            <PasswordField fx:id="pfDataPartitionPersonalPassword" minHeight="32.0" />
+                                                            <PasswordField fx:id="pfDataPartitionSecondaryPassword" disable="true" minHeight="32.0" />
                                                          </children>
                                                       </VBox>
                                                       <VBox spacing="5.0">
                                                          <children>
-                                                            <Button fx:id="btnDataPartitionShowPersonalPassword" mnemonicParsing="false" text="Button" />
-                                                            <Button fx:id="btnDataPartitionShowSecondaryPassword" disable="true" mnemonicParsing="false" text="Button" />
+                                                            <Button fx:id="btnDataPartitionShowPersonalPassword" minHeight="32.0" mnemonicParsing="false" text="Button" />
+                                                            <Button fx:id="btnDataPartitionShowSecondaryPassword" disable="true" minHeight="32.0" mnemonicParsing="false" text="Button" />
                                                          </children>
                                                       </VBox>
                                                    </children>
@@ -284,7 +268,7 @@
                                                 </HBox>
                                                 <HBox>
                                                    <children>
-                                                      <CheckBox fx:id="chbDataPartitionOverwrite" disable="true" mnemonicParsing="false" text="%install.overwriteWithRandomData" />
+                                                      <CheckBox fx:id="chbDataPartitionOverwrite" disable="true" minHeight="32.0" mnemonicParsing="false" text="%install.overwriteWithRandomData" />
                                                    </children>
                                                    <padding>
                                                       <Insets left="20.0" top="10.0" />
@@ -304,7 +288,7 @@
                                                       <Insets bottom="5.0" top="5.0" />
                                                    </padding>
                                                 </HBox>
-                                                <ComboBox fx:id="cmbDataPartitionFilesystem" maxHeight="25.0" minHeight="25.0" prefHeight="25.0" />
+                                                <ComboBox fx:id="cmbDataPartitionFilesystem" minHeight="32.0" />
                                              </children>
                                              <HBox.margin>
                                                 <Insets />
@@ -314,7 +298,7 @@
                                     </HBox>
                                     <HBox>
                                        <children>
-                                          <CheckBox fx:id="chbCheckCopies" mnemonicParsing="false" text="%install.checkCopies" />
+                                          <CheckBox fx:id="chbCheckCopies" minHeight="32.0" mnemonicParsing="false" text="%install.checkCopies" />
                                        </children>
                                     </HBox>
                                  </children>
@@ -353,6 +337,9 @@
                </children>
             </VBox>
          </children>
+         <GridPane.margin>
+            <Insets left="20.0" right="20.0" />
+         </GridPane.margin>
       </HBox>
       <HBox GridPane.columnIndex="3" GridPane.rowIndex="3">
          <children>
@@ -363,13 +350,13 @@
             </VBox>
             <ButtonBar buttonMinWidth="0.0">
               <buttons>
-                      <Button fx:id="btnBack" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="%global.previous" />
-                      <Button fx:id="btnInstall" mnemonicParsing="false" text="%global.install" />
+                      <Button fx:id="btnBack" minHeight="32.0" mnemonicParsing="false" text="%global.previous" />
+                      <Button fx:id="btnInstall" minHeight="32.0" mnemonicParsing="false" text="%global.install" />
               </buttons>
             </ButtonBar>
          </children>
          <padding>
-            <Insets bottom="30.0" top="30.0" />
+            <Insets bottom="30.0" left="20.0" right="20.0" top="30.0" />
          </padding>
       </HBox>
     </children>
