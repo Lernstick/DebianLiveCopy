@@ -197,14 +197,6 @@ public class Installer extends InstallerOrUpgrader
             inhibit.delete();
         }
 
-        // the following try-catch block is needed to log otherwise invisible
-        // runtime exceptions
-//        try {
-//            get();
-//        } catch (Exception ex) {
-//            LOGGER.log(Level.WARNING, "", ex);
-//        }
-
         dlCopyGUI.installingListFinished();
     }
 
