@@ -202,19 +202,19 @@
                                                       <VBox>
                                                          <children>
                                                             <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.prefixText" />
-                                                            <TextField minHeight="32.0" />
+                                                            <TextField fx:id="tfPrefixText" minHeight="32.0" />
                                                             <HBox spacing="20.0">
                                                                <children>
                                                                   <VBox>
                                                                      <children>
                                                                         <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.startPattern" />
-                                                                        <TextField minHeight="32.0" />
+                                                                        <TextField fx:id="tfPattern" minHeight="32.0" />
                                                                      </children>
                                                                   </VBox>
                                                                   <VBox>
                                                                      <children>
                                                                         <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.steps" />
-                                                                        <TextField minHeight="32.0" />
+                                                                        <TextField fx:id="tfSteps" minHeight="32.0" />
                                                                      </children>
                                                                   </VBox>
                                                                </children>
@@ -261,10 +261,10 @@
                                                                   <PasswordField fx:id="pfDataPartitionSecondaryPassword" disable="true" minHeight="32.0" />
                                                                </children>
                                                             </VBox>
-                                                            <VBox spacing="5.0">
+                                                            <VBox spacing="10.0">
                                                                <children>
-                                                                  <Button fx:id="btnDataPartitionShowPersonalPassword" minHeight="32.0" mnemonicParsing="false" text="Button" />
-                                                                  <Button fx:id="btnDataPartitionShowSecondaryPassword" disable="true" minHeight="32.0" mnemonicParsing="false" text="Button" />
+                                                                  <Button fx:id="btnDataPartitionShowPersonalPassword" minHeight="32.0" mnemonicParsing="false" text="%global.prompt" />
+                                                                  <Button fx:id="btnDataPartitionShowSecondaryPassword" disable="true" minHeight="32.0" mnemonicParsing="false" text="%global.prompt" />
                                                                </children>
                                                             </VBox>
                                                          </children>
