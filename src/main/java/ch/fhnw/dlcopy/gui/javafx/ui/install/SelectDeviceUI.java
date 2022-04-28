@@ -187,11 +187,11 @@ public class SelectDeviceUI extends View {
     @Override
     protected void setupEventHandlers() {
         btnInstall.setOnAction(event -> {
-            if (valChb(chbDataPartitionPersonalPassword) && pfDataPartitionPersonalPassword.getPromptText().length() == 0) {
+            if (valChb(chbDataPartitionPersonalPassword) && pfDataPartitionPersonalPassword.getText().length() == 0) {
                 showError(stringBundle.getString("install.error.noPassword"));
                 return;
             }
-            if (valChb(chbDataPartitionSecondaryPassword) && pfDataPartitionSecondaryPassword.getPromptText().length() == 0) {
+            if (valChb(chbDataPartitionSecondaryPassword) && pfDataPartitionSecondaryPassword.getText().length() == 0) {
                 showError(stringBundle.getString("install.error.noPassword"));
                 return;
             }
@@ -244,9 +244,9 @@ public class SelectDeviceUI extends View {
             1,  // the auto numbering increment
             1,  // the minimal number of digits to use for auto numbering
             valChb(chbDataPartitionPersonalPassword),  // if the data partition should be encrypted with a personal password
-            pfDataPartitionPersonalPassword.getPromptText(), // the personal password for data partition encryption
+            pfDataPartitionPersonalPassword.getText(), // the personal password for data partition encryption
             valChb(chbDataPartitionSecondaryPassword),  // if the data partition should be encrypted with a secondary password
-            pfDataPartitionSecondaryPassword.getPromptText(), // the secondary password for data partition encryption
+            pfDataPartitionSecondaryPassword.getText(), // the secondary password for data partition encryption
             valChb(chbDataPartitionOverwrite),  // if the data partition should be filled with random data before formatting
             valChb(chbCopyDataPartition),  // if the data partition should be copied
             getDataPartitionMode(),   // the mode of the data partition to set in the bootloaders config
