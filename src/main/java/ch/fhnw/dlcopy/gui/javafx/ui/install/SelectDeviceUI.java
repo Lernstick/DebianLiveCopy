@@ -3,12 +3,14 @@ package ch.fhnw.dlcopy.gui.javafx.ui.install;
 import ch.fhnw.dlcopy.DLCopy;
 import ch.fhnw.dlcopy.DataPartitionMode;
 import ch.fhnw.dlcopy.Installer;
+import ch.fhnw.dlcopy.PartitionSizes;
 import ch.fhnw.dlcopy.PartitionState;
 import ch.fhnw.dlcopy.RunningSystemSource;
 import ch.fhnw.dlcopy.SystemSource;
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import ch.fhnw.util.LernstickFileTools;
+import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
 import java.io.IOException;
@@ -17,6 +19,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.locks.Lock;
@@ -36,7 +39,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.text.Text;
+import javafx.scene.control.TextInputDialog;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 public class SelectDeviceUI extends View {
@@ -108,7 +111,7 @@ public class SelectDeviceUI extends View {
                     List<StorageDevice> removedDevices = new ArrayList<>();
                     List<StorageDevice> addedDevices = new ArrayList<>();
                     for (StorageDevice device : pluggedDevices) {
-                        if(!lvDevices.getItems().contains(device)) {
+                        if (!lvDevices.getItems().contains(device)) {
                             // Plugged deice is not shown yet
                             addedDevices.add(device);
                         }
@@ -131,7 +134,6 @@ public class SelectDeviceUI extends View {
         listUpdateTimer.scheduleAtFixedRate(listUpdater, 0, 1000L); // Starts the `lisstUpdater`-task each 1000ms (1sec)
 
         lvDevices.setPlaceholder(new Label(stringBundle.getString("install.lvDevices")));
-
 
         // use running system as initial value
         long enlargedSystemSize
@@ -193,15 +195,15 @@ public class SelectDeviceUI extends View {
     @Override
     protected void setupEventHandlers() {
         btnInstall.setOnAction(event -> {
-            if (valChb(chbDataPartitionPersonalPassword) && pfDataPartitionPersonalPassword.getText().length() == 0) {
-                showError(stringBundle.getString("install.error.noPassword"));
-                return;
+            ObservableList<StorageDevice> devices = lvDevices.getSelectionModel().getSelectedItems();
+            try {
+                if (!checkSelection(devices)) {
+                    return;
+                }
+                install(devices);
+            } catch (DBusException|IOException e) {
+                LOGGER.log(Level.WARNING, e.getLocalizedMessage());
             }
-            if (valChb(chbDataPartitionSecondaryPassword) && pfDataPartitionSecondaryPassword.getText().length() == 0) {
-                showError(stringBundle.getString("install.error.noPassword"));
-                return;
-            }
-            showInstallConfirmation(stringBundle.getString("install.installWarning"));
         });
         btnBack.setOnAction(event -> {
             context.setScene(new StartscreenUI());
@@ -244,12 +246,11 @@ public class SelectDeviceUI extends View {
         });
     }
 
-    private void install() {
+    private void install(ObservableList<StorageDevice> devices) {
         // Register the selected devices for the installation report
         InstallControler installcontroller = InstallControler.getInstance(context);
-        List<StorageDevice> devices = lvDevices.getSelectionModel().getSelectedItems();
         installcontroller.createInstallationList(devices, 1, 1);
-        
+
         new Installer(
             runningSystemSource,    // the system source
             devices,   // the list of StorageDevices to install
@@ -323,6 +324,127 @@ public class SelectDeviceUI extends View {
         // see ch.fhnw.dlcopy.gui.swing.InstallerPanels
     }
 
+    private boolean checkSelection(ObservableList<StorageDevice> devices)
+            throws DBusException, IOException {
+        boolean harddiskSelected = false;
+        for (StorageDevice device : devices) {
+            if (device.getType() == StorageDevice.Type.HardDrive) {
+                harddiskSelected = true;
+            }
+
+            PartitionSizes partitionSizes = DLCopy.getInstallPartitionSizes(
+                    runningSystemSource, device,
+                    exchangePartitionSize);
+
+            if (!checkPersistence(partitionSizes)) {
+                return false;
+            }
+
+            if (!checkExchange(partitionSizes)) {
+                return false;
+            }
+
+            //TODO: checkTransfer from ch.fhnw.dlcopy.gui.swing.InstallerPanels.java:296/2126
+        }
+
+        if (valChb(chbDataPartitionPersonalPassword) && pfDataPartitionPersonalPassword.getText().length() == 0) {
+            showError(stringBundle.getString("install.error.noPassword"));
+            return false;
+        }
+
+        if (valChb(chbDataPartitionSecondaryPassword) && pfDataPartitionSecondaryPassword.getText().length() == 0) {
+            showError(stringBundle.getString("install.error.noPassword"));
+            return false;
+        }
+
+        if (harddiskSelected) {
+            showHarddiskConfirmation();
+        }
+
+        Optional<ButtonType> result = showConfirm(
+                stringBundle.getString("install.warningDataLoss"),
+                stringBundle.getString("install.installWarning")
+        );
+
+        return (result.isPresent() && result.get() == ButtonType.OK);
+    }
+
+    private boolean checkPersistence(PartitionSizes partitionSizes)
+            throws IOException, DBusException {
+
+        if (!valChb(chbCopyDataPartition)) {
+            return true;
+        }
+
+        if (!isUnmountedPersistenceAvailable()) {
+            return false;
+        }
+
+        return checkPersistencePartition(
+                runningSystemSource.getDataPartition().getUsedSpace(false),
+                partitionSizes);
+    }
+
+    private boolean checkPersistencePartition(
+            long dataSize, PartitionSizes partitionSizes) {
+
+        // check if the target medium actually has a persistence partition
+        if (partitionSizes.getPersistenceMB() == 0) {
+            showError(stringBundle.getString("install.error.noDataTarget"));
+            return false;
+        }
+
+        // check that target partition is large enough
+        long targetPersistenceSize
+                = (long) partitionSizes.getPersistenceMB() * (long) DLCopy.MEGA;
+        if (dataSize > targetPersistenceSize) {
+            String errorMessage = MessageFormat.format(stringBundle.getString("install.error.dataSize"),
+                    LernstickFileTools.getDataVolumeString(dataSize, 1),
+                    LernstickFileTools.getDataVolumeString(
+                            targetPersistenceSize, 1));
+            showError(errorMessage);
+            return false;
+        }
+
+        return true;
+    }
+
+    private boolean checkExchange(PartitionSizes partitionSizes)
+            throws IOException {
+
+        // early return
+        if (valChb(chbCopyExchangePartition)) {
+            return true;
+        }
+
+        // check if the target storage device actually has an exchange partition
+        return checkExchangePartition(
+                runningSystemSource.getExchangePartition(),
+                partitionSizes);
+    }
+
+    private boolean checkExchangePartition(
+            Partition exchangePartition, PartitionSizes partitionSizes) {
+
+        if (partitionSizes.getExchangeMB() == 0) {
+            showError(stringBundle.getString("install.error.noExchangeTarget"));
+            return false;
+        }
+
+        // check that target partition is large enough
+        if (exchangePartition != null) {
+            long sourceExchangeSize = exchangePartition.getUsedSpace(false);
+            long targetExchangeSize = (long) partitionSizes.getExchangeMB()
+                    * (long) DLCopy.MEGA;
+            if (sourceExchangeSize > targetExchangeSize) {
+                showError(stringBundle.getString("install.error.exchangeSize"));
+                return false;
+            }
+        }
+
+        return true;
+    }
+
     private void setSystemSource(SystemSource systemSource) {
         // early return
         if (systemSource == null) {
@@ -346,6 +468,55 @@ public class SelectDeviceUI extends View {
 
         // TODO: update all other parts of the UI
         // see ch.fhnw.dlcopy.gui.swing.InstallerPanels
+    }
+
+    /**
+     * see equivalent function in ch.fhnw.dlcopy.gui.javafx.ui.ExportSystemUI
+     * TODO: remove redudancy
+     */
+    public boolean isUnmountedPersistenceAvailable()
+            throws IOException, DBusException {
+
+        // check that a persistence partition is available
+        Partition dataPartition = runningSystemSource.getDataPartition();
+        if (dataPartition == null) {
+            String message = stringBundle.getString("error.noDataPartition");
+            LOGGER.log(Level.WARNING, message);
+            showError(message);
+            printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.noDataPartition"));
+            return false;
+        }
+
+        // ensure that the persistence partition is not mounted read-write
+        String dataPartitionDevice = dataPartition.getFullDeviceAndNumber();
+        if (DLCopy.isMountedReadWrite(dataPartitionDevice)) {
+            if (DLCopy.isBootPersistent()) {
+                // error and hint
+                String message = stringBundle.getString(
+                        "warning.dataPartitionInUse") + "\n"
+                        + stringBundle.getString("hint.nonpersistentBoot");
+                LOGGER.log(Level.WARNING, message);
+                showError(message);
+                return false;
+            } else {
+                // persistence partition was manually mounted
+                // warning and offer umount
+                String message = stringBundle.getString(
+                        "warning.dataPartitionInUse") + "\n"
+                        + stringBundle.getString("export.unmountQuestion");
+                LOGGER.log(Level.WARNING, message);
+                Optional<ButtonType> result = showConfirm(stringBundle.getString("global.warning"), message);
+                if (result.isPresent() && result.get() == ButtonType.OK) {
+                    LOGGER.log(Level.FINEST, result.get().getText());
+                    dataPartition.umount();
+                    LOGGER.log(Level.WARNING, "Parition unmounted");
+                    return isUnmountedPersistenceAvailable();
+                } else {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 
     /**
@@ -380,17 +551,26 @@ public class SelectDeviceUI extends View {
         alert.showAndWait();
     }
 
-    private void showInstallConfirmation(String message) {
+    private Optional<ButtonType> showConfirm(String header, String message) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setHeaderText(stringBundle.getString("install.warningDataLoss"));
+        alert.setHeaderText(header);
         alert.setTitle(stringBundle.getString("global.confirm"));
         alert.setContentText(message);
-        Text text = new Text(message);
-        text.setWrappingWidth(300);
-        alert.getDialogPane().setContent(text);
-        alert.showAndWait()
-            .filter(response -> response == ButtonType.OK)
-            .ifPresent(response -> install());
+        return alert.showAndWait();
+    }
+
+    private void showHarddiskConfirmation() {
+        TextInputDialog alert = new TextInputDialog();
+        String msg = stringBundle.getString("install.warn.harddisk");
+        String answ = stringBundle.getString("install.warn.harddisk.verify");
+        alert.setHeaderText(answ);
+        alert.setTitle(stringBundle.getString("global.warning"));
+        alert.setContentText(MessageFormat.format(msg, answ));
+        alert.showAndWait();
+        if(!alert.getEditor().getText().equals(answ)) {
+            showError(stringBundle.getString("error.mistypedText"));
+            showHarddiskConfirmation();
+        }
     }
 
     private DataPartitionMode getDataPartitionMode() {
