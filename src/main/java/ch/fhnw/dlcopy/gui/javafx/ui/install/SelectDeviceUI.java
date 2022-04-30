@@ -220,6 +220,22 @@ public class SelectDeviceUI extends View {
             pfDataPartitionSecondaryPassword.setDisable(notEnc || noSnd);
             btnDataPartitionShowSecondaryPassword.setDisable(notEnc || noSnd);
         });
+        btnDataPartitionShowPersonalPassword.setOnMousePressed(event -> {
+            pfDataPartitionPersonalPassword.setPromptText(pfDataPartitionPersonalPassword.getText());
+            pfDataPartitionPersonalPassword.setText("");
+        });
+        btnDataPartitionShowPersonalPassword.setOnMouseReleased(event -> {
+            pfDataPartitionPersonalPassword.setText(pfDataPartitionPersonalPassword.getPromptText());
+            pfDataPartitionPersonalPassword.setPromptText("");
+        });
+        btnDataPartitionShowSecondaryPassword.setOnMousePressed(event -> {
+            pfDataPartitionSecondaryPassword.setPromptText(pfDataPartitionSecondaryPassword.getText());
+            pfDataPartitionSecondaryPassword.setText("");
+        });
+        btnDataPartitionShowSecondaryPassword.setOnMouseReleased(event -> {
+            pfDataPartitionSecondaryPassword.setText(pfDataPartitionSecondaryPassword.getPromptText());
+            pfDataPartitionSecondaryPassword.setPromptText("");
+        });
     }
 
     private void install() {
