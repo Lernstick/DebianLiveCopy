@@ -57,6 +57,7 @@ public class SelectDeviceUI extends View {
     @FXML private Button btnInstall;
     @FXML private Button btnDataPartitionShowPersonalPassword;
     @FXML private Button btnDataPartitionShowSecondaryPassword;
+    @FXML private ComboBox cmbDataPartitionFilesystem;
     @FXML private ComboBox cmbDataPartitionMode;
     @FXML private ComboBox cmbExchangePartitionFilesystem;
     @FXML private Label lblRequiredDiskspace;
@@ -152,6 +153,11 @@ public class SelectDeviceUI extends View {
         chbCopyDataPartition.setDisable(runningSystemSource.getDataPartition() == null);
         chbCopyExchangePartition.setDisable(!runningSystemSource.hasExchangePartition());
 
+        ObservableList<String> dpfsList = FXCollections.observableArrayList();
+        dpfsList.addAll(DLCopy.DATA_PARTITION_FS);
+        cmbDataPartitionFilesystem.setItems(dpfsList);
+        cmbDataPartitionFilesystem.getSelectionModel().selectLast();
+
         ObservableList<DataPartitionModeEntry> dpmeList = FXCollections.observableArrayList();
         dpmeList.add(new DataPartitionModeEntry(DataPartitionMode.READ_WRITE, "install.dataPartitionModeRW"));
         dpmeList.add(new DataPartitionModeEntry(DataPartitionMode.READ_ONLY, "install.dataPartitionModeR"));
@@ -159,9 +165,9 @@ public class SelectDeviceUI extends View {
         cmbDataPartitionMode.setItems(dpmeList);
         cmbDataPartitionMode.getSelectionModel().selectFirst();
 
-        ObservableList<String> epmeList = FXCollections.observableArrayList();
-        epmeList.addAll(DLCopy.EXCHANGE_PARTITION_FS);
-        cmbExchangePartitionFilesystem.setItems(epmeList);
+        ObservableList<String> epfsList = FXCollections.observableArrayList();
+        epfsList.addAll(DLCopy.EXCHANGE_PARTITION_FS);
+        cmbExchangePartitionFilesystem.setItems(epfsList);
         cmbExchangePartitionFilesystem.getSelectionModel().selectFirst();
 
         // Install Button should be disabled, till a valid exchangePartition size is choosen.
@@ -249,7 +255,7 @@ public class SelectDeviceUI extends View {
             devices,   // the list of StorageDevices to install
             "Austausch",     // the label of the exchange partition
             cmbExchangePartitionFilesystem.getValue().toString(),    // the file system of the exchange partition
-            "ext4", // the file system of the data partition
+            cmbDataPartitionFilesystem.getValue().toString(), // the file system of the data partition
             new HashMap<String, byte[]>(),  // a global digest cache for speeding up repeated file checks
             // Register the InstallControler as Callback-Class
             installcontroller,    // the DLCopyGUI
