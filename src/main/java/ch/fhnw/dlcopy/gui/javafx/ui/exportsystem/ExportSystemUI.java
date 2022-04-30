@@ -1,7 +1,6 @@
 package ch.fhnw.dlcopy.gui.javafx.ui.exportsystem;
 
 import ch.fhnw.dlcopy.DLCopy;
-import static ch.fhnw.dlcopy.DLCopy.STRINGS;
 import ch.fhnw.dlcopy.DataPartitionMode;
 import ch.fhnw.dlcopy.IsoCreator;
 import ch.fhnw.dlcopy.RunningSystemSource;
@@ -9,7 +8,6 @@ import ch.fhnw.dlcopy.SystemSource;
 import ch.fhnw.dlcopy.gui.javafx.SwitchButton;
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
-import ch.fhnw.dlcopy.gui.javafx.ui.exportdata.LoadUI;
 import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
@@ -269,8 +267,8 @@ public class ExportSystemUI extends View {
 
     private Optional<ButtonType> showConfirm(String message) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(STRINGS.getString("Warning"));
-        alert.setHeaderText(STRINGS.getString("Warning"));
+        alert.setTitle(stringBundle.getString("global.warning"));
+        alert.setHeaderText(stringBundle.getString("global.warning"));
         alert.setContentText(message);
         return alert.showAndWait();
     }
