@@ -75,7 +75,7 @@
             </VBox>
             <VBox HBox.hgrow="NEVER">
                <children>
-                      <Button fx:id="btnFinsh" minHeight="32.0" mnemonicParsing="false" text="%global.finish">
+                      <Button fx:id="btnFinish" minHeight="32.0" mnemonicParsing="false" text="%global.finish">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
