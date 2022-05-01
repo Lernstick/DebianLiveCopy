@@ -14,6 +14,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
@@ -142,18 +143,23 @@ public class ExportDataUI extends View {
     }
 
     private void createDataPartiton() {
-        try {
-            new SquashFSCreator(
-                context,
-                runningSystemSource,
-                tfTargetDirectory.getText(),
-                chbInformationDialog.isSelected(),
-                chbInstallationProgram.isSelected()
-            ).createSquashFS();
-        } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "", ex);
-            showError(ex.getLocalizedMessage());
-        }
+        new Thread(() -> {
+            try {
+                new SquashFSCreator(
+                        context,
+                        runningSystemSource,
+                        tfTargetDirectory.getText(),
+                        chbInformationDialog.isSelected(),
+                        chbInstallationProgram.isSelected()
+                ).createSquashFS();
+            } catch (Exception ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
+                showError(ex.getLocalizedMessage());
+            }
+            Platform.runLater(() -> {
+                context.setScene(new LoadUI());
+            });
+        }).start();
     }
 
     private void showError(String message) {

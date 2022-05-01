@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -48,7 +49,6 @@ public class ExportSystemUI extends View {
     @FXML private CheckBox chbInformationDialog;
     @FXML private CheckBox chbInstallationProgram;
     @FXML private ComboBox<String> cmbDataPartitionMode;
-    @FXML private ImageView imgTargetDirectory;
     @FXML private Label lblFreeSpace;
     @FXML private Label lblFreeSpaceDisplay;
     @FXML private Label lblTargetDirectory;
@@ -227,25 +227,30 @@ public class ExportSystemUI extends View {
     }
 
     private void createIso() {
-        try {
-            if (!isUnmountedPersistenceAvailable()) {
-                btnExport.setDisable(true);
-                return;
+        new Thread(() -> {
+            try {
+                if (!isUnmountedPersistenceAvailable()) {
+                    btnExport.setDisable(true);
+                    return;
+                }
+                new IsoCreator(
+                        context,
+                        runningSystemSource,
+                        false,                               // Only boot medium
+                        tfTargetDirectory.getText(),         // tmpDirectory
+                        getDataPartitionMode(),              // Data Partition mode
+                        chbInformationDialog.isSelected(),   // showNotUsedDialog
+                        chbInstallationProgram.isSelected(), // autoStartInstaller
+                        tfDvdLabel.getText()                 // partition label
+                ).createISO();
+            } catch (Exception ex) {
+                LOGGER.log(Level.SEVERE, "", ex);
+                showError(ex.getLocalizedMessage());
             }
-            new IsoCreator(
-                context,
-                runningSystemSource,
-                false,                               // Only boot medium
-                tfTargetDirectory.getText(),         // tmpDirectory
-                getDataPartitionMode(),              // Data Partition mode
-                chbInformationDialog.isSelected(),   // showNotUsedDialog
-                chbInstallationProgram.isSelected(), // autoStartInstaller
-                tfDvdLabel.getText()                 // partition label
-            ).createISO();
-        } catch (Exception ex) {
-            LOGGER.log(Level.SEVERE, "", ex);
-            showError(ex.getLocalizedMessage());
-        }
+            Platform.runLater(() -> {
+                context.setScene(new LoadUI());
+            });
+        }).start();
     }
 
     private void toggleExpertMode() {
