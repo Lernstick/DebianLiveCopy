@@ -75,6 +75,12 @@ public class SelectDeviceUI extends View {
     @FXML private PasswordField pfDataPartitionPersonalPassword;
     @FXML private PasswordField pfDataPartitionSecondaryPassword;
     @FXML private TextField tfExchangePartitionSize;
+    
+    @FXML private TextField tfPrefixText;
+    @FXML private TextField tfPattern;
+    @FXML private TextField tfSteps;
+
+    
 
     public SelectDeviceUI() {
 
@@ -262,10 +268,10 @@ public class SelectDeviceUI extends View {
             installcontroller,    // the DLCopyGUI
             exchangePartitionSize,  // the size of the exchange partition
             valChb(chbCopyExchangePartition),  // if the exchange partition should be copied
-            "", // the auto numbering pattern
-            1,  // the auto numbering start value
-            1,  // the auto numbering increment
-            1,  // the minimal number of digits to use for auto numbering
+            tfPrefixText.getText(), // the auto numbering pattern
+            getAutoNrStartVal(),  // the auto numbering start value
+            getAutoNrIncrement(),  // the auto numbering increment
+            getAutoNrDigits(),  // the minimal number of digits to use for auto numbering
             valChb(chbDataPartitionPersonalPassword),  // if the data partition should be encrypted with a personal password
             pfDataPartitionPersonalPassword.getText(), // the personal password for data partition encryption
             valChb(chbDataPartitionSecondaryPassword),  // if the data partition should be encrypted with a secondary password
@@ -283,6 +289,25 @@ public class SelectDeviceUI extends View {
             installLock // the lock to aquire before executing in background
         ).execute();
     }
+    
+    public int getAutoNrStartVal(){
+        int result = 1;
+        try{result = Integer.parseInt(tfPattern.getText());} catch(Exception e){;}
+        return result;
+    }
+    
+    public int getAutoNrIncrement(){
+        int result = 1;
+        try{result = Integer.parseInt(tfSteps.getText());} catch(Exception e){;}
+        return result;
+    }
+    
+    public int getAutoNrDigits(){
+        int count = 0, num = getAutoNrStartVal();
+        while (num != 0) { num /= 10; ++count;}
+        return tfPattern.getText().length() - count;
+    }
+    
 
     public void updateInstallSelectionCountAndExchangeInfo() {
         // check all selected storage devices
