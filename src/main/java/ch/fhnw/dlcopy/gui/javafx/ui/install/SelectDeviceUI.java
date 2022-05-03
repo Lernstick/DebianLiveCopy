@@ -27,8 +27,11 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -38,6 +41,7 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -51,6 +55,7 @@ public class SelectDeviceUI extends View {
     private SystemSource runningSystemSource;
     private int exchangePartitionSize = -1;
     private boolean showHarddisks = false;
+    private ObservableList<StorageDevice> selectedStds;
 
     // some locks to synchronize the Installer, Upgrader and Resetter with their
     // corresponding StorageDeviceAdder
@@ -188,7 +193,14 @@ public class SelectDeviceUI extends View {
         chbDataPartitionOverwrite.setDisable(true);
         btnDataPartitionShowPersonalPassword.setDisable(true);
         btnDataPartitionShowSecondaryPassword.setDisable(true);
-    }
+        
+        lvDevices.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
+        lvDevices.getSelectionModel().selectedItemProperty().addListener(
+                (ObservableValue<? extends StorageDevice> ov, StorageDevice old_val, StorageDevice new_val) -> {
+             selectedStds = lvDevices.getSelectionModel().getSelectedItems();
+        });
+        btnInstall.setDisable(false);
+   }
 
     @Override
     protected void setupBindings() {
@@ -256,10 +268,9 @@ public class SelectDeviceUI extends View {
         // Register the selected devices for the installation report
         InstallControler installcontroller = InstallControler.getInstance(context);
         installcontroller.createInstallationList(devices, 1, 1);
-
         new Installer(
             runningSystemSource,    // the system source
-            devices,   // the list of StorageDevices to install
+            selectedStds,   // the list of StorageDevices to install
             "Austausch",     // the label of the exchange partition
             cmbExchangePartitionFilesystem.getValue().toString(),    // the file system of the exchange partition
             cmbDataPartitionFilesystem.getValue().toString(), // the file system of the data partition
