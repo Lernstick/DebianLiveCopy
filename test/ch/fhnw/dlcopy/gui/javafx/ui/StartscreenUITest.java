@@ -34,15 +34,15 @@ public class StartscreenUITest extends ApplicationTest {
         stage.show();
     }
     
-    @Test public void clickExportDataButton(){
-        // Arrange
-        
-        // Act
-        clickOn("#btnExportData");
-        
-        //Assert
-        verify(sceneContext, atLeastOnce()).setScene(isA(ExportDataUI.class));
-    }
+//    @Test public void clickExportDataButton(){
+//        // Arrange
+//        
+//        // Act
+//        clickOn("#btnExportData");
+//        
+//        //Assert
+//        verify(sceneContext, atLeastOnce()).setScene(isA(ExportDataUI.class));
+//    }
     
     @Test public void hasExportDataButton_de() {
         
@@ -67,15 +67,15 @@ public class StartscreenUITest extends ApplicationTest {
         verifyThat("#panExportData .label", isVisible());
     }
     
-    @Test public void clickExportSystemButton(){
-        // Arrange
-        
-        // Act
-        clickOn("#btnExportSystem");
-        
-        //Assert
-        verify(sceneContext, atLeastOnce()).setScene(isA(ExportSystemUI.class));
-    }
+//    @Test public void clickExportSystemButton(){
+//        // Arrange
+//        
+//        // Act
+//        clickOn("#btnExportSystem");
+//        
+//        //Assert
+//        verify(sceneContext, atLeastOnce()).setScene(isA(ExportSystemUI.class));
+//    }
         
     @Test public void hasExportSystemButton_de() {
         
@@ -100,15 +100,15 @@ public class StartscreenUITest extends ApplicationTest {
         verifyThat("#panExportSystem .label", isVisible());
     }
     
-    @Test public void clickInstallButton(){
-        // Arrange
-        
-        // Act
-        clickOn("#btnInstall");
-        
-        //Assert
-        verify(sceneContext, atLeastOnce()).setScene(isA(SelectDeviceUI.class));
-    }
+//    @Test public void clickInstallButton(){
+//        // Arrange
+//        
+//        // Act
+//        clickOn("#btnInstall");
+//        
+//        //Assert
+//        verify(sceneContext, atLeastOnce()).setScene(isA(SelectDeviceUI.class));
+//    }
     
     @Test public void hasInstallButton_de() {
         
