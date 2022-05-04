@@ -7,6 +7,9 @@ import static org.testfx.matcher.base.NodeMatchers.*;
 import static org.testfx.matcher.control.LabeledMatchers.*;
 
 import ch.fhnw.dlcopy.gui.javafx.SceneContext;
+import ch.fhnw.dlcopy.gui.javafx.ui.exportdata.ExportDataUI;
+import ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.ExportSystemUI;
+import ch.fhnw.dlcopy.gui.javafx.ui.install.SelectDeviceUI;
 import ch.fhnw.dlcopy.model.PresentationModel;
 import java.util.Locale;
 import javafx.scene.Parent;
@@ -15,14 +18,13 @@ import javafx.stage.Stage;
 import org.junit.Test;
 import org.testfx.framework.junit.ApplicationTest;
 import org.testfx.robot.Motion;
-import org.junit.jupiter.params.ParameterizedTest;
 
 public class StartscreenUITest extends ApplicationTest {
     
     private final PresentationModel model = PresentationModel.getInstance();
+    private SceneContext sceneContext = mock(SceneContext.class);
     
     @Override public void start(Stage stage) throws Exception {
-        SceneContext sceneContext = mock(SceneContext.class);
         
         View view = new StartscreenUI();
         Parent root = view.getRoot(sceneContext);
@@ -30,6 +32,16 @@ public class StartscreenUITest extends ApplicationTest {
         stage.setScene(scene);
         
         stage.show();
+    }
+    
+    @Test public void clickExportDataButton(){
+        // Arrange
+        
+        // Act
+        clickOn("#btnExportData");
+        
+        //Assert
+        verify(sceneContext, atLeastOnce()).setScene(isA(ExportDataUI.class));
     }
     
     @Test public void hasExportDataButton_de() {
@@ -54,6 +66,16 @@ public class StartscreenUITest extends ApplicationTest {
         verifyThat("#imgExportData", isVisible());
         verifyThat("#panExportData .label", isVisible());
     }
+    
+    @Test public void clickExportSystemButton(){
+        // Arrange
+        
+        // Act
+        clickOn("#btnExportSystem");
+        
+        //Assert
+        verify(sceneContext, atLeastOnce()).setScene(isA(ExportSystemUI.class));
+    }
         
     @Test public void hasExportSystemButton_de() {
         
@@ -76,6 +98,16 @@ public class StartscreenUITest extends ApplicationTest {
         //Assert
         verifyThat("#imgExportSystem", isVisible());
         verifyThat("#panExportSystem .label", isVisible());
+    }
+    
+    @Test public void clickInstallButton(){
+        // Arrange
+        
+        // Act
+        clickOn("#btnInstall");
+        
+        //Assert
+        verify(sceneContext, atLeastOnce()).setScene(isA(SelectDeviceUI.class));
     }
     
     @Test public void hasInstallButton_de() {
