@@ -267,7 +267,7 @@ public class SelectDeviceUI extends View {
     private void install(ObservableList<StorageDevice> devices) {
         // Register the selected devices for the installation report
         InstallControler installcontroller = InstallControler.getInstance(context);
-        installcontroller.createInstallationList(devices, 1, 1);
+        installcontroller.createInstallationList(selectedStds, 1, 1);
         new Installer(
             runningSystemSource,    // the system source
             selectedStds,   // the list of StorageDevices to install
@@ -324,9 +324,8 @@ public class SelectDeviceUI extends View {
         // check all selected storage devices
         long minOverhead = Long.MAX_VALUE;
         boolean exchange = true;
-        ObservableList<StorageDevice> selectedIndices = lvDevices.getSelectionModel().getSelectedItems();
 
-        if (selectedIndices.isEmpty()) {
+        if (selectedStds.isEmpty()) {
             minOverhead = 0;
             exchange = false;
         } else {
@@ -336,7 +335,7 @@ public class SelectDeviceUI extends View {
                 long enlargedSystemSize = DLCopy.getEnlargedSystemSize(
                         runningSystemSource.getSystemSize());
 
-                for (StorageDevice device : selectedIndices) {
+                for (StorageDevice device : selectedStds) {
                     long overhead = device.getSize()
                             - (DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA)
                             - enlargedSystemSize;
