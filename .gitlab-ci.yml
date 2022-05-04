@@ -158,4 +158,9 @@ testfx:
   script:
     - apt-get update
     - apt-get install -y --no-install-recommends junit libmockito-java xauth xvfb
+    # Create files for tricking the Storage media management into thinking to run on a Lerstick instance
+    # See `src/main/java/ch/fhnw/dlcopy/DebianLiveVersion.java` for more infomration
+    - mkdir -pv /run/live/medium
+    - mkdir -pv /usr/lib/syslinux/mbr
+    - touch /usr/lib/syslinux/mbr/mbr.bin
     - xvfb-run ant test
