@@ -208,7 +208,7 @@
                                                                   <VBox>
                                                                      <children>
                                                                         <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.startPattern" />
-                                                                        <TextField fx:id="tfPattern" minHeight="32.0" />
+                                                                        <TextField fx:id="tfExchangePartitionPattern" minHeight="32.0" />
                                                                      </children>
                                                                   </VBox>
                                                                   <VBox>
