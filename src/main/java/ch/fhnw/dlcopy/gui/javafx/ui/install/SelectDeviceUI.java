@@ -213,12 +213,11 @@ public class SelectDeviceUI extends View {
     @Override
     protected void setupEventHandlers() {
         btnInstall.setOnAction(event -> {
-            ObservableList<StorageDevice> devices = lvDevices.getSelectionModel().getSelectedItems();
             try {
-                if (!checkSelection(devices)) {
+                if (!checkSelection(selectedStds)) {
                     return;
                 }
-                install(devices);
+                install(selectedStds);
             } catch (DBusException|IOException e) {
                 LOGGER.log(Level.WARNING, e.getLocalizedMessage());
             }
