@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.String?>
+<?import java.net.URL?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
+
+<!--<?import ch.fhnw.dlcopy.gui.javafx.SwitchButton?>-->
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+    <columnConstraints>
+        <ColumnConstraints />
+        <ColumnConstraints hgrow="NEVER" />
+        <ColumnConstraints hgrow="SOMETIMES" percentWidth="1.0" />
+      <ColumnConstraints hgrow="ALWAYS" />
+    </columnConstraints>
+    <rowConstraints>
+        <RowConstraints vgrow="ALWAYS" />
+        <RowConstraints vgrow="SOMETIMES" />
+        <RowConstraints vgrow="SOMETIMES" />
+    </rowConstraints>
+    <children>
+      <VBox fillWidth="false" spacing="5.0" GridPane.columnIndex="1">
+         <children>
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.exportData" />
+            <Separator />
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="%global.selection">
+               <styleClass>
+                  <String fx:value="labelcenter" />
+                  <String fx:value="labelselected" />
+               </styleClass>
+                </Label>
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.export" />
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.finish" />
+         </children>
+         <padding>
+            <Insets left="5.0" right="5.0" top="10.0" />
+         </padding>
+      </VBox>
+        <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="2" />
+        <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+        <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+        <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="3" GridPane.rowIndex="1" />
+      <ScrollPane GridPane.columnIndex="3">
+         <content>
+            <TabPane tabClosingPolicy="UNAVAILABLE">
+              <tabs>
+                <Tab text="%global.selection">
+                     <content>
+                        <VBox>
+                           <children>
+                              <HBox>
+                                 <children>
+                                    <RadioButton fx:id="rdbStoragefromList" mnemonicParsing="false" text="%update.rdbStorageMediafromList" />
+                                    <CheckBox fx:id="chbShowHarddisk" mnemonicParsing="false" text="%global.showHarddisk" />
+                                 </children>
+                              </HBox>
+                              <RadioButton fx:id="rdbAutomaticUpgrade" mnemonicParsing="false" text="%update.rdbAutomaticUpgrade" />
+                           </children>
+                        </VBox>
+                     </content>
+                </Tab>
+                  <Tab text="%global.options">
+                     <content>
+                        <VBox minHeight="32.0">
+                           <children>
+                              <HBox minHeight="32.0">
+                                 <children>
+                                    <VBox minHeight="32.0">
+                                       <children>
+                                          <CheckBox fx:id="chbSystemPartition" minHeight="32.0" mnemonicParsing="false" text="%update.chbSystemPartition" />
+                                       </children>
+                                    </VBox>
+                                    <VBox minHeight="32.0">
+                                       <children>
+                                          <CheckBox fx:id="chbResetDataPartition" minHeight="32.0" mnemonicParsing="false" text="%update.chbResetDataPartition" />
+                                          <CheckBox fx:id="chbKeepPrinterSettings" minHeight="32.0" mnemonicParsing="false" text="%update.chbKeepPrinterSettings" />
+                                          <CheckBox fx:id="chbKeepNetworkSettings" minHeight="32.0" mnemonicParsing="false" text="%update.chbKeepNetworkSettings" />
+                                          <CheckBox fx:id="chbKeepFirewallSettings" minHeight="32.0" mnemonicParsing="false" text="%update.chbKeepFirewallSettings" />
+                                          <CheckBox fx:id="chbKeepUserSettings" minHeight="32.0" mnemonicParsing="false" text="%update.chbKeepUserSettings" />
+                                       </children>
+                                    </VBox>
+                                 </children>
+                              </HBox>
+                              <CheckBox fx:id="chbReactivateWelcome" minHeight="32.0" mnemonicParsing="false" text="%update.chbReactivateWelcome" />
+                              <CheckBox fx:id="chbRemoveHiddenFiles" minHeight="32.0" mnemonicParsing="false" text="%update.chbRemoveHiddenFiles" />
+                              <CheckBox fx:id="chbAutomaticBackup" minHeight="32.0" mnemonicParsing="false" text="%update.chbAutomaticBackup" />
+                              <VBox minHeight="32.0">
+                                 <children>
+                                    <HBox minHeight="32.0">
+                                       <children>
+                                          <Label minHeight="32.0" text="%update.lblAutomaticBackup" />
+                                          <TextField fx:id="tfAutomaticBackup" minHeight="32.0" />
+                                       </children>
+                                    </HBox>
+                                    <CheckBox fx:id="chbAutomaticBackupRemove" minHeight="32.0" mnemonicParsing="false" text="%update.chbAutomaticBackupRemove" />
+                                 </children>
+                              </VBox>
+                              <VBox minHeight="32.0">
+                                 <children>
+                                    <Label minHeight="32.0" text="%update.lblRepartitionExchangeOptions" />
+                                    <RadioButton fx:id="rdbOriginalExchange" minHeight="32.0" mnemonicParsing="false" text="%update.rdbOriginalExchange" />
+                                    <RadioButton fx:id="rdbRemoveExchange" minHeight="32.0" mnemonicParsing="false" text="%update.rdbRemoveExchange" />
+                                    <HBox>
+                                       <children>
+                                          <RadioButton fx:id="rdbResizeExchange" minHeight="32.0" mnemonicParsing="false" text="%update.rdbResizeExchange" />
+                                          <TextField fx:id="tfResizeExchange" minHeight="32.0" />
+                                          <Label minHeight="32.0" text="%update.lblResizeExchange" />
+                                       </children>
+                                    </HBox>
+                                 </children>
+                              </VBox>
+                           </children>
+                        </VBox>
+                     </content>
+                  </Tab>
+                  <Tab text="%update.taboverwrite">
+                     <content>
+                        <HBox>
+                           <children>
+                              <VBox>
+                                 <children>
+                                    <Button minHeight="35.0" minWidth="35.0" mnemonicParsing="false" text="UP" />
+                                    <Button minHeight="35.0" minWidth="35.0" mnemonicParsing="false" text="DW" />
+                                    <Button minHeight="35.0" minWidth="35.0" mnemonicParsing="false" />
+                                    <Button minHeight="35.0" minWidth="35.0" mnemonicParsing="false" />
+                                 </children>
+                              </VBox>
+                              <ScrollPane HBox.hgrow="ALWAYS">
+                                <content>
+                                  <AnchorPane maxWidth="1.7976931348623157E308">
+                                       <children>
+                                          <ListView fx:id="lvDocuments" />
+                                       </children>
+                                    </AnchorPane>
+                                </content>
+                              </ScrollPane>
+                              <VBox>
+                                 <children>
+                                    <Button minHeight="35.0" minWidth="35.0" mnemonicParsing="false" />
+                                    <Button minHeight="35.0" minWidth="35.0" mnemonicParsing="false" />
+                                    <Button minHeight="35.0" minWidth="35.0" mnemonicParsing="false" />
+                                    <Button minHeight="35.0" minWidth="35.0" mnemonicParsing="false" />
+                                    <Button minHeight="35.0" minWidth="35.0" mnemonicParsing="false" />
+                                 </children>
+                              </VBox>
+                           </children></HBox>
+                     </content>
+                  </Tab>
+              </tabs>
+            </TabPane>
+         </content>
+      </ScrollPane>
+      <HBox GridPane.columnIndex="3" GridPane.rowIndex="2">
+         <children>
+            <VBox HBox.hgrow="ALWAYS">
+               <children>
+                      <Label fx:id="lblInfo" text="Info" textAlignment="CENTER" />
+               </children>
+            </VBox>
+            <VBox HBox.hgrow="NEVER">
+               <children>
+                      <Button fx:id="btnBack" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="%global.previous" />
+               </children>
+            </VBox>
+            <VBox HBox.hgrow="NEVER">
+               <children>
+                      <Button fx:id="btnExport" mnemonicParsing="false" text="%global.export">
+                     <VBox.margin>
+                        <Insets right="20.0" />
+                     </VBox.margin>
+                  </Button>
+               </children>
+               <opaqueInsets>
+                  <Insets />
+               </opaqueInsets>
+               <HBox.margin>
+                  <Insets left="10.0" />
+               </HBox.margin>
+            </VBox>
+         </children>
+         <padding>
+            <Insets bottom="30.0" top="30.0" />
+         </padding>
+      </HBox>
+    </children>
+   <stylesheets>
+      <URL value="@css/global.css" />
+      <URL value="@../css/global.css" />
+   </stylesheets>
+</GridPane>
