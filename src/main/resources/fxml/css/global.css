@@ -253,6 +253,9 @@
 .scroll-bar:vertical{
     -fx-background-color:transparent;
 }
+.scroll-bar:horizontal{
+    -fx-background-color:transparent;
+}
 
 .scroll-bar .thumb{
     -fx-background-color: #8c8c8b

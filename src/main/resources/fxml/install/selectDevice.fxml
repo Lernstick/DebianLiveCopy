@@ -22,7 +22,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints />
         <ColumnConstraints hgrow="NEVER" />
@@ -348,12 +348,16 @@
       </ScrollPane>
       <HBox GridPane.columnIndex="3" GridPane.rowIndex="3">
          <children>
-            <VBox HBox.hgrow="ALWAYS">
-               <children>
-                      <Label fx:id="lblInfo" text="Info" textAlignment="CENTER" />
-               </children>
-            </VBox>
-            <ButtonBar buttonMinWidth="0.0">
+            <ScrollPane fitToHeight="true" maxHeight="1.7976931348623157E308">
+               <content>
+                  <VBox fillWidth="false" maxHeight="1.7976931348623157E308">
+                     <children>
+                        <Label fx:id="lblInfo" maxHeight="1.7976931348623157E308" textAlignment="CENTER" VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
+               </content>
+            </ScrollPane>
+            <ButtonBar HBox.hgrow="ALWAYS">
               <buttons>
                       <Button fx:id="btnBack" minHeight="32.0" mnemonicParsing="false" text="%global.previous" />
                       <Button fx:id="btnInstall" minHeight="32.0" mnemonicParsing="false" text="%global.install" />

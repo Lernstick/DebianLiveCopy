@@ -7,6 +7,7 @@
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.ColumnConstraints?>
@@ -15,9 +16,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<?import ch.fhnw.dlcopy.gui.javafx.SwitchButton?>
+<!--<?import ch.fhnw.dlcopy.gui.javafx.SwitchButton?>-->
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints hgrow="NEVER" />
         <ColumnConstraints hgrow="SOMETIMES" percentWidth="1.0" />
@@ -72,7 +73,7 @@
                       <Label fx:id="lblWriteableDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%global.notApplicable" />
                       <Label fx:id="lblFreeSpaceDisplay" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%global.notApplicable" />
                   <ComboBox fx:id="cmbDataPartitionMode" maxHeight="0.0" minHeight="32.0" />
-                      <SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" textOn="%global.on" textOff="%global.off" />
+                      <!--<SwitchButton fx:id="switchBtn" mnemonicParsing="false" styleClass="switchButton" textOn="%global.on" textOff="%global.off" />-->
                       <CheckBox fx:id="chbInformationDialog" minHeight="32.0" mnemonicParsing="false" text="%export.chbInformationDialog" visible="false" />
                       <CheckBox fx:id="chbInstallationProgram" minHeight="32.0" mnemonicParsing="false" text="%export.chbInstallationProgram" visible="false" />
                </children>
@@ -87,12 +88,16 @@
       </HBox>
       <HBox GridPane.columnIndex="2" GridPane.rowIndex="2">
          <children>
-            <VBox HBox.hgrow="ALWAYS">
-               <children>
-                      <Label fx:id="lblInfo" textAlignment="CENTER" />
-               </children>
-            </VBox>
-            <ButtonBar buttonMinWidth="0.0">
+            <ScrollPane fitToHeight="true" maxHeight="1.7976931348623157E308">
+               <content>
+                  <VBox fillWidth="false" maxHeight="1.7976931348623157E308">
+                     <children>
+                        <Label fx:id="lblInfo" maxHeight="1.7976931348623157E308" textAlignment="CENTER" VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
+               </content>
+            </ScrollPane>
+            <ButtonBar HBox.hgrow="ALWAYS">
               <buttons>
                       <Button fx:id="btnBack" minHeight="32.0" mnemonicParsing="false" text="%global.previous" />
                       <Button fx:id="btnExport" minHeight="32.0" mnemonicParsing="false" text="%global.export" />
