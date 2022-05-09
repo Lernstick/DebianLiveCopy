@@ -82,7 +82,7 @@ public class SelectDeviceUI extends View {
     @FXML private TextField tfExchangePartitionSize;
     
     @FXML private TextField tfPrefixText;
-    @FXML private TextField tfPattern;
+    @FXML private TextField tfStartPattern;
     @FXML private TextField tfSteps;
 
     
@@ -302,7 +302,7 @@ public class SelectDeviceUI extends View {
     
     public int getAutoNrStartVal(){
         int result = 1;
-        try{result = Integer.parseInt(tfPattern.getText());} catch(Exception e){;}
+        try{result = Integer.parseInt(tfStartPattern.getText());} catch(Exception e){;}
         return result;
     }
     
@@ -315,7 +315,7 @@ public class SelectDeviceUI extends View {
     public int getAutoNrDigits(){
         int count = 0, num = getAutoNrStartVal();
         while (num != 0) { num /= 10; ++count;}
-        return tfPattern.getText().length() - count;
+        return tfStartPattern.getText().length() - count;
     }
     
 
