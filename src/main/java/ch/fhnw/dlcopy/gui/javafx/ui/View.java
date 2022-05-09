@@ -62,7 +62,7 @@ public abstract class View {
                 lblInfo.setText(stringBundle.getString("global.info") + tooltip);
             } else {
                 // tfTarget is not focused anymore
-                lblInfo.setText(defaultInfo);
+                // lblInfo.setText(defaultInfo);
             }
         });
     }
