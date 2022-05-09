@@ -70,19 +70,4 @@ public class StorageMediaManagement
     public static void launchFX(String[] args) {
         launch(args);
     }
-
-    @Override
-    public void showIsoProgressMessage(String message) {
-        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.LoadUI(message));
-    }
-
-    @Override
-    public void showIsoProgressMessage(String message, int value) {
-        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.LoadUI(message, value));
-    }
-
-    @Override
-    public void isoCreationFinished(String path, boolean success) {
-        setScene(new ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.InfoUI(path, success));
-    }
 }

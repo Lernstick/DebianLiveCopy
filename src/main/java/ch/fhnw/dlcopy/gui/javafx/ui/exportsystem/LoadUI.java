@@ -37,8 +37,12 @@ public class LoadUI extends View {
         if (tmpMessage != null) {
             lblStatusInfo.setText(tmpMessage);
         }
-        double percent = Math.max(tmpProgress, 100) / 100d;
+        double percent = 0;
+        if (tmpProgress != 0) {
+            percent = Math.min(tmpProgress, 100) / 100d;
+        }
         pbStatus.setProgress(percent);
+        btnNext.setDisable(true);
     }
 
     @Override

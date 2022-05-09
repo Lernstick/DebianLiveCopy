@@ -2,7 +2,6 @@ package ch.fhnw.dlcopy.gui.javafx.ui.exportsystem;
 
 import ch.fhnw.dlcopy.DLCopy;
 import ch.fhnw.dlcopy.DataPartitionMode;
-import ch.fhnw.dlcopy.IsoCreator;
 import ch.fhnw.dlcopy.RunningSystemSource;
 import ch.fhnw.dlcopy.SystemSource;
 import ch.fhnw.dlcopy.gui.javafx.SwitchButton;
@@ -18,7 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -29,7 +28,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Tooltip;
-import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import org.freedesktop.dbus.exceptions.DBusException;
 
@@ -77,7 +75,7 @@ public class ExportSystemUI extends View {
         cmbDataPartitionMode.getItems().addAll(option_ReadWrite, option_ReadOnly, option_NotUsed);
         cmbDataPartitionMode.setValue(option_ReadWrite);
         btnExport.setDisable(true);
-        
+
         addToolTip(tfTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
         addToolTip(chbInformationDialog, stringBundle.getString("export.tooltip.informationDialog"));
         addToolTip(chbInstallationProgram, stringBundle.getString("export.tooltip.installationProgram"));
@@ -104,7 +102,7 @@ public class ExportSystemUI extends View {
         tfTargetDirectory.setOnMouseClicked(event -> {
             selectDirectory();
         });
-        
+
         tfTargetDirectory.setOnAction(event -> {
             selectDirectory();
         });
@@ -226,30 +224,28 @@ public class ExportSystemUI extends View {
     }
 
     private void createIso() {
-        new Thread(() -> {
-            try {
-                if (!isUnmountedPersistenceAvailable()) {
-                    btnExport.setDisable(true);
-                    return;
-                }
-                new IsoCreator(
-                        context,
-                        runningSystemSource,
-                        false,                               // Only boot medium
-                        tfTargetDirectory.getText(),         // tmpDirectory
-                        getDataPartitionMode(),              // Data Partition mode
-                        chbInformationDialog.isSelected(),   // showNotUsedDialog
-                        chbInstallationProgram.isSelected(), // autoStartInstaller
-                        tfDvdLabel.getText()                 // partition label
-                ).createISO();
-            } catch (Exception ex) {
-                LOGGER.log(Level.SEVERE, "", ex);
-                showError(ex.getLocalizedMessage());
+        try {
+            if (!isUnmountedPersistenceAvailable()) {
+                btnExport.setDisable(true);
+                return;
             }
-            Platform.runLater(() -> {
-                context.setScene(new LoadUI());
-            });
-        }).start();
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+            showError(ex.getLocalizedMessage());
+            return;
+        }
+        Task exporter = new ExportSystemTask(
+            ExportControler.getInstance(context),
+            runningSystemSource,
+            false,                               // Only boot medium
+            tfTargetDirectory.getText(),         // tmpDirectory
+            getDataPartitionMode(),              // Data Partition mode
+            chbInformationDialog.isSelected(),   // showNotUsedDialog
+            chbInstallationProgram.isSelected(), // autoStartInstaller
+            tfDvdLabel.getText()                 // partition label
+        );
+        new Thread(exporter).start();
+        context.setScene(new LoadUI());
     }
 
     private void toggleExpertMode() {
