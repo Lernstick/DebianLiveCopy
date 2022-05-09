@@ -1,7 +1,6 @@
 package ch.fhnw.dlcopy.gui.javafx.ui.exportdata;
 
 import ch.fhnw.dlcopy.RunningSystemSource;
-import ch.fhnw.dlcopy.SquashFSCreator;
 import ch.fhnw.dlcopy.SystemSource;
 import ch.fhnw.dlcopy.gui.javafx.SwitchButton;
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
@@ -14,12 +13,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
+import javafx.concurrent.Task;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
-import javafx.scene.control.Alert;
-import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Control;
@@ -144,31 +141,15 @@ public class ExportDataUI extends View {
     }
 
     private void createDataPartiton() {
-        new Thread(() -> {
-            try {
-                new SquashFSCreator(
-                        context,
-                        runningSystemSource,
-                        tfTargetDirectory.getText(),
-                        chbInformationDialog.isSelected(),
-                        chbInstallationProgram.isSelected()
-                ).createSquashFS();
-            } catch (Exception ex) {
-                LOGGER.log(Level.SEVERE, "", ex);
-                showError(ex.getLocalizedMessage());
-            }
-            Platform.runLater(() -> {
-                context.setScene(new LoadUI());
-            });
-        }).start();
-    }
-
-    private void showError(String message) {
-        Alert alert = new Alert(AlertType.ERROR);
-        alert.setTitle(stringBundle.getString("error.error"));
-        alert.setHeaderText(stringBundle.getString("error.error"));
-        alert.setContentText(message);
-        alert.showAndWait();
+        Task exporter = new ExportDataTask(
+            ExportControler.getInstance(context),
+            runningSystemSource,
+            tfTargetDirectory.getText(),
+            chbInformationDialog.isSelected(),
+            chbInstallationProgram.isSelected()
+        );
+        new Thread(exporter).start();
+        context.setScene(new LoadUI());
     }
 
     private void toggleExpertMode() {
