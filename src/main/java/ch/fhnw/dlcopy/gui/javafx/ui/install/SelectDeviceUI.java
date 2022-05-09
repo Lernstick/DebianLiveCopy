@@ -44,6 +44,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.Tooltip;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 public class SelectDeviceUI extends View {
@@ -155,13 +156,13 @@ public class SelectDeviceUI extends View {
                 stringBundle.getString("install.select_install_target_storage_media"),
                 sizeString));
 
-        setTooltip(chbCopyExchangePartition, stringBundle.getString("install.tooltip.copyExchangePartition"));
-        setTooltip(cmbDataPartitionMode, stringBundle.getString("global.tooltip.dataPartitionMode"));
-        setTooltip(lblRequiredDiskspace, stringBundle.getString("install.tooltip.requiredDiskSpace"));
-        setTooltip(chbCopyDataPartition, stringBundle.getString("install.tooltip.copyDataPartition"));
-        setTooltip(chbDataPartitionPersonalPassword, stringBundle.getString("install.tooltip.encryption"));
-        setTooltip(chbDataPartitionOverwrite, stringBundle.getString("install.tooltip.randomFill"));
-        setTooltip(chbDataPartitionSecondaryPassword, stringBundle.getString("install.tooltip.secondaryPassword"));
+        chbCopyExchangePartition.setTooltip(new Tooltip(stringBundle.getString("install.tooltip.copyExchangePartition")));
+        cmbDataPartitionMode.setTooltip(new Tooltip(stringBundle.getString("global.tooltip.dataPartitionMode")));
+        lblRequiredDiskspace.setTooltip(new Tooltip(stringBundle.getString("install.tooltip.requiredDiskSpace")));
+        chbCopyDataPartition.setTooltip(new Tooltip(stringBundle.getString("install.tooltip.copyDataPartition")));
+        chbDataPartitionPersonalPassword.setTooltip(new Tooltip(stringBundle.getString("install.tooltip.encryption")));
+        chbDataPartitionOverwrite.setTooltip(new Tooltip(stringBundle.getString("install.tooltip.randomFill")));
+        chbDataPartitionSecondaryPassword.setTooltip(new Tooltip(stringBundle.getString("install.tooltip.secondaryPassword")));
 
         chbCopyDataPartition.setDisable(runningSystemSource.getDataPartition() == null);
         chbCopyExchangePartition.setDisable(!runningSystemSource.hasExchangePartition());
@@ -517,7 +518,7 @@ public class SelectDeviceUI extends View {
             String message = stringBundle.getString("error.noDataPartition");
             LOGGER.log(Level.WARNING, message);
             showError(message);
-            printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.noDataPartition"));
+            //printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.noDataPartition"));
             return false;
         }
 

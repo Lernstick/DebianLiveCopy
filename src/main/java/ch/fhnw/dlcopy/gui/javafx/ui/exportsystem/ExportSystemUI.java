@@ -28,6 +28,7 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.scene.image.ImageView;
 import javafx.stage.DirectoryChooser;
 import org.freedesktop.dbus.exceptions.DBusException;
@@ -77,18 +78,18 @@ public class ExportSystemUI extends View {
         cmbDataPartitionMode.setValue(option_ReadWrite);
         btnExport.setDisable(true);
         
-        setTooltip(tfTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
-        setTooltip(chbInformationDialog, stringBundle.getString("export.tooltip.informationDialog"));
-        setTooltip(chbInstallationProgram, stringBundle.getString("export.tooltip.installationProgram"));
-        setTooltip(cmbDataPartitionMode, stringBundle.getString("global.tooltip.dataPartitionMode"));
-        setTooltip(lblFreeSpace, stringBundle.getString("export.tooltip.freeSpace"));
-        setTooltip(lblTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
-        setTooltip(lblFreeSpaceDisplay, stringBundle.getString("export.tooltip.freeSpace"));
-        setTooltip(lblWriteable, stringBundle.getString("export.tooltip.writeable"));
-        setTooltip(lblWriteableDisplay, stringBundle.getString("export.tooltip.writeable"));
-        setTooltip(switchBtn, stringBundle.getString("global.tooltip.expertMode"));
-        setTooltip(tfDvdLabel, stringBundle.getString("export.tooltip.dvdLabel"));
-        setTooltip(tfTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
+        tfTargetDirectory.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.targetDirectory")));
+        chbInformationDialog.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.informationDialog")));
+        chbInstallationProgram.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.installationProgram")));
+        cmbDataPartitionMode.setTooltip(new Tooltip("global.tooltip.dataPartitionMode"));
+        lblFreeSpace.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.freeSpace")));
+        lblTargetDirectory.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.targetDirectory")));
+        lblFreeSpaceDisplay.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.freeSpace")));
+        lblWriteable.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.writeable")));
+        lblWriteableDisplay.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.writeable")));
+        switchBtn.setTooltip(new Tooltip(stringBundle.getString("global.tooltip.expertMode")));
+        tfDvdLabel.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.dvdLabel")));
+        tfTargetDirectory.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.targetDirectory")));
     }
 
     @Override
@@ -164,7 +165,7 @@ public class ExportSystemUI extends View {
                 lblWriteableDisplay.getStyleClass().clear();
                 lblWriteableDisplay.getStyleClass().add("target-ro");
                 btnExport.setDisable(true);
-                printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.notWriteable"));
+                //printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.notWriteable"));
             }
         } else {
             lblWriteableDisplay.setText(
@@ -172,7 +173,7 @@ public class ExportSystemUI extends View {
             lblWriteableDisplay.getStyleClass().clear();
             lblWriteableDisplay.getStyleClass().add("target-na");
             btnExport.setDisable(true);
-            printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.directoryDoesNotExist"));
+            //printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.directoryDoesNotExist"));
         }
     }
 
@@ -188,7 +189,7 @@ public class ExportSystemUI extends View {
             String message = stringBundle.getString("error.noDataPartition");
             LOGGER.log(Level.WARNING, message);
             showError(message);
-            printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.noDataPartition"));
+            //printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.noDataPartition"));
             return false;
         }
 

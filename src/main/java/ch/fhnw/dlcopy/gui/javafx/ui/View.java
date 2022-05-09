@@ -5,11 +5,13 @@ import ch.fhnw.dlcopy.model.PresentationModel;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
+import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.control.Label;
+import javafx.util.Duration;
 
 public abstract class View {
 
@@ -29,7 +31,6 @@ public abstract class View {
     
     @FXML
     public final void initialize(){
-        printInfo("");
         initSelf();
         initControls();
         layoutControls();
@@ -49,34 +50,6 @@ public abstract class View {
     protected void setupEventHandlers(){}
 
     protected void setupValueChangedListeners(){}
-    
-    /**
-     * Sets a tooltip, witch is shown on the bottom of the view, when the node is hovered
-     * @param node The node witch has to be hovered for showing the tooltip
-     * @param tooltip The tooltip to be shown
-     */
-    protected final void setTooltip(Node node, String tooltip){
-        node.hoverProperty().addListener((value, hadFocus, hasFocus) -> {
-            if (hasFocus) {
-                // tfTarget is now focused
-                lblInfo.setText(stringBundle.getString("global.info") + tooltip);
-            } else {
-                // tfTarget is not focused anymore
-                // lblInfo.setText(defaultInfo);
-            }
-        });
-    }
-    
-    /**
-     * Prints the given information on the bottem of the view
-     * @param info The information to be printed
-     */
-    protected final void printInfo(String info){
-        if (lblInfo != null){
-            defaultInfo = info;
-            lblInfo.setText(info);
-        }
-    }
   
     /**
     * Returns the root parent. This parent can be displayed in a FX-scene

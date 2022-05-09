@@ -22,8 +22,10 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.control.Tooltip;
 import javafx.stage.DirectoryChooser;
 import org.freedesktop.dbus.exceptions.DBusException;
 
@@ -63,17 +65,17 @@ public class ExportDataUI extends View {
     protected void initControls() {
         btnExport.setDisable(true);
         
-        setTooltip(tfTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
-        setTooltip(chbInformationDialog, stringBundle.getString("export.tooltip.informationDialog"));
-        setTooltip(chbInstallationProgram, stringBundle.getString("export.tooltip.installationProgram"));
-        setTooltip(lblFreeSpace, stringBundle.getString("export.tooltip.freeSpace"));
-        setTooltip(lblTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
-        setTooltip(lblFreeSpaceDisplay, stringBundle.getString("export.tooltip.freeSpace"));
-        setTooltip(lblWriteable, stringBundle.getString("export.tooltip.writeable"));
-        setTooltip(lblWriteableDisplay, stringBundle.getString("export.tooltip.writeable"));
-        setTooltip(switchBtn, stringBundle.getString("global.tooltip.expertMode"));
-        setTooltip(tfTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
+        tfTargetDirectory.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.targetDirectory")));
+        chbInformationDialog.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.informationDialog")));
+        chbInstallationProgram.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.installationProgram")));
+        lblFreeSpace.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.freeSpace")));
+        lblTargetDirectory.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.targetDirectory")));
+        lblFreeSpaceDisplay.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.freeSpace")));
+        lblWriteable.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.writeable")));
+        lblWriteableDisplay.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.writeable")));
+        switchBtn.setTooltip(new Tooltip(stringBundle.getString("global.tooltip.expertMode")));
     }
+    
 
     @Override
     protected void setupEventHandlers() {
@@ -129,7 +131,7 @@ public class ExportDataUI extends View {
                 lblWriteableDisplay.getStyleClass().clear();
                 lblWriteableDisplay.getStyleClass().add("target-ro");
                 btnExport.setDisable(true);
-                printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.notWriteable"));
+                //printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.notWriteable"));
             }
         } else {
             lblWriteableDisplay.setText(
@@ -137,7 +139,7 @@ public class ExportDataUI extends View {
             lblWriteableDisplay.getStyleClass().clear();
             lblWriteableDisplay.getStyleClass().add("target-na");
             btnExport.setDisable(true);
-            printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.directoryDoesNotExist"));
+            //printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.directoryDoesNotExist"));
         }
     }
 
