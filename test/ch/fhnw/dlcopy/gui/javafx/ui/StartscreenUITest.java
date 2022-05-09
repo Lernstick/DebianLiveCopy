@@ -141,7 +141,7 @@ public class StartscreenUITest extends ApplicationTest {
         // Act
         
         //Assert
-        verifyThat("#btnReset", hasText("Zurücksetzten"));
+        verifyThat("#btnReset", hasText("Zurücksetzen"));
     }
     
     @Test public void hoverResetButton() {

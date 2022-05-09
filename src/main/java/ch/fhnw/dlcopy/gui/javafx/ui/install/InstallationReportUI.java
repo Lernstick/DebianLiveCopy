@@ -55,7 +55,7 @@ public class InstallationReportUI extends View{
      * It has to be called manually!
      */
     @Override
-    public void deinitialize() {
+    public void deinitialize_override() {
         tableRefresheTimer.cancel();
     }
 
