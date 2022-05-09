@@ -4,6 +4,7 @@
 <?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.ListView?>
@@ -127,11 +128,14 @@
                               <VBox minHeight="32.0">
                                  <children>
                                     <Label minHeight="32.0" text="%update.lblRepartitionExchangeOptions" />
-                                    <RadioButton fx:id="rdbOriginalExchange" minHeight="32.0" mnemonicParsing="false" text="%update.rdbOriginalExchange" />
-                                    <RadioButton fx:id="rdbRemoveExchange" minHeight="32.0" mnemonicParsing="false" text="%update.rdbRemoveExchange" />
+                                    <RadioButton fx:id="rdbOriginalExchange" minHeight="32.0" mnemonicParsing="false" selected="true" text="%update.rdbOriginalExchange">
+                                       <toggleGroup>
+                                          <ToggleGroup fx:id="tgModeRepartition" />
+                                       </toggleGroup></RadioButton>
+                                    <RadioButton fx:id="rdbRemoveExchange" minHeight="32.0" mnemonicParsing="false" text="%update.rdbRemoveExchange" toggleGroup="$tgModeRepartition" />
                                     <HBox spacing="20.0">
                                        <children>
-                                          <RadioButton fx:id="rdbResizeExchange" minHeight="32.0" mnemonicParsing="false" text="%update.rdbResizeExchange" />
+                                          <RadioButton fx:id="rdbResizeExchange" minHeight="32.0" mnemonicParsing="false" text="%update.rdbResizeExchange" toggleGroup="$tgModeRepartition" />
                                           <TextField fx:id="tfResizeExchange" minHeight="32.0" />
                                           <Label minHeight="32.0" text="%update.lblResizeExchange" />
                                        </children>
@@ -159,7 +163,7 @@
                                              </image>
                                           </ImageView>
                                        </graphic></Button>
-                                    <Button maxWidth="35.0" minHeight="35.0" minWidth="35.0" mnemonicParsing="false">
+                                    <Button disable="true" maxWidth="35.0" minHeight="35.0" minWidth="35.0" mnemonicParsing="false">
                                        <graphic>
                                           <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
@@ -167,7 +171,7 @@
                                              </image>
                                           </ImageView>
                                        </graphic></Button>
-                                    <Button maxWidth="35.0" minHeight="35.0" minWidth="35.0" mnemonicParsing="false">
+                                    <Button disable="true" maxWidth="35.0" minHeight="35.0" minWidth="35.0" mnemonicParsing="false">
                                        <graphic>
                                           <ImageView fitHeight="20.0" fitWidth="20.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
@@ -203,7 +207,7 @@
                                              </image>
                                           </ImageView>
                                        </graphic></Button>
-                                    <Button maxWidth="35.0" minHeight="35.0" minWidth="35.0" mnemonicParsing="false">
+                                    <Button disable="true" maxWidth="35.0" minHeight="35.0" minWidth="35.0" mnemonicParsing="false">
                                        <graphic>
                                           <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
@@ -211,7 +215,7 @@
                                              </image>
                                           </ImageView>
                                        </graphic></Button>
-                                    <Button maxWidth="35.0" minHeight="35.0" minWidth="35.0" mnemonicParsing="false">
+                                    <Button disable="true" maxWidth="35.0" minHeight="35.0" minWidth="35.0" mnemonicParsing="false">
                                        <graphic>
                                           <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
@@ -260,29 +264,15 @@
                       <Label fx:id="lblInfo" text="Info" textAlignment="CENTER" />
                </children>
             </VBox>
-            <VBox HBox.hgrow="NEVER">
-               <children>
+            <ButtonBar buttonMinWidth="0.0">
+               <buttons>
                       <Button fx:id="btnBack" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="%global.previous" />
-               </children>
-            </VBox>
-            <VBox HBox.hgrow="NEVER">
-               <children>
-                      <Button fx:id="btnExport" disable="true" mnemonicParsing="false" text="%global.export">
-                     <VBox.margin>
-                        <Insets right="20.0" />
-                     </VBox.margin>
-                  </Button>
-               </children>
-               <opaqueInsets>
-                  <Insets />
-               </opaqueInsets>
-               <HBox.margin>
-                  <Insets left="10.0" />
-               </HBox.margin>
-            </VBox>
+                      <Button fx:id="btnExport" disable="true" mnemonicParsing="false" text="%global.next" />
+               </buttons>
+            </ButtonBar>
          </children>
          <padding>
-            <Insets bottom="30.0" top="30.0" />
+            <Insets bottom="30.0" left="20.0" right="20.0" top="30.0" />
          </padding>
       </HBox>
     </children>
