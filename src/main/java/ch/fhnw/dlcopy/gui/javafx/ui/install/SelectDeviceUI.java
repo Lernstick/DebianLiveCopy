@@ -42,11 +42,15 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.HBox;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 public class SelectDeviceUI extends View {
@@ -86,15 +90,21 @@ public class SelectDeviceUI extends View {
     @FXML private CheckBox chbNetworkSettings;
     @FXML private CheckBox chbPrinterSettings;
     @FXML private CheckBox chbFirewallSettings;
+    @FXML private HBox hbDevices;
+    @FXML private HBox hbTarget;
     @FXML private PasswordField pfDataPartitionPersonalPassword;
     @FXML private PasswordField pfDataPartitionSecondaryPassword;
     @FXML private TextField tfExchangePartitionSize;
     @FXML private GridPane gpFilesystem;
+    @FXML private RadioButton rdbCurrentSystem;
+    @FXML private RadioButton rdbIsoImage;
+    @FXML private TabPane tpInstallDetails;
+    @FXML private ToggleGroup tgSelectDevice;
     @FXML private TextField tfPrefixText;
     @FXML private NumericTextField tfStartPattern;
     @FXML private NumericTextField tfSteps;
 
-    
+
 
     public SelectDeviceUI() {
 
@@ -202,7 +212,7 @@ public class SelectDeviceUI extends View {
         chbDataPartitionOverwrite.setDisable(true);
         btnDataPartitionShowPersonalPassword.setDisable(true);
         btnDataPartitionShowSecondaryPassword.setDisable(true);
-        
+
         lvDevices.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         lvDevices.getSelectionModel().selectedItemProperty().addListener(
                 (ObservableValue<? extends StorageDevice> ov, StorageDevice old_val, StorageDevice new_val) -> {
@@ -278,6 +288,17 @@ public class SelectDeviceUI extends View {
                 gpFilesystem.setVisible(false);
             }
         });
+        rdbCurrentSystem.setOnAction(event -> {
+            hbDevices.setVisible(true);
+            hbTarget.setVisible(true);
+            tpInstallDetails.setVisible(true);
+
+        });
+        rdbIsoImage.setOnAction(event -> {
+            hbDevices.setVisible(false);
+            hbTarget.setVisible(false);
+            tpInstallDetails.setVisible(false);
+        });
     }
 
     private void install(ObservableList<StorageDevice> devices) {
@@ -316,25 +337,25 @@ public class SelectDeviceUI extends View {
             installLock // the lock to aquire before executing in background
         ).execute();
     }
-    
+
     public int getAutoNrStartVal(){
         int result = 1;
         try{result = Integer.parseInt(tfStartPattern.getText());} catch(Exception e){;}
         return result;
     }
-    
+
     public int getAutoNrIncrement(){
         int result = 1;
         try{result = Integer.parseInt(tfSteps.getText());} catch(Exception e){;}
         return result;
     }
-    
+
     public int getAutoNrDigits(){
         int count = 0, num = getAutoNrStartVal();
         while (num != 0) { num /= 10; ++count;}
         return tfStartPattern.getText().length() - count;
     }
-    
+
 
     public void updateInstallSelectionCountAndExchangeInfo() {
         // check all selected storage devices

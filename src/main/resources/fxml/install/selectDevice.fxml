@@ -82,7 +82,7 @@
                               <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
                            </padding>
                         </VBox>
-                        <HBox>
+                        <HBox fx:id="hbTarget">
                            <children>
                               <Label fx:id="lblInstallationTarget1" text="%install.lblInstallationTarget" />
                               <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
@@ -91,7 +91,7 @@
                               <Insets bottom="5.0" top="5.0" />
                            </padding>
                         </HBox>
-                        <HBox spacing="10.0">
+                        <HBox fx:id="hbDevices" spacing="10.0">
                            <children>
                               <VBox HBox.hgrow="SOMETIMES" />
                               <VBox HBox.hgrow="ALWAYS">
@@ -109,7 +109,7 @@
                               </VBox>
                            </children>
                         </HBox>
-                        <TabPane tabClosingPolicy="UNAVAILABLE">
+                        <TabPane fx:id="tpInstallDetails" tabClosingPolicy="UNAVAILABLE">
                           <tabs>
                             <Tab text="%global.selection">
                                  <content>
