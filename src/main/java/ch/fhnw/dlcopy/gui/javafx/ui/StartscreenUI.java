@@ -3,6 +3,7 @@ package ch.fhnw.dlcopy.gui.javafx.ui;
 import ch.fhnw.dlcopy.gui.javafx.ui.exportdata.ExportDataUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.exportsystem.ExportSystemUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.install.SelectDeviceUI;
+import ch.fhnw.dlcopy.gui.javafx.ui.update.UpdateDeviceUI;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
@@ -57,6 +58,10 @@ public class StartscreenUI extends View {
         
         btnInstall.setOnAction(event -> {
             context.setScene(new SelectDeviceUI());
+        });
+        
+        btnUpdate.setOnAction(event -> {
+            context.setScene(new UpdateDeviceUI());
         });
 
         imgDefault      .fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 2.16));
