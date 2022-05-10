@@ -22,7 +22,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints />
         <ColumnConstraints hgrow="NEVER" />
@@ -202,7 +202,7 @@
                                                       <VBox>
                                                          <children>
                                                             <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.prefixText" />
-                                                            <TextField fx:id="tfPrefixText" alignment="CENTER" minHeight="32.0" promptText="Example" />
+                                                            <TextField fx:id="tfPrefixText" alignment="CENTER" minHeight="32.0" promptText="%global.example" />
                                                             <HBox spacing="20.0">
                                                                <children>
                                                                   <VBox>
