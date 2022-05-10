@@ -65,15 +65,15 @@ public class ExportDataUI extends View {
     protected void initControls() {
         btnExport.setDisable(true);
         
-        tfTargetDirectory.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.targetDirectory")));
-        chbInformationDialog.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.informationDialog")));
-        chbInstallationProgram.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.installationProgram")));
-        lblFreeSpace.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.freeSpace")));
-        lblTargetDirectory.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.targetDirectory")));
-        lblFreeSpaceDisplay.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.freeSpace")));
-        lblWriteable.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.writeable")));
-        lblWriteableDisplay.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.writeable")));
-        switchBtn.setTooltip(new Tooltip(stringBundle.getString("global.tooltip.expertMode")));
+        addToolTip(tfTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
+        addToolTip(chbInformationDialog,stringBundle.getString("export.tooltip.informationDialog"));
+        addToolTip(chbInstallationProgram,stringBundle.getString("export.tooltip.installationProgram"));
+        addToolTip(lblFreeSpace, stringBundle.getString("export.tooltip.freeSpace"));
+        addToolTip(lblTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
+        addToolTip(lblFreeSpaceDisplay, stringBundle.getString("export.tooltip.freeSpace"));
+        addToolTip(lblWriteable, stringBundle.getString("export.tooltip.writeable"));
+        addToolTip(lblWriteableDisplay, stringBundle.getString("export.tooltip.writeable"));
+        addToolTip(switchBtn, stringBundle.getString("global.tooltip.expertMode"));
     }
     
 

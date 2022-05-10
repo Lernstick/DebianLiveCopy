@@ -5,13 +5,12 @@ import ch.fhnw.dlcopy.model.PresentationModel;
 import java.io.IOException;
 import java.net.URL;
 import java.util.ResourceBundle;
-import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
-import javafx.scene.Node;
 import javafx.scene.Parent;
+import javafx.scene.control.Control;
 import javafx.scene.control.Label;
-import javafx.util.Duration;
+import javafx.scene.control.Tooltip;
 
 public abstract class View {
 
@@ -51,6 +50,13 @@ public abstract class View {
 
     protected void setupValueChangedListeners(){}
     
+    
+    protected void addToolTip(Control c, String s){
+        Tooltip tt = new Tooltip(s);
+        tt.setPrefWidth(400);
+        tt.setWrapText(true);
+        c.setTooltip(tt);
+    }
      /**
      * Prints the given information on the bottem of the view
      * @param info The information to be printed

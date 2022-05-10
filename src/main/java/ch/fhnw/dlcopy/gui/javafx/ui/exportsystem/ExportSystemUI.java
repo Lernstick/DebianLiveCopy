@@ -78,18 +78,18 @@ public class ExportSystemUI extends View {
         cmbDataPartitionMode.setValue(option_ReadWrite);
         btnExport.setDisable(true);
         
-        tfTargetDirectory.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.targetDirectory")));
-        chbInformationDialog.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.informationDialog")));
-        chbInstallationProgram.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.installationProgram")));
-        cmbDataPartitionMode.setTooltip(new Tooltip("global.tooltip.dataPartitionMode"));
-        lblFreeSpace.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.freeSpace")));
-        lblTargetDirectory.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.targetDirectory")));
-        lblFreeSpaceDisplay.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.freeSpace")));
-        lblWriteable.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.writeable")));
-        lblWriteableDisplay.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.writeable")));
-        switchBtn.setTooltip(new Tooltip(stringBundle.getString("global.tooltip.expertMode")));
-        tfDvdLabel.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.dvdLabel")));
-        tfTargetDirectory.setTooltip(new Tooltip(stringBundle.getString("export.tooltip.targetDirectory")));
+        addToolTip(tfTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
+        addToolTip(chbInformationDialog, stringBundle.getString("export.tooltip.informationDialog"));
+        addToolTip(chbInstallationProgram, stringBundle.getString("export.tooltip.installationProgram"));
+        addToolTip(cmbDataPartitionMode, stringBundle.getString("global.tooltip.dataPartitionMode"));
+        addToolTip(lblFreeSpace, stringBundle.getString("export.tooltip.freeSpace"));
+        addToolTip(lblTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
+        addToolTip(lblFreeSpaceDisplay, stringBundle.getString("export.tooltip.freeSpace"));
+        addToolTip(lblWriteable, stringBundle.getString("export.tooltip.writeable"));
+        addToolTip(lblWriteableDisplay, stringBundle.getString("export.tooltip.writeable"));
+        addToolTip(switchBtn, stringBundle.getString("global.tooltip.expertMode"));
+        addToolTip(tfDvdLabel, stringBundle.getString("export.tooltip.dvdLabel"));
+        addToolTip(tfTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
     }
 
     @Override

@@ -156,13 +156,13 @@ public class SelectDeviceUI extends View {
                 stringBundle.getString("install.select_install_target_storage_media"),
                 sizeString));
 
-        chbCopyExchangePartition.setTooltip(new Tooltip(stringBundle.getString("install.tooltip.copyExchangePartition")));
-        cmbDataPartitionMode.setTooltip(new Tooltip(stringBundle.getString("global.tooltip.dataPartitionMode")));
-        lblRequiredDiskspace.setTooltip(new Tooltip(stringBundle.getString("install.tooltip.requiredDiskSpace")));
-        chbCopyDataPartition.setTooltip(new Tooltip(stringBundle.getString("install.tooltip.copyDataPartition")));
-        chbDataPartitionPersonalPassword.setTooltip(new Tooltip(stringBundle.getString("install.tooltip.encryption")));
-        chbDataPartitionOverwrite.setTooltip(new Tooltip(stringBundle.getString("install.tooltip.randomFill")));
-        chbDataPartitionSecondaryPassword.setTooltip(new Tooltip(stringBundle.getString("install.tooltip.secondaryPassword")));
+        addToolTip(chbCopyExchangePartition, stringBundle.getString("install.tooltip.copyExchangePartition"));
+        addToolTip(cmbDataPartitionMode, stringBundle.getString("global.tooltip.dataPartitionMode"));
+        addToolTip(lblRequiredDiskspace, stringBundle.getString("install.tooltip.requiredDiskSpace"));
+        addToolTip(chbCopyDataPartition, stringBundle.getString("install.tooltip.copyDataPartition"));
+        addToolTip(chbDataPartitionPersonalPassword, stringBundle.getString("install.tooltip.encryption"));
+        addToolTip(chbDataPartitionOverwrite, stringBundle.getString("install.tooltip.randomFill"));
+        addToolTip(chbDataPartitionSecondaryPassword, stringBundle.getString("install.tooltip.secondaryPasssword"));
 
         chbCopyDataPartition.setDisable(runningSystemSource.getDataPartition() == null);
         chbCopyExchangePartition.setDisable(!runningSystemSource.hasExchangePartition());
