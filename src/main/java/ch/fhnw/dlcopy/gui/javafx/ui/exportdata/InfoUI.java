@@ -42,6 +42,15 @@ public class InfoUI extends View {
         } else {
             message = stringBundle.getString("export.error.isoCreation");
         }
+
+        WebView  web = new WebView();
+        WebEngine webEngine = web.getEngine();
+        webEngine.loadContent(stringBundle.getString("info.tooltip.filesystemtable"));
+
+        Tooltip  tip = new Tooltip();
+        tip.setContentDisplay(ContentDisplay.GRAPHIC_ONLY);
+        tip.setGraphic(web);
+
         lblExtraInfo.setText(message);
     }
 
