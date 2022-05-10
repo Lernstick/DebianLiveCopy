@@ -27,6 +27,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -262,6 +263,19 @@ public class SelectDeviceUI extends View {
             pfDataPartitionSecondaryPassword.setText(pfDataPartitionSecondaryPassword.getPromptText());
             pfDataPartitionSecondaryPassword.setPromptText("");
         });
+        
+        tfSteps.textProperty().addListener( (observable, oldValue, newValue) -> {
+            if(!newValue.matches("[0-9]+")|| newValue.length() > 10){
+                ((StringProperty)observable).setValue(oldValue);
+            }
+        });
+        
+        tfStartPattern.textProperty().addListener( (observable, oldValue, newValue) -> {
+            if(!newValue.matches("[0-9]+")){
+                ((StringProperty)observable).setValue(oldValue);
+            }
+        });
+                
     }
 
     private void install(ObservableList<StorageDevice> devices) {
