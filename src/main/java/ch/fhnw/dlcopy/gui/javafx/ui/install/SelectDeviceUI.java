@@ -162,7 +162,7 @@ public class SelectDeviceUI extends View {
         addToolTip(chbCopyDataPartition, stringBundle.getString("install.tooltip.copyDataPartition"));
         addToolTip(chbDataPartitionPersonalPassword, stringBundle.getString("install.tooltip.encryption"));
         addToolTip(chbDataPartitionOverwrite, stringBundle.getString("install.tooltip.randomFill"));
-        addToolTip(chbDataPartitionSecondaryPassword, stringBundle.getString("install.tooltip.secondaryPasssword"));
+        addToolTip(chbDataPartitionSecondaryPassword, stringBundle.getString("install.tooltip.secondaryPassword"));
 
         chbCopyDataPartition.setDisable(runningSystemSource.getDataPartition() == null);
         chbCopyExchangePartition.setDisable(!runningSystemSource.hasExchangePartition());
