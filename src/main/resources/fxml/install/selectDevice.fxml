@@ -202,19 +202,19 @@
                                                       <VBox>
                                                          <children>
                                                             <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.prefixText" />
-                                                            <TextField fx:id="tfPrefixText" minHeight="32.0" />
+                                                            <TextField fx:id="tfPrefixText" alignment="CENTER" minHeight="32.0" promptText="Example" />
                                                             <HBox spacing="20.0">
                                                                <children>
                                                                   <VBox>
                                                                      <children>
                                                                         <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.startPattern" />
-                                                                        <TextField fx:id="tfStartPattern" minHeight="32.0" />
+                                                                        <TextField fx:id="tfStartPattern" alignment="CENTER" minHeight="32.0" promptText="001" />
                                                                      </children>
                                                                   </VBox>
                                                                   <VBox>
                                                                      <children>
                                                                         <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.steps" />
-                                                                        <TextField fx:id="tfSteps" minHeight="32.0" />
+                                                                        <TextField fx:id="tfSteps" alignment="CENTER" minHeight="32.0" promptText="1" />
                                                                      </children>
                                                                   </VBox>
                                                                </children>
