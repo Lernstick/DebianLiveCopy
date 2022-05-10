@@ -57,7 +57,11 @@
                         <Image url="@../../new_icons/export-file-white.png" />
                      </image>
                   </ImageView>
-                  <TextArea fx:id="lblExtraInfo" VBox.vgrow="ALWAYS" />
+                  <ScrollPane VBox.vgrow="ALWAYS">
+                     <content>
+                        <TextArea fx:id="lblExtraInfo" />
+                     </content>
+                  </ScrollPane>
                </children>
             </VBox>
          </children>
