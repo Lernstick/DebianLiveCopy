@@ -50,6 +50,18 @@ public abstract class View {
     protected void setupEventHandlers(){}
 
     protected void setupValueChangedListeners(){}
+    
+     /**
+     * Prints the given information on the bottem of the view
+     * @param info The information to be printed
+     */
+    protected final void printInfo(String info){
+        if (lblInfo != null){
+            defaultInfo = info;
+            lblInfo.setText(info);
+        }
+    }
+
   
     /**
     * Returns the root parent. This parent can be displayed in a FX-scene

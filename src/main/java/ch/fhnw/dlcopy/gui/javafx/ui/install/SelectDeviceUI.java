@@ -518,7 +518,7 @@ public class SelectDeviceUI extends View {
             String message = stringBundle.getString("error.noDataPartition");
             LOGGER.log(Level.WARNING, message);
             showError(message);
-            //printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.noDataPartition"));
+            printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.noDataPartition"));
             return false;
         }
 
