@@ -119,7 +119,7 @@
                                  <content>
                                     <VBox spacing="10.0">
                                        <children>
-                                          <ListView fx:id="lvDevices" maxHeight="200.0" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
+                                          <ListView fx:id="lvDevices" maxHeight="200.0" VBox.vgrow="ALWAYS" />
                                           <Label text="%global.exchangepartition" />
                                           <HBox spacing="20.0">
                                              <children>
