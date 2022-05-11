@@ -30,6 +30,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import org.freedesktop.dbus.exceptions.DBusException;
+import javafx.scene.control.Alert;
+import javafx.scene.control.CheckBox;
+
 
 /**
  *
@@ -45,10 +48,11 @@ public class UpdateDeviceUI  extends View{
     private ObservableList<StorageDevice> selectedStds;
     
     @FXML private ListView<StorageDevice> lvDevices;
-    @FXML private CheckBox chbShowHarddisk;
     @FXML private Button btnBack;
-    
-    public UpdateDeviceUI() {
+    @FXML private Button btnExport;
+    @FXML private CheckBox chbShowHarddisk;
+
+    public UpdateDeviceUI() {   
         Map<String, String> environment = new HashMap<>();
         environment.put("LC_ALL", "C");
         PROCESS_EXECUTOR.setEnvironment(environment);
@@ -63,7 +67,6 @@ public class UpdateDeviceUI  extends View{
         resourcePath = getClass().getResource("/fxml/update/update.fxml");
     }
     
-    
      /**
      * This function is called, when the view should be deinitalized.
      * It has to be called manually!
@@ -73,10 +76,22 @@ public class UpdateDeviceUI  extends View{
         listUpdateTimer.cancel();
     }
     
+    private void confirm(String message) {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle(stringBundle.getString("confirm.confirm"));
+        alert.setHeaderText(stringBundle.getString("confirm.text"));
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+        
     @Override
     protected void setupEventHandlers() {
         btnBack.setOnAction(event -> {
             context.setScene(new StartscreenUI());
+        });    
+        
+        btnExport.setOnAction(event ->{
+           confirm(stringBundle.getString("confirm.ignore"));
         });
         chbShowHarddisk.setOnAction(event -> {
             showHarddisks = valChb(chbShowHarddisk);
