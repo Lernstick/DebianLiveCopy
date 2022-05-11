@@ -31,6 +31,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import org.freedesktop.dbus.exceptions.DBusException;
 import javafx.scene.control.Alert;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 
 
@@ -77,9 +78,11 @@ public class UpdateDeviceUI  extends View{
     }
     
     private void confirm(String message) {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(stringBundle.getString("confirm.confirm"));
-        alert.setHeaderText(stringBundle.getString("confirm.text"));
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
+                stringBundle.getString("updateconfirm.confirm"), 
+                ButtonType.YES, ButtonType.CANCEL);
+        alert.setTitle(stringBundle.getString("updateconfirm.header"));
+        alert.setHeaderText(stringBundle.getString("updateconfirm.consequences"));
         alert.setContentText(message);
         alert.showAndWait();
     }
@@ -90,8 +93,8 @@ public class UpdateDeviceUI  extends View{
             context.setScene(new StartscreenUI());
         });    
         
-        btnExport.setOnAction(event ->{
-           confirm(stringBundle.getString("confirm.ignore"));
+        chbShowHarddisk.setOnAction(event ->{
+           confirm(stringBundle.getString("updateconfirm.lastwarning"));
         });
         chbShowHarddisk.setOnAction(event -> {
             showHarddisks = valChb(chbShowHarddisk);
