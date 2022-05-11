@@ -35,10 +35,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 
 
-/**
- *
- * @author user
- */
 public class UpdateDeviceUI  extends View{
     
     private static final Logger LOGGER = Logger.getLogger(UpdateDeviceUI.class.getName());
@@ -186,7 +182,4 @@ public class UpdateDeviceUI  extends View{
     private boolean valChb(CheckBox chb) {
         return chb.isSelected() && !chb.isDisabled();
     }
-
-    
-    
  }
