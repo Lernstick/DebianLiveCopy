@@ -84,8 +84,8 @@ public class SelectDeviceUI extends View {
     @FXML private TextField tfExchangePartitionSize;
     
     @FXML private TextField tfPrefixText;
-    @FXML private TextField tfStartPattern;
-    @FXML private TextField tfSteps;
+    @FXML private NumericTextField tfStartPattern;
+    @FXML private NumericTextField tfSteps;
 
     
 
@@ -264,17 +264,6 @@ public class SelectDeviceUI extends View {
             pfDataPartitionSecondaryPassword.setPromptText("");
         });
         
-        tfSteps.textProperty().addListener( (observable, oldValue, newValue) -> {
-            if(!newValue.matches("[0-9]+")|| newValue.length() > 10){
-                ((StringProperty)observable).setValue(oldValue);
-            }
-        });
-        
-        tfStartPattern.textProperty().addListener( (observable, oldValue, newValue) -> {
-            if(!newValue.matches("[0-9]+")){
-                ((StringProperty)observable).setValue(oldValue);
-            }
-        });
                 
     }
 
@@ -625,5 +614,12 @@ public class SelectDeviceUI extends View {
     private DataPartitionMode getDataPartitionMode() {
         DataPartitionModeEntry selection = (DataPartitionModeEntry) cmbDataPartitionMode.getValue();
         return selection.getMode();
+    }
+    
+    private boolean isWholeNumber(String strNum){
+        if (strNum == null) {return false;}
+        try {int i = Integer.parseInt(strNum);}
+        catch (NumberFormatException nfe) {return false;}
+        return true;
     }
 }
