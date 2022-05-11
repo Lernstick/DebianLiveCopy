@@ -13,6 +13,7 @@ import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
+import java.io.File;
 import java.io.IOException;
 import java.text.MessageFormat;
 import java.util.ArrayList;
@@ -31,8 +32,6 @@ import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
@@ -51,6 +50,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.DirectoryChooser;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 public class SelectDeviceUI extends View {
@@ -293,14 +293,19 @@ public class SelectDeviceUI extends View {
             hbDevices.setVisible(true);
             hbTarget.setVisible(true);
             tpInstallDetails.setVisible(true);
+            tfISODirectory.setDisable(true);
 
         });
         rdbIsoImage.setOnAction(event -> {
             hbDevices.setVisible(false);
             hbTarget.setVisible(false);
             tpInstallDetails.setVisible(false);
+            tfISODirectory.setDisable(false);
         });
         tfISODirectory.setOnAction(event -> {
+            selectDirectory();
+        });
+        tfISODirectory.setOnMouseClicked(event -> {
             selectDirectory();
         });
     }
@@ -664,10 +669,10 @@ public class SelectDeviceUI extends View {
     private void selectDirectory() {
         DirectoryChooser folder = new DirectoryChooser();
         File selectedDirectory = folder.showDialog(
-            tfTargetDirectory.getScene().getWindow());
+            tfISODirectory.getScene().getWindow());
         folder.setTitle(stringBundle.getString("export.chooseDirectory"));
         if (selectedDirectory != null) {
-            tfTargetDirectory.setText(selectedDirectory.getAbsolutePath());
+            tfISODirectory.setText(selectedDirectory.getAbsolutePath());
         }
     }
 }
