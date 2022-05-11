@@ -164,4 +164,3 @@ testfx:
     - mkdir -pv /usr/lib/syslinux/mbr
     - touch /usr/lib/syslinux/mbr/mbr.bin
     - xvfb-run ant test
-  allow_failure: true
