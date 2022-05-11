@@ -11,6 +11,7 @@ import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import ch.fhnw.dlcopy.gui.javafx.ui.install.SelectDeviceUI;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,13 +23,17 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.property.SimpleListProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
+import javafx.event.EventType;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
+import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import org.freedesktop.dbus.exceptions.DBusException;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -44,6 +49,8 @@ public class UpdateDeviceUI  extends View{
     private final Timer listUpdateTimer = new Timer();
     private ObservableList<StorageDevice> selectedStds;
     
+    @FXML private Button btnAddFileToOverwritte;
+    @FXML private ListView<String> lvFilesToOverwritte;
     @FXML private ListView<StorageDevice> lvDevices;
     @FXML private Button btnBack;
     @FXML private Button btnExport;
@@ -132,6 +139,14 @@ public class UpdateDeviceUI  extends View{
              selectedStds = lvDevices.getSelectionModel().getSelectedItems();
         });
 
+        btnAddFileToOverwritte.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser();
+            File selectedFile = fileChooser.showOpenDialog(btnAddFileToOverwritte.getScene().getWindow());
+            fileChooser.setTitle(stringBundle.getString("export.chooseDirectory")); 
+            if (selectedFile != null) {
+                lvFilesToOverwritte.getItems().add(selectedFile.getAbsolutePath());
+            }
+        });
     }
     
       public void updateInstallSelectionCountAndExchangeInfo() {
