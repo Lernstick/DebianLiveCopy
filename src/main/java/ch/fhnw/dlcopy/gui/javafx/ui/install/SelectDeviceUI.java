@@ -103,6 +103,7 @@ public class SelectDeviceUI extends View {
     @FXML private TextField tfPrefixText;
     @FXML private NumericTextField tfStartPattern;
     @FXML private NumericTextField tfSteps;
+    @FXML private TextField tfISODirectory;
 
 
 
@@ -298,6 +299,9 @@ public class SelectDeviceUI extends View {
             hbDevices.setVisible(false);
             hbTarget.setVisible(false);
             tpInstallDetails.setVisible(false);
+        });
+        tfISODirectory.setOnAction(event -> {
+            selectDirectory();
         });
     }
 
@@ -655,5 +659,15 @@ public class SelectDeviceUI extends View {
         try {int i = Integer.parseInt(strNum);}
         catch (NumberFormatException nfe) {return false;}
         return true;
+    }
+
+    private void selectDirectory() {
+        DirectoryChooser folder = new DirectoryChooser();
+        File selectedDirectory = folder.showDialog(
+            tfTargetDirectory.getScene().getWindow());
+        folder.setTitle(stringBundle.getString("export.chooseDirectory"));
+        if (selectedDirectory != null) {
+            tfTargetDirectory.setText(selectedDirectory.getAbsolutePath());
+        }
     }
 }
