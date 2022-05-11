@@ -24,7 +24,7 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints />
         <ColumnConstraints hgrow="NEVER" />
@@ -331,15 +331,15 @@
                                                 <TextArea editable="false" maxHeight="115.0" text="%install.disclaimer" wrapText="true" HBox.hgrow="ALWAYS" />
                                                           <VBox fillWidth="false" spacing="10.0">
                                                               <children>
-                                                                  <CheckBox fx:id="cbexchange_partition" mnemonicParsing="false" prefHeight="32.0" text="%install.exchangepartition" />
-                                                                  <CheckBox fx:id="cbNetwork_settings" mnemonicParsing="false" prefHeight="32.0" text="%install.networksettings" />
-                                                                  <CheckBox fx:id="cbFirewall_settings" mnemonicParsing="false" prefHeight="32.0" text="%install.firewallsettings" />
+                                                                  <CheckBox fx:id="chbExchangePartition" mnemonicParsing="false" prefHeight="32.0" text="%install.exchangepartition" />
+                                                                  <CheckBox fx:id="chbNetworkSettings" mnemonicParsing="false" prefHeight="32.0" text="%install.networksettings" />
+                                                                  <CheckBox fx:id="chbFirewallSettings" mnemonicParsing="false" prefHeight="32.0" text="%install.firewallsettings" />
                                                               </children>
                                                           </VBox>
                                                           <VBox fillWidth="false" spacing="10.0">
                                                               <children>
-                                                                  <CheckBox fx:id="cbHome_folder" mnemonicParsing="false" prefHeight="32.0" text="%install.homefolder" />
-                                                                  <CheckBox fx:id="cbPrinter_settings" mnemonicParsing="false" prefHeight="32.0" text="%install.printersettings" />
+                                                                  <CheckBox fx:id="chbHomeFolder" mnemonicParsing="false" prefHeight="32.0" text="%install.homefolder" />
+                                                                  <CheckBox fx:id="chbPrinterSettings" mnemonicParsing="false" prefHeight="32.0" text="%install.printersettings" />
                                                               </children>
                                                           </VBox>
                                                               </children>

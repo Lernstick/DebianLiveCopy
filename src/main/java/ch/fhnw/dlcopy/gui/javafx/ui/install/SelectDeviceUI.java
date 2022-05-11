@@ -79,6 +79,11 @@ public class SelectDeviceUI extends View {
     @FXML private CheckBox chbDataPartitionPersonalPassword;
     @FXML private CheckBox chbDataPartitionSecondaryPassword;
     @FXML private CheckBox chbDataPartitionOverwrite;
+    @FXML private CheckBox chbExchangePartition;
+    @FXML private CheckBox chbHomeFolder;
+    @FXML private CheckBox chbNetworkSettings;
+    @FXML private CheckBox chbPrinterSettings;
+    @FXML private CheckBox chbFirewallSettings;
     @FXML private PasswordField pfDataPartitionPersonalPassword;
     @FXML private PasswordField pfDataPartitionSecondaryPassword;
     @FXML private TextField tfExchangePartitionSize;
@@ -294,11 +299,11 @@ public class SelectDeviceUI extends View {
             valChb(chbCopyDataPartition),  // if the data partition should be copied
             getDataPartitionMode(),   // the mode of the data partition to set in the bootloaders config
             null,   // the device to transfer data from or null, if no data should be transferred
-            false,  // if the exchange partition should be transferred
-            false,  // if the home folder should be transferred
-            false,  // if the network settings should be transferred
-            false,  // if the printer settings should be transferred
-            false,  // if the firewall settings should be transferred
+            valChb(chbExchangePartition),  // if the exchange partition should be transferred
+            valChb(chbHomeFolder),  // if the home folder should be transferred
+            valChb(chbNetworkSettings),  // if the network settings should be transferred
+            valChb(chbPrinterSettings),  // if the printer settings should be transferred
+            valChb(chbFirewallSettings),  // if the firewall settings should be transferred
             valChb(chbCheckCopies),  // if copies should be checked for errors
             installLock // the lock to aquire before executing in background
         ).execute();
