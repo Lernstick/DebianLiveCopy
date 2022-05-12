@@ -3,10 +3,13 @@ package ch.fhnw.dlcopy.gui.javafx.ui.install;
 import ch.fhnw.dlcopy.DLCopy;
 import ch.fhnw.dlcopy.DataPartitionMode;
 import ch.fhnw.dlcopy.Installer;
+import ch.fhnw.dlcopy.IsoSystemSource;
 import ch.fhnw.dlcopy.PartitionSizes;
 import ch.fhnw.dlcopy.PartitionState;
 import ch.fhnw.dlcopy.RunningSystemSource;
 import ch.fhnw.dlcopy.SystemSource;
+import ch.fhnw.dlcopy.exceptions.NoExecutableExtLinuxException;
+import ch.fhnw.dlcopy.exceptions.NoExtLinuxException;
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import ch.fhnw.util.LernstickFileTools;
@@ -50,7 +53,7 @@ import javafx.scene.control.ToggleGroup;
 import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
-import javafx.stage.DirectoryChooser;
+import javafx.stage.FileChooser;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 public class SelectDeviceUI extends View {
@@ -303,10 +306,10 @@ public class SelectDeviceUI extends View {
             tfISODirectory.setDisable(false);
         });
         tfISODirectory.setOnAction(event -> {
-            selectDirectory();
+            selectISO();
         });
         tfISODirectory.setOnMouseClicked(event -> {
-            selectDirectory();
+            selectISO();
         });
     }
 
@@ -666,13 +669,47 @@ public class SelectDeviceUI extends View {
         return true;
     }
 
-    private void selectDirectory() {
-        DirectoryChooser folder = new DirectoryChooser();
-        File selectedDirectory = folder.showDialog(
+    private void selectISO() {
+        FileChooser chooser = new FileChooser();
+        File selectedISO = chooser.showOpenDialog(
             tfISODirectory.getScene().getWindow());
-        folder.setTitle(stringBundle.getString("export.chooseDirectory"));
-        if (selectedDirectory != null) {
-            tfISODirectory.setText(selectedDirectory.getAbsolutePath());
+        chooser.setTitle(stringBundle.getString("export.chooseDirectory"));
+        if (selectedISO != null) {
+            setISOInstallationSourcePath(selectedISO.getAbsolutePath());
+        }
+    }
+
+    private void setISOInstallationSourcePath(String path) {
+        try {
+
+            ProcessExecutor processExecutor = new ProcessExecutor(true);
+
+            SystemSource newIsoSystemSource
+                    = new IsoSystemSource(path, processExecutor);
+
+            if (isoSystemSource != null) {
+                isoSystemSource.unmountTmpPartitions();
+            }
+
+            isoSystemSource = newIsoSystemSource;
+            setSystemSource(isoSystemSource);
+            tfISODirectory.setText(path);
+
+        } catch (IllegalStateException | IOException ex) {
+            LOGGER.log(Level.INFO, "", ex);
+            String msg = stringBundle.getString("install.error.invalid_iso");
+            msg = MessageFormat.format(msg, path);
+            showError(msg);
+        } catch (NoExecutableExtLinuxException ex) {
+            LOGGER.log(Level.INFO, "", ex);
+            String msg = stringBundle.getString("install.error.exec_extlinux");
+            msg = MessageFormat.format(msg, path);
+            showError(msg);
+        } catch (NoExtLinuxException ex) {
+            LOGGER.log(Level.INFO, "", ex);
+            String msg = stringBundle.getString("install.error.iso_too_old");
+            msg = MessageFormat.format(msg, path);
+            showError(msg);
         }
     }
 }
