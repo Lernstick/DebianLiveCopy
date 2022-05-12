@@ -4,7 +4,6 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.ButtonBar?>
-<?import ch.fhnw.dlcopy.gui.javafx.ui.install.NumericTextField?>
 <?import javafx.scene.control.CheckBox?>
 <?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
@@ -24,7 +23,9 @@
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1">
+<?import ch.fhnw.dlcopy.gui.javafx.ui.install.NumericTextField?>
+
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
         <ColumnConstraints />
         <ColumnConstraints hgrow="NEVER" />
@@ -185,7 +186,7 @@
                                                       </HBox>
                                                    </children>
                                                 </VBox>
-                                                <GridPane fx:id="gpFilesystem" gridLinesVisible="true" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" visible="false">
+                                                <GridPane fx:id="gpFilesystem" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" style="-fx-border-image-insets: 40;" styleClass="gridpaneFilesystem">
                                                   <columnConstraints>
                                                     <ColumnConstraints hgrow="SOMETIMES" />
                                                       <ColumnConstraints hgrow="SOMETIMES" />
@@ -202,101 +203,101 @@
                                                       <RowConstraints maxHeight="20.0" percentHeight="100.0" vgrow="SOMETIMES" />
                                                   </rowConstraints>
                                                    <children>
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.exFAT" GridPane.columnIndex="1" />
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.FAT32" GridPane.columnIndex="2" />
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.NTFS" GridPane.columnIndex="3" />
-                                                      <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.Linux" GridPane.rowIndex="1" />
-                                                      <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.macOS" GridPane.rowIndex="2" />
-                                                      <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.Windows" GridPane.rowIndex="3" />
-                                                      <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.largeFiles" GridPane.rowIndex="4" />
-                                                      <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.backup" GridPane.rowIndex="5" />
-                                                      <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.swapFile" GridPane.rowIndex="6" />
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.yes" GridPane.columnIndex="1" GridPane.rowIndex="1">
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.exFAT" GridPane.columnIndex="1" />
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.FAT32" GridPane.columnIndex="2" />
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.NTFS" GridPane.columnIndex="3" />
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.Linux" GridPane.rowIndex="1" />
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.macOS" GridPane.rowIndex="2" />
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.Windows" GridPane.rowIndex="3" />
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.largeFiles" GridPane.rowIndex="4" />
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.backup" GridPane.rowIndex="5" />
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.swapFile" GridPane.rowIndex="6" />
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.yes" GridPane.columnIndex="1" GridPane.rowIndex="1">
                                                          <padding>
                                                             <Insets left="2.0" right="2.0" />
                                                          </padding>
                                                       </Label>
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.yesSince" GridPane.columnIndex="1" GridPane.rowIndex="2">
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.yesSince" GridPane.columnIndex="1" GridPane.rowIndex="2">
                                                          <padding>
                                                             <Insets left="2.0" right="2.0" />
                                                          </padding>
                                                       </Label>
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.yes" GridPane.columnIndex="1" GridPane.rowIndex="3">
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.yes" GridPane.columnIndex="1" GridPane.rowIndex="3">
                                                          <padding>
                                                             <Insets left="2.0" right="2.0" />
                                                          </padding>
                                                       </Label>
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.yes" GridPane.columnIndex="1" GridPane.rowIndex="4">
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.yes" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                                          <padding>
                                                             <Insets left="2.0" right="2.0" />
                                                          </padding>
                                                       </Label>
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.no" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.no" GridPane.columnIndex="1" GridPane.rowIndex="5">
                                                          <padding>
                                                             <Insets left="2.0" right="2.0" />
                                                          </padding>
                                                       </Label>
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.no" GridPane.columnIndex="1" GridPane.rowIndex="6">
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.no" GridPane.columnIndex="1" GridPane.rowIndex="6">
                                                          <padding>
                                                             <Insets left="2.0" right="2.0" />
                                                          </padding>
                                                       </Label>
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.yes" GridPane.columnIndex="2" GridPane.rowIndex="1">
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.yes" GridPane.columnIndex="2" GridPane.rowIndex="1">
                                                          <padding>
                                                             <Insets left="2.0" right="2.0" />
                                                          </padding>
                                                       </Label>
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.yes" GridPane.columnIndex="2" GridPane.rowIndex="2">
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.yes" GridPane.columnIndex="2" GridPane.rowIndex="2">
                                                          <padding>
                                                             <Insets left="2.0" right="2.0" />
                                                          </padding>
                                                       </Label>
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.yes" GridPane.columnIndex="2" GridPane.rowIndex="3">
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.yes" GridPane.columnIndex="2" GridPane.rowIndex="3">
                                                          <padding>
                                                             <Insets left="2.0" right="2.0" />
                                                          </padding>
                                                       </Label>
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.max" GridPane.columnIndex="2" GridPane.rowIndex="4">
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.max" GridPane.columnIndex="2" GridPane.rowIndex="4">
                                                          <padding>
                                                             <Insets left="2.0" right="2.0" />
                                                          </padding>
                                                       </Label>
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.limited" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.limited" GridPane.columnIndex="2" GridPane.rowIndex="5">
                                                          <padding>
                                                             <Insets left="2.0" right="2.0" />
                                                          </padding>
                                                       </Label>
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.yes" GridPane.columnIndex="2" GridPane.rowIndex="6">
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.yes" GridPane.columnIndex="2" GridPane.rowIndex="6">
                                                          <padding>
                                                             <Insets left="2.0" right="2.0" />
                                                          </padding>
                                                       </Label>
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.yes" GridPane.columnIndex="3" GridPane.rowIndex="1">
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.yes" GridPane.columnIndex="3" GridPane.rowIndex="1">
                                                          <padding>
                                                             <Insets left="2.0" right="2.0" />
                                                          </padding>
                                                       </Label>
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.readonly" GridPane.columnIndex="3" GridPane.rowIndex="2">
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.readonly" GridPane.columnIndex="3" GridPane.rowIndex="2">
                                                          <padding>
                                                             <Insets left="2.0" right="2.0" />
                                                          </padding>
                                                       </Label>
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.yes" GridPane.columnIndex="3" GridPane.rowIndex="3">
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.yes" GridPane.columnIndex="3" GridPane.rowIndex="3">
                                                          <padding>
                                                             <Insets left="2.0" right="2.0" />
                                                          </padding>
                                                       </Label>
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.yes" GridPane.columnIndex="3" GridPane.rowIndex="4">
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.yes" GridPane.columnIndex="3" GridPane.rowIndex="4">
                                                          <padding>
                                                             <Insets left="2.0" right="2.0" />
                                                          </padding>
                                                       </Label>
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.yes" GridPane.columnIndex="3" GridPane.rowIndex="5">
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.yes" GridPane.columnIndex="3" GridPane.rowIndex="5">
                                                          <padding>
                                                             <Insets left="2.0" right="2.0" />
                                                          </padding>
                                                       </Label>
-                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="%install.table.no" GridPane.columnIndex="3" GridPane.rowIndex="6">
+                                                      <Label alignment="CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="lblFilesystem" text="%install.table.no" GridPane.columnIndex="3" GridPane.rowIndex="6">
                                                          <padding>
                                                             <Insets left="2.0" right="2.0" />
                                                          </padding>

@@ -264,3 +264,11 @@
 .tab-pane:focused>.tab-header-area>.headers-region>.tab:selected .focus-indicator {
     -fx-border-color: #1F76E1;
 }
+
+.gridpaneFilesystem{
+    -fx-background-color: #3C3C3C;
+}
+
+.lblFilesystem{
+    -fx-text-fill: #9e9b99;
+}
