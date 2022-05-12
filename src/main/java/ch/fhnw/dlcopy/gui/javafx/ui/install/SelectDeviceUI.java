@@ -46,6 +46,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.Tooltip;
+import javafx.scene.layout.GridPane;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 public class SelectDeviceUI extends View {
@@ -87,10 +88,11 @@ public class SelectDeviceUI extends View {
     @FXML private PasswordField pfDataPartitionPersonalPassword;
     @FXML private PasswordField pfDataPartitionSecondaryPassword;
     @FXML private TextField tfExchangePartitionSize;
-    
+    @FXML private GridPane gpFilesystem;
     @FXML private TextField tfPrefixText;
     @FXML private NumericTextField tfStartPattern;
     @FXML private NumericTextField tfSteps;
+    @FXML private Label lblFilesystem;
 
     
 
@@ -177,6 +179,20 @@ public class SelectDeviceUI extends View {
         dpfsList.addAll(DLCopy.DATA_PARTITION_FS);
         cmbDataPartitionFilesystem.setItems(dpfsList);
         cmbDataPartitionFilesystem.getSelectionModel().selectLast();
+        
+        lblFilesystem.hoverProperty().addListener((value, hadFocus, hasFocus) -> {
+             if (hasFocus) {
+                 System.out.println("chbFilesystem focuse");
+                gpFilesystem.setVisible(true);
+            }
+             
+            if (hadFocus){
+                System.out.println("chbFilesystem no focuse");
+                gpFilesystem.setVisible(false);
+            }
+
+        });
+
 
         ObservableList<DataPartitionModeEntry> dpmeList = FXCollections.observableArrayList();
         dpmeList.add(new DataPartitionModeEntry(DataPartitionMode.READ_WRITE, "install.dataPartitionModeRW"));
