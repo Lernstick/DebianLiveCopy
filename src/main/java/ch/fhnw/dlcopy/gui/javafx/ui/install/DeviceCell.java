@@ -118,16 +118,20 @@ public class DeviceCell extends ListCell<StorageDevice>{
                     .divide(deviceSize)
             );
             
-            lblPartition2.textProperty().bind(new SimpleStringProperty(LernstickFileTools.getDataVolumeString(exchangePartitionSize.get(), 1)));
-            lblPartition3.textProperty().bind(new SimpleStringProperty(LernstickFileTools.getDataVolumeString(dataPartitionSize.get(), 1)));
-            lblPartition4.textProperty().bind(new SimpleStringProperty(LernstickFileTools.getDataVolumeString(systemPartitionSize.get(), 1)));
+            efiPartitionSize.addListener(event -> {
+                lblPartition1.setText(LernstickFileTools.getDataVolumeString(efiPartitionSize.get(), 1));
+            });
             
             exchangePartitionSize.addListener(event -> {
-                System.out.println("TRACE: new efiPartitionSize: " + efiPartitionSize.get());
-                System.out.println("\texchangePartitionSize: " + exchangePartitionSize.get());
-                System.out.println("\tdataPartitionSize: " + dataPartitionSize.get());
-                System.out.println("\tsystemPartitionSize: " + systemPartitionSize.get());
-                System.out.println("\tdevice size: " + deviceSize.get());
+                lblPartition2.setText(LernstickFileTools.getDataVolumeString(exchangePartitionSize.get(), 1));
+            });
+            
+            dataPartitionSize.addListener(event -> {
+                lblPartition3.setText(LernstickFileTools.getDataVolumeString(dataPartitionSize.get(), 1));
+            });
+            
+            systemPartitionSize.addListener(event -> {
+                lblPartition4.setText(LernstickFileTools.getDataVolumeString(systemPartitionSize.get(), 1));
             });
             
             setText(null);
