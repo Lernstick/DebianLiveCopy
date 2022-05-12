@@ -16,6 +16,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
@@ -307,6 +308,7 @@ public class UpdateDeviceUI extends View {
             lvFilesToOverwritte.getItems().sort(Comparator.reverseOrder());
         });
 
+        btnUpgrade.setDisable(false);
         tfResizeExchange.setDisable(true);
         rdbOriginalExchange.setOnAction(event -> {
             repartitionStrategy = RepartitionStrategy.KEEP;
@@ -322,11 +324,16 @@ public class UpdateDeviceUI extends View {
         });
 
         btnUpgrade.setOnAction(event -> {
-            confirm(stringBundle.getString("updateconfirm.lastwarning"));
-            update();
+            if (upgradeSanityChecks()) {
+                confirm(stringBundle.getString("updateconfirm.lastwarning"));
+                update();
+            }
         });
 
         tfAutomaticBackup.setOnAction(event -> {
+            selectDirectory();
+        });
+        tfAutomaticBackup.setOnMouseClicked(event -> {
             selectDirectory();
         });
     }
@@ -410,6 +417,60 @@ public class UpdateDeviceUI extends View {
         }
     }
 
+    private boolean upgradeSanityChecks() {
+        if (valChb(chbAutomaticBackup)) {
+            String dstPath = tfAutomaticBackup.getText();
+            File dstDir = null;
+            if (dstPath != null) {
+                dstDir = new File(dstPath);
+            }
+
+            // file checks
+            String msg = null;
+            if (dstDir == null || dstDir.getPath().length() == 0) {
+                msg = stringBundle.getString("update.error.backup_dir_empty");
+            } else if (!dstDir.exists()) {
+                msg = stringBundle.getString("update.error.backup_dir_na");
+            } else if (!dstDir.isDirectory()) {
+                msg = stringBundle.getString("update.error.backup_dir_nodir");
+            } else if (!dstDir.canRead()) {
+                msg = stringBundle.getString("update.error.backup_dir_nreadable");
+            } else if (valRdb(rdbResizeExchange)) {
+                String newSizeText = tfResizeExchange.getText();
+                try {
+                    Integer.parseInt(newSizeText);
+                } catch (NumberFormatException ex) {
+                    msg = stringBundle.getString("update.error.invalid_partition_size");
+                    msg = MessageFormat.format(
+                            msg, newSizeText);
+                }
+            }
+            if (msg != null) {
+                showError(msg);
+                return false;
+            }
+        }
+        if (rdbResizeExchange.isSelected()) {
+            String newSizeText = tfResizeExchange.getText();
+            String msg = null;
+            if (newSizeText.isEmpty()) {
+                msg = stringBundle.getString("update.error.exchange_partition_size");
+            } else {
+                try {
+                    Integer.parseInt(newSizeText);
+                } catch (NumberFormatException ex) {
+                    LOGGER.log(Level.WARNING, "", ex);
+                    msg = stringBundle.getString("update.error.invalid_exchange_partition_size");
+                }
+            }
+            if (msg != null) {
+                showError(msg);
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Validates a checkbox filed.
      *
@@ -418,5 +479,23 @@ public class UpdateDeviceUI extends View {
      */
     private boolean valChb(CheckBox chb) {
         return chb.isSelected() && !chb.isDisabled();
+    }
+
+    private void showError(String msg) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(stringBundle.getString("error.error"));
+        alert.setHeaderText(stringBundle.getString("error.error"));
+        alert.setContentText(msg);
+        alert.showAndWait();
+    }
+
+    /**
+     * Validates a radio button filed.
+     *
+     * @param chb
+     * @return true if selected and enabled.
+     */
+    private boolean valRdb(RadioButton rdb) {
+        return rdb.isSelected() && !rdb.isDisabled();
     }
 }
