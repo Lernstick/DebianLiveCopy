@@ -20,7 +20,7 @@ lineendings:
   stage: lint
   script:
    - apk add --no-cache file findutils
-   - ! find -regex '.*\.\(f?xml\|java\|md\|properties\|svg\|txt\)$' -type f -exec file '{}' \; | grep -F 'CRLF'
+   - ! find -regex '.*\.\(css\|f?xml\|java\|md\|properties\|svg\|txt\)$' -type f -exec file '{}' \; | grep -F 'CRLF'
 
 xmllint:
   image: alpine
