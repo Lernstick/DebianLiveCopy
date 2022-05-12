@@ -50,6 +50,7 @@ public class UpdateDeviceUI  extends View{
     private ObservableList<StorageDevice> selectedStds;
     
     @FXML private Button btnAddFileToOverwritte;
+    @FXML private Button btnEditFileToOverwritte;
     @FXML private Button btnRemoveFileToOverwritte;
     @FXML private ListView<String> lvFilesToOverwritte;
     @FXML private ListView<StorageDevice> lvDevices;
@@ -160,6 +161,23 @@ public class UpdateDeviceUI  extends View{
             lvFilesToOverwritte.getItems().removeAll(
                     lvFilesToOverwritte.getSelectionModel().getSelectedItems()
             );
+        });
+        
+        // Aktivate the edit button, when one item is selected
+        btnEditFileToOverwritte.disableProperty().bind(
+                lvFilesToOverwritte.getSelectionModel().selectedItemProperty().isNull()
+        );
+        
+        // Edit selected file
+        btnEditFileToOverwritte.setOnAction(event -> {
+            String path = lvFilesToOverwritte.getSelectionModel().getSelectedItem();
+            File file = new File(path);
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setInitialDirectory(new File(file.getParent()));
+            fileChooser.setTitle(stringBundle.getString("export.chooseDirectory")); 
+            File selectedFile = fileChooser.showOpenDialog(btnAddFileToOverwritte.getScene().getWindow());
+            lvFilesToOverwritte.getItems().remove(path);
+            lvFilesToOverwritte.getItems().add(selectedFile.getAbsolutePath());
         });
     }
     
