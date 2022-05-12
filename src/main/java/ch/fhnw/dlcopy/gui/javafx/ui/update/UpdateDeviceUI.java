@@ -51,7 +51,6 @@ public class UpdateDeviceUI  extends View{
     @FXML private ListView<StorageDevice> lvDevices;
     @FXML private Button btnBack;
     @FXML private Button btnExport;
-    @FXML private CheckBox chbShowHarddisk;
 
     public UpdateDeviceUI() {   
         Map<String, String> environment = new HashMap<>();
@@ -93,7 +92,7 @@ public class UpdateDeviceUI  extends View{
             context.setScene(new StartscreenUI());
         });    
         
-        chbShowHarddisk.setOnAction(event ->{
+        btnExport.setOnAction(event ->{
            confirm(stringBundle.getString("updateconfirm.lastwarning"));
         });
         chbShowHarddisk.setOnAction(event -> {
