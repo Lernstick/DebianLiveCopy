@@ -47,6 +47,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
+import javafx.scene.control.Slider;
 import javafx.scene.control.TabPane;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
@@ -55,6 +56,7 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
+import javafx.util.converter.NumberStringConverter;
 import org.freedesktop.dbus.exceptions.DBusException;
 
 public class SelectDeviceUI extends View {
@@ -99,6 +101,7 @@ public class SelectDeviceUI extends View {
     @FXML private HBox hbTarget;
     @FXML private PasswordField pfDataPartitionPersonalPassword;
     @FXML private PasswordField pfDataPartitionSecondaryPassword;
+    @FXML private Slider slExchangePartitionSize;
     @FXML private TextField tfExchangePartitionSize;
     @FXML private GridPane gpFilesystem;
     @FXML private RadioButton rdbCurrentSystem;
@@ -228,10 +231,16 @@ public class SelectDeviceUI extends View {
 
     @Override
     protected void setupBindings() {
-        tfExchangePartitionSize.textProperty().addListener(event -> {
-            exchangePartitionSize = valExPartSize(tfExchangePartitionSize.getText().trim());
-            btnInstall.setDisable(exchangePartitionSize < 0);
-        });
+        
+        // Enable install button, when exchange partition is not 0
+        btnInstall.disableProperty().bind(
+                slExchangePartitionSize.valueProperty().lessThan(0)
+        );
+        
+        // Bind textfield to slider for exchange partition size
+        tfExchangePartitionSize.textProperty().bindBidirectional(
+                slExchangePartitionSize.valueProperty(), new NumberStringConverter()
+        );
     }
 
     @Override

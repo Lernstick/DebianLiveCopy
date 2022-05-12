@@ -129,7 +129,7 @@
                                                 <Separator orientation="VERTICAL" />
                                                 <Label maxHeight="1.7976931348623157E308" minHeight="32.0" text="%global.size" />
                                                 <TextField fx:id="tfExchangePartitionSize" minHeight="32.0" />
-                                                <Slider minorTickCount="1" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="50.0" HBox.hgrow="ALWAYS">
+                                                <Slider fx:id="slExchangePartitionSize" minorTickCount="1" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="50.0" HBox.hgrow="ALWAYS">
                                                    <HBox.margin>
                                                       <Insets left="20.0" />
                                                    </HBox.margin>
