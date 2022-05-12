@@ -226,6 +226,7 @@ public class SelectDeviceUI extends View {
                 (ObservableValue<? extends StorageDevice> ov, StorageDevice old_val, StorageDevice new_val) -> {
              selectedStds = lvDevices.getSelectionModel().getSelectedItems();
         });
+        lvDevices.setCellFactory(cell -> new DeviceCell());
         btnInstall.setDisable(false);
    }
 
