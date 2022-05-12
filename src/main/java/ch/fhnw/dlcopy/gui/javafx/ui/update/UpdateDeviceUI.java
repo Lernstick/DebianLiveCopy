@@ -11,8 +11,11 @@ import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import ch.fhnw.dlcopy.gui.javafx.ui.install.SelectDeviceUI;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -53,6 +56,7 @@ public class UpdateDeviceUI  extends View{
     @FXML private Button btnAddFileToOverwritte;
     @FXML private Button btnEditFileToOverwritte;
     @FXML private Button btnExportFileToOverwritte;
+    @FXML private Button btnImportFileToOverwritte;
     @FXML private Button btnRemoveFileToOverwritte;
     @FXML private ListView<String> lvFilesToOverwritte;
     @FXML private ListView<StorageDevice> lvDevices;
@@ -204,6 +208,26 @@ public class UpdateDeviceUI  extends View{
                         writer.println(file);
                     });
                     writer.close();
+                } catch (IOException ex) {
+                    Logger.getLogger(UpdateDeviceUI.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        });
+        
+        // Import files from exteral file
+        btnImportFileToOverwritte.setOnAction(event -> {
+            FileChooser fileChooser = new FileChooser();
+            fileChooser.setTitle(stringBundle.getString("export.chooseDirectory")); 
+            File selectedFile = fileChooser.showOpenDialog(btnAddFileToOverwritte.getScene().getWindow());
+            if (!selectedFile.canRead()){
+                // Can't read to the file
+            } else {
+                // Read lines from the file
+                try {
+                    lvFilesToOverwritte.getItems().clear();
+                    BufferedReader reader = new BufferedReader(new FileReader(selectedFile));
+                    reader.lines().forEach(file -> lvFilesToOverwritte.getItems().add(file));
+                    reader.close();
                 } catch (IOException ex) {
                     Logger.getLogger(UpdateDeviceUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
