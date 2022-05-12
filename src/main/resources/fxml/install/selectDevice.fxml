@@ -93,11 +93,7 @@
                         </HBox>
                         <HBox spacing="10.0">
                            <children>
-                              <VBox HBox.hgrow="SOMETIMES">
-                                 <children>
-                                    <Label text="%install.lblRequiredDiskspaceInfo" />
-                                 </children>
-                              </VBox>
+                              <VBox HBox.hgrow="SOMETIMES" />
                               <VBox HBox.hgrow="ALWAYS">
                                  <children>
                                     <Label fx:id="lblRequiredDiskspace" text="Label" />
