@@ -42,6 +42,8 @@ import org.freedesktop.dbus.exceptions.DBusException;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
+import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextField;
 
 
 public class UpdateDeviceUI extends View {
@@ -52,6 +54,7 @@ public class UpdateDeviceUI extends View {
     private boolean showHarddisks = false;
     private final Timer listUpdateTimer = new Timer();
     private ObservableList<StorageDevice> selectedStds;
+    private RepartitionStrategy repartitionStrategy = RepartitionStrategy.KEEP;
 
     @FXML private Button btnAddFileToOverwritte;
     @FXML private Button btnBack;
@@ -62,11 +65,15 @@ public class UpdateDeviceUI extends View {
     @FXML private Button btnFilesSort;
     @FXML private Button btnFilesSortReverse;
     @FXML private Button btnImportFileToOverwritte;
-    @FXML private Button btnUpgrade;
     @FXML private Button btnRemoveFileToOverwritte;
-    @FXML private ListView<String> lvFilesToOverwritte;
-    @FXML private ListView<StorageDevice> lvDevices;
+    @FXML private Button btnUpgrade;
     @FXML private CheckBox chbShowHarddisk;
+    @FXML private ListView<StorageDevice> lvDevices;
+    @FXML private ListView<String> lvFilesToOverwritte;
+    @FXML private RadioButton rdbOriginalExchange;
+    @FXML private RadioButton rdbRemoveExchange;
+    @FXML private RadioButton rdbResizeExchange;
+    @FXML private TextField tfResizeExchange;
 
     public UpdateDeviceUI() {
         Map<String, String> environment = new HashMap<>();
@@ -283,6 +290,20 @@ public class UpdateDeviceUI extends View {
         // Sort file list alphabeticly
         btnFilesSortReverse.setOnAction(event -> {
             lvFilesToOverwritte.getItems().sort(Comparator.reverseOrder());
+        });
+
+        tfResizeExchange.setDisable(true);
+        rdbOriginalExchange.setOnAction(event -> {
+            repartitionStrategy = RepartitionStrategy.KEEP;
+            tfResizeExchange.setDisable(true);
+        });
+        rdbRemoveExchange.setOnAction(event -> {
+            repartitionStrategy = RepartitionStrategy.REMOVE;
+            tfResizeExchange.setDisable(true);
+        });
+        rdbResizeExchange.setOnAction(event -> {
+            repartitionStrategy = RepartitionStrategy.RESIZE;
+            tfResizeExchange.setDisable(false);
         });
 
         btnUpgrade.setOnAction(event -> {
