@@ -149,15 +149,20 @@ public class UpdateDeviceUI extends View {
         lvDevices.getSelectionModel().selectedItemProperty().addListener(
                 (ObservableValue<? extends StorageDevice> ov, StorageDevice old_val, StorageDevice new_val) -> {
                     selectedStds = lvDevices.getSelectionModel().getSelectedItems();
-                });
+            }
+        );
+
+        lvFilesToOverwritte.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
 
         // Add files to the list
         btnAddFileToOverwritte.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();
-            File selectedFile = fileChooser.showOpenDialog(btnAddFileToOverwritte.getScene().getWindow());
+            List<File> selectedFiles = fileChooser.showOpenMultipleDialog(btnAddFileToOverwritte.getScene().getWindow());
             fileChooser.setTitle(stringBundle.getString("export.chooseDirectory"));
-            if (selectedFile != null) {
-                lvFilesToOverwritte.getItems().add(selectedFile.getAbsolutePath());
+            if (!selectedFiles.isEmpty()) {
+                for (File f : selectedFiles) {
+                    lvFilesToOverwritte.getItems().add(f.getAbsolutePath());
+                }
             }
         });
 
@@ -234,7 +239,7 @@ public class UpdateDeviceUI extends View {
             boolean firstItem = lvFilesToOverwritte.getItems().indexOf(lvFilesToOverwritte.getSelectionModel().getSelectedItem()) == 0;
             if (newValue != null) {
                 // new selection is not empty
-                btnFileUp.setDisable(firstItem);
+                btnFileUp.setDisable(firstItem || (lvFilesToOverwritte.getSelectionModel().getSelectedIndices().size() != 1));
             }
         });
 
@@ -245,6 +250,7 @@ public class UpdateDeviceUI extends View {
             String tmp = lvFilesToOverwritte.getItems().get(selection_index - 1);
             lvFilesToOverwritte.getItems().set(selection_index - 1, selection);
             lvFilesToOverwritte.getItems().set(selection_index, tmp);
+            lvFilesToOverwritte.getSelectionModel().clearSelection();
             lvFilesToOverwritte.getSelectionModel().select(selection);
         });
 
@@ -254,7 +260,7 @@ public class UpdateDeviceUI extends View {
             boolean lastItem = lvFilesToOverwritte.getItems().indexOf(lvFilesToOverwritte.getSelectionModel().getSelectedItem()) == lastIndex;
             if (newValue != null) {
                 // new selection is not empty
-                btnFileDown.setDisable(lastItem);
+                btnFileDown.setDisable(lastItem || (lvFilesToOverwritte.getSelectionModel().getSelectedIndices().size() != 1));
             }
         });
 
@@ -265,6 +271,7 @@ public class UpdateDeviceUI extends View {
             String tmp = lvFilesToOverwritte.getItems().get(selection_index + 1);
             lvFilesToOverwritte.getItems().set(selection_index + 1, selection);
             lvFilesToOverwritte.getItems().set(selection_index, tmp);
+            lvFilesToOverwritte.getSelectionModel().clearSelection();
             lvFilesToOverwritte.getSelectionModel().select(selection);
         });
 
