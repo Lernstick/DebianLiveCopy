@@ -22,6 +22,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+<?import ch.fhnw.dlcopy.gui.javafx.NumericTextField?>
 
 <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
@@ -137,7 +138,7 @@
                                     <HBox spacing="20.0">
                                        <children>
                                           <RadioButton fx:id="rdbResizeExchange" minHeight="32.0" mnemonicParsing="false" text="%update.rdbResizeExchange" toggleGroup="$tgModeRepartition" />
-                                          <TextField fx:id="tfResizeExchange" minHeight="32.0" />
+                                          <NumericTextField fx:id="tfResizeExchange" minHeight="32.0" />
                                           <Label minHeight="32.0" text="%update.lblResizeExchange" />
                                        </children>
                                     </HBox>
