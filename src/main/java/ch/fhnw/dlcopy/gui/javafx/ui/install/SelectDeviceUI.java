@@ -1,5 +1,6 @@
 package ch.fhnw.dlcopy.gui.javafx.ui.install;
 
+import ch.fhnw.dlcopy.gui.javafx.NumericTextField;
 import ch.fhnw.dlcopy.DLCopy;
 import ch.fhnw.dlcopy.DataPartitionMode;
 import ch.fhnw.dlcopy.Installer;
