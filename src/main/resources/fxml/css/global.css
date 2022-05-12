@@ -22,9 +22,8 @@
 }
 
 .labelselected {
-    /*-fx-background-color: #494949;*/
+    -fx-font-size: 13;
     -fx-font-weight: bold;
-    -fx-text-fill: black;
 }
 
 .list-cell {
