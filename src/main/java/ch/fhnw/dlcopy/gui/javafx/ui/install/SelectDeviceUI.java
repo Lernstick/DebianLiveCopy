@@ -272,11 +272,9 @@ public class SelectDeviceUI extends View {
         });
         lblFilesystem.hoverProperty().addListener((value, hadFocus, hasFocus) -> {
             if (hasFocus) {
-                System.out.println("chbFilesystem focuse");
                 gpFilesystem.setVisible(true);
             }
             if (hadFocus){
-                System.out.println("chbFilesystem no focuse");
                 gpFilesystem.setVisible(false);
             }
         });
