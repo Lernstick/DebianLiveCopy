@@ -52,8 +52,9 @@ public class UpdateDeviceUI extends View {
     private boolean showHarddisks = false;
     private final Timer listUpdateTimer = new Timer();
     private ObservableList<StorageDevice> selectedStds;
-    
+
     @FXML private Button btnAddFileToOverwritte;
+    @FXML private Button btnBack;
     @FXML private Button btnEditFileToOverwritte;
     @FXML private Button btnExportFileToOverwritte;
     @FXML private Button btnFileDown;
@@ -65,10 +66,9 @@ public class UpdateDeviceUI extends View {
     @FXML private Button btnRemoveFileToOverwritte;
     @FXML private ListView<String> lvFilesToOverwritte;
     @FXML private ListView<StorageDevice> lvDevices;
-    @FXML private Button btnBack;
-    @FXML private Button btnExport;
+    @FXML private CheckBox chbShowHarddisk;
 
-    public UpdateDeviceUI() {   
+    public UpdateDeviceUI() {
         Map<String, String> environment = new HashMap<>();
         environment.put("LC_ALL", "C");
         PROCESS_EXECUTOR.setEnvironment(environment);
@@ -82,17 +82,18 @@ public class UpdateDeviceUI extends View {
 
         resourcePath = getClass().getResource("/fxml/update/update.fxml");
     }
-    
+
+
     private void confirm(String message) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
-                stringBundle.getString("updateconfirm.confirm"), 
+                stringBundle.getString("updateconfirm.confirm"),
                 ButtonType.YES, ButtonType.CANCEL);
         alert.setTitle(stringBundle.getString("updateconfirm.header"));
         alert.setHeaderText(stringBundle.getString("updateconfirm.consequences"));
         alert.setContentText(message);
         alert.showAndWait();
     }
-        
+
 
      /**
      * This function is called, when the view should be deinitalized.
@@ -107,11 +108,8 @@ public class UpdateDeviceUI extends View {
     protected void setupEventHandlers() {
         btnBack.setOnAction(event -> {
             context.setScene(new StartscreenUI());
-        });    
-        
-        btnExport.setOnAction(event ->{
-           confirm(stringBundle.getString("updateconfirm.lastwarning"));
         });
+
         chbShowHarddisk.setOnAction(event -> {
             showHarddisks = valChb(chbShowHarddisk);
         });
@@ -281,6 +279,7 @@ public class UpdateDeviceUI extends View {
         });
 
         btnUpgrade.setOnAction(event -> {
+            confirm(stringBundle.getString("updateconfirm.lastwarning"));
             update();
         });
     }
