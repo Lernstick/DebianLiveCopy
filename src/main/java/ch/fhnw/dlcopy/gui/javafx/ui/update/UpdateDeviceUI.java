@@ -27,6 +27,8 @@ import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.property.BooleanProperty;
+import javafx.beans.property.SimpleBooleanProperty;
 import javafx.beans.property.SimpleListProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
@@ -56,6 +58,7 @@ public class UpdateDeviceUI  extends View{
     @FXML private Button btnAddFileToOverwritte;
     @FXML private Button btnEditFileToOverwritte;
     @FXML private Button btnExportFileToOverwritte;
+    @FXML private Button btnFileUp;
     @FXML private Button btnImportFileToOverwritte;
     @FXML private Button btnRemoveFileToOverwritte;
     @FXML private ListView<String> lvFilesToOverwritte;
@@ -232,6 +235,26 @@ public class UpdateDeviceUI  extends View{
                     Logger.getLogger(UpdateDeviceUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
+        });
+        
+        // Activate up button, when a file is selected and it is not the most top one
+        lvFilesToOverwritte.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            boolean firstItem = lvFilesToOverwritte.getItems().indexOf(lvFilesToOverwritte.getSelectionModel().getSelectedItem()) == 0;
+            if (newValue != null){
+                // new selection is not empty
+                btnFileUp.setDisable(firstItem);
+            }
+        });
+        
+        // Move file up in the file list
+        btnFileUp.setOnAction(event -> {
+            String selection = lvFilesToOverwritte.getSelectionModel().getSelectedItem();
+            int selection_index = lvFilesToOverwritte.getItems().indexOf(selection);
+            String tmp = lvFilesToOverwritte.getItems().get(selection_index - 1);
+            lvFilesToOverwritte.getItems().set(selection_index - 1, selection);
+            lvFilesToOverwritte.getItems().set(selection_index, tmp);
+            lvFilesToOverwritte.getSelectionModel().select(selection);
+            
         });
     }
     
