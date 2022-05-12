@@ -42,7 +42,6 @@ public class InfoUI extends View {
         } else {
             message = stringBundle.getString("export.error.isoCreation");
         }
-
         lblExtraInfo.setText(message);
     }
 

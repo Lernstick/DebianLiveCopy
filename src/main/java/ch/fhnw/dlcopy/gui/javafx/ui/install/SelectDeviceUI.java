@@ -72,6 +72,7 @@ public class SelectDeviceUI extends View {
     @FXML private ComboBox cmbDataPartitionMode;
     @FXML private ComboBox cmbExchangePartitionFilesystem;
     @FXML private Label lblRequiredDiskspace;
+    @FXML private Label lblFilesystem;
     @FXML private ListView<StorageDevice> lvDevices;
     @FXML private CheckBox chbCheckCopies;
     @FXML private CheckBox chbCopyDataPartition;
@@ -92,7 +93,6 @@ public class SelectDeviceUI extends View {
     @FXML private TextField tfPrefixText;
     @FXML private NumericTextField tfStartPattern;
     @FXML private NumericTextField tfSteps;
-    @FXML private Label lblFilesystem;
 
     
 
@@ -179,20 +179,6 @@ public class SelectDeviceUI extends View {
         dpfsList.addAll(DLCopy.DATA_PARTITION_FS);
         cmbDataPartitionFilesystem.setItems(dpfsList);
         cmbDataPartitionFilesystem.getSelectionModel().selectLast();
-        
-        lblFilesystem.hoverProperty().addListener((value, hadFocus, hasFocus) -> {
-             if (hasFocus) {
-                 System.out.println("chbFilesystem focuse");
-                gpFilesystem.setVisible(true);
-            }
-             
-            if (hadFocus){
-                System.out.println("chbFilesystem no focuse");
-                gpFilesystem.setVisible(false);
-            }
-
-        });
-
 
         ObservableList<DataPartitionModeEntry> dpmeList = FXCollections.observableArrayList();
         dpmeList.add(new DataPartitionModeEntry(DataPartitionMode.READ_WRITE, "install.dataPartitionModeRW"));
@@ -284,8 +270,16 @@ public class SelectDeviceUI extends View {
             pfDataPartitionSecondaryPassword.setText(pfDataPartitionSecondaryPassword.getPromptText());
             pfDataPartitionSecondaryPassword.setPromptText("");
         });
-        
-                
+        lblFilesystem.hoverProperty().addListener((value, hadFocus, hasFocus) -> {
+            if (hasFocus) {
+                System.out.println("chbFilesystem focuse");
+                gpFilesystem.setVisible(true);
+            }
+            if (hadFocus){
+                System.out.println("chbFilesystem no focuse");
+                gpFilesystem.setVisible(false);
+            }
+        });
     }
 
     private void install(ObservableList<StorageDevice> devices) {
