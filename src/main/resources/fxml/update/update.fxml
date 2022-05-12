@@ -272,7 +272,7 @@
             <ButtonBar HBox.hgrow="ALWAYS">
                <buttons>
                       <Button fx:id="btnBack" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="%global.previous" />
-                      <Button fx:id="btnExport" disable="true" mnemonicParsing="false" text="%global.next" />
+                      <Button fx:id="btnUpgrade" disable="true" mnemonicParsing="false" text="%global.next" />
                </buttons>
             </ButtonBar>
          </children>

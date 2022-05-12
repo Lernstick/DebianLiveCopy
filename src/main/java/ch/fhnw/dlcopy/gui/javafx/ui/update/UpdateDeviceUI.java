@@ -4,8 +4,10 @@ package ch.fhnw.dlcopy.gui.javafx.ui.update;
 import ch.fhnw.dlcopy.DLCopy;
 import static ch.fhnw.dlcopy.DLCopy.MEGA;
 import ch.fhnw.dlcopy.PartitionState;
+import ch.fhnw.dlcopy.RepartitionStrategy;
 import ch.fhnw.dlcopy.RunningSystemSource;
 import ch.fhnw.dlcopy.SystemSource;
+import ch.fhnw.dlcopy.Upgrader;
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import ch.fhnw.dlcopy.gui.javafx.ui.install.SelectDeviceUI;
@@ -25,6 +27,7 @@ import javafx.fxml.FXML;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
@@ -64,6 +67,7 @@ public class UpdateDeviceUI  extends View{
     @FXML private Button btnFilesSort;
     @FXML private Button btnFilesSortReverse;
     @FXML private Button btnImportFileToOverwritte;
+    @FXML private Button btnUpgrade;
     @FXML private Button btnRemoveFileToOverwritte;
     @FXML private ListView<String> lvFilesToOverwritte;
     @FXML private ListView<StorageDevice> lvDevices;
@@ -289,6 +293,10 @@ public class UpdateDeviceUI  extends View{
         btnFilesSortReverse.setOnAction(event -> {
             lvFilesToOverwritte.getItems().sort(Comparator.reverseOrder());
         });
+        
+        btnUpgrade.setOnAction(event -> {
+            update();
+        });
     }
     
       public void updateInstallSelectionCountAndExchangeInfo() {
@@ -328,6 +336,35 @@ public class UpdateDeviceUI  extends View{
 
         // TODO: update all other parts of the UI
         // see ch.fhnw.dlcopy.gui.swing.InstallerPanels
+    }
+      
+    private void update(){
+        new Upgrader(
+            runningSystemSource, // the system source
+            lvDevices.getItems(), // the list of StorageDevices to upgrade
+            "", // the label of the exchange partition
+            "", // the file system of the exchange partition
+            "", // the file system of the data partition
+            new HashMap<>(), // a global digest cache for speeding up repeated file checks
+            null, // the main DLCopy instance
+            context, // the DLCopy GUI
+            RepartitionStrategy.KEEP, // the repartition strategie for the exchange partition
+            0, // the new size of the exchange partition if we want to resize it during upgrade
+            false, // if an automatic backup should be run before upgrading
+            "", // the destination for automatic backups
+            false, // if temporary backups should be deleted
+            false, // if the system partition should be upgraded
+            false, // if the data partition should be reset
+            false, // if the printer settings should be kept when upgrading
+            false, // if the network settings should be kept when upgrading
+            false, // if the firewall settings should be kept when upgrading
+            false, // if the user name, password and groups should be kept when upgrading
+            false, // if the welcome program should be reactivated
+            false, // if hidden files in the user's home of the storage device should be deleted
+            lvFilesToOverwritte.getItems(), // the list of files to copy from the currently
+            DLCopy.getEnlargedSystemSize(runningSystemSource.getSystemSize()), // the "enlarged" system size (multiplied with a small file system overhead factor)
+            new ReentrantLock() // the lock to aquire before executing in background
+        ).execute();
     }
     
     /**
