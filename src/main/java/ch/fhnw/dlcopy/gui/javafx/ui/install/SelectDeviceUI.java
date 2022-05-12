@@ -2,6 +2,7 @@ package ch.fhnw.dlcopy.gui.javafx.ui.install;
 
 import ch.fhnw.dlcopy.gui.javafx.NumericTextField;
 import ch.fhnw.dlcopy.DLCopy;
+import static ch.fhnw.dlcopy.DLCopy.MEGA;
 import ch.fhnw.dlcopy.DataPartitionMode;
 import ch.fhnw.dlcopy.Installer;
 import ch.fhnw.dlcopy.IsoSystemSource;
@@ -32,6 +33,8 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -67,9 +70,9 @@ public class SelectDeviceUI extends View {
     private final Timer listUpdateTimer = new Timer();
     private SystemSource runningSystemSource;
     private SystemSource isoSystemSource;
-    private int exchangePartitionSize = -1;
     private boolean showHarddisks = false;
     private ObservableList<StorageDevice> selectedStds;
+    private LongProperty exchangePartitionSize = new SimpleLongProperty();
 
     // some locks to synchronize the Installer, Upgrader and Resetter with their
     // corresponding StorageDeviceAdder
@@ -226,7 +229,13 @@ public class SelectDeviceUI extends View {
                 (ObservableValue<? extends StorageDevice> ov, StorageDevice old_val, StorageDevice new_val) -> {
              selectedStds = lvDevices.getSelectionModel().getSelectedItems();
         });
-        lvDevices.setCellFactory(cell -> new DeviceCell());
+        lvDevices.setCellFactory(cell -> {
+            return new DeviceCell(
+                    new SimpleLongProperty(DLCopy.EFI_PARTITION_SIZE * MEGA),
+                    exchangePartitionSize,
+                    new SimpleLongProperty(runningSystemSource.getSystemSize() / MEGA)
+            );
+        });
         btnInstall.setDisable(false);
    }
 
@@ -235,13 +244,12 @@ public class SelectDeviceUI extends View {
         
         // Enable install button, when exchange partition is not 0
         btnInstall.disableProperty().bind(
-                slExchangePartitionSize.valueProperty().lessThan(0)
+                exchangePartitionSize.lessThan(0)
         );
         
-        // Bind textfield to slider for exchange partition size
-        tfExchangePartitionSize.textProperty().bindBidirectional(
-                slExchangePartitionSize.valueProperty(), new NumberStringConverter()
-        );
+        // Bind the textinput and the slider to the same value
+        tfExchangePartitionSize.textProperty().bindBidirectional(exchangePartitionSize, new NumberStringConverter());
+        slExchangePartitionSize.valueProperty().bindBidirectional(exchangePartitionSize);
     }
 
     @Override
@@ -337,7 +345,7 @@ public class SelectDeviceUI extends View {
             new HashMap<String, byte[]>(),  // a global digest cache for speeding up repeated file checks
             // Register the InstallControler as Callback-Class
             installcontroller,    // the DLCopyGUI
-            exchangePartitionSize,  // the size of the exchange partition
+            exchangePartitionSize.intValue(),  // the size of the exchange partition
             valChb(chbCopyExchangePartition),  // if the exchange partition should be copied
             tfPrefixText.getText(), // the auto numbering pattern
             getAutoNrStartVal(),  // the auto numbering start value
@@ -429,7 +437,7 @@ public class SelectDeviceUI extends View {
 
             PartitionSizes partitionSizes = DLCopy.getInstallPartitionSizes(
                     runningSystemSource, device,
-                    exchangePartitionSize);
+                    exchangePartitionSize.intValue());
 
             if (!checkPersistence(partitionSizes)) {
                 return false;

@@ -12,6 +12,13 @@
             <Label fx:id="lblIdentifier" text="lblIdentifier" />
          </children>
       </HBox>
-      <HBox prefHeight="100.0" prefWidth="200.0" />
+      <HBox fx:id="hbPartitions" maxWidth="1.7976931348623157E308">
+         <children>
+            <Label fx:id="lblPartition1" style="-fx-background-color: #111111;" text="lblPartition1" />
+            <Label fx:id="lblPartition2" style="-fx-background-color: #222222;" text="lblPartition2" />
+            <Label fx:id="lblPartition3" style="-fx-background-color: #333333;" text="lblPartition3" />
+            <Label fx:id="lblPartition4" style="-fx-background-color: #444444;" text="lblPartition4" />
+         </children>
+      </HBox>
    </children>
 </VBox>
