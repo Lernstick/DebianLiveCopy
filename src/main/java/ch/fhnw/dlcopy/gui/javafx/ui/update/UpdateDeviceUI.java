@@ -50,6 +50,7 @@ public class UpdateDeviceUI  extends View{
     private ObservableList<StorageDevice> selectedStds;
     
     @FXML private Button btnAddFileToOverwritte;
+    @FXML private Button btnRemoveFileToOverwritte;
     @FXML private ListView<String> lvFilesToOverwritte;
     @FXML private ListView<StorageDevice> lvDevices;
     @FXML private Button btnBack;
@@ -139,6 +140,7 @@ public class UpdateDeviceUI  extends View{
              selectedStds = lvDevices.getSelectionModel().getSelectedItems();
         });
 
+        // Add files to the list
         btnAddFileToOverwritte.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();
             File selectedFile = fileChooser.showOpenDialog(btnAddFileToOverwritte.getScene().getWindow());
@@ -146,6 +148,18 @@ public class UpdateDeviceUI  extends View{
             if (selectedFile != null) {
                 lvFilesToOverwritte.getItems().add(selectedFile.getAbsolutePath());
             }
+        });
+        
+        // Aktivate the remove button, when a item is selected
+        btnRemoveFileToOverwritte.disableProperty().bind(
+                lvFilesToOverwritte.getSelectionModel().selectedItemProperty().isNull()
+        );
+        
+        // Remove files from the list
+        btnRemoveFileToOverwritte.setOnAction(event -> {
+            lvFilesToOverwritte.getItems().removeAll(
+                    lvFilesToOverwritte.getSelectionModel().getSelectedItems()
+            );
         });
     }
     

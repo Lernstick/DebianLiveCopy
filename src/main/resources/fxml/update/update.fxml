@@ -216,7 +216,7 @@
                                              </image>
                                           </ImageView>
                                        </graphic></Button>
-                                    <Button disable="true" maxWidth="35.0" minHeight="35.0" minWidth="35.0" mnemonicParsing="false">
+                                    <Button fx:id="btnRemoveFileToOverwritte" disable="true" maxWidth="35.0" minHeight="35.0" minWidth="35.0" mnemonicParsing="false">
                                        <graphic>
                                           <ImageView fitHeight="25.0" fitWidth="25.0" pickOnBounds="true" preserveRatio="true">
                                              <image>
