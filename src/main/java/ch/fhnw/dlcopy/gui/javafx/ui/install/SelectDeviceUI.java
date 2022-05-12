@@ -60,6 +60,7 @@ public class SelectDeviceUI extends View {
 
     private final Timer listUpdateTimer = new Timer();
     private SystemSource runningSystemSource;
+    private SystemSource isoSystemSource;
     private int exchangePartitionSize = -1;
     private boolean showHarddisks = false;
     private ObservableList<StorageDevice> selectedStds;
@@ -99,7 +100,6 @@ public class SelectDeviceUI extends View {
     @FXML private RadioButton rdbCurrentSystem;
     @FXML private RadioButton rdbIsoImage;
     @FXML private TabPane tpInstallDetails;
-    @FXML private ToggleGroup tgSelectDevice;
     @FXML private TextField tfPrefixText;
     @FXML private NumericTextField tfStartPattern;
     @FXML private NumericTextField tfSteps;
