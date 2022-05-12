@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import javafx.fxml.FXML;
@@ -60,6 +61,8 @@ public class UpdateDeviceUI  extends View{
     @FXML private Button btnExportFileToOverwritte;
     @FXML private Button btnFileDown;
     @FXML private Button btnFileUp;
+    @FXML private Button btnFilesSort;
+    @FXML private Button btnFilesSortReverse;
     @FXML private Button btnImportFileToOverwritte;
     @FXML private Button btnRemoveFileToOverwritte;
     @FXML private ListView<String> lvFilesToOverwritte;
@@ -275,6 +278,16 @@ public class UpdateDeviceUI  extends View{
             lvFilesToOverwritte.getItems().set(selection_index + 1, selection);
             lvFilesToOverwritte.getItems().set(selection_index, tmp);
             lvFilesToOverwritte.getSelectionModel().select(selection); 
+        });
+        
+        // Sort file list alphabeticly
+        btnFilesSort.setOnAction(event -> {
+            lvFilesToOverwritte.getItems().sort(Comparator.naturalOrder());
+        });
+        
+        // Sort file list alphabeticly
+        btnFilesSortReverse.setOnAction(event -> {
+            lvFilesToOverwritte.getItems().sort(Comparator.reverseOrder());
         });
     }
     
