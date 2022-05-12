@@ -48,20 +48,20 @@
         <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="1" GridPane.rowIndex="2" />
         <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="2" GridPane.rowIndex="1" />
       <HBox GridPane.columnIndex="2" />
-      <TableView id="tvReport" fx:id="tvReport" GridPane.columnIndex="2">
+      <TableView id="tvReport" fx:id="tvReport" maxHeight="-Infinity" maxWidth="-Infinity" GridPane.columnIndex="2">
          <columns>
-            <TableColumn fx:id="colNumber" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" resizable="false" text="%install.colNumber" />
-            <TableColumn fx:id="colMountpoint" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" resizable="false" text="%install.colMountpoint" />
-            <TableColumn fx:id="colMounted" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" resizable="false" text="%install.colMounted" />
-            <TableColumn fx:id="colVendor" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" resizable="false" text="%install.colVendor" />
-            <TableColumn fx:id="colModel" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" resizable="false" text="%install.colModel" />
-            <TableColumn fx:id="colSerial" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" resizable="false" text="%install.colSerial" />
-            <TableColumn fx:id="colSize" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" resizable="false" text="%install.colSize" />
-            <TableColumn fx:id="colStart" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" resizable="false" text="%install.colStart" />
-            <TableColumn fx:id="colFinish" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" resizable="false" text="%install.colFinish" />
-            <TableColumn fx:id="colDuration" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" resizable="false" text="%install.colDuration" />
-            <TableColumn fx:id="colStatus" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" resizable="false" text="%install.colStatus" />
-            <TableColumn fx:id="colError" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="100.0" resizable="false" text="%error.error" />
+            <TableColumn fx:id="colNumber" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" text="%install.colNumber" />
+            <TableColumn fx:id="colMountpoint" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" text="%install.colMountpoint" />
+            <TableColumn fx:id="colMounted" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" text="%install.colMounted" />
+            <TableColumn fx:id="colVendor" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" text="%install.colVendor" />
+            <TableColumn fx:id="colModel" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" text="%install.colModel" />
+            <TableColumn fx:id="colSerial" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" text="%install.colSerial" />
+            <TableColumn fx:id="colSize" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" text="%install.colSize" />
+            <TableColumn fx:id="colStart" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" text="%install.colStart" />
+            <TableColumn fx:id="colFinish" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" text="%install.colFinish" />
+            <TableColumn fx:id="colDuration" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" text="%install.colDuration" />
+            <TableColumn fx:id="colStatus" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" text="%install.colStatus" />
+            <TableColumn fx:id="colError" editable="false" maxWidth="1.7976931348623157E308" minWidth="-1.0" prefWidth="-1.0" resizable="false" text="%error.error" />
          </columns>
          <GridPane.margin>
             <Insets bottom="20.0" left="20.0" right="20.0" top="20.0" />
