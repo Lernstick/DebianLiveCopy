@@ -233,7 +233,8 @@ public class SelectDeviceUI extends View {
             return new DeviceCell(
                     new SimpleLongProperty(DLCopy.EFI_PARTITION_SIZE * MEGA),
                     exchangePartitionSize,
-                    new SimpleLongProperty(runningSystemSource.getSystemSize() / MEGA)
+                    new SimpleLongProperty(runningSystemSource.getSystemSize()),
+                    lvDevices.widthProperty()
             );
         });
         btnInstall.setDisable(false);

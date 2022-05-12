@@ -5,6 +5,7 @@ import ch.fhnw.util.StorageDevice;
 import java.io.IOException;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.LongProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
@@ -20,8 +21,9 @@ public class DeviceCell extends ListCell<StorageDevice>{
     private FXMLLoader loader;
     
     private LongProperty efiPartitionSize;
-    private LongProperty exchangePartitionSize;
+    private LongProperty exchangePartitionSize = new SimpleLongProperty();
     private LongProperty systemPartitionSize;
+    private ReadOnlyDoubleProperty rowSpace;
     
     @FXML private HBox hbPartitions;
     @FXML private Label lblIdentifier;
@@ -31,12 +33,12 @@ public class DeviceCell extends ListCell<StorageDevice>{
     @FXML private Label lblPartition4;
     @FXML private VBox panRoot;
     
-    public DeviceCell(LongProperty efiPartitionSize, LongProperty exchangePartitionSize, LongProperty systemPartitionSize){
+    public DeviceCell(LongProperty efiPartitionSize, LongProperty exchangePartitionSize, LongProperty systemPartitionSize, ReadOnlyDoubleProperty rowSpace){
         super();
         this.efiPartitionSize = efiPartitionSize;
-        this.exchangePartitionSize = exchangePartitionSize;
+        this.exchangePartitionSize.bind(exchangePartitionSize);
         this.systemPartitionSize = systemPartitionSize;
-        
+        this.rowSpace = rowSpace;
     }
     
     public DeviceCell(StorageDevice device){
@@ -83,41 +85,47 @@ public class DeviceCell extends ListCell<StorageDevice>{
             
             lblIdentifier.setText(device.toString());
             
-            LongProperty deviceSize = new SimpleLongProperty(device.getSize() / 8);
+            LongProperty deviceSize = new SimpleLongProperty(device.getSize());
+            LongProperty dataPartitionSize = new SimpleLongProperty();
+            dataPartitionSize.bind(
+                    deviceSize
+                    .subtract(efiPartitionSize)
+                    .subtract(exchangePartitionSize)
+                    .subtract(systemPartitionSize)
+            );
             
             lblPartition1.prefWidthProperty().bind(
                     efiPartitionSize
-                    .multiply(hbPartitions.widthProperty().multiply(0.98))
+                    .multiply(rowSpace.multiply(0.95))
                     .divide(deviceSize)
             );
             
             lblPartition2.prefWidthProperty().bind(
                     exchangePartitionSize
-                    .multiply(hbPartitions.widthProperty().multiply(0.98))
+                    .multiply(rowSpace.multiply(0.95))
                     .divide(deviceSize)
             );
             
             lblPartition3.prefWidthProperty().bind(
-                    deviceSize
-                    .subtract(efiPartitionSize)
-                    .subtract(exchangePartitionSize)
-                    .subtract(systemPartitionSize)
-                    .multiply(hbPartitions.widthProperty().multiply(0.98))
+                    dataPartitionSize
+                    .multiply(rowSpace.multiply(0.95))
                     .divide(deviceSize)
             );
             
             lblPartition4.prefWidthProperty().bind(
                     systemPartitionSize
-                    .multiply(hbPartitions.widthProperty().multiply(0.98))
+                    .multiply(rowSpace.multiply(0.95))
                     .divide(deviceSize)
             );
             
             lblPartition2.textProperty().bind(new SimpleStringProperty(LernstickFileTools.getDataVolumeString(exchangePartitionSize.get(), 1)));
+            lblPartition3.textProperty().bind(new SimpleStringProperty(LernstickFileTools.getDataVolumeString(dataPartitionSize.get(), 1)));
             lblPartition4.textProperty().bind(new SimpleStringProperty(LernstickFileTools.getDataVolumeString(systemPartitionSize.get(), 1)));
             
             exchangePartitionSize.addListener(event -> {
                 System.out.println("TRACE: new efiPartitionSize: " + efiPartitionSize.get());
                 System.out.println("\texchangePartitionSize: " + exchangePartitionSize.get());
+                System.out.println("\tdataPartitionSize: " + dataPartitionSize.get());
                 System.out.println("\tsystemPartitionSize: " + systemPartitionSize.get());
                 System.out.println("\tdevice size: " + deviceSize.get());
             });
