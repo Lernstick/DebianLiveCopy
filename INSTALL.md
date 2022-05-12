@@ -26,7 +26,7 @@ We require the following additional packages:
 
 ```sh
 sudo apt update
-sudo apt install --no-install-recommends -y checkstyle gradle openjfx
+sudo apt install --no-install-recommends -y checkstyle gradle openjdk-11-jdk openjfx
 ```
 
 ### Source code

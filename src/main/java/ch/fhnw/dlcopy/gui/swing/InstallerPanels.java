@@ -670,10 +670,10 @@ public class InstallerPanels extends JPanel implements DocumentListener {
                 long enlargedSystemSize = DLCopy.getEnlargedSystemSize(
                         systemSource.getSystemSize());
 
-                for (int i = 0; i < selectionCount; i++) {
+                for (int i : selectedIndices) {
 
                     StorageDevice device
-                            = storageDeviceListModel.get(selectedIndices[i]);
+                            = storageDeviceListModel.get(i);
 
                     long overhead = device.getSize()
                             - (DLCopy.EFI_PARTITION_SIZE * DLCopy.MEGA)

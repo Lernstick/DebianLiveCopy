@@ -27,7 +27,7 @@ public class SquashFSCreatorSwingWorker extends SwingWorker<Boolean, String> {
     private SquashFSCreator squashFSCreator;
 
     /**
-     * creates a new ISOCreator
+     * creates a new SquashFSCreator
      *
      * @param dlCopyGUI the DLCopy GUI
      * @param systemSource the system source

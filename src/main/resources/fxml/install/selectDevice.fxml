@@ -1,100 +1,372 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.lang.String?>
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ButtonBar?>
+<?import javafx.scene.control.CheckBox?>
+<?import javafx.scene.control.ComboBox?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ListView?>
+<?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.RadioButton?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
+<?import javafx.scene.layout.VBox?>
 
-<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="540.0" prefWidth="960.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/17" xmlns:fx="http://javafx.com/fxml/1">
+<GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" stylesheets="@../css/global.css" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
     <columnConstraints>
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="19.0" prefWidth="100.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="1.0" prefWidth="100.0" />
-        <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="80.0" prefWidth="100.0" />
+        <ColumnConstraints />
+        <ColumnConstraints hgrow="NEVER" />
+        <ColumnConstraints hgrow="SOMETIMES" percentWidth="1.0" />
+      <ColumnConstraints hgrow="ALWAYS" />
     </columnConstraints>
     <rowConstraints>
-        <RowConstraints minHeight="10.0" percentHeight="85.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" percentHeight="1.0" prefHeight="30.0" vgrow="SOMETIMES" />
-        <RowConstraints minHeight="10.0" percentHeight="14.0" prefHeight="30.0" vgrow="SOMETIMES" />
+        <RowConstraints />
+        <RowConstraints vgrow="ALWAYS" />
+        <RowConstraints vgrow="SOMETIMES" />
+      <RowConstraints vgrow="SOMETIMES" />
     </rowConstraints>
     <children>
-        <GridPane>
-            <columnConstraints>
-                <ColumnConstraints halignment="LEFT" hgrow="SOMETIMES" minWidth="10.0" prefWidth="100.0" />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="2.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="50.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            </rowConstraints>
-            <children>
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="Steps" GridPane.hgrow="ALWAYS" GridPane.vgrow="ALWAYS" />
-                <Separator prefWidth="200.0" GridPane.rowIndex="1" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="Label" GridPane.hgrow="ALWAYS" GridPane.rowIndex="2" GridPane.vgrow="ALWAYS" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="Label" GridPane.hgrow="ALWAYS" GridPane.rowIndex="3" GridPane.vgrow="ALWAYS" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="Label" GridPane.hgrow="ALWAYS" GridPane.rowIndex="4" GridPane.vgrow="ALWAYS" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="Label" GridPane.hgrow="ALWAYS" GridPane.rowIndex="5" GridPane.vgrow="ALWAYS" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="Label" GridPane.hgrow="ALWAYS" GridPane.rowIndex="6" GridPane.vgrow="ALWAYS" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="Label" GridPane.hgrow="ALWAYS" GridPane.rowIndex="7" GridPane.vgrow="ALWAYS" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="Label" GridPane.hgrow="ALWAYS" GridPane.rowIndex="8" GridPane.vgrow="ALWAYS" />
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" styleClass="labelcenter" text="Label" GridPane.hgrow="ALWAYS" GridPane.rowIndex="9" GridPane.vgrow="ALWAYS" />
-            </children>
-        </GridPane>
-        <Separator orientation="VERTICAL" prefHeight="200.0" GridPane.columnIndex="1" />
-        <Separator orientation="VERTICAL" prefHeight="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <Separator orientation="VERTICAL" prefHeight="200.0" GridPane.columnIndex="1" GridPane.rowIndex="2" />
-        <Separator prefWidth="200.0" GridPane.columnIndex="2" GridPane.rowIndex="1" />
-        <Separator prefWidth="200.0" GridPane.columnIndex="1" GridPane.rowIndex="1" />
-        <GridPane GridPane.columnIndex="2" GridPane.rowIndex="2">
-            <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="60.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="14.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="3.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="14.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints minHeight="10.0" percentHeight="33.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="33.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="33.3" prefHeight="30.0" vgrow="SOMETIMES" />
-            </rowConstraints>
-            <children>
-                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Info" textAlignment="CENTER" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
-                <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Button" GridPane.columnIndex="2" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
-                <Button maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" mnemonicParsing="false" text="Button" GridPane.columnIndex="4" GridPane.hgrow="ALWAYS" GridPane.rowIndex="1" GridPane.vgrow="ALWAYS" />
-            </children>
-        </GridPane>
-        <GridPane GridPane.columnIndex="2">
-            <columnConstraints>
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="25.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="50.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="10.0" prefWidth="100.0" />
-                <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
-            </columnConstraints>
-            <rowConstraints>
-                <RowConstraints minHeight="10.0" percentHeight="7.6" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="5.3" prefHeight="30.0" vgrow="SOMETIMES" />
-                <RowConstraints minHeight="10.0" percentHeight="50.0" prefHeight="30.0" vgrow="SOMETIMES" />
-            </rowConstraints>
-        </GridPane>
+      <VBox fillWidth="false" spacing="5.0" GridPane.columnIndex="1" GridPane.rowIndex="1">
+         <children>
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.installSystem" />
+            <Separator />
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="%global.selection">
+               <styleClass>
+                  <String fx:value="labelcenter" />
+                  <String fx:value="labelselected" />
+               </styleClass>
+                </Label>
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.install" />
+                <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.finish" />
+         </children>
+         <padding>
+            <Insets left="5.0" right="5.0" top="10.0" />
+         </padding>
+      </VBox>
+        <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="2" GridPane.rowIndex="1" />
+        <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="2" GridPane.rowIndex="2" />
+        <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" orientation="VERTICAL" GridPane.columnIndex="2" GridPane.rowIndex="3" />
+        <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" GridPane.columnIndex="3" GridPane.rowIndex="2" />
+      <ScrollPane fitToWidth="true" GridPane.columnIndex="3" GridPane.rowIndex="1">
+         <GridPane.margin>
+            <Insets left="20.0" right="20.0" />
+         </GridPane.margin>
+         <content>
+            <HBox maxWidth="1.7976931348623157E308">
+               <children>
+                  <VBox HBox.hgrow="ALWAYS">
+                     <children>
+                        <VBox spacing="10.0">
+                           <children>
+                              <Label fx:id="lblSourceSelection" text="%install.lblSourceSelection" />
+                              <RadioButton fx:id="rdbCurrentSystem" mnemonicParsing="false" selected="true" text="%install.rdbCurrentSystem">
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="tgSelectDevice" />
+                                 </toggleGroup>
+                              </RadioButton>
+                              <RadioButton fx:id="rdbIsoImage" mnemonicParsing="false" text="%install.rdbIsoImage" toggleGroup="$tgSelectDevice" />
+                           </children>
+                           <padding>
+                              <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
+                           </padding>
+                        </VBox>
+                        <HBox>
+                           <children>
+                              <Label fx:id="lblInstallationTarget1" text="%install.lblInstallationTarget" />
+                              <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                           </children>
+                           <padding>
+                              <Insets bottom="5.0" top="5.0" />
+                           </padding>
+                        </HBox>
+                        <HBox spacing="10.0">
+                           <children>
+                              <VBox HBox.hgrow="SOMETIMES">
+                                 <children>
+                                    <Label text="%install.lblRequiredDiskspaceInfo" />
+                                 </children>
+                              </VBox>
+                              <VBox HBox.hgrow="ALWAYS">
+                                 <children>
+                                    <Label fx:id="lblRequiredDiskspace" text="Label" />
+                                 </children>
+                              </VBox>
+                              <VBox>
+                                 <children>
+                                    <CheckBox fx:id="chbShowHarddisk" alignment="CENTER_RIGHT" minHeight="32.0" mnemonicParsing="false" text="%global.showHarddisk" />
+                                 </children>
+                                 <padding>
+                                    <Insets right="40.0" />
+                                 </padding>
+                              </VBox>
+                           </children>
+                        </HBox>
+                        <TabPane tabClosingPolicy="UNAVAILABLE">
+                          <tabs>
+                            <Tab text="%global.selection">
+                                 <content>
+                                    <VBox spacing="10.0">
+                                       <children>
+                                          <ListView fx:id="lvDevices" maxHeight="200.0" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
+                                          <Label text="%global.exchangepartition" />
+                                          <HBox spacing="20.0">
+                                             <children>
+                                                <CheckBox fx:id="chbCopyExchangePartition" disable="true" maxHeight="1.7976931348623157E308" minHeight="32.0" mnemonicParsing="false" text="%install.chbcopy" />
+                                                <Separator orientation="VERTICAL" />
+                                                <Label maxHeight="1.7976931348623157E308" minHeight="32.0" text="%global.size" />
+                                                <TextField fx:id="tfExchangePartitionSize" minHeight="32.0" />
+                                             </children>
+                                          </HBox>
+                                          <Label text="%global.dataPartition" />
+                                          <HBox spacing="20.0">
+                                             <children>
+                                                <CheckBox fx:id="chbCopyDataPartition" maxHeight="1.7976931348623157E308" minHeight="32.0" mnemonicParsing="false" text="%install.chbcopy" />
+                                                <Separator orientation="VERTICAL" />
+                                                <Label maxHeight="1.7976931348623157E308" minHeight="32.0" text="%global.mode" />
+                                                <ComboBox fx:id="cmbDataPartitionMode" minHeight="32.0" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                       <padding>
+                                          <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
+                                       </padding>
+                                    </VBox>
+                                 </content>
+                              </Tab>
+                            <Tab text="%global.details">
+                                 <content>
+                                    <VBox spacing="10.0">
+                                       <children>
+                                          <HBox>
+                                             <children>
+                                                <Label text="%global.exchangepartition" HBox.hgrow="ALWAYS" />
+                                                <Separator maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                                             </children>
+                                             <padding>
+                                                <Insets bottom="5.0" top="5.0" />
+                                             </padding>
+                                          </HBox>
+                                          <HBox spacing="20.0">
+                                             <children>
+                                                <VBox spacing="10.0">
+                                                   <opaqueInsets>
+                                                      <Insets />
+                                                   </opaqueInsets>
+                                                   <padding>
+                                                      <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
+                                                   </padding>
+                                                   <children>
+                                                      <HBox spacing="20.0">
+                                                         <children>
+                                                            <VBox alignment="CENTER_LEFT" spacing="11.0">
+                                                               <children>
+                                                                  <Label minHeight="32.0" text="%global.fileSystem" />
+                                                                  <Label minHeight="32.0" text="%install.label" />
+                                                               </children>
+                                                            </VBox>
+                                                            <VBox spacing="10.0">
+                                                               <children>
+                                                                  <ComboBox fx:id="cmbExchangePartitionFilesystem" minHeight="32.0" />
+                                                                  <TextField fx:id="tfExchangePartitionLabel" minHeight="32.0" />
+                                                               </children>
+                                                            </VBox>
+                                                         </children>
+                                                      </HBox>
+                                                   </children>
+                                                </VBox>
+                                                <Separator orientation="VERTICAL" />
+                                                <VBox>
+                                                   <children>
+                                                      <HBox>
+                                                         <children>
+                                                            <Label text="%install.automaticNumbering" HBox.hgrow="ALWAYS" />
+                                                            <Separator maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                                                         </children>
+                                                         <padding>
+                                                            <Insets bottom="5.0" top="5.0" />
+                                                         </padding>
+                                                      </HBox>
+                                                      <VBox>
+                                                         <children>
+                                                            <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.prefixText" />
+                                                            <TextField fx:id="tfPrefixText" alignment="CENTER" minHeight="32.0" promptText="%global.example" />
+                                                            <HBox spacing="20.0">
+                                                               <children>
+                                                                  <VBox>
+                                                                     <children>
+                                                                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.startPattern" />
+                                                                        <TextField fx:id="tfStartPattern" alignment="CENTER" minHeight="32.0" promptText="001" />
+                                                                     </children>
+                                                                  </VBox>
+                                                                  <VBox>
+                                                                     <children>
+                                                                        <Label alignment="CENTER" maxWidth="1.7976931348623157E308" minHeight="32.0" text="%install.steps" />
+                                                                        <TextField fx:id="tfSteps" alignment="CENTER" minHeight="32.0" promptText="1" />
+                                                                     </children>
+                                                                  </VBox>
+                                                               </children>
+                                                            </HBox>
+                                                         </children>
+                                                      </VBox>
+                                                   </children>
+                                                </VBox>
+                                             </children>
+                                          </HBox>
+                                          <HBox>
+                                             <children>
+                                                <Label text="%global.dataPartition" HBox.hgrow="ALWAYS" />
+                                                <Separator maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                                             </children>
+                                             <padding>
+                                                <Insets bottom="5.0" top="5.0" />
+                                             </padding>
+                                          </HBox>
+                                          <HBox spacing="20.0">
+                                             <children>
+                                                <VBox HBox.hgrow="SOMETIMES">
+                                                   <children>
+                                                      <HBox>
+                                                         <children>
+                                                            <Label text="%install.encryption" HBox.hgrow="ALWAYS" />
+                                                            <Separator maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                                                         </children>
+                                                         <padding>
+                                                            <Insets bottom="5.0" left="20.0" top="5.0" />
+                                                         </padding>
+                                                      </HBox>
+                                                      <HBox spacing="20.0">
+                                                         <children>
+                                                            <VBox alignment="CENTER_LEFT" spacing="10.0">
+                                                               <children>
+                                                                  <CheckBox fx:id="chbDataPartitionPersonalPassword" minHeight="32.0" mnemonicParsing="false" text="%install.personalPassword" />
+                                                                  <CheckBox fx:id="chbDataPartitionSecondaryPassword" disable="true" minHeight="32.0" mnemonicParsing="false" text="%install.secondaryPassword" />
+                                                               </children>
+                                                            </VBox>
+                                                            <VBox spacing="10.0">
+                                                               <children>
+                                                                  <PasswordField fx:id="pfDataPartitionPersonalPassword" minHeight="32.0" />
+                                                                  <PasswordField fx:id="pfDataPartitionSecondaryPassword" disable="true" minHeight="32.0" />
+                                                               </children>
+                                                            </VBox>
+                                                            <VBox spacing="10.0">
+                                                               <children>
+                                                                  <Button fx:id="btnDataPartitionShowPersonalPassword" minHeight="32.0" mnemonicParsing="false" text="%global.prompt" />
+                                                                  <Button fx:id="btnDataPartitionShowSecondaryPassword" disable="true" minHeight="32.0" mnemonicParsing="false" text="%global.prompt" />
+                                                               </children>
+                                                            </VBox>
+                                                         </children>
+                                                         <padding>
+                                                            <Insets left="20.0" />
+                                                         </padding>
+                                                      </HBox>
+                                                      <HBox>
+                                                         <children>
+                                                            <CheckBox fx:id="chbDataPartitionOverwrite" disable="true" minHeight="32.0" mnemonicParsing="false" text="%install.overwriteWithRandomData" />
+                                                         </children>
+                                                         <padding>
+                                                            <Insets left="20.0" top="10.0" />
+                                                         </padding>
+                                                      </HBox>
+                                                   </children>
+                                                </VBox>
+                                                <Separator orientation="VERTICAL" />
+                                                <VBox HBox.hgrow="ALWAYS">
+                                                   <children>
+                                                      <HBox>
+                                                         <children>
+                                                            <Label text="%global.fileSystem" HBox.hgrow="ALWAYS" />
+                                                            <Separator maxHeight="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                                                         </children>
+                                                         <padding>
+                                                            <Insets bottom="5.0" top="5.0" />
+                                                         </padding>
+                                                      </HBox>
+                                                      <ComboBox fx:id="cmbDataPartitionFilesystem" minHeight="32.0" />
+                                                   </children>
+                                                   <HBox.margin>
+                                                      <Insets />
+                                                   </HBox.margin>
+                                                </VBox>
+                                             </children>
+                                          </HBox>
+                                          <HBox>
+                                             <children>
+                                                <CheckBox fx:id="chbCheckCopies" minHeight="32.0" mnemonicParsing="false" text="%install.checkCopies" />
+                                             </children>
+                                          </HBox>
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </Tab>
+                              <Tab text="%global.datatransfer">
+                                 <content>
+                                    <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0">
+                                       <opaqueInsets>
+                                          <Insets />
+                                       </opaqueInsets>
+                                       <padding>
+                                          <Insets bottom="10.0" left="20.0" right="10.0" top="10.0" />
+                                       </padding>
+                                       <children>
+                                          <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="ALWAYS">
+                                             <children>
+                                                <HBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" VBox.vgrow="ALWAYS">
+                                                   <children>
+                                                      <Label maxHeight="-Infinity" maxWidth="-Infinity" text="%install.lblInstallationTarget" HBox.hgrow="ALWAYS" />
+                                                      <Separator maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+                                                   </children>
+                                                   <padding>
+                                                      <Insets bottom="5.0" top="5.0" />
+                                                   </padding>
+                                                </HBox>
+                                             </children>
+                                          </VBox>
+                                       </children>
+                                    </VBox>
+                                 </content>
+                              </Tab>
+                          </tabs>
+                        </TabPane>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+         </content>
+      </ScrollPane>
+      <HBox GridPane.columnIndex="3" GridPane.rowIndex="3">
+         <children>
+            <ScrollPane fitToHeight="true" maxHeight="1.7976931348623157E308">
+               <content>
+                  <VBox fillWidth="false" maxHeight="1.7976931348623157E308">
+                     <children>
+                        <Label fx:id="lblInfo" maxHeight="1.7976931348623157E308" textAlignment="CENTER" VBox.vgrow="ALWAYS" />
+                     </children>
+                  </VBox>
+               </content>
+            </ScrollPane>
+            <ButtonBar HBox.hgrow="ALWAYS">
+              <buttons>
+                      <Button fx:id="btnBack" minHeight="32.0" mnemonicParsing="false" text="%global.previous" />
+                      <Button fx:id="btnInstall" minHeight="32.0" mnemonicParsing="false" text="%global.install" />
+              </buttons>
+            </ButtonBar>
+         </children>
+         <padding>
+            <Insets bottom="30.0" left="20.0" right="20.0" top="30.0" />
+         </padding>
+      </HBox>
     </children>
 </GridPane>

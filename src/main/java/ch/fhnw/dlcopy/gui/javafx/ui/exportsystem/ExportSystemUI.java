@@ -1,15 +1,12 @@
 package ch.fhnw.dlcopy.gui.javafx.ui.exportsystem;
 
 import ch.fhnw.dlcopy.DLCopy;
-import static ch.fhnw.dlcopy.DLCopy.STRINGS;
 import ch.fhnw.dlcopy.DataPartitionMode;
-import ch.fhnw.dlcopy.IsoCreator;
 import ch.fhnw.dlcopy.RunningSystemSource;
 import ch.fhnw.dlcopy.SystemSource;
 import ch.fhnw.dlcopy.gui.javafx.SwitchButton;
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
-import ch.fhnw.dlcopy.gui.javafx.ui.exportdata.LoadUI;
 import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
@@ -20,6 +17,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javafx.concurrent.Task;
 import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Alert;
@@ -29,11 +27,11 @@ import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.image.ImageView;
+import javafx.scene.control.Tooltip;
 import javafx.stage.DirectoryChooser;
 import org.freedesktop.dbus.exceptions.DBusException;
 
-public class ExportSystemUI extends View{
+public class ExportSystemUI extends View {
 
     private String option_NotUsed = stringBundle.getString("global.notUsed");
     private String option_ReadOnly = stringBundle.getString("global.readWrite");
@@ -45,14 +43,14 @@ public class ExportSystemUI extends View{
 
     @FXML private Button btnBack;
     @FXML private Button btnExport;
-    @FXML private Button btnTargetDirectory;
     @FXML private CheckBox chbInformationDialog;
     @FXML private CheckBox chbInstallationProgram;
     @FXML private ComboBox<String> cmbDataPartitionMode;
-    @FXML private ImageView imgTargetDirectory;
+    @FXML private Label lblFreeSpace;
     @FXML private Label lblFreeSpaceDisplay;
+    @FXML private Label lblTargetDirectory;
+    @FXML private Label lblWriteable;
     @FXML private Label lblWriteableDisplay;
-    @FXML private Label lblInfo;
     @FXML private SwitchButton switchBtn;
     @FXML private TextField tfDvdLabel;
     @FXML private TextField tfTargetDirectory;
@@ -73,58 +71,65 @@ public class ExportSystemUI extends View{
     }
 
     @Override
-    protected void initControls(){
+    protected void initControls() {
         cmbDataPartitionMode.getItems().addAll(option_ReadWrite, option_ReadOnly, option_NotUsed);
         cmbDataPartitionMode.setValue(option_ReadWrite);
+        btnExport.setDisable(true);
+
+        addToolTip(tfTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
+        addToolTip(chbInformationDialog, stringBundle.getString("export.tooltip.informationDialog"));
+        addToolTip(chbInstallationProgram, stringBundle.getString("export.tooltip.installationProgram"));
+        addToolTip(cmbDataPartitionMode, stringBundle.getString("global.tooltip.dataPartitionMode"));
+        addToolTip(lblFreeSpace, stringBundle.getString("export.tooltip.freeSpace"));
+        addToolTip(lblTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
+        addToolTip(lblFreeSpaceDisplay, stringBundle.getString("export.tooltip.freeSpace"));
+        addToolTip(lblWriteable, stringBundle.getString("export.tooltip.writeable"));
+        addToolTip(lblWriteableDisplay, stringBundle.getString("export.tooltip.writeable"));
+        addToolTip(switchBtn, stringBundle.getString("global.tooltip.expertMode"));
+        addToolTip(tfDvdLabel, stringBundle.getString("export.tooltip.dvdLabel"));
+        addToolTip(tfTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
     }
 
     @Override
     protected void setupEventHandlers() {
-        switchBtn.getButton().setOnAction(event -> {
+        switchBtn.setOnAction(event -> {
             toggleExpertMode();
         });
         btnBack.setOnAction(event -> {
             context.setScene(new StartscreenUI());
         });
 
-        btnTargetDirectory.setOnAction(event -> {
+        tfTargetDirectory.setOnMouseClicked(event -> {
+            selectDirectory();
+        });
+
+        tfTargetDirectory.setOnAction(event -> {
             selectDirectory();
         });
 
         btnExport.setOnAction(event -> {
-            try {
-                if(!(tfTargetDirectory.getText().isBlank() && tfDvdLabel.getText().isBlank())){
-                    return;
-                }
-                if (!isUnmountedPersistenceAvailable()) {
-                    btnExport.setDisable(true);
-                    return;
-                }
-                context.setScene(new LoadUI());
-                new IsoCreator(
-                    context,
-                    runningSystemSource,
-                    false,                               // Only boot medium
-                    tfTargetDirectory.getText(),         // tmpDirectory
-                    getDataPartitionMode(),              // Data Partition mode
-                    chbInformationDialog.isSelected(),   // showNotUsedDialog
-                    chbInstallationProgram.isSelected(), // autoStartInstaller
-                    tfDvdLabel.getText()                 // partition label
-                ).createISO();
-            } catch (Exception ex) {
-                LOGGER.log(Level.SEVERE, "", ex);
-                showError(ex.getLocalizedMessage());
+            boolean isIncomplete = false; // To log all errors at the same time
+            if (tfTargetDirectory.getText().isBlank()) {
+                LOGGER.log(Level.WARNING, "No directory choosen.");
+                isIncomplete = true;
             }
+            if (tfDvdLabel.getText().isBlank()) {
+                LOGGER.log(Level.WARNING, "No label choosen.");
+                isIncomplete = true;
+            }
+            if (isIncomplete) {
+                return;
+            }
+            createIso();
         });
-
     }
 
-    public DataPartitionMode getDataPartitionMode(){
+    public DataPartitionMode getDataPartitionMode() {
         if (option_NotUsed.equals(cmbDataPartitionMode.getValue())) {
             return DataPartitionMode.NOT_USED;
-        } else if (option_ReadWrite.equals(cmbDataPartitionMode.getValue())){
+        } else if (option_ReadWrite.equals(cmbDataPartitionMode.getValue())) {
             return DataPartitionMode.READ_WRITE;
-        } else if (option_ReadOnly.equals(cmbDataPartitionMode.getValue())){
+        } else if (option_ReadOnly.equals(cmbDataPartitionMode.getValue())) {
             return DataPartitionMode.READ_ONLY;
         } else {
             throw new IllegalArgumentException();
@@ -134,7 +139,7 @@ public class ExportSystemUI extends View{
     private void selectDirectory() {
         DirectoryChooser folder = new DirectoryChooser();
         File selectedDirectory = folder.showDialog(
-            btnTargetDirectory.getScene().getWindow());
+            tfTargetDirectory.getScene().getWindow());
         folder.setTitle(stringBundle.getString("export.chooseDirectory"));
         if (selectedDirectory != null) {
             tfTargetDirectory.setText(selectedDirectory.getAbsolutePath());
@@ -158,6 +163,7 @@ public class ExportSystemUI extends View{
                 lblWriteableDisplay.getStyleClass().clear();
                 lblWriteableDisplay.getStyleClass().add("target-ro");
                 btnExport.setDisable(true);
+                printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.notWriteable"));
             }
         } else {
             lblWriteableDisplay.setText(
@@ -165,6 +171,7 @@ public class ExportSystemUI extends View{
             lblWriteableDisplay.getStyleClass().clear();
             lblWriteableDisplay.getStyleClass().add("target-na");
             btnExport.setDisable(true);
+            printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.directoryDoesNotExist"));
         }
     }
 
@@ -180,6 +187,7 @@ public class ExportSystemUI extends View{
             String message = stringBundle.getString("error.noDataPartition");
             LOGGER.log(Level.WARNING, message);
             showError(message);
+            printInfo(stringBundle.getString("error.error") + ": " + stringBundle.getString("error.noDataPartition"));
             return false;
         }
 
@@ -215,9 +223,33 @@ public class ExportSystemUI extends View{
         return true;
     }
 
-    private void toggleExpertMode(){
-        switchBtn.toggle();
-        for (Node n : new Node[]{chbInformationDialog,chbInstallationProgram}){
+    private void createIso() {
+        try {
+            if (!isUnmountedPersistenceAvailable()) {
+                btnExport.setDisable(true);
+                return;
+            }
+        } catch (Exception ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+            showError(ex.getLocalizedMessage());
+            return;
+        }
+        Task exporter = new ExportSystemTask(
+            ExportControler.getInstance(context),
+            runningSystemSource,
+            false,                               // Only boot medium
+            tfTargetDirectory.getText(),         // tmpDirectory
+            getDataPartitionMode(),              // Data Partition mode
+            chbInformationDialog.isSelected(),   // showNotUsedDialog
+            chbInstallationProgram.isSelected(), // autoStartInstaller
+            tfDvdLabel.getText()                 // partition label
+        );
+        new Thread(exporter).start();
+        context.setScene(new LoadUI());
+    }
+
+    private void toggleExpertMode() {
+        for (Node n : new Node[]{chbInformationDialog, chbInstallationProgram}) {
             n.setVisible(switchBtn.isEnabled());
         }
     }
@@ -232,8 +264,8 @@ public class ExportSystemUI extends View{
 
     private Optional<ButtonType> showConfirm(String message) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle(STRINGS.getString("Warning"));
-        alert.setHeaderText(STRINGS.getString("Warning"));
+        alert.setTitle(stringBundle.getString("global.warning"));
+        alert.setHeaderText(stringBundle.getString("global.warning"));
         alert.setContentText(message);
         return alert.showAndWait();
     }

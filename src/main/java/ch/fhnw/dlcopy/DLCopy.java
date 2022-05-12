@@ -70,10 +70,28 @@ public class DLCopy {
     /**
      * the known and supported data partition modes
      */
-    public static final String[] DATA_PARTITION_MODES = new String[]{
+    public static final String[] DATA_PARTITION_MODES = new String[] {
         STRINGS.getString("Read_Write"),
         STRINGS.getString("Read_Only"),
         STRINGS.getString("Not_Used")
+    };
+
+    /**
+     * the known and supported data partition filesystems
+     */
+    public static final String[] DATA_PARTITION_FS = new String[] {
+        "ext2",
+        "ext3",
+        "ext4"
+    };
+
+    /**
+     * the known and supported exchange partition filesystems
+     */
+    public static final String[] EXCHANGE_PARTITION_FS = new String[] {
+        "exFAT",
+        "FAT32",
+        "NTFS"
     };
 
     /**
@@ -111,11 +129,11 @@ public class DLCopy {
             startFX(args);
         }
     }
-    
+
     public static void startFX(final String args[]){
         StorageMediaManagement.launchFX(args);
     }
-    
+
     public static void startSwing(final String args[]){
         java.awt.EventQueue.invokeLater(() -> {
             DLCopySwingGUI gui = new DLCopySwingGUI(args);
@@ -1396,6 +1414,7 @@ public class DLCopy {
         // repartition device
         String[] commandArray = partedCommandList.toArray(
                 new String[partedCommandList.size()]);
+        
         exitValue = PROCESS_EXECUTOR.executeProcess(commandArray);
         if (exitValue != 0) {
             String errorMessage = STRINGS.getString("Error_Repartitioning");

@@ -8,6 +8,9 @@ import java.util.ResourceBundle;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.control.Control;
+import javafx.scene.control.Label;
+import javafx.scene.control.Tooltip;
 
 public abstract class View {
 
@@ -15,6 +18,15 @@ public abstract class View {
     protected PresentationModel model = PresentationModel.getInstance();
     protected URL resourcePath;
     protected ResourceBundle stringBundle = ResourceBundle.getBundle("strings/Strings");
+    
+    @FXML private Label lblInfo;
+    private String defaultInfo = "";
+    
+    /**
+     * This function is called, when the view should be deinitalized.
+     * It has to be called manually!
+     */
+    public void deinitialize(){}
     
     @FXML
     public final void initialize(){
@@ -37,6 +49,25 @@ public abstract class View {
     protected void setupEventHandlers(){}
 
     protected void setupValueChangedListeners(){}
+    
+    
+    protected void addToolTip(Control c, String s){
+        Tooltip tt = new Tooltip(s);
+        tt.setPrefWidth(400);
+        tt.setWrapText(true);
+        c.setTooltip(tt);
+    }
+     /**
+     * Prints the given information on the bottem of the view
+     * @param info The information to be printed
+     */
+    protected final void printInfo(String info){
+        if (lblInfo != null){
+            defaultInfo = info;
+            lblInfo.setText(info);
+        }
+    }
+
   
     /**
     * Returns the root parent. This parent can be displayed in a FX-scene
