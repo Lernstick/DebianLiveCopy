@@ -1,8 +1,6 @@
-
 package ch.fhnw.dlcopy.gui.javafx.ui.update;
 
 import ch.fhnw.dlcopy.DLCopy;
-import static ch.fhnw.dlcopy.DLCopy.MEGA;
 import ch.fhnw.dlcopy.PartitionState;
 import ch.fhnw.dlcopy.RepartitionStrategy;
 import ch.fhnw.dlcopy.RunningSystemSource;
@@ -17,13 +15,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
-import javafx.fxml.FXML;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -31,18 +27,16 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.property.SimpleListProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
-import javafx.event.EventType;
+import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
-import javafx.stage.DirectoryChooser;
 import javafx.stage.FileChooser;
 import org.freedesktop.dbus.exceptions.DBusException;
 import javafx.scene.control.Alert;
@@ -50,8 +44,8 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 
 
-public class UpdateDeviceUI  extends View{
-    
+public class UpdateDeviceUI extends View {
+
     private static final Logger LOGGER = Logger.getLogger(UpdateDeviceUI.class.getName());
     private static final ProcessExecutor PROCESS_EXECUTOR = new ProcessExecutor();
     private SystemSource runningSystemSource;
@@ -89,15 +83,6 @@ public class UpdateDeviceUI  extends View{
         resourcePath = getClass().getResource("/fxml/update/update.fxml");
     }
     
-     /**
-     * This function is called, when the view should be deinitalized.
-     * It has to be called manually!
-     */
-    @Override
-    public void deinitialize() {
-        listUpdateTimer.cancel();
-    }
-    
     private void confirm(String message) {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION,
                 stringBundle.getString("updateconfirm.confirm"), 
@@ -108,6 +93,16 @@ public class UpdateDeviceUI  extends View{
         alert.showAndWait();
     }
         
+
+     /**
+     * This function is called, when the view should be deinitalized.
+     * It has to be called manually!
+     */
+    @Override
+    public void deinitialize() {
+        listUpdateTimer.cancel();
+    }
+
     @Override
     protected void setupEventHandlers() {
         btnBack.setOnAction(event -> {
@@ -120,30 +115,30 @@ public class UpdateDeviceUI  extends View{
         chbShowHarddisk.setOnAction(event -> {
             showHarddisks = valChb(chbShowHarddisk);
         });
-        
+
         TimerTask listUpdater = new TimerTask() {
             @Override
             public void run() {
-                try{
-                List<StorageDevice> pluggedDevices = DLCopy.getStorageDevices(showHarddisks, false, "bootDeviceName");
-                List<StorageDevice> removedDevices = new ArrayList<>();
-                List<StorageDevice> addedDevices = new ArrayList<>();
-                for (StorageDevice device : pluggedDevices) {
-                    if (!lvDevices.getItems().contains(device)) {
-                        
-                        // Plugged deice is not shown yet
-                        addedDevices.add(device);
+                try {
+                    List<StorageDevice> pluggedDevices = DLCopy.getStorageDevices(showHarddisks, false, "bootDeviceName");
+                    List<StorageDevice> removedDevices = new ArrayList<>();
+                    List<StorageDevice> addedDevices = new ArrayList<>();
+                    for (StorageDevice device : pluggedDevices) {
+                        if (!lvDevices.getItems().contains(device)) {
+
+                            // Plugged deice is not shown yet
+                            addedDevices.add(device);
+                        }
                     }
-                }
-                for (StorageDevice device : lvDevices.getItems()) {
-                    if (!pluggedDevices.contains(device)) {
-                        removedDevices.add(device);
+                    for (StorageDevice device : lvDevices.getItems()) {
+                        if (!pluggedDevices.contains(device)) {
+                            removedDevices.add(device);
+                        }
                     }
-                }
-                Platform.runLater(() -> {
-                    lvDevices.getItems().removeAll(removedDevices);
-                    lvDevices.getItems().addAll(addedDevices);
-                });
+                    Platform.runLater(() -> {
+                        lvDevices.getItems().removeAll(removedDevices);
+                        lvDevices.getItems().addAll(addedDevices);
+                    });
                 } catch (IOException | DBusException ex) {
                     Logger.getLogger(SelectDeviceUI.class.getName()).log(Level.SEVERE, null, ex);
                 }
@@ -151,109 +146,100 @@ public class UpdateDeviceUI  extends View{
         };
         listUpdateTimer.scheduleAtFixedRate(listUpdater, 0, 1000L); // Starts the `lisstUpdater`-task each 1000ms (1sec)
         lvDevices.setPlaceholder(new Label(stringBundle.getString("update.lvDevices")));
-        
+
         lvDevices.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         lvDevices.getSelectionModel().selectedItemProperty().addListener(
                 (ObservableValue<? extends StorageDevice> ov, StorageDevice old_val, StorageDevice new_val) -> {
-             selectedStds = lvDevices.getSelectionModel().getSelectedItems();
-        });
+                    selectedStds = lvDevices.getSelectionModel().getSelectedItems();
+                });
 
         // Add files to the list
         btnAddFileToOverwritte.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();
             File selectedFile = fileChooser.showOpenDialog(btnAddFileToOverwritte.getScene().getWindow());
-            fileChooser.setTitle(stringBundle.getString("export.chooseDirectory")); 
+            fileChooser.setTitle(stringBundle.getString("export.chooseDirectory"));
             if (selectedFile != null) {
                 lvFilesToOverwritte.getItems().add(selectedFile.getAbsolutePath());
             }
         });
-        
+
         // Aktivate the remove button, when a item is selected
         btnRemoveFileToOverwritte.disableProperty().bind(
                 lvFilesToOverwritte.getSelectionModel().selectedItemProperty().isNull()
         );
-        
+
         // Remove files from the list
         btnRemoveFileToOverwritte.setOnAction(event -> {
             lvFilesToOverwritte.getItems().removeAll(
                     lvFilesToOverwritte.getSelectionModel().getSelectedItems()
             );
         });
-        
+
         // Aktivate the edit button, when one item is selected
         btnEditFileToOverwritte.disableProperty().bind(
                 lvFilesToOverwritte.getSelectionModel().selectedItemProperty().isNull()
         );
-        
+
         // Edit selected file
         btnEditFileToOverwritte.setOnAction(event -> {
             String path = lvFilesToOverwritte.getSelectionModel().getSelectedItem();
             File file = new File(path);
             FileChooser fileChooser = new FileChooser();
             fileChooser.setInitialDirectory(new File(file.getParent()));
-            fileChooser.setTitle(stringBundle.getString("export.chooseDirectory")); 
+            fileChooser.setTitle(stringBundle.getString("export.chooseDirectory"));
             File selectedFile = fileChooser.showOpenDialog(btnAddFileToOverwritte.getScene().getWindow());
             lvFilesToOverwritte.getItems().remove(path);
             lvFilesToOverwritte.getItems().add(selectedFile.getAbsolutePath());
         });
-        
+
         // Export the overwritte files to a file
         btnExportFileToOverwritte.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();
             fileChooser.setInitialFileName("files_to_overwritte.txt");
-            fileChooser.setTitle(stringBundle.getString("export.chooseDirectory")); 
+            fileChooser.setTitle(stringBundle.getString("export.chooseDirectory"));
             File selectedFile = fileChooser.showSaveDialog(btnAddFileToOverwritte.getScene().getWindow());
             try {
                 selectedFile.createNewFile();
             } catch (IOException ex) {
                 Logger.getLogger(UpdateDeviceUI.class.getName()).log(Level.SEVERE, null, ex);
             }
-            if (!selectedFile.canWrite()){
-                // Can't writte to the file
-            } else {
-                // Writte lines to the file
-                try {
-                    PrintWriter writer;
-                    writer = new PrintWriter(selectedFile);
-                    lvFilesToOverwritte.getItems().forEach(file -> {
-                        writer.println(file);
-                    });
-                    writer.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(UpdateDeviceUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            try {
+                PrintWriter writer;
+                writer = new PrintWriter(selectedFile);
+                lvFilesToOverwritte.getItems().forEach(file -> {
+                    writer.println(file);
+                });
+                writer.close();
+            } catch (IOException ex) {
+                Logger.getLogger(UpdateDeviceUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
-        
+
         // Import files from exteral file
         btnImportFileToOverwritte.setOnAction(event -> {
             FileChooser fileChooser = new FileChooser();
-            fileChooser.setTitle(stringBundle.getString("export.chooseDirectory")); 
+            fileChooser.setTitle(stringBundle.getString("export.chooseDirectory"));
             File selectedFile = fileChooser.showOpenDialog(btnAddFileToOverwritte.getScene().getWindow());
-            if (!selectedFile.canRead()){
-                // Can't read to the file
-            } else {
-                // Read lines from the file
-                try {
-                    lvFilesToOverwritte.getItems().clear();
-                    BufferedReader reader = new BufferedReader(new FileReader(selectedFile));
-                    reader.lines().forEach(file -> lvFilesToOverwritte.getItems().add(file));
-                    reader.close();
-                } catch (IOException ex) {
-                    Logger.getLogger(UpdateDeviceUI.class.getName()).log(Level.SEVERE, null, ex);
-                }
+            // Read lines from the file
+            try {
+                lvFilesToOverwritte.getItems().clear();
+                BufferedReader reader = new BufferedReader(new FileReader(selectedFile));
+                reader.lines().forEach(file -> lvFilesToOverwritte.getItems().add(file));
+                reader.close();
+            } catch (IOException ex) {
+                Logger.getLogger(UpdateDeviceUI.class.getName()).log(Level.SEVERE, null, ex);
             }
         });
-        
+
         // Activate up button, when a file is selected and it is not the most top one
         lvFilesToOverwritte.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             boolean firstItem = lvFilesToOverwritte.getItems().indexOf(lvFilesToOverwritte.getSelectionModel().getSelectedItem()) == 0;
-            if (newValue != null){
+            if (newValue != null) {
                 // new selection is not empty
                 btnFileUp.setDisable(firstItem);
             }
         });
-        
+
         // Move file up in the file list
         btnFileUp.setOnAction(event -> {
             String selection = lvFilesToOverwritte.getSelectionModel().getSelectedItem();
@@ -261,19 +247,19 @@ public class UpdateDeviceUI  extends View{
             String tmp = lvFilesToOverwritte.getItems().get(selection_index - 1);
             lvFilesToOverwritte.getItems().set(selection_index - 1, selection);
             lvFilesToOverwritte.getItems().set(selection_index, tmp);
-            lvFilesToOverwritte.getSelectionModel().select(selection); 
+            lvFilesToOverwritte.getSelectionModel().select(selection);
         });
-        
+
         // Activate up button, when a file is selected and it is not the most top one
         lvFilesToOverwritte.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             int lastIndex = lvFilesToOverwritte.getItems().size() - 1;
             boolean lastItem = lvFilesToOverwritte.getItems().indexOf(lvFilesToOverwritte.getSelectionModel().getSelectedItem()) == lastIndex;
-            if (newValue != null){
+            if (newValue != null) {
                 // new selection is not empty
                 btnFileDown.setDisable(lastItem);
             }
         });
-        
+
         // Move file down in the file list
         btnFileDown.setOnAction(event -> {
             String selection = lvFilesToOverwritte.getSelectionModel().getSelectedItem();
@@ -281,25 +267,25 @@ public class UpdateDeviceUI  extends View{
             String tmp = lvFilesToOverwritte.getItems().get(selection_index + 1);
             lvFilesToOverwritte.getItems().set(selection_index + 1, selection);
             lvFilesToOverwritte.getItems().set(selection_index, tmp);
-            lvFilesToOverwritte.getSelectionModel().select(selection); 
+            lvFilesToOverwritte.getSelectionModel().select(selection);
         });
-        
+
         // Sort file list alphabeticly
         btnFilesSort.setOnAction(event -> {
             lvFilesToOverwritte.getItems().sort(Comparator.naturalOrder());
         });
-        
+
         // Sort file list alphabeticly
         btnFilesSortReverse.setOnAction(event -> {
             lvFilesToOverwritte.getItems().sort(Comparator.reverseOrder());
         });
-        
+
         btnUpgrade.setOnAction(event -> {
             update();
         });
     }
-    
-      public void updateInstallSelectionCountAndExchangeInfo() {
+
+    public void updateInstallSelectionCountAndExchangeInfo() {
         // check all selected storage devices
         long minOverhead = Long.MAX_VALUE;
         boolean exchange = true;
@@ -337,36 +323,36 @@ public class UpdateDeviceUI  extends View{
         // TODO: update all other parts of the UI
         // see ch.fhnw.dlcopy.gui.swing.InstallerPanels
     }
-      
-    private void update(){
+
+    private void update() {
         new Upgrader(
-            runningSystemSource, // the system source
-            lvDevices.getItems(), // the list of StorageDevices to upgrade
-            "", // the label of the exchange partition
-            "", // the file system of the exchange partition
-            "", // the file system of the data partition
-            new HashMap<>(), // a global digest cache for speeding up repeated file checks
-            null, // the main DLCopy instance
-            context, // the DLCopy GUI
-            RepartitionStrategy.KEEP, // the repartition strategie for the exchange partition
-            0, // the new size of the exchange partition if we want to resize it during upgrade
-            false, // if an automatic backup should be run before upgrading
-            "", // the destination for automatic backups
-            false, // if temporary backups should be deleted
-            false, // if the system partition should be upgraded
-            false, // if the data partition should be reset
-            false, // if the printer settings should be kept when upgrading
-            false, // if the network settings should be kept when upgrading
-            false, // if the firewall settings should be kept when upgrading
-            false, // if the user name, password and groups should be kept when upgrading
-            false, // if the welcome program should be reactivated
-            false, // if hidden files in the user's home of the storage device should be deleted
-            lvFilesToOverwritte.getItems(), // the list of files to copy from the currently
-            DLCopy.getEnlargedSystemSize(runningSystemSource.getSystemSize()), // the "enlarged" system size (multiplied with a small file system overhead factor)
-            new ReentrantLock() // the lock to aquire before executing in background
+                runningSystemSource, // the system source
+                lvDevices.getItems(), // the list of StorageDevices to upgrade
+                "", // the label of the exchange partition
+                "", // the file system of the exchange partition
+                "", // the file system of the data partition
+                new HashMap<>(), // a global digest cache for speeding up repeated file checks
+                null, // the main DLCopy instance
+                context, // the DLCopy GUI
+                RepartitionStrategy.KEEP, // the repartition strategie for the exchange partition
+                0, // the new size of the exchange partition if we want to resize it during upgrade
+                false, // if an automatic backup should be run before upgrading
+                "", // the destination for automatic backups
+                false, // if temporary backups should be deleted
+                false, // if the system partition should be upgraded
+                false, // if the data partition should be reset
+                false, // if the printer settings should be kept when upgrading
+                false, // if the network settings should be kept when upgrading
+                false, // if the firewall settings should be kept when upgrading
+                false, // if the user name, password and groups should be kept when upgrading
+                false, // if the welcome program should be reactivated
+                false, // if hidden files in the user's home of the storage device should be deleted
+                lvFilesToOverwritte.getItems(), // the list of files to copy from the currently
+                DLCopy.getEnlargedSystemSize(runningSystemSource.getSystemSize()), // the "enlarged" system size (multiplied with a small file system overhead factor)
+                new ReentrantLock() // the lock to aquire before executing in background
         ).execute();
     }
-    
+
     /**
      * Validates a checkbox filed.
      *
@@ -376,4 +362,4 @@ public class UpdateDeviceUI  extends View{
     private boolean valChb(CheckBox chb) {
         return chb.isSelected() && !chb.isDisabled();
     }
- }
+}
