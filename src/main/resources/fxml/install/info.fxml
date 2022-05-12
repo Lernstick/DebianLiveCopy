@@ -26,10 +26,10 @@
         <RowConstraints vgrow="SOMETIMES" />
     </rowConstraints>
     <children>
-      <VBox fillWidth="false" spacing="5.0">
+      <VBox spacing="5.0">
          <children>
                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.installSystem" />
-            <Separator />
+            <Separator maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.selection" />
                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.install" />
                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="%global.finish">
@@ -55,7 +55,7 @@
                         <Image url="@../../new_icons/install-software-download-white.png" />
                      </image>
                   </ImageView>
-                  <TextArea fx:id="taExtraInfo" VBox.vgrow="ALWAYS" />
+                  <TextArea fx:id="taExtraInfo" editable="false" wrapText="true" VBox.vgrow="ALWAYS" />
                </children>
             </VBox>
          </children>
