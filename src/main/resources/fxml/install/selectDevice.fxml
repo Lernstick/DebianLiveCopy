@@ -12,6 +12,7 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.Separator?>
+<?import javafx.scene.control.Slider?>
 <?import javafx.scene.control.Tab?>
 <?import javafx.scene.control.TabPane?>
 <?import javafx.scene.control.TextArea?>
@@ -128,6 +129,11 @@
                                                 <Separator orientation="VERTICAL" />
                                                 <Label maxHeight="1.7976931348623157E308" minHeight="32.0" text="%global.size" />
                                                 <TextField fx:id="tfExchangePartitionSize" minHeight="32.0" />
+                                                <Slider minorTickCount="1" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="50.0" HBox.hgrow="ALWAYS">
+                                                   <HBox.margin>
+                                                      <Insets left="20.0" />
+                                                   </HBox.margin>
+                                                </Slider>
                                              </children>
                                           </HBox>
                                           <Label text="%global.dataPartition" />
