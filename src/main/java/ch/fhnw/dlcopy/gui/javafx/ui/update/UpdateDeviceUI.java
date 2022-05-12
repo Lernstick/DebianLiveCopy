@@ -44,6 +44,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
+import javafx.stage.DirectoryChooser;
 
 
 public class UpdateDeviceUI extends View {
@@ -67,12 +68,15 @@ public class UpdateDeviceUI extends View {
     @FXML private Button btnImportFileToOverwritte;
     @FXML private Button btnRemoveFileToOverwritte;
     @FXML private Button btnUpgrade;
+    @FXML private CheckBox chbAutomaticBackup;
+    @FXML private CheckBox chbAutomaticBackupRemove;
     @FXML private CheckBox chbShowHarddisk;
     @FXML private ListView<StorageDevice> lvDevices;
     @FXML private ListView<String> lvFilesToOverwritte;
     @FXML private RadioButton rdbOriginalExchange;
     @FXML private RadioButton rdbRemoveExchange;
     @FXML private RadioButton rdbResizeExchange;
+    @FXML private TextField tfAutomaticBackup;
     @FXML private TextField tfResizeExchange;
 
     public UpdateDeviceUI() {
@@ -109,6 +113,27 @@ public class UpdateDeviceUI extends View {
     @Override
     public void deinitialize() {
         listUpdateTimer.cancel();
+    }
+
+    @Override
+    protected void setupBindings() {
+
+        // activate the remove button, when a item is selected
+        btnRemoveFileToOverwritte.disableProperty().bind(
+                lvFilesToOverwritte.getSelectionModel().selectedItemProperty().isNull()
+        );
+
+        // activate the edit button, when one item is selected
+        btnEditFileToOverwritte.disableProperty().bind(
+                lvFilesToOverwritte.getSelectionModel().selectedItemProperty().isNull()
+        );
+
+        chbAutomaticBackupRemove.disableProperty().bind(
+            chbAutomaticBackup.selectedProperty().not()
+        );
+        tfAutomaticBackup.disableProperty().bind(
+            chbAutomaticBackup.selectedProperty().not()
+        );
     }
 
     @Override
@@ -173,22 +198,12 @@ public class UpdateDeviceUI extends View {
             }
         });
 
-        // Aktivate the remove button, when a item is selected
-        btnRemoveFileToOverwritte.disableProperty().bind(
-                lvFilesToOverwritte.getSelectionModel().selectedItemProperty().isNull()
-        );
-
         // Remove files from the list
         btnRemoveFileToOverwritte.setOnAction(event -> {
             lvFilesToOverwritte.getItems().removeAll(
                     lvFilesToOverwritte.getSelectionModel().getSelectedItems()
             );
         });
-
-        // Aktivate the edit button, when one item is selected
-        btnEditFileToOverwritte.disableProperty().bind(
-                lvFilesToOverwritte.getSelectionModel().selectedItemProperty().isNull()
-        );
 
         // Edit selected file
         btnEditFileToOverwritte.setOnAction(event -> {
@@ -310,6 +325,10 @@ public class UpdateDeviceUI extends View {
             confirm(stringBundle.getString("updateconfirm.lastwarning"));
             update();
         });
+
+        tfAutomaticBackup.setOnAction(event -> {
+            selectDirectory();
+        });
     }
 
     public void updateInstallSelectionCountAndExchangeInfo() {
@@ -363,9 +382,9 @@ public class UpdateDeviceUI extends View {
                 context, // the DLCopy GUI
                 RepartitionStrategy.KEEP, // the repartition strategie for the exchange partition
                 0, // the new size of the exchange partition if we want to resize it during upgrade
-                false, // if an automatic backup should be run before upgrading
-                "", // the destination for automatic backups
-                false, // if temporary backups should be deleted
+                valChb(chbAutomaticBackup), // if an automatic backup should be run before upgrading
+                tfAutomaticBackup.getText(), // the destination for automatic backups
+                valChb(chbAutomaticBackupRemove), // if temporary backups should be deleted
                 false, // if the system partition should be upgraded
                 false, // if the data partition should be reset
                 false, // if the printer settings should be kept when upgrading
@@ -378,6 +397,17 @@ public class UpdateDeviceUI extends View {
                 DLCopy.getEnlargedSystemSize(runningSystemSource.getSystemSize()), // the "enlarged" system size (multiplied with a small file system overhead factor)
                 new ReentrantLock() // the lock to aquire before executing in background
         ).execute();
+    }
+
+    private void selectDirectory() {
+        DirectoryChooser folder = new DirectoryChooser();
+        File selectedDirectory = folder.showDialog(
+            tfAutomaticBackup.getScene().getWindow()
+        );
+        folder.setTitle(stringBundle.getString("export.chooseDirectory"));
+        if (selectedDirectory != null) {
+            tfAutomaticBackup.setText(selectedDirectory.getAbsolutePath());
+        }
     }
 
     /**
