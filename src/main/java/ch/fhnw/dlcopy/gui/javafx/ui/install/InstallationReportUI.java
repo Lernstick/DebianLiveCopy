@@ -73,6 +73,20 @@ public class InstallationReportUI extends View{
     
     @Override
     protected void initControls() {
+
+        colDuration.bind(tvReport.widthProperty().multiply(0.0833));
+        colError.bind(tvReport.widthProperty().multiply(0.0833));
+        colFinish.bind(tvReport.widthProperty().multiply(0.0833));
+        colModel.bind(tvReport.widthProperty().multiply(0.0833));
+        colMounted.bind(tvReport.widthProperty().multiply(0.0833));
+        colMountpoint.bind(tvReport.widthProperty().multiply(0.0833));
+        colNumber.bind(tvReport.widthProperty().multiply(0.0833));
+        colSerial.bind(tvReport.widthProperty().multiply(0.0833));
+        colSize.bind(tvReport.widthProperty().multiply(0.0833));
+        colStart.bind(tvReport.widthProperty().multiply(0.0833));
+        colStatus.bind(tvReport.widthProperty().multiply(0.0833));
+        colVendor.bind(tvReport.widthProperty().multiply(0.0833));
+
         colDuration.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDuratioinString()));
         colError.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getError()));
         colFinish.setCellValueFactory(cell -> {
