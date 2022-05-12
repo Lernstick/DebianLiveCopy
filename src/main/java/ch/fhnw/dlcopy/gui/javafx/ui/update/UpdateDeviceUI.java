@@ -58,6 +58,7 @@ public class UpdateDeviceUI  extends View{
     @FXML private Button btnAddFileToOverwritte;
     @FXML private Button btnEditFileToOverwritte;
     @FXML private Button btnExportFileToOverwritte;
+    @FXML private Button btnFileDown;
     @FXML private Button btnFileUp;
     @FXML private Button btnImportFileToOverwritte;
     @FXML private Button btnRemoveFileToOverwritte;
@@ -253,8 +254,27 @@ public class UpdateDeviceUI  extends View{
             String tmp = lvFilesToOverwritte.getItems().get(selection_index - 1);
             lvFilesToOverwritte.getItems().set(selection_index - 1, selection);
             lvFilesToOverwritte.getItems().set(selection_index, tmp);
-            lvFilesToOverwritte.getSelectionModel().select(selection);
-            
+            lvFilesToOverwritte.getSelectionModel().select(selection); 
+        });
+        
+        // Activate up button, when a file is selected and it is not the most top one
+        lvFilesToOverwritte.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            int lastIndex = lvFilesToOverwritte.getItems().size() - 1;
+            boolean lastItem = lvFilesToOverwritte.getItems().indexOf(lvFilesToOverwritte.getSelectionModel().getSelectedItem()) == lastIndex;
+            if (newValue != null){
+                // new selection is not empty
+                btnFileDown.setDisable(lastItem);
+            }
+        });
+        
+        // Move file down in the file list
+        btnFileDown.setOnAction(event -> {
+            String selection = lvFilesToOverwritte.getSelectionModel().getSelectedItem();
+            int selection_index = lvFilesToOverwritte.getItems().indexOf(selection);
+            String tmp = lvFilesToOverwritte.getItems().get(selection_index + 1);
+            lvFilesToOverwritte.getItems().set(selection_index + 1, selection);
+            lvFilesToOverwritte.getItems().set(selection_index, tmp);
+            lvFilesToOverwritte.getSelectionModel().select(selection); 
         });
     }
     
