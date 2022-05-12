@@ -17,7 +17,7 @@ import javafx.scene.image.ImageView;
 public class InfoUI extends View {
     @FXML private Button btnFinish;
     @FXML private ImageView imgExportFile;
-    @FXML private TextArea lblExtraInfo;
+    @FXML private TextArea taExtraInfo;
 
     private static final Logger LOGGER = Logger.getLogger(InfoUI.class.getName());
     private String tmpPath;
@@ -42,7 +42,7 @@ public class InfoUI extends View {
         } else {
             message = stringBundle.getString("export.error.isoCreation");
         }
-        lblExtraInfo.setText(message);
+        taExtraInfo.setText(message);
     }
 
     @Override
