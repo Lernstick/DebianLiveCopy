@@ -33,7 +33,9 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javafx.application.Platform;
+import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.LongProperty;
+import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
@@ -73,6 +75,7 @@ public class SelectDeviceUI extends View {
     private boolean showHarddisks = false;
     private ObservableList<StorageDevice> selectedStds;
     private LongProperty exchangePartitionSize = new SimpleLongProperty();
+    private DoubleProperty maxCustomizablePartitionSpace = new SimpleDoubleProperty(Double.MAX_VALUE);
 
     // some locks to synchronize the Installer, Upgrader and Resetter with their
     // corresponding StorageDeviceAdder
@@ -166,6 +169,16 @@ public class SelectDeviceUI extends View {
                     Platform.runLater(() -> {
                         lvDevices.getItems().removeAll(removedDevices);
                         lvDevices.getItems().addAll(addedDevices);
+                        
+                        // Calc the max space for the exchange and data partition
+                        lvDevices.getItems().forEach(device -> {
+                            double customizablePartitionSpace = device.getSize()
+                                    - runningSystemSource.getSystemSize()
+                                    - DLCopy.EFI_PARTITION_SIZE * MEGA;
+                            if (maxCustomizablePartitionSpace.greaterThan(customizablePartitionSpace).get()) {
+                                maxCustomizablePartitionSpace.set(customizablePartitionSpace);
+                            }
+                        });
                     });
                 } catch (IOException | DBusException ex) {
                     Logger.getLogger(SelectDeviceUI.class.getName()).log(Level.SEVERE, null, ex);
@@ -251,6 +264,8 @@ public class SelectDeviceUI extends View {
         // Bind the textinput and the slider to the same value
         tfExchangePartitionSize.textProperty().bindBidirectional(exchangePartitionSize, new NumberStringConverter());
         slExchangePartitionSize.valueProperty().bindBidirectional(exchangePartitionSize);
+        
+        slExchangePartitionSize.maxProperty().bind(maxCustomizablePartitionSpace);
     }
 
     @Override
