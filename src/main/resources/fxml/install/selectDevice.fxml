@@ -128,7 +128,7 @@
                                                 <CheckBox fx:id="chbCopyExchangePartition" disable="true" maxHeight="1.7976931348623157E308" minHeight="32.0" mnemonicParsing="false" text="%install.chbcopy" />
                                                 <Separator orientation="VERTICAL" />
                                                 <Label maxHeight="1.7976931348623157E308" minHeight="32.0" text="%global.size" />
-                                                <TextField fx:id="tfExchangePartitionSize" minHeight="32.0" />
+                                                <NumericTextField fx:id="tfExchangePartitionSize" minHeight="32.0" />
                                                 <Slider fx:id="slExchangePartitionSize" blockIncrement="1.0" majorTickUnit="1048576.0" max="1.03079215104E11" minorTickCount="5" showTickLabels="true" showTickMarks="true" snapToTicks="true" value="2.0" HBox.hgrow="ALWAYS">
                                                    <HBox.margin>
                                                       <Insets left="20.0" />
