@@ -463,6 +463,10 @@ public class SelectDeviceUI extends View {
     private boolean checkSelection(ObservableList<StorageDevice> devices)
             throws DBusException, IOException {
         boolean harddiskSelected = false;
+        if (devices == null || devices.size() <= 0){
+            showError(stringBundle.getString("install.error.noSelection"));
+            return false;
+        }
         for (StorageDevice device : devices) {
             if (device.getType() == StorageDevice.Type.HardDrive) {
                 harddiskSelected = true;
