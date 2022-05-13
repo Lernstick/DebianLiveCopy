@@ -75,13 +75,7 @@ public class InstallationReportUI extends View{
     protected void initControls(){
 
         colDuration.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDuratioinString()));
-        colDuration.setMinWidth(10);
-        colDuration.setPrefWidth(75);
-        colDuration.setMaxWidth(5000);
         colError.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getError()));
-        colError.setMinWidth(10);
-        colError.setPrefWidth(75);
-        colError.setMaxWidth(5000);
         colFinish.setCellValueFactory(cell -> {
             LocalTime finishTime = cell.getValue().getEnd();
             String result = (finishTime == null ? "" : finishTime.format(DateTimeFormatter.ISO_LOCAL_TIME));
