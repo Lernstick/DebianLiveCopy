@@ -61,6 +61,8 @@ import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
+import javafx.util.StringConverter;
+import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.NumberStringConverter;
 import org.freedesktop.dbus.exceptions.DBusException;
 
@@ -251,6 +253,18 @@ public class SelectDeviceUI extends View {
             );
         });
         btnInstall.setDisable(false);
+        
+        slExchangePartitionSize.setLabelFormatter(new StringConverter<Double> () {
+            @Override
+            public String toString(Double t) {
+                return LernstickFileTools.getDataVolumeString(Double.doubleToLongBits(t), 1);
+            }
+
+            @Override
+            public Double fromString(String string) {
+                throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+            }
+        });
    }
 
     @Override
@@ -402,8 +416,7 @@ public class SelectDeviceUI extends View {
         while (num != 0) { num /= 10; ++count;}
         return tfStartPattern.getText().length() - count;
     }
-
-
+    
     public void updateInstallSelectionCountAndExchangeInfo() {
         // check all selected storage devices
         long minOverhead = Long.MAX_VALUE;
@@ -696,7 +709,7 @@ public class SelectDeviceUI extends View {
         DataPartitionModeEntry selection = (DataPartitionModeEntry) cmbDataPartitionMode.getValue();
         return selection.getMode();
     }
-    
+
     private boolean isWholeNumber(String strNum){
         if (strNum == null) {return false;}
         try {int i = Integer.parseInt(strNum);}
