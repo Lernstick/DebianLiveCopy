@@ -71,6 +71,12 @@ public class UpdateDeviceUI extends View {
     @FXML private Button btnUpgrade;
     @FXML private CheckBox chbAutomaticBackup;
     @FXML private CheckBox chbAutomaticBackupRemove;
+    @FXML private CheckBox chbKeepFirewallSettings;
+    @FXML private CheckBox chbKeepNetworkSettings;
+    @FXML private CheckBox chbKeepPrinterSettings;
+    @FXML private CheckBox chbKeepUserSettings;
+    @FXML private CheckBox chbReactivateWelcome;
+    @FXML private CheckBox chbResetDataPartition;
     @FXML private CheckBox chbShowHarddisk;
     @FXML private ListView<StorageDevice> lvDevices;
     @FXML private ListView<String> lvFilesToOverwritte;
@@ -106,6 +112,17 @@ public class UpdateDeviceUI extends View {
         alert.showAndWait();
     }
 
+    @Override
+    protected void initControls() {
+        addToolTip(chbAutomaticBackup, stringBundle.getString("update.tooltip.createbackup"));
+        addToolTip(tfAutomaticBackup, stringBundle.getString("update.tooltip.backuplocation"));
+        addToolTip(chbResetDataPartition, stringBundle.getString("update.tooltip.resetDataPartiton"));
+        addToolTip(chbKeepPrinterSettings, stringBundle.getString("update.tooltip.keepPrinterSettings"));
+        addToolTip(chbKeepNetworkSettings, stringBundle.getString("update.tooltip.keepNetworkSettings"));
+        addToolTip(chbKeepFirewallSettings, stringBundle.getString("update.tooltip.keepFirewallSettings"));
+        addToolTip(chbKeepUserSettings, stringBundle.getString("update.tooltip.keepUserSettings"));
+        addToolTip(chbReactivateWelcome,stringBundle.getString("update.tooltip.reactivateWelcomeProgram"));
+    }
 
      /**
      * This function is called, when the view should be deinitalized.
