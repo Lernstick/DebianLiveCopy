@@ -176,7 +176,7 @@ public class SelectDeviceUI extends View {
                         // Calc the max space for the exchange and data partition
                         lvDevices.getItems().forEach(device -> {
                             double customizablePartitionSpace = device.getSize()
-                                    - runningSystemSource.getSystemSize()
+                                    - getSelectedSource().getSystemSize()
                                     - DLCopy.EFI_PARTITION_SIZE * MEGA;
                             if (maxCustomizablePartitionSpace.greaterThan(customizablePartitionSpace).get()) {
                                 maxCustomizablePartitionSpace.set(customizablePartitionSpace);
@@ -249,7 +249,7 @@ public class SelectDeviceUI extends View {
             return new DeviceCell(
                     new SimpleLongProperty(DLCopy.EFI_PARTITION_SIZE * MEGA),
                     exchangePartitionSize,
-                    new SimpleLongProperty(runningSystemSource.getSystemSize()),
+                    new SimpleLongProperty(getSelectedSource().getSystemSize()),
                     lvDevices.widthProperty()
             );
         });
@@ -368,7 +368,7 @@ public class SelectDeviceUI extends View {
         InstallControler installcontroller = InstallControler.getInstance(context);
         installcontroller.createInstallationList(selectedStds, 1, 1);
         new Installer(
-            runningSystemSource,    // the system source
+            getSelectedSource(),    // the system source
             selectedStds,   // the list of StorageDevices to install
             tfExchangePartitionLabel.getText(),     // the label of the exchange partition
             cmbExchangePartitionFilesystem.getValue().toString(),    // the file system of the exchange partition
@@ -427,11 +427,11 @@ public class SelectDeviceUI extends View {
             minOverhead = 0;
             exchange = false;
         } else {
-            if (runningSystemSource == null) {
+            if (getSelectedSource() == null) {
                 LOGGER.warning("No valid system source selected!");
             } else {
                 long enlargedSystemSize = DLCopy.getEnlargedSystemSize(
-                        runningSystemSource.getSystemSize());
+                        getSelectedSource().getSystemSize());
 
                 for (StorageDevice device : selectedStds) {
                     long overhead = device.getSize()
@@ -514,7 +514,7 @@ public class SelectDeviceUI extends View {
         }
 
         return checkPersistencePartition(
-                runningSystemSource.getDataPartition().getUsedSpace(false),
+                getSelectedSource().getDataPartition().getUsedSpace(false),
                 partitionSizes);
     }
 
@@ -552,7 +552,7 @@ public class SelectDeviceUI extends View {
 
         // check if the target storage device actually has an exchange partition
         return checkExchangePartition(
-                runningSystemSource.getExchangePartition(),
+                getSelectedSource().getExchangePartition(),
                 partitionSizes);
     }
 
@@ -611,7 +611,7 @@ public class SelectDeviceUI extends View {
             throws IOException, DBusException {
 
         // check that a persistence partition is available
-        Partition dataPartition = runningSystemSource.getDataPartition();
+        Partition dataPartition = getSelectedSource().getDataPartition();
         if (dataPartition == null) {
             String message = stringBundle.getString("error.noDataPartition");
             LOGGER.log(Level.WARNING, message);
@@ -760,5 +760,12 @@ public class SelectDeviceUI extends View {
             msg = MessageFormat.format(msg, path);
             showError(msg);
         }
+    }
+    
+    private SystemSource getSelectedSource(){
+        if (rdbIsoImage.isSelected()) {
+            return isoSystemSource;
+        }
+        return runningSystemSource;
     }
 }
