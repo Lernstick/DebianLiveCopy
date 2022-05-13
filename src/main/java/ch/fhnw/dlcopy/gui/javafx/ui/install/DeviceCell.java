@@ -3,6 +3,8 @@ package ch.fhnw.dlcopy.gui.javafx.ui.install;
 import ch.fhnw.util.LernstickFileTools;
 import ch.fhnw.util.StorageDevice;
 import java.io.IOException;
+import java.net.URL;
+import java.util.ResourceBundle;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.LongProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
@@ -10,18 +12,20 @@ import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
+import javafx.fxml.Initializable;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
-public class DeviceCell extends ListCell<StorageDevice>{
+public class DeviceCell extends ListCell<StorageDevice> implements Initializable{
     
     private StorageDevice device;
     private FXMLLoader loader;
     
     private LongProperty efiPartitionSize;
     private LongProperty exchangePartitionSize = new SimpleLongProperty();
+    LongProperty dataPartitionSize = new SimpleLongProperty(0);
     private LongProperty systemPartitionSize;
     private ReadOnlyDoubleProperty rowSpace;
     
@@ -60,6 +64,15 @@ public class DeviceCell extends ListCell<StorageDevice>{
     }
     
     @Override
+    public void initialize(URL url, ResourceBundle rb) {
+        // Set initial labels
+        lblPartition1.setText(LernstickFileTools.getDataVolumeString(efiPartitionSize.get(), 1));
+        lblPartition2.setText(LernstickFileTools.getDataVolumeString(exchangePartitionSize.get(), 1));
+        lblPartition3.setText(LernstickFileTools.getDataVolumeString(dataPartitionSize.get(), 1));
+        lblPartition4.setText(LernstickFileTools.getDataVolumeString(systemPartitionSize.get(), 1));
+    }
+    
+    @Override
     protected void updateItem(StorageDevice device, boolean empty) {
         super.updateItem(device, empty);
         
@@ -86,7 +99,6 @@ public class DeviceCell extends ListCell<StorageDevice>{
             lblIdentifier.setText(device.toString());
             
             LongProperty deviceSize = new SimpleLongProperty(device.getSize());
-            LongProperty dataPartitionSize = new SimpleLongProperty();
             dataPartitionSize.bind(
                     deviceSize
                     .subtract(efiPartitionSize)
