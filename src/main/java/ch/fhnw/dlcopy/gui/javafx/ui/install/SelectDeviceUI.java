@@ -287,7 +287,10 @@ public class SelectDeviceUI extends View {
     protected void setupEventHandlers() {
         btnInstall.setOnAction(event -> {
             try {
-                if (!checkSelection(selectedStds)) {
+                if (rdbCurrentSystem.isSelected() &&  !checkSelection(selectedStds)) {
+                    return;
+                } else if (rdbIsoImage.isSelected() && tfISODirectory.getText().isEmpty()) {
+                    showError(stringBundle.getString("error.emptyIsoPath"));
                     return;
                 }
                 install(selectedStds);
