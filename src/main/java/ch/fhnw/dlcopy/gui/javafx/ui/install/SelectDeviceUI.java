@@ -119,6 +119,7 @@ public class SelectDeviceUI extends View {
     @FXML private NumericTextField tfStartPattern;
     @FXML private NumericTextField tfSteps;
     @FXML private TextField tfISODirectory;
+    @FXML private TextField tfExchangePartitionLabel;
 
 
 
@@ -369,7 +370,7 @@ public class SelectDeviceUI extends View {
         new Installer(
             runningSystemSource,    // the system source
             selectedStds,   // the list of StorageDevices to install
-            "Austausch",     // the label of the exchange partition
+            tfExchangePartitionLabel.getText(),     // the label of the exchange partition
             cmbExchangePartitionFilesystem.getValue().toString(),    // the file system of the exchange partition
             cmbDataPartitionFilesystem.getValue().toString(), // the file system of the data partition
             new HashMap<String, byte[]>(),  // a global digest cache for speeding up repeated file checks
