@@ -76,7 +76,7 @@
                                     <CheckBox fx:id="chbShowHarddisk" mnemonicParsing="false" text="%global.showHarddisk" />
                                  </children>
                               </HBox>
-                              <RadioButton fx:id="rdbAutomaticUpgrade" mnemonicParsing="false" text="%update.rdbAutomaticUpgrade" toggleGroup="$tgSelectDevice" />
+                              <RadioButton fx:id="rdbAutomaticUpgrade" mnemonicParsing="false" text="%update.rdbAutomaticUpgrade" toggleGroup="$tgSelectDevice" disable="true" />
                               <Separator prefWidth="200.0" />
                               <ListView fx:id="lvDevices" maxHeight="200.0" maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
                            </children>
