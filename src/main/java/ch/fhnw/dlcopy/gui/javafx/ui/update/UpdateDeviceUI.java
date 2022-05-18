@@ -409,13 +409,13 @@ public class UpdateDeviceUI extends View {
                 valChb(chbAutomaticBackup), // if an automatic backup should be run before upgrading
                 tfAutomaticBackup.getText(), // the destination for automatic backups
                 valChb(chbAutomaticBackupRemove), // if temporary backups should be deleted
-                false, // if the system partition should be upgraded
-                false, // if the data partition should be reset
-                false, // if the printer settings should be kept when upgrading
-                false, // if the network settings should be kept when upgrading
-                false, // if the firewall settings should be kept when upgrading
-                false, // if the user name, password and groups should be kept when upgrading
-                false, // if the welcome program should be reactivated
+                true, // if the system partition should be upgraded
+                true, // if the data partition should be reset
+                true, // if the printer settings should be kept when upgrading
+                true, // if the network settings should be kept when upgrading
+                true, // if the firewall settings should be kept when upgrading
+                true, // if the user name, password and groups should be kept when upgrading
+                true, // if the welcome program should be reactivated
                 false, // if hidden files in the user's home of the storage device should be deleted
                 lvFilesToOverwritte.getItems(), // the list of files to copy from the currently
                 DLCopy.getEnlargedSystemSize(runningSystemSource.getSystemSize()), // the "enlarged" system size (multiplied with a small file system overhead factor)

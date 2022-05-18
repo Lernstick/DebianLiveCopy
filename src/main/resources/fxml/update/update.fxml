@@ -22,6 +22,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
+
 <?import ch.fhnw.dlcopy.gui.javafx.NumericTextField?>
 
 <GridPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="400.0" minWidth="600.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
@@ -93,22 +94,22 @@
                                  <children>
                                     <VBox minHeight="32.0">
                                        <children>
-                                          <CheckBox fx:id="chbSystemPartition" minHeight="32.0" mnemonicParsing="false" text="%update.chbSystemPartition" />
+                                          <CheckBox fx:id="chbSystemPartition" disable="true" minHeight="32.0" mnemonicParsing="false" text="%update.chbSystemPartition" />
                                        </children>
                                     </VBox>
                                     <VBox minHeight="32.0">
                                        <children>
-                                          <CheckBox fx:id="chbResetDataPartition" minHeight="32.0" mnemonicParsing="false" text="%update.chbResetDataPartition" />
-                                          <CheckBox fx:id="chbKeepPrinterSettings" minHeight="32.0" mnemonicParsing="false" text="%update.chbKeepPrinterSettings" />
-                                          <CheckBox fx:id="chbKeepNetworkSettings" minHeight="32.0" mnemonicParsing="false" text="%update.chbKeepNetworkSettings" />
-                                          <CheckBox fx:id="chbKeepFirewallSettings" minHeight="32.0" mnemonicParsing="false" text="%update.chbKeepFirewallSettings" />
-                                          <CheckBox fx:id="chbKeepUserSettings" minHeight="32.0" mnemonicParsing="false" text="%update.chbKeepUserSettings" />
+                                          <CheckBox fx:id="chbResetDataPartition" disable="true" minHeight="32.0" mnemonicParsing="false" text="%update.chbResetDataPartition" />
+                                          <CheckBox fx:id="chbKeepPrinterSettings" disable="true" minHeight="32.0" mnemonicParsing="false" text="%update.chbKeepPrinterSettings" />
+                                          <CheckBox fx:id="chbKeepNetworkSettings" disable="true" minHeight="32.0" mnemonicParsing="false" text="%update.chbKeepNetworkSettings" />
+                                          <CheckBox fx:id="chbKeepFirewallSettings" disable="true" minHeight="32.0" mnemonicParsing="false" text="%update.chbKeepFirewallSettings" />
+                                          <CheckBox fx:id="chbKeepUserSettings" disable="true" minHeight="32.0" mnemonicParsing="false" text="%update.chbKeepUserSettings" />
                                        </children>
                                     </VBox>
                                  </children>
                               </HBox>
-                              <CheckBox fx:id="chbReactivateWelcome" minHeight="32.0" mnemonicParsing="false" text="%update.chbReactivateWelcome" />
-                              <CheckBox fx:id="chbRemoveHiddenFiles" minHeight="32.0" mnemonicParsing="false" text="%update.chbRemoveHiddenFiles" />
+                              <CheckBox fx:id="chbReactivateWelcome" disable="true" minHeight="32.0" mnemonicParsing="false" text="%update.chbReactivateWelcome" />
+                              <CheckBox fx:id="chbRemoveHiddenFiles" disable="true" minHeight="32.0" mnemonicParsing="false" text="%update.chbRemoveHiddenFiles" />
                               <VBox minHeight="32.0">
                                  <children>
                                     <CheckBox fx:id="chbAutomaticBackup" minHeight="32.0" mnemonicParsing="false" text="%update.chbAutomaticBackup" />
