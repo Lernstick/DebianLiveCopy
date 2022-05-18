@@ -13,13 +13,29 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+/**
+ * This class is the base of the JavaFX frontend.
+ * It's starts the JavaFX and manages the displayed view.
+ */
 public class StorageMediaManagement
         extends Application
         implements SceneContext {
 
     private Scene scene;
+
+    /**
+     * The presentation model, which holds crosscutting states
+     */
     private PresentationModel model = PresentationModel.getInstance();
+
+    /**
+     * The resource bundle with the internationalized strings
+     */
     private ResourceBundle stringBundle = ResourceBundle.getBundle("strings/Strings");
+
+    /**
+     * The currently displayed view
+     */
     private View view;
 
     @Override
@@ -38,11 +54,19 @@ public class StorageMediaManagement
     }
 
     @Override
+    /**
+     * This methode is called by JavaFX, when the application stops.
+     * It deinitalize the current view, to avoid memory leakes.
+     */
     public void stop() throws Exception {
         view.deinitialize();
     }
 
     @Override
+    /**
+     * This methode is called by JavaFX, when the application starts.
+     * It initalizes the windows and views the startscreen - view.
+     */
     public void start(Stage stage) throws Exception {
 
         view = new StartscreenUI();
@@ -66,6 +90,7 @@ public class StorageMediaManagement
     }
 
     /**
+     * When this methode is called, the JavaFX frontend will be initalized.
      * @param args the command line arguments
      */
     public static void launchFX(String[] args) {
