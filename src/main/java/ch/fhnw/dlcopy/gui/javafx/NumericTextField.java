@@ -1,11 +1,11 @@
 package ch.fhnw.dlcopy.gui.javafx;
 
+import javafx.scene.control.TextField;
+
 /**
  * This class represents a FX Controller
  * In this TextField only Numbers can be insert
  */
-import javafx.scene.control.TextField;
-
 public class NumericTextField extends TextField {
 
     @Override

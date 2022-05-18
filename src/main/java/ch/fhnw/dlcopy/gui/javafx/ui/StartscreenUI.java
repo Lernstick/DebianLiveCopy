@@ -12,6 +12,10 @@ import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
+/**
+ * This view represents the startscreen.
+ * In the startscreen the user can choose the path (use case) of the application.
+ */
 public class StartscreenUI extends View {
 
     @FXML private Button btnExportData;
@@ -32,16 +36,27 @@ public class StartscreenUI extends View {
     @FXML private Pane panReset;
     @FXML private Pane panUpdate;
 
+    /**
+     * The empty constructor is used by the JavaFX, when a instance of this view is created.
+     */
     public StartscreenUI() {
         resourcePath = getClass().getResource("/fxml/startscreen.fxml");
     }
 
     @Override
+    /**
+     * This methode is called durring the initalize - process.
+     * All initalizeations of the controlls should be triggered from this methode
+     */
     protected void initControls() {
         panDefault.setVisible(true);
     }
 
     @Override
+    /**
+     * This methode is called durring the initalize - process.
+     * All event handlers should be initialized in this methode
+     */
     protected void setupEventHandlers() {
         setupMenuButtonHandler(btnExportSystem, panExportSystem);
         setupMenuButtonHandler(btnExportData, panExportData);
@@ -68,8 +83,6 @@ public class StartscreenUI extends View {
        btnReset.setOnAction(event -> {
             disable(stringBundle.getString("reset.disable.comeBack"));
         });
-       
-       
 
         imgDefault      .fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 2.16));
         imgExportData   .fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 2.16));
