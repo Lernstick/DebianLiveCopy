@@ -54,6 +54,7 @@ import javafx.scene.control.RadioButton;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.Slider;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
 import javafx.scene.control.ToggleGroup;
@@ -687,7 +688,12 @@ public class SelectDeviceUI extends View {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(stringBundle.getString("error.error"));
         alert.setHeaderText(stringBundle.getString("error.error"));
-        alert.setContentText(message);
+        
+        TextArea area = new TextArea(message);
+        area.setWrapText(true);
+        area.setEditable(false);
+        
+        alert.getDialogPane().setContent(area);
         alert.showAndWait();
     }
 
@@ -695,7 +701,12 @@ public class SelectDeviceUI extends View {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setHeaderText(header);
         alert.setTitle(stringBundle.getString("global.confirm"));
-        alert.setContentText(message);
+        
+        TextArea area = new TextArea(message);
+        area.setWrapText(true);
+        area.setEditable(false);
+        
+        alert.getDialogPane().setContent(area);
         return alert.showAndWait();
     }
 
@@ -705,7 +716,12 @@ public class SelectDeviceUI extends View {
         String answ = stringBundle.getString("install.warn.harddisk.verify");
         alert.setHeaderText(answ);
         alert.setTitle(stringBundle.getString("global.warning"));
-        alert.setContentText(MessageFormat.format(msg, answ));
+        
+        TextArea area = new TextArea(MessageFormat.format(msg, answ));
+        area.setWrapText(true);
+        area.setEditable(false);
+        
+        alert.getDialogPane().setContent(area);
         alert.showAndWait();
         if(!alert.getEditor().getText().equals(answ)) {
             showError(stringBundle.getString("error.mistypedText"));

@@ -44,6 +44,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.RadioButton;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 
@@ -108,7 +109,13 @@ public class UpdateDeviceUI extends View {
                 ButtonType.YES, ButtonType.CANCEL);
         alert.setTitle(stringBundle.getString("updateconfirm.header"));
         alert.setHeaderText(stringBundle.getString("updateconfirm.consequences"));
-        alert.setContentText(message);
+        
+        TextArea area = new TextArea(message);
+        area.setWrapText(true);
+        area.setEditable(false);
+        
+        alert.getDialogPane().setContent(area);
+        
         alert.showAndWait();
     }
 
@@ -502,7 +509,13 @@ public class UpdateDeviceUI extends View {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(stringBundle.getString("error.error"));
         alert.setHeaderText(stringBundle.getString("error.error"));
-        alert.setContentText(msg);
+        
+        TextArea area = new TextArea(msg);
+        area.setWrapText(true);
+        area.setEditable(false);
+        
+        alert.getDialogPane().setContent(area);
+        
         alert.showAndWait();
     }
 
