@@ -1,0 +1,50 @@
+name: CI Docker Image
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+on:
+  schedule:
+    - cron: '30 4 * * 0'
+  workflow_dispatch:
+
+jobs:
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - name: Checkout HEAD
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 1
+
+      - name: Login to container registry
+        uses: docker/login-action@v2
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      # https://github.com/docker/build-push-action/issues/424
+      - name: downcase REPO
+        run: |
+          echo "IMAGE_NAME_LOWER=${GITHUB_REPOSITORY,,}" >>${GITHUB_ENV}
+
+      #- name: Extract metadata (tags, labels) for Docker
+      #  id: meta
+      #  uses: docker/metadata-action@v4
+      #  with:
+      #    images: ${{ github.image_name_lower }}
+
+      - name: Build and push CI Docker image
+        uses: docker/build-push-action@v3
+        with:
+          context: ci
+          push: true
+          #tags: ${{ steps.meta.outputs.tags }},${{ github.image_name_lower }}:latest
+          tags: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME_LOWER }}:latest
+          labels: ${{ steps.meta.outputs.labels }}
