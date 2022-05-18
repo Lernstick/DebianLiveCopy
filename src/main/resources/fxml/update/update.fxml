@@ -94,21 +94,21 @@
                                  <children>
                                     <VBox minHeight="32.0">
                                        <children>
-                                          <CheckBox fx:id="chbSystemPartition" disable="true" minHeight="32.0" mnemonicParsing="false" text="%update.chbSystemPartition" />
+                                          <CheckBox fx:id="chbSystemPartition" disable="true" minHeight="32.0" mnemonicParsing="false" selected="true" text="%update.chbSystemPartition" />
                                        </children>
                                     </VBox>
                                     <VBox minHeight="32.0">
                                        <children>
-                                          <CheckBox fx:id="chbResetDataPartition" disable="true" minHeight="32.0" mnemonicParsing="false" text="%update.chbResetDataPartition" />
-                                          <CheckBox fx:id="chbKeepPrinterSettings" disable="true" minHeight="32.0" mnemonicParsing="false" text="%update.chbKeepPrinterSettings" />
-                                          <CheckBox fx:id="chbKeepNetworkSettings" disable="true" minHeight="32.0" mnemonicParsing="false" text="%update.chbKeepNetworkSettings" />
-                                          <CheckBox fx:id="chbKeepFirewallSettings" disable="true" minHeight="32.0" mnemonicParsing="false" text="%update.chbKeepFirewallSettings" />
-                                          <CheckBox fx:id="chbKeepUserSettings" disable="true" minHeight="32.0" mnemonicParsing="false" text="%update.chbKeepUserSettings" />
+                                          <CheckBox fx:id="chbResetDataPartition" disable="true" minHeight="32.0" mnemonicParsing="false" selected="true" text="%update.chbResetDataPartition" />
+                                          <CheckBox fx:id="chbKeepPrinterSettings" disable="true" minHeight="32.0" mnemonicParsing="false" selected="true" text="%update.chbKeepPrinterSettings" />
+                                          <CheckBox fx:id="chbKeepNetworkSettings" disable="true" minHeight="32.0" mnemonicParsing="false" selected="true" text="%update.chbKeepNetworkSettings" />
+                                          <CheckBox fx:id="chbKeepFirewallSettings" disable="true" minHeight="32.0" mnemonicParsing="false" selected="true" text="%update.chbKeepFirewallSettings" />
+                                          <CheckBox fx:id="chbKeepUserSettings" disable="true" minHeight="32.0" mnemonicParsing="false" selected="true" text="%update.chbKeepUserSettings" />
                                        </children>
                                     </VBox>
                                  </children>
                               </HBox>
-                              <CheckBox fx:id="chbReactivateWelcome" disable="true" minHeight="32.0" mnemonicParsing="false" text="%update.chbReactivateWelcome" />
+                              <CheckBox fx:id="chbReactivateWelcome" disable="true" minHeight="32.0" mnemonicParsing="false" selected="true" text="%update.chbReactivateWelcome" />
                               <CheckBox fx:id="chbRemoveHiddenFiles" disable="true" minHeight="32.0" mnemonicParsing="false" text="%update.chbRemoveHiddenFiles" />
                               <VBox minHeight="32.0">
                                  <children>
