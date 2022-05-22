@@ -18,16 +18,16 @@ public abstract class View{
     protected PresentationModel model = PresentationModel.getInstance();
     protected URL resourcePath;
     protected ResourceBundle stringBundle = ResourceBundle.getBundle("strings/Strings");
-    
+
     @FXML private Label lblInfo;
     private String defaultInfo = "";
-    
+
     /**
      * This function is called, when the view should be deinitalized.
      * It has to be called manually!
      */
     public void deinitialize(){}
-    
+
     @FXML
     public final void initialize(){
         initSelf();
@@ -49,8 +49,8 @@ public abstract class View{
     protected void setupEventHandlers(){}
 
     protected void setupValueChangedListeners(){}
-    
-    
+
+
     protected void addToolTip(Control c, String s){
         Tooltip tt = new Tooltip(s);
         tt.setPrefWidth(400);
@@ -68,7 +68,7 @@ public abstract class View{
         }
     }
 
-  
+
     /**
     * Returns the root parent. This parent can be displayed in a FX-scene
     * For displaying an other scene, this view can call `context.setScene(new ViewToBeDisplayed())`
@@ -77,7 +77,7 @@ public abstract class View{
     */
     public Parent getRoot(SceneContext context) throws IOException{
         this.context = context;
-        
+
         FXMLLoader loader = new FXMLLoader(resourcePath);
         loader.setController(this);
         loader.setResources(stringBundle);

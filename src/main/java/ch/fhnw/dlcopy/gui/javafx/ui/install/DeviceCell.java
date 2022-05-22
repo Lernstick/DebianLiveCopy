@@ -24,13 +24,13 @@ public class DeviceCell extends ListCell<StorageDevice> implements Initializable
 
     private StorageDevice device;
     private FXMLLoader loader;
-    
+
     private LongProperty efiPartitionSize;
     private LongProperty exchangePartitionSize = new SimpleLongProperty();
     LongProperty dataPartitionSize = new SimpleLongProperty(0);
     private LongProperty systemPartitionSize;
     private ReadOnlyDoubleProperty rowSpace;
-    
+
     @FXML private HBox hbPartitions;
     @FXML private Label lblIdentifier;
     @FXML private Label lblPartition1;
@@ -38,7 +38,7 @@ public class DeviceCell extends ListCell<StorageDevice> implements Initializable
     @FXML private Label lblPartition3;
     @FXML private Label lblPartition4;
     @FXML private VBox panRoot;
-    
+
     public DeviceCell(LongProperty efiPartitionSize, LongProperty exchangePartitionSize, LongProperty systemPartitionSize, ReadOnlyDoubleProperty rowSpace){
         super();
         this.efiPartitionSize = efiPartitionSize;
@@ -46,12 +46,12 @@ public class DeviceCell extends ListCell<StorageDevice> implements Initializable
         this.systemPartitionSize = systemPartitionSize;
         this.rowSpace = rowSpace;
     }
-    
+
     public DeviceCell(StorageDevice device){
         super();
         this.device = device;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (this == obj) {
@@ -64,7 +64,7 @@ public class DeviceCell extends ListCell<StorageDevice> implements Initializable
         final DeviceCell other = (DeviceCell) obj;
         return device.equals(other.device);
     }
-    
+
     @Override
     public void initialize(URL url, ResourceBundle rb) {
         // Set initial labels
@@ -73,13 +73,13 @@ public class DeviceCell extends ListCell<StorageDevice> implements Initializable
         lblPartition3.setText(LernstickFileTools.getDataVolumeString(dataPartitionSize.get(), 1));
         lblPartition4.setText(LernstickFileTools.getDataVolumeString(systemPartitionSize.get(), 1));
     }
-    
+
     @Override
     protected void updateItem(StorageDevice device, boolean empty) {
         super.updateItem(device, empty);
-        
+
         this.device = device;
-        
+
         if (empty || device == null) {
             // Cell is empty
             setText(null);
@@ -97,9 +97,9 @@ public class DeviceCell extends ListCell<StorageDevice> implements Initializable
                     LOGGER.log(Level.SEVERE, e.getLocalizedMessage());
                 }
             }
-            
+
             lblIdentifier.setText(device.toString());
-            
+
             LongProperty deviceSize = new SimpleLongProperty(device.getSize());
             dataPartitionSize.bind(
                     deviceSize
@@ -107,47 +107,47 @@ public class DeviceCell extends ListCell<StorageDevice> implements Initializable
                     .subtract(exchangePartitionSize)
                     .subtract(systemPartitionSize)
             );
-            
+
             lblPartition1.prefWidthProperty().bind(
                     efiPartitionSize
                     .multiply(rowSpace.multiply(0.95))
                     .divide(deviceSize)
             );
-            
+
             lblPartition2.prefWidthProperty().bind(
                     exchangePartitionSize
                     .multiply(rowSpace.multiply(0.95))
                     .divide(deviceSize)
             );
-            
+
             lblPartition3.prefWidthProperty().bind(
                     dataPartitionSize
                     .multiply(rowSpace.multiply(0.95))
                     .divide(deviceSize)
             );
-            
+
             lblPartition4.prefWidthProperty().bind(
                     systemPartitionSize
                     .multiply(rowSpace.multiply(0.95))
                     .divide(deviceSize)
             );
-            
+
             efiPartitionSize.addListener(event -> {
                 lblPartition1.setText(LernstickFileTools.getDataVolumeString(efiPartitionSize.get(), 1));
             });
-            
+
             exchangePartitionSize.addListener(event -> {
                 lblPartition2.setText(LernstickFileTools.getDataVolumeString(exchangePartitionSize.get(), 1));
             });
-            
+
             dataPartitionSize.addListener(event -> {
                 lblPartition3.setText(LernstickFileTools.getDataVolumeString(dataPartitionSize.get(), 1));
             });
-            
+
             systemPartitionSize.addListener(event -> {
                 lblPartition4.setText(LernstickFileTools.getDataVolumeString(systemPartitionSize.get(), 1));
             });
-            
+
             setText(null);
             setGraphic(panRoot);
         }
@@ -157,7 +157,7 @@ public class DeviceCell extends ListCell<StorageDevice> implements Initializable
     public StorageDevice getDevice(){
         return getStorageDevice();
     }
-    
+
     public StorageDevice getStorageDevice(){
         return device;
     }

@@ -28,7 +28,6 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.stage.DirectoryChooser;
 import org.freedesktop.dbus.exceptions.DBusException;
 
@@ -259,11 +258,11 @@ public class ExportSystemUI extends View {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(stringBundle.getString("error.error"));
         alert.setHeaderText(stringBundle.getString("error.error"));
-        
+
         TextArea area = new TextArea(message);
         area.setWrapText(true);
         area.setEditable(false);
-        
+
         alert.getDialogPane().setContent(area);
         alert.showAndWait();
     }
@@ -272,11 +271,11 @@ public class ExportSystemUI extends View {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(stringBundle.getString("global.warning"));
         alert.setHeaderText(stringBundle.getString("global.warning"));
-        
+
         TextArea area = new TextArea(message);
         area.setWrapText(true);
         area.setEditable(false);
-        
+
         alert.getDialogPane().setContent(area);
         return alert.showAndWait();
     }

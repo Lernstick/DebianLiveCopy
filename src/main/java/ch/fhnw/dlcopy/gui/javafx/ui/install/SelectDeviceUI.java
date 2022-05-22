@@ -38,7 +38,6 @@ import javafx.beans.property.LongProperty;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleLongProperty;
-import javafx.beans.property.StringProperty;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -58,13 +57,10 @@ import javafx.scene.control.TabPane;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextInputDialog;
-import javafx.scene.control.ToggleGroup;
-import javafx.scene.control.Tooltip;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
 import javafx.stage.FileChooser;
 import javafx.util.StringConverter;
-import javafx.util.converter.DoubleStringConverter;
 import javafx.util.converter.NumberStringConverter;
 import org.freedesktop.dbus.exceptions.DBusException;
 
@@ -177,7 +173,7 @@ public class SelectDeviceUI extends View {
                     Platform.runLater(() -> {
                         lvDevices.getItems().removeAll(removedDevices);
                         lvDevices.getItems().addAll(addedDevices);
-                        
+
                         // Calc the max space for the exchange and data partition
                         lvDevices.getItems().forEach(device -> {
                             double customizablePartitionSpace = device.getSize()
@@ -189,7 +185,7 @@ public class SelectDeviceUI extends View {
                         });
                     });
                 } catch (IOException | DBusException ex) {
-                    Logger.getLogger(SelectDeviceUI.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, ex.getLocalizedMessage());
                 }
             }
         };
@@ -259,7 +255,7 @@ public class SelectDeviceUI extends View {
             );
         });
         btnInstall.setDisable(false);
-        
+
         slExchangePartitionSize.setLabelFormatter(new StringConverter<Double> () {
             @Override
             public String toString(Double t) {
@@ -275,16 +271,16 @@ public class SelectDeviceUI extends View {
 
     @Override
     protected void setupBindings() {
-        
+
         // Enable install button, when exchange partition is not 0
         btnInstall.disableProperty().bind(
                 exchangePartitionSize.lessThan(0)
         );
-        
+
         // Bind the textinput and the slider to the same value
         tfExchangePartitionSize.textProperty().bindBidirectional(displayedExchangePartitionSize, new NumberStringConverter());
         slExchangePartitionSize.valueProperty().bindBidirectional(displayedExchangePartitionSize);
-        
+
         slExchangePartitionSize.maxProperty().bind(maxCustomizablePartitionSpace.divide(GIGA));
     }
 
@@ -448,7 +444,7 @@ public class SelectDeviceUI extends View {
         while (num != 0) { num /= 10; ++count;}
         return tfStartPattern.getText().length() - count;
     }
-    
+
     public void updateInstallSelectionCountAndExchangeInfo() {
         // check all selected storage devices
         long minOverhead = Long.MAX_VALUE;
@@ -715,11 +711,11 @@ public class SelectDeviceUI extends View {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(stringBundle.getString("error.error"));
         alert.setHeaderText(stringBundle.getString("error.error"));
-        
+
         TextArea area = new TextArea(message);
         area.setWrapText(true);
         area.setEditable(false);
-        
+
         alert.getDialogPane().setContent(area);
         alert.showAndWait();
     }
@@ -728,11 +724,11 @@ public class SelectDeviceUI extends View {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setHeaderText(header);
         alert.setTitle(stringBundle.getString("global.confirm"));
-        
+
         TextArea area = new TextArea(message);
         area.setWrapText(true);
         area.setEditable(false);
-        
+
         alert.getDialogPane().setContent(area);
         return alert.showAndWait();
     }
@@ -743,11 +739,11 @@ public class SelectDeviceUI extends View {
         String answ = stringBundle.getString("install.warn.harddisk.verify");
         alert.setHeaderText(answ);
         alert.setTitle(stringBundle.getString("global.warning"));
-        
+
         TextArea area = new TextArea(MessageFormat.format(msg, answ));
         area.setWrapText(true);
         area.setEditable(false);
-        
+
         alert.getDialogPane().setContent(area);
         alert.showAndWait();
         if(!alert.getEditor().getText().equals(answ)) {
@@ -811,7 +807,7 @@ public class SelectDeviceUI extends View {
             showError(msg);
         }
     }
-    
+
     private SystemSource getSelectedSource(){
         if (rdbIsoImage.isSelected()) {
             return isoSystemSource;

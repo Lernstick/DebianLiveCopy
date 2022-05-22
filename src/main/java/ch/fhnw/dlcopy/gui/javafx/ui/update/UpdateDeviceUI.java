@@ -8,7 +8,6 @@ import ch.fhnw.dlcopy.SystemSource;
 import ch.fhnw.dlcopy.Upgrader;
 import ch.fhnw.dlcopy.gui.javafx.ui.StartscreenUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
-import ch.fhnw.dlcopy.gui.javafx.ui.install.SelectDeviceUI;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
 import java.io.BufferedReader;
@@ -31,10 +30,7 @@ import javafx.application.Platform;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
@@ -109,13 +105,13 @@ public class UpdateDeviceUI extends View {
                 ButtonType.YES, ButtonType.CANCEL);
         alert.setTitle(stringBundle.getString("updateconfirm.header"));
         alert.setHeaderText(stringBundle.getString("updateconfirm.consequences"));
-        
+
         TextArea area = new TextArea(message);
         area.setWrapText(true);
         area.setEditable(false);
-        
+
         alert.getDialogPane().setContent(area);
-        
+
         alert.showAndWait();
     }
 
@@ -195,7 +191,7 @@ public class UpdateDeviceUI extends View {
                         lvDevices.getItems().addAll(addedDevices);
                     });
                 } catch (IOException | DBusException ex) {
-                    Logger.getLogger(SelectDeviceUI.class.getName()).log(Level.SEVERE, null, ex);
+                    LOGGER.log(Level.SEVERE, ex.getLocalizedMessage());
                 }
             }
         };
@@ -251,7 +247,7 @@ public class UpdateDeviceUI extends View {
             try {
                 selectedFile.createNewFile();
             } catch (IOException ex) {
-                Logger.getLogger(UpdateDeviceUI.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, ex.getLocalizedMessage());
             }
             try {
                 PrintWriter writer;
@@ -261,7 +257,7 @@ public class UpdateDeviceUI extends View {
                 });
                 writer.close();
             } catch (IOException ex) {
-                Logger.getLogger(UpdateDeviceUI.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, ex.getLocalizedMessage());
             }
         });
 
@@ -277,7 +273,7 @@ public class UpdateDeviceUI extends View {
                 reader.lines().forEach(file -> lvFilesToOverwritte.getItems().add(file));
                 reader.close();
             } catch (IOException ex) {
-                Logger.getLogger(UpdateDeviceUI.class.getName()).log(Level.SEVERE, null, ex);
+                LOGGER.log(Level.SEVERE, ex.getLocalizedMessage());
             }
         });
 
@@ -509,13 +505,13 @@ public class UpdateDeviceUI extends View {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(stringBundle.getString("error.error"));
         alert.setHeaderText(stringBundle.getString("error.error"));
-        
+
         TextArea area = new TextArea(msg);
         area.setWrapText(true);
         area.setEditable(false);
-        
+
         alert.getDialogPane().setContent(area);
-        
+
         alert.showAndWait();
     }
 
