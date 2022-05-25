@@ -522,7 +522,9 @@ public class SelectDeviceUI extends View {
         }
 
         if (harddiskSelected) {
-            showHarddiskConfirmation();
+            if (!showHarddiskConfirmation()){
+                return false;
+            }
         }
 
         Optional<ButtonType> result = showConfirm(
@@ -733,7 +735,7 @@ public class SelectDeviceUI extends View {
         return alert.showAndWait();
     }
 
-    private void showHarddiskConfirmation() {
+    private boolean showHarddiskConfirmation() {
         TextInputDialog alert = new TextInputDialog();
         String msg = stringBundle.getString("install.warn.harddisk");
         String answ = stringBundle.getString("install.warn.harddisk.verify");
@@ -745,11 +747,14 @@ public class SelectDeviceUI extends View {
         area.setEditable(false);
 
         alert.getDialogPane().setContent(area);
-        alert.showAndWait();
+        
+        Optional<String> result = alert.showAndWait();
+        if (!result.isPresent()){ return false;}
         if(!alert.getEditor().getText().equals(answ)) {
             showError(stringBundle.getString("error.mistypedText"));
-            showHarddiskConfirmation();
+            return showHarddiskConfirmation();
         }
+        return true;
     }
 
     private DataPartitionMode getDataPartitionMode() {
