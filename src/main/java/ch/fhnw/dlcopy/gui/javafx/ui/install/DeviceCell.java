@@ -18,10 +18,13 @@ import javafx.scene.control.ListCell;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 
+
+/**
+ * Represents a cell in the device preview list
+ */
 public class DeviceCell extends ListCell<StorageDevice> implements Initializable {
 
     private static final Logger LOGGER = Logger.getLogger(SelectDeviceUI.class.getName());
-
     private StorageDevice device;
     private FXMLLoader loader;
 

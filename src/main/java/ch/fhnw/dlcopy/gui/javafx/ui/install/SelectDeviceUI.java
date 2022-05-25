@@ -64,6 +64,9 @@ import javafx.util.StringConverter;
 import javafx.util.converter.NumberStringConverter;
 import org.freedesktop.dbus.exceptions.DBusException;
 
+/**
+ * The view, in which the device to install is selected
+ */
 public class SelectDeviceUI extends View {
 
     private static final Logger LOGGER = Logger.getLogger(SelectDeviceUI.class.getName());

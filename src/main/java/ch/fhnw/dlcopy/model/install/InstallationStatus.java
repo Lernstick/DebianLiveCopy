@@ -1,8 +1,7 @@
 package ch.fhnw.dlcopy.model.install;
 
 /**
- * Represents the detail states a installation can be in
- * @author lukas-gysin
+ * Represents the detail states an installation can be in
  */
 public enum InstallationStatus {
     CREATE_FILE_SYSTEMS,

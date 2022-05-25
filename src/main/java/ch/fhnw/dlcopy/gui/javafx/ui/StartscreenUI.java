@@ -13,8 +13,8 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
 /**
- * This view represents the startscreen.
- * In the startscreen the user can choose the path (use case) of the application.
+ * This view represents the start screen.
+ * In the start screen the user can choose the path (use case) of the application.
  */
 public class StartscreenUI extends View {
 
@@ -45,8 +45,8 @@ public class StartscreenUI extends View {
 
     @Override
     /**
-     * This methode is called durring the initalize - process.
-     * All initalizeations of the controlls should be triggered from this methode
+     * This method is called during the initialize-process.
+     * All initializations of the controls should be triggered from this method
      */
     protected void initControls() {
         panDefault.setVisible(true);
@@ -54,8 +54,8 @@ public class StartscreenUI extends View {
 
     @Override
     /**
-     * This methode is called durring the initalize - process.
-     * All event handlers should be initialized in this methode
+     * This method is called during the initialize-process.
+     * All event handlers should be initialized in this method
      */
     protected void setupEventHandlers() {
         setupMenuButtonHandler(btnExportSystem, panExportSystem);

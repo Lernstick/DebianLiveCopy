@@ -15,7 +15,7 @@ import javafx.stage.Stage;
 
 /**
  * This class is the base of the JavaFX frontend.
- * It's starts the JavaFX and manages the displayed view.
+ * It starts the JavaFX and manages the displayed view.
  */
 public class StorageMediaManagement
         extends Application
@@ -55,8 +55,8 @@ public class StorageMediaManagement
 
     @Override
     /**
-     * This methode is called by JavaFX, when the application stops.
-     * It deinitalize the current view, to avoid memory leakes.
+     * This method is called by JavaFX when the application stops.
+     * It deinitialize the current view, to avoid memory leaks.
      */
     public void stop() throws Exception {
         view.deinitialize();
@@ -64,8 +64,8 @@ public class StorageMediaManagement
 
     @Override
     /**
-     * This methode is called by JavaFX, when the application starts.
-     * It initalizes the windows and views the startscreen - view.
+      * This method is called by JavaFX when the application starts.
+      * It initializes the windows and views the start screen - view.
      */
     public void start(Stage stage) throws Exception {
 
@@ -90,8 +90,8 @@ public class StorageMediaManagement
     }
 
     /**
-     * When this methode is called, the JavaFX frontend will be initalized.
-     * @param args the command line arguments
+     * When this method is called, the JavaFX frontend will be initialized.
+     * @param args The command-line arguments
      */
     public static void launchFX(String[] args) {
         launch(args);

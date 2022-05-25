@@ -14,7 +14,7 @@ import javafx.scene.control.Tooltip;
 
 /**
  * This class represents a view to be displayed.
- * A view is the wrapper for the content in the screen.
+ * A view is the wrapper for the content on the screen.
  */
 public abstract class View{
 
@@ -34,7 +34,7 @@ public abstract class View{
 
     @FXML
     /**
-     * This methode is called from JavaFX, when a instance of the view is generated.
+     * This method is called from JavaFX when a instance of the view is generated.
      */
     public final void initialize(){
         initSelf();
@@ -46,44 +46,44 @@ public abstract class View{
     }
 
     /**
-    * This methode is called durring the initalize - process.
-    * The class itslefe should be initalized here.
-    * In here the refferences to the FXML - elements are not null. In the constructor, theses elements are all null - references.
+    * This method is called during the initialize-process.
+    * The class itself should be initialized here.
+    * In here the references to the FXML - elements are not null. In the constructor, these elements are all null - references.
     */
     protected void initSelf(){}
 
     /**
-    * This methode is called durring the initalize - process.
-    * All initalizeations of the controlls should be triggered from this methode
+    * This method is called during the initialize-process.
+    * All initializations of the controls should be triggered from this method
     */
     protected void initControls(){}
 
     /**
-     * This methode is called durring the initalize - process.
-     * In this methode the size and the position of the controls should be adjusted, if needed.
+     * This method is called during the initialize - process.
+     * In this method the size and the position of the controls should be adjusted, if needed.
      */
     protected void layoutControls(){}
 
     /**
-     * This methode is called durring the initalize - process.
-     * In this methode JavaFX - bindings are set up
+     * This method is called during the initialize-process.
+     * In this method JavaFX - bindings are set up
      */
     protected void setupBindings(){}
 
     /**
-    * This methode is called durring the initalize - process.
-    * In this methode JavaFX - event handlers are set up
+    * This method is called during the initialize-process.
+    * In this method JavaFX - event handlers are set up
     */
     protected void setupEventHandlers(){}
 
     /**
-    * This methode is called durring the initalize - process.
-    * In this methode JavaFX - value change listeners are set up
+    * This method is called during the initialize-process.
+    * In this method JavaFX - value change listeners are set up
     */
     protected void setupValueChangedListeners(){}
 
     /**
-     * This methode adds a tooltip to a control.
+     * This method adds a tooltip to a control.
      * When the mouse hovers over the control, a tooltip with the given text will appear.
      * @param c The control, where the tooltip should be added
      * @param s The string to be shown in the tooltip

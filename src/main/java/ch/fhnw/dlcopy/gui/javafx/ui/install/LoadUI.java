@@ -13,6 +13,9 @@ import javafx.scene.image.ImageView;
 import javafx.scene.text.Text;
 import javafx.scene.text.TextFlow;
 
+/**
+ * In this view, the progress of the installation is shown
+ */
 public class LoadUI extends View {
 
     @FXML private Button btnBack;
@@ -42,12 +45,20 @@ public class LoadUI extends View {
     }
 
     @Override
+    /**
+    * This method is called during the initialize-process.
+    * All initializations of the controls should be triggered from this method
+    */
     protected void initControls() {
         btnBack.setDisable(true);
         initBulletPoints();
     }
 
     @Override
+    /**
+     * This method is called during the initialize-process.
+     * In this method JavaFX - bindings are set up
+     */
     protected void setupBindings(){
         InstallControler controller = InstallControler.getInstance(context);
 
@@ -56,6 +67,10 @@ public class LoadUI extends View {
     }
 
     @Override
+    /**
+    * This method is called during the initialize-process.
+    * In this method JavaFX - event handlers are set up
+    */
     protected void setupEventHandlers() {
         btnReport.setOnAction((ActionEvent event) -> {
             context.setScene(new InstallationReportUI());

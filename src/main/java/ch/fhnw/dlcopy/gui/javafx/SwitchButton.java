@@ -15,7 +15,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 
 /**
- * This class represents a FX Controller.
+ * This class represents an FX Controller.
  * It displays a toggle - button
  *
  * This implementation is inspired by:

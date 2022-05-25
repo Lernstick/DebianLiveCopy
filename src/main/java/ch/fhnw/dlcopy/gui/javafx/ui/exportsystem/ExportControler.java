@@ -41,21 +41,37 @@ public class ExportControler implements DLCopyGUI {
         return instance;
     }
 
+    /**
+     * This method is called from the core when the system is exported
+     * The Loading Screen should be displayed, when this method is called.
+     */
     public void showIsoProgress() {
         context.setScene(new LoadUI());
     }
 
     @Override
+    /**
+     * This method is called from the core when the system is exported
+     * The Loading Screen should be displayed and the given message should be shown, when this method is called.
+     */
     public void showIsoProgressMessage(String message) {
         context.setScene(new LoadUI(message));
     }
 
     @Override
+    /**
+     * This method is called from the core when the system is exported
+     * The Loading Screen should be displayed, the given message should be shown and the progress should be set to the value when this method is called.
+     */
     public void showIsoProgressMessage(String message, int value) {
         context.setScene(new LoadUI(message, value));
     }
 
     @Override
+    /**
+     * This method is called from the core when the system is exported
+     * The End Screen (Info Screen called) should be displayed.
+     */
     public void isoCreationFinished(String path, boolean success) {
         context.setScene(new InfoUI(path, success));
     }

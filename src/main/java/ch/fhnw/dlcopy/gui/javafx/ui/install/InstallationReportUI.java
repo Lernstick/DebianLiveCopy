@@ -17,6 +17,9 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import org.freedesktop.dbus.exceptions.DBusException;
 
+/**
+ * In this view the installation results are shown as a table
+ */
 public class InstallationReportUI extends View{
 
     private final Timer tableRefresheTimer = new Timer();

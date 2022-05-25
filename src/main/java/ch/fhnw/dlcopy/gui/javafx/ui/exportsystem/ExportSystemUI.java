@@ -31,6 +31,9 @@ import javafx.scene.control.TextField;
 import javafx.stage.DirectoryChooser;
 import org.freedesktop.dbus.exceptions.DBusException;
 
+/**
+ * Represents the Export System View, where you can export the system.
+ */
 public class ExportSystemUI extends View {
 
     private String option_NotUsed = stringBundle.getString("global.notUsed");
@@ -71,6 +74,10 @@ public class ExportSystemUI extends View {
     }
 
     @Override
+    /**
+    * This method is called during the initialize-process.
+    * All initializations of the controls should be triggered from this method
+    */
     protected void initControls() {
         cmbDataPartitionMode.getItems().addAll(option_ReadWrite, option_ReadOnly, option_NotUsed);
         cmbDataPartitionMode.setValue(option_ReadWrite);
@@ -91,6 +98,10 @@ public class ExportSystemUI extends View {
     }
 
     @Override
+    /**
+    * This method is called during the initialize-process.
+    * In this method JavaFX - event handlers are set up
+    */
     protected void setupEventHandlers() {
         switchBtn.setOnAction(event -> {
             toggleExpertMode();

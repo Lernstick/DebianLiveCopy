@@ -8,6 +8,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
 
+/**
+ * This class represents the loading bar screen, which shows the progress
+ */
 public class LoadUI extends View {
 
     @FXML private Button btnNext;
@@ -33,6 +36,10 @@ public class LoadUI extends View {
     }
 
     @Override
+    /**
+    * This method is called during the initialize-process.
+    * All initializations of the controls should be triggered from this method
+    */
     protected void initSelf() {
         if (tmpMessage != null) {
             lblStatusInfo.setText(tmpMessage);
@@ -46,6 +53,10 @@ public class LoadUI extends View {
     }
 
     @Override
+    /**
+    * This method is called during the initialize-process.
+    * In this method JavaFX - event handlers are set up
+    */
     protected void setupEventHandlers() {
         btnNext.setOnAction(event -> {
             context.setScene(new InfoUI());
