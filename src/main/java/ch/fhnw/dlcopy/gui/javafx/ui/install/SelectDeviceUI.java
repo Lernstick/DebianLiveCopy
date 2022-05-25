@@ -35,6 +35,7 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.LongProperty;
+import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.property.StringProperty;
@@ -71,6 +72,8 @@ public class SelectDeviceUI extends View {
 
     private static final Logger LOGGER = Logger.getLogger(SelectDeviceUI.class.getName());
     private static final ProcessExecutor PROCESS_EXECUTOR = new ProcessExecutor();
+    
+    private static final long GIGA = 1073741824;
 
     private final Timer listUpdateTimer = new Timer();
     private SystemSource runningSystemSource;
@@ -78,6 +81,7 @@ public class SelectDeviceUI extends View {
     private boolean showHarddisks = false;
     private ObservableList<StorageDevice> selectedStds;
     private LongProperty exchangePartitionSize = new SimpleLongProperty();
+    private LongProperty displayedExchangePartitionSize = new SimpleLongProperty();
     private DoubleProperty maxCustomizablePartitionSpace = new SimpleDoubleProperty(Double.MAX_VALUE);
 
     // some locks to synchronize the Installer, Upgrader and Resetter with their
@@ -278,14 +282,37 @@ public class SelectDeviceUI extends View {
         );
         
         // Bind the textinput and the slider to the same value
-        tfExchangePartitionSize.textProperty().bindBidirectional(exchangePartitionSize, new NumberStringConverter());
-        slExchangePartitionSize.valueProperty().bindBidirectional(exchangePartitionSize);
+        tfExchangePartitionSize.textProperty().bindBidirectional(displayedExchangePartitionSize, new NumberStringConverter());
+        slExchangePartitionSize.valueProperty().bindBidirectional(displayedExchangePartitionSize);
         
-        slExchangePartitionSize.maxProperty().bind(maxCustomizablePartitionSpace);
+        slExchangePartitionSize.maxProperty().bind(maxCustomizablePartitionSpace.divide(GIGA));
     }
 
     @Override
-    protected void setupEventHandlers() {
+    protected void setupValueChangedListeners() {
+        exchangePartitionSize.addListener((observable, oldValue, newValue) -> {
+            if (newValue.longValue() > maxCustomizablePartitionSpace.longValue()){
+                exchangePartitionSize.set(maxCustomizablePartitionSpace.longValue());
+            } else if (newValue.longValue() < 0){
+                exchangePartitionSize.set(0);
+            }
+        });
+        
+        exchangePartitionSize.addListener((observable, oldValue, newValue) -> {
+            if (newValue.longValue() != displayedExchangePartitionSize.multiply(GIGA).longValue()){
+                displayedExchangePartitionSize.set(newValue.longValue() / GIGA);
+            }
+        });
+        
+        displayedExchangePartitionSize.addListener((observable, oldValue, newValue) -> {
+            if (newValue.longValue() != exchangePartitionSize.divide(GIGA).longValue()){
+                exchangePartitionSize.set(newValue.longValue() * GIGA);
+            }
+        });
+    }   
+
+    @Override
+    protected void setupEventHandlers() {        
         btnInstall.setOnAction(event -> {
             try {
                 if (rdbCurrentSystem.isSelected() &&  !checkSelection(selectedStds)) {
