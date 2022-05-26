@@ -744,12 +744,7 @@ public class SelectDeviceUI extends View {
         String answ = stringBundle.getString("install.warn.harddisk.verify");
         alert.setHeaderText(answ);
         alert.setTitle(stringBundle.getString("global.warning"));
-
-        TextArea area = new TextArea(MessageFormat.format(msg, answ));
-        area.setWrapText(true);
-        area.setEditable(false);
-
-        alert.getDialogPane().setContent(area);
+        alert.setContentText(MessageFormat.format(msg, answ));
         
         Optional<String> result = alert.showAndWait();
         if (!result.isPresent()){ return false;}
