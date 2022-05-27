@@ -48,7 +48,7 @@ jobs:
       - name: Unix lineendings
         run: |
           apk add --no-cache file findutils
-          ! find -regex '.*\.\(css\|f?xml\|java\|md\|properties\|svg\|txt\)$' -type f -exec file '{}' \; | grep -F 'CRLF'
+          (! find -regex '.*\.\(css\|f?xml\|java\|md\|properties\|svg\|txt\)$' -type f -exec file '{}' \; | grep -F 'CRLF' )
 
   xmllint:
     runs-on: ubuntu-latest
@@ -62,7 +62,7 @@ jobs:
       - name: Ensure that the FXML Java versions matches the system verison to avoid warnings
         run: |
           apk add --no-cache findutils libxml2-utils
-          ! find -regex '.*\.f?xml$' -type f -exec xmllint --format --noout '{}' \;
+          find -regex '.*\.f?xml$' -type f -exec xmllint --format --noout '{}' \;
           find src/main/resources/fxml -not \( -name controls -prune \) -type f -name '*.fxml' | xargs -t -L1 xmllint --xpath '/*[namespace-uri()="http://javafx.com/javafx/11"]' > /dev/null
 
   nbproperties:
