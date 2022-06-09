@@ -5,8 +5,7 @@ import java.time.Duration;
 import java.time.LocalTime;
 
 /**
- * Represents a installation.
- * @author lukas-gysin
+ * Represents an installation.
  */
 public class Installation {
     

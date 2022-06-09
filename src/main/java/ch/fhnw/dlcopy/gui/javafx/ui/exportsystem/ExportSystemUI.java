@@ -26,11 +26,14 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
 import javafx.scene.control.ComboBox;
 import javafx.scene.control.Label;
+import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.stage.DirectoryChooser;
 import org.freedesktop.dbus.exceptions.DBusException;
 
+/**
+ * Represents the Export System View, where you can export the system.
+ */
 public class ExportSystemUI extends View {
 
     private String option_NotUsed = stringBundle.getString("global.notUsed");
@@ -71,6 +74,10 @@ public class ExportSystemUI extends View {
     }
 
     @Override
+    /**
+    * This method is called during the initialize-process.
+    * All initializations of the controls should be triggered from this method
+    */
     protected void initControls() {
         cmbDataPartitionMode.getItems().addAll(option_ReadWrite, option_ReadOnly, option_NotUsed);
         cmbDataPartitionMode.setValue(option_ReadWrite);
@@ -91,6 +98,10 @@ public class ExportSystemUI extends View {
     }
 
     @Override
+    /**
+    * This method is called during the initialize-process.
+    * In this method JavaFX - event handlers are set up
+    */
     protected void setupEventHandlers() {
         switchBtn.setOnAction(event -> {
             toggleExpertMode();
@@ -258,7 +269,12 @@ public class ExportSystemUI extends View {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(stringBundle.getString("error.error"));
         alert.setHeaderText(stringBundle.getString("error.error"));
-        alert.setContentText(message);
+
+        TextArea area = new TextArea(message);
+        area.setWrapText(true);
+        area.setEditable(false);
+
+        alert.getDialogPane().setContent(area);
         alert.showAndWait();
     }
 
@@ -266,7 +282,12 @@ public class ExportSystemUI extends View {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle(stringBundle.getString("global.warning"));
         alert.setHeaderText(stringBundle.getString("global.warning"));
-        alert.setContentText(message);
+
+        TextArea area = new TextArea(message);
+        area.setWrapText(true);
+        area.setEditable(false);
+
+        alert.getDialogPane().setContent(area);
         return alert.showAndWait();
     }
 }

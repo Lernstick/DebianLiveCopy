@@ -20,14 +20,14 @@ lineendings:
   stage: lint
   script:
    - apk add --no-cache file findutils
-   - ! find -regex '.*\.\(f?xml\|java\|md\|properties\|svg\|txt\)$' -type f -exec file '{}' \; | grep -F 'CRLF'
+   - (! find -regex '.*\.\(css\|f?xml\|java\|md\|properties\|svg\|txt\)$' -type f -exec file '{}' \; | grep -F 'CRLF')
 
 xmllint:
   image: alpine
   stage: lint
   script:
    - apk add --no-cache findutils libxml2-utils
-   - ! find -regex '.*\.f?xml$' -type f -exec xmllint --format --noout '{}' \;
+   - find -regex '.*\.f?xml$' -type f -exec xmllint --format --noout '{}' \;
    - find src/main/resources/fxml -not \( -name controls -prune \) -type f -name '*.fxml' | xargs -t -L1 xmllint --xpath '/*[namespace-uri()="http://javafx.com/javafx/11"]' > /dev/null
 
 .prepare:
@@ -151,3 +151,16 @@ sonarqube-warn:
       -Dsonar.sources=src
   # fine graded options are a paid feature.
   allow_failure: true
+
+testfx:
+  extends: .prepare
+  stage: test
+  script:
+    - apt-get update
+    - apt-get install -y --no-install-recommends junit libmockito-java xauth xvfb
+    # Create files for tricking the Storage media management into thinking to run on a Lerstick instance
+    # See `src/main/java/ch/fhnw/dlcopy/DebianLiveVersion.java` for more infomration
+    - mkdir -pv /run/live/medium
+    - mkdir -pv /usr/lib/syslinux/mbr
+    - touch /usr/lib/syslinux/mbr/mbr.bin
+    - xvfb-run ant test

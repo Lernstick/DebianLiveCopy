@@ -14,8 +14,6 @@ import java.util.ResourceBundle;
 import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableDoubleValue;
-import javafx.beans.value.ObservableStringValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 
@@ -25,36 +23,36 @@ import javafx.collections.ObservableList;
  * @author lukas-gysin
  */
 public class InstallControler implements DLCopyGUI {
-    
+
     private Installation currentInstallation = null;
     protected ResourceBundle stringBundle = ResourceBundle.getBundle("strings/Strings");
-    
+
     /**
      * The singleton instance of the class
      */
     private static InstallControler instance = null;
-    
+
     /**
      * A list of all selected devices
      * On each of this devices a installation is planed
      */
     private final List<Installation> installations = new ArrayList<>();
-    
+
     /**
      * The scene context, witch is used to switch the scene
      */
     private final SceneContext context;
-    
+
     private final Property<String> installationStep = new SimpleStringProperty();
     private final Property<Number> progress = new SimpleDoubleProperty(-1);
-    
+
     /**
      * Mark the constructor <c>private</c>, so it is not accessable from outside
      */
     private InstallControler(SceneContext context) {
         this.context = context;
     }
-    
+
     /**
      * A thread save lacy constructor for the singleton
      * @param context The scene context, witch will be used to switch the scene.
@@ -66,7 +64,7 @@ public class InstallControler implements DLCopyGUI {
         }
         return instance;
     }
-    
+
     /**
      * Generates the `installations` list from the given list
      * All installations will have the status `PENDING`
@@ -81,10 +79,10 @@ public class InstallControler implements DLCopyGUI {
             currentNumber += increment;
         }
     }
-    
+
     /**
      * This methode is called, when installation starts.
-     * It will show initial the load ui. 
+     * It will show initial the load ui.
      */
     @Override
     public void showInstallProgress() {
@@ -93,7 +91,7 @@ public class InstallControler implements DLCopyGUI {
 
     /**
      * This methode is called, when the installation on the given device starts
-     * @param storageDevice 
+     * @param storageDevice
      */
     @Override
     public void installingDeviceStarted(StorageDevice storageDevice) {
@@ -120,7 +118,7 @@ public class InstallControler implements DLCopyGUI {
         currentInstallation.setDetailStatus(InstallationStatus.COPY_FILES);
         installationStep.setValue(stringBundle.getString("install.copy"));
         progress.setValue(-1);
-        
+
     }
 
     @Override
@@ -171,7 +169,7 @@ public class InstallControler implements DLCopyGUI {
         currentInstallation.setStatus(OperationStatus.SUCCESSFULL); // It's possible thant for the last device no installing Device finished is called
         context.setScene(new InfoUI());
     }
-    
+
     /**
      * Returns the list of installations
      * @return The list of all installations
@@ -179,15 +177,15 @@ public class InstallControler implements DLCopyGUI {
     public ObservableList<Installation> getInstallations() {
         return FXCollections.observableList(installations);
     }
-    
+
     public Property<String> getInstallationStep(){
         return installationStep;
     }
-    
+
     public Property<Number> getProgress(){
         return progress;
     }
-    
+
     /**
      * Finds the current installation for the given device
      * @param device The device, for witch the installation should be searched

@@ -28,10 +28,10 @@
         <RowConstraints vgrow="SOMETIMES" />
     </rowConstraints>
     <children>
-      <VBox fillWidth="false" spacing="5.0">
+      <VBox spacing="5.0">
          <children>
                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.exportSystem" />
-            <Separator />
+             <Separator maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.selection" />
                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.export" />
                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="%global.finish">
@@ -57,11 +57,7 @@
                         <Image url="@../../new_icons/export-file-white.png" />
                      </image>
                   </ImageView>
-                  <ScrollPane VBox.vgrow="ALWAYS">
-                     <content>
-                        <TextArea fx:id="lblExtraInfo" />
-                     </content>
-                  </ScrollPane>
+                  <TextArea fx:id="taExtraInfo" editable="false" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" wrapText="true" />
                </children>
             </VBox>
          </children>

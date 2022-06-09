@@ -19,13 +19,14 @@ import javafx.fxml.FXML;
 import javafx.scene.Node;
 import javafx.scene.control.Button;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.Control;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
-import javafx.scene.control.Tooltip;
 import javafx.stage.DirectoryChooser;
 import org.freedesktop.dbus.exceptions.DBusException;
 
+/**
+ * Represents the Export Data View, where you can export only the data to a SquashFS.
+ */
 public class ExportDataUI extends View {
 
     private SystemSource runningSystemSource;
@@ -59,9 +60,13 @@ public class ExportDataUI extends View {
     }
 
     @Override
+    /**
+    * This method is called during the initialize-process.
+    * All initializations of the controls should be triggered from this method.
+    */
     protected void initControls() {
         btnExport.setDisable(true);
-        
+
         addToolTip(tfTargetDirectory, stringBundle.getString("export.tooltip.targetDirectory"));
         addToolTip(chbInformationDialog,stringBundle.getString("export.tooltip.informationDialog"));
         addToolTip(chbInstallationProgram,stringBundle.getString("export.tooltip.installationProgram"));
@@ -72,11 +77,15 @@ public class ExportDataUI extends View {
         addToolTip(lblWriteableDisplay, stringBundle.getString("export.tooltip.writeable"));
         addToolTip(switchBtn, stringBundle.getString("global.tooltip.expertMode"));
     }
-    
+
 
     @Override
+    /**
+    * This method is called during the initialize-process.
+    * In this method JavaFX - event handlers are set up
+    */
     protected void setupEventHandlers() {
-        
+
         switchBtn.setOnAction(event -> {
             toggleExpertMode();
         });
@@ -84,7 +93,7 @@ public class ExportDataUI extends View {
         tfTargetDirectory.setOnAction(event -> {
             selectDirectory();
         });
-        
+
         tfTargetDirectory.setOnMouseClicked(event -> {
             selectDirectory();
         });
@@ -100,7 +109,7 @@ public class ExportDataUI extends View {
             }
             createDataPartiton();
         });
-    }  
+    }
 
     private void selectDirectory() {
         DirectoryChooser folder = new DirectoryChooser();

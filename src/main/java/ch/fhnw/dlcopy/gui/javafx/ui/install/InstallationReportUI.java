@@ -1,36 +1,29 @@
 package ch.fhnw.dlcopy.gui.javafx.ui.install;
 
 import ch.fhnw.dlcopy.DLCopy;
-import ch.fhnw.dlcopy.StorageDeviceResult;
 import ch.fhnw.dlcopy.gui.javafx.ui.View;
 import ch.fhnw.dlcopy.model.install.Installation;
-import ch.fhnw.dlcopy.model.install.OperationStatus;
-import ch.fhnw.util.StorageDevice;
 import java.io.IOException;
-import java.time.Duration;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javafx.application.Platform;
-import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 import org.freedesktop.dbus.exceptions.DBusException;
 
+/**
+ * In this view the installation results are shown as a table
+ */
 public class InstallationReportUI extends View{
-    
+
     private final Timer tableRefresheTimer = new Timer();
-    
+
     @FXML Button btnProgress;
     @FXML TableColumn<Installation, String> colDuration;
     @FXML TableColumn<Installation, String> colError;
@@ -45,11 +38,11 @@ public class InstallationReportUI extends View{
     @FXML TableColumn<Installation, String> colStatus;
     @FXML TableColumn<Installation, String> colVendor;
     @FXML TableView<Installation> tvReport;
-    
+
     public InstallationReportUI(){
         resourcePath = getClass().getResource("/fxml/install/installationreport.fxml");
     }
-    
+
     /**
      * This function is called, when the view should be deinitalized.
      * It has to be called manually!
@@ -64,15 +57,16 @@ public class InstallationReportUI extends View{
         TimerTask tableRefresher = new TimerTask() {
             @Override
             public void run() {
-                
+
                 tvReport.refresh();
             }
         };
         tableRefresheTimer.scheduleAtFixedRate(tableRefresher, 0, 1000L); // Starts the `listUpdater`-task each 1000ms (1sec)
     }
-    
+
     @Override
-    protected void initControls() {
+    protected void initControls(){
+
         colDuration.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDuratioinString()));
         colError.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getError()));
         colFinish.setCellValueFactory(cell -> {
@@ -104,7 +98,7 @@ public class InstallationReportUI extends View{
         });
         colStatus.setCellValueFactory(cell -> {
             String resutl;
-            
+
             switch (cell.getValue().getStatus()) {
                 case PENDING:
                     resutl = stringBundle.getString("install.waiting");
@@ -121,11 +115,11 @@ public class InstallationReportUI extends View{
                 default:
                     throw new IllegalStateException("This Operations state is unknown: " + cell.getValue().getStatus());
             }
-            
+
             return new SimpleStringProperty(resutl);
         });
         colVendor.setCellValueFactory(cell -> new SimpleStringProperty(cell.getValue().getDevice().getVendor()));
-        
+
         tvReport.setItems(InstallControler.getInstance(context).getInstallations());
     }
 
@@ -135,6 +129,6 @@ public class InstallationReportUI extends View{
             context.setScene(new LoadUI());
         });
     }
-    
-    
+
+
 }

@@ -6,11 +6,16 @@ import ch.fhnw.dlcopy.gui.javafx.ui.install.SelectDeviceUI;
 import ch.fhnw.dlcopy.gui.javafx.ui.update.UpdateDeviceUI;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
+/**
+ * This view represents the start screen.
+ * In the start screen the user can choose the path (use case) of the application.
+ */
 public class StartscreenUI extends View {
 
     @FXML private Button btnExportData;
@@ -31,16 +36,27 @@ public class StartscreenUI extends View {
     @FXML private Pane panReset;
     @FXML private Pane panUpdate;
 
+    /**
+     * The empty constructor is used by the JavaFX, when a instance of this view is created.
+     */
     public StartscreenUI() {
         resourcePath = getClass().getResource("/fxml/startscreen.fxml");
     }
 
     @Override
+    /**
+     * This method is called during the initialize-process.
+     * All initializations of the controls should be triggered from this method
+     */
     protected void initControls() {
         panDefault.setVisible(true);
     }
 
     @Override
+    /**
+     * This method is called during the initialize-process.
+     * All event handlers should be initialized in this method
+     */
     protected void setupEventHandlers() {
         setupMenuButtonHandler(btnExportSystem, panExportSystem);
         setupMenuButtonHandler(btnExportData, panExportData);
@@ -63,6 +79,10 @@ public class StartscreenUI extends View {
         btnUpdate.setOnAction(event -> {
             context.setScene(new UpdateDeviceUI());
         });
+        
+       btnReset.setOnAction(event -> {
+            disable(stringBundle.getString("reset.disable.comeBack"));
+        });
 
         imgDefault      .fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 2.16));
         imgExportData   .fitHeightProperty().bind(Bindings.divide(model.heightProperty(), 2.16));
@@ -83,5 +103,14 @@ public class StartscreenUI extends View {
             panDefault.setVisible(true);
             ivw.setVisible(false);
         });
+    }
+    
+    private void disable(String message) {
+        Alert alert = new Alert(Alert.AlertType.INFORMATION,
+                stringBundle.getString("reset.disable.header"));
+        alert.setTitle(stringBundle.getString("reset.disable.header"));
+        alert.setHeaderText(stringBundle.getString("reset.disable.noPaht"));
+        alert.setContentText(message);
+        alert.showAndWait();
     }
 }

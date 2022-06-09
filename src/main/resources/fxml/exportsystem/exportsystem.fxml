@@ -30,10 +30,10 @@
         <RowConstraints vgrow="SOMETIMES" />
     </rowConstraints>
     <children>
-      <VBox fillWidth="false" spacing="5.0">
+      <VBox spacing="5.0">
          <children>
                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" styleClass="labelcenter" text="%global.exportSystem" />
-            <Separator />
+             <Separator maxWidth="1.7976931348623157E308" VBox.vgrow="ALWAYS" />
                 <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" minHeight="-Infinity" minWidth="-Infinity" text="%global.selection">
                <styleClass>
                   <String fx:value="labelcenter" />

@@ -15,11 +15,12 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ToggleButton;
 
 /**
- * Inspired by https://stackoverflow.com/a/57290206 and
- * https://stackoverflow.com/a/17494262
+ * This class represents an FX Controller.
+ * It displays a toggle - button
  *
- * In the future a library could be used for this, but for now it is not worth
- * for just a single button.
+ * This implementation is inspired by:
+ * @see <a href="https://stackoverflow.com/a/57290206">StackOverflow: Creating sliding on/off Switch button in javaFX</a>
+ * @see <a href="https://stackoverflow.com/a/17494262">StackOverflow: How can i create a switch button in javafx?</a>
  */
 public class SwitchButton extends Label {
 

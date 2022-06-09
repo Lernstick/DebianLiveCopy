@@ -22,21 +22,14 @@
 }
 
 .labelselected {
-    /*-fx-background-color: #494949;*/
+    -fx-font-size: 13;
     -fx-font-weight: bold;
-    -fx-text-fill: black;
 }
 
 .list-cell {
     -fx-background-color: #3C3C3C;
     -fx-border-color: #282828;
-    -fx-border-width: 3;
-    -fx-border-radius: 5;
     -fx-text-fill: #EEEEEE;
-}
-
-.list-cell:odd{
-    -fx-background-color: #494949;
 }
 
 .list-cell:selected{
@@ -263,4 +256,12 @@
 
 .tab-pane:focused>.tab-header-area>.headers-region>.tab:selected .focus-indicator {
     -fx-border-color: #1F76E1;
+}
+
+.gridpaneFilesystem{
+    -fx-background-color: #3C3C3C;
+}
+
+.lblFilesystem{
+    -fx-text-fill: #9e9b99;
 }

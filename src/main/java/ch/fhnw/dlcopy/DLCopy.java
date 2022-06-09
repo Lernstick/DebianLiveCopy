@@ -132,6 +132,7 @@ public class DLCopy {
 
     public static void startFX(final String args[]){
         StorageMediaManagement.launchFX(args);
+	System.exit(0);
     }
 
     public static void startSwing(final String args[]){

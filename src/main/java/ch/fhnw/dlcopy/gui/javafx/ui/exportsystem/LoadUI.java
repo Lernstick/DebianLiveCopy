@@ -8,6 +8,9 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.ImageView;
 
+/**
+ * This class represents the loading bar screen, which shows the progress
+ */
 public class LoadUI extends View {
 
     @FXML private Button btnNext;

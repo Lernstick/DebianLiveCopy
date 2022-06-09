@@ -12,12 +12,12 @@ import javafx.scene.control.TextArea;
 import javafx.scene.image.ImageView;
 
 /**
- * Call the info screen
+ * This class represents the View, where all the information is shown at the end of the export
  */
 public class InfoUI extends View {
     @FXML private Button btnFinish;
     @FXML private ImageView imgExportFile;
-    @FXML private TextArea lblExtraInfo;
+    @FXML private TextArea taExtraInfo;
 
     private static final Logger LOGGER = Logger.getLogger(InfoUI.class.getName());
     private String tmpPath;
@@ -34,6 +34,11 @@ public class InfoUI extends View {
     }
 
     @Override
+    /**
+    * This method is called during the initialize-process.
+    * The class itself should be initialized here.
+    * In here the references to the FXML - elements are not null. In the constructor, these elements are all null - references.
+    */
     protected void initSelf() {
         String message;
         if (tmpSuccess) {
@@ -42,10 +47,14 @@ public class InfoUI extends View {
         } else {
             message = stringBundle.getString("export.error.isoCreation");
         }
-        lblExtraInfo.setText(message);
+        taExtraInfo.setText(message);
     }
 
     @Override
+    /**
+    * This method is called during the initialize-process.
+    * In this method JavaFX - event handlers are set up
+    */
     protected void setupEventHandlers() {
         btnFinish.setOnAction(event -> {
             LOGGER.log(Level.INFO, "Mischief managed.");

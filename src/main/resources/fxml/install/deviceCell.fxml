@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+
+
+<VBox fx:id="panRoot" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" spacing="10.0" xmlns="http://javafx.com/javafx/11" xmlns:fx="http://javafx.com/fxml/1">
+   <children>
+      <HBox spacing="20.0">
+         <children>
+            <Label fx:id="lblIdentifier" text="lblIdentifier" />
+         </children>
+      </HBox>
+      <HBox fx:id="hbPartitions" maxWidth="1.7976931348623157E308">
+         <children>
+            <Label fx:id="lblPartition1" alignment="CENTER" prefHeight="30.0" style="-fx-background-color: #111111;" text="lblPartition1" textAlignment="CENTER" />
+            <Label fx:id="lblPartition2" alignment="CENTER" prefHeight="30.0" style="-fx-background-color: #222222;" text="lblPartition2" textAlignment="CENTER" />
+            <Label fx:id="lblPartition3" alignment="CENTER" prefHeight="30.0" style="-fx-background-color: #333333;" text="lblPartition3" textAlignment="CENTER" />
+            <Label fx:id="lblPartition4" alignment="CENTER" prefHeight="30.0" style="-fx-background-color: #444444;" text="lblPartition4" textAlignment="CENTER" />
+         </children>
+      </HBox>
+   </children>
+</VBox>

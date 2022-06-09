@@ -1,5 +1,7 @@
 package ch.fhnw.dlcopy.model;
 
+import java.util.ArrayList;
+import java.util.Locale;
 import javafx.beans.property.IntegerProperty;
 import javafx.beans.property.SimpleIntegerProperty;
 
