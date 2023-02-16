@@ -123,10 +123,10 @@ public class DLCopy {
     public static void main(final String args[]) {
         ArrayList<String> arguments = new ArrayList<>();
         arguments.addAll(Arrays.asList(args));
-        if (arguments.contains("--old-ui")) {
-            startSwing(args);
-        } else {
+        if (arguments.contains("--new-ui")) {
             startFX(args);
+        } else {
+            startSwing(args);
         }
     }
 
