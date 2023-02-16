@@ -70,7 +70,7 @@ public class DLCopy {
     /**
      * the known and supported data partition modes
      */
-    public static final String[] DATA_PARTITION_MODES = new String[] {
+    public static final String[] DATA_PARTITION_MODES = new String[]{
         STRINGS.getString("Read_Write"),
         STRINGS.getString("Read_Only"),
         STRINGS.getString("Not_Used")
@@ -79,7 +79,7 @@ public class DLCopy {
     /**
      * the known and supported data partition filesystems
      */
-    public static final String[] DATA_PARTITION_FS = new String[] {
+    public static final String[] DATA_PARTITION_FS = new String[]{
         "ext2",
         "ext3",
         "ext4"
@@ -88,7 +88,7 @@ public class DLCopy {
     /**
      * the known and supported exchange partition filesystems
      */
-    public static final String[] EXCHANGE_PARTITION_FS = new String[] {
+    public static final String[] EXCHANGE_PARTITION_FS = new String[]{
         "exFAT",
         "FAT32",
         "NTFS"
@@ -123,19 +123,19 @@ public class DLCopy {
     public static void main(final String args[]) {
         ArrayList<String> arguments = new ArrayList<>();
         arguments.addAll(Arrays.asList(args));
-        if(arguments.contains("--old-ui")){
+        if (arguments.contains("--old-ui")) {
             startSwing(args);
         } else {
             startFX(args);
         }
     }
 
-    public static void startFX(final String args[]){
+    public static void startFX(final String args[]) {
         StorageMediaManagement.launchFX(args);
-	System.exit(0);
+        System.exit(0);
     }
 
-    public static void startSwing(final String args[]){
+    public static void startSwing(final String args[]) {
         java.awt.EventQueue.invokeLater(() -> {
             DLCopySwingGUI gui = new DLCopySwingGUI(args);
             gui.init();
@@ -161,9 +161,9 @@ public class DLCopy {
      * @return the PartitionState for a given storage and system size
      */
     public static PartitionState getPartitionState(
-        long storageSize, long systemSize) {
+            long storageSize, long systemSize) {
         LOGGER.log(Level.FINE, "storageSize = {0}, systemSize = {1}",
-            new Object[]{storageSize, systemSize});
+                new Object[]{storageSize, systemSize});
         if (storageSize > (systemSize + (2 * MINIMUM_PARTITION_SIZE))) {
             return PartitionState.EXCHANGE;
         } else if (storageSize > (systemSize + MINIMUM_PARTITION_SIZE)) {
@@ -183,11 +183,11 @@ public class DLCopy {
      * @throws IOException if moving the file fails
      */
     public static void moveFile(String source, String destination)
-        throws IOException {
+            throws IOException {
         Path sourcePath = Paths.get(source);
         if (Files.notExists(sourcePath)) {
             String errorMessage
-                = STRINGS.getString("Error_File_Does_Not_Exist");
+                    = STRINGS.getString("Error_File_Does_Not_Exist");
             errorMessage = MessageFormat.format(errorMessage, source);
             throw new IOException(errorMessage);
         }
@@ -196,7 +196,7 @@ public class DLCopy {
         } catch (IOException exception) {
             String errorMessage = STRINGS.getString("Error_File_Move");
             errorMessage = MessageFormat.format(
-                errorMessage, source, destination);
+                    errorMessage, source, destination);
             throw new IOException(errorMessage, exception);
         }
     }
@@ -626,9 +626,8 @@ public class DLCopy {
 
                 LOGGER.info("filling data partition with random data...");
                 try (FileChannel source = FileChannel.open(
-                        Paths.get("/dev/urandom"), StandardOpenOption.READ);
-                        FileChannel destination = FileChannel.open(
-                                Paths.get(device), StandardOpenOption.WRITE)) {
+                        Paths.get("/dev/urandom"), StandardOpenOption.READ); FileChannel destination = FileChannel.open(
+                        Paths.get(device), StandardOpenOption.WRITE)) {
                     ByteBuffer byteBuffer = ByteBuffer.allocateDirect(MEGA);
                     long written = 0;
                     while (true) {
@@ -961,13 +960,11 @@ public class DLCopy {
         for (String partition : partitions) {
             LOGGER.log(Level.FINE, "checking partition \"{0}\"", partition);
 
-            if (!includeBootDevice) {
-                if (partition.equals(bootDeviceName)) {
-                    // this is the boot device, skip it
-                    LOGGER.log(Level.INFO,
-                            "skipping {0}, it''s the boot device", partition);
-                    continue;
-                }
+            if (!includeBootDevice && partition.equals(bootDeviceName)) {
+                // this is the boot device, skip it
+                LOGGER.log(Level.INFO,
+                        "skipping {0}, it''s the boot device", partition);
+                continue;
             }
 
             String pathPrefix = "/org/freedesktop/";
@@ -1415,7 +1412,7 @@ public class DLCopy {
         // repartition device
         String[] commandArray = partedCommandList.toArray(
                 new String[partedCommandList.size()]);
-        
+
         exitValue = PROCESS_EXECUTOR.executeProcess(commandArray);
         if (exitValue != 0) {
             String errorMessage = STRINGS.getString("Error_Repartitioning");
