@@ -20,9 +20,21 @@ public abstract class SystemSource {
      * the pattern of files that need to be copied to the EFI partition
      */
     public final static String EFI_COPY_PATTERN
-            = "autorun.inf|boot.*|efi.*|EFI.*|isolinux.*|syslinux.*|"
-            + "lernstick.ico|live/initrd.*|live/memtest|live/vmlinuz.*|"
-            + "md5sum.txt|\\.disk.*|\\.VolumeIcon.icns";
+            = "autorun.inf|"
+            + "boot.*|"
+            + "efi.*|"
+            + "EFI.*|"
+            + "isolinux.*|"
+            + "lernstick.ico|"
+            + "live/initrd.*|"
+            + "live/memtest|"
+            + "live/vmlinuz.*|"
+            + "md5sum.txt|"
+            + "readme.pdf|"
+            + "start.bat|"
+            + "syslinux.*|"
+            + "\\.disk.*|"
+            + "\\.VolumeIcon.icns";
 
     /**
      * the pattern of files that need to be copied to the EFI partition on
@@ -158,7 +170,7 @@ public abstract class SystemSource {
 
     public abstract Source getPersistentCopySource();
 
-    public abstract Source getExchangeCopySource() 
+    public abstract Source getExchangeCopySource()
             throws DBusException, IOException;
 
     public abstract Partition getEfiPartition();
