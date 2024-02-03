@@ -658,6 +658,9 @@ public class DLCopy {
             }
         }
 
+        // The force flag of mkfs.btrfs is "-f" but for mkfs.ext{2..4} it is
+        // "-F". Consistency? Please?!
+        String forceFlag = fileSystem.equals("btrfs") ? "-f" : "-F";
         // If we want to create a partition at the exact same location of
         // another type of partition mkfs becomes interactive.
         // For instance if we first install with an exchange partition and later
@@ -669,7 +672,7 @@ public class DLCopy {
         // To make a long story short, this is the reason we have to use the
         // force flag "-F" here.
         int exitValue = PROCESS_EXECUTOR.executeProcess("/sbin/mkfs."
-                + fileSystem, "-F", "-L", Partition.PERSISTENCE_LABEL,
+                + fileSystem, forceFlag, "-L", Partition.PERSISTENCE_LABEL,
                 personalDataPartitionEncryption ? mapperDevice : device);
         if (exitValue != 0) {
             LOGGER.severe(PROCESS_EXECUTOR.getOutput());
@@ -680,15 +683,17 @@ public class DLCopy {
         }
 
         // tuning
-        exitValue = PROCESS_EXECUTOR.executeProcess(
-                "/sbin/tune2fs", "-m", "0", "-c", "0", "-i", "0",
-                personalDataPartitionEncryption ? mapperDevice : device);
-        if (exitValue != 0) {
-            LOGGER.severe(PROCESS_EXECUTOR.getOutput());
-            String errorMessage = STRINGS.getString(
-                    "Error_Tune_Data_Partition");
-            LOGGER.severe(errorMessage);
-            throw new IOException(errorMessage);
+        if (fileSystem.startsWith("ext")) {
+            exitValue = PROCESS_EXECUTOR.executeProcess(
+                    "/sbin/tune2fs", "-m", "0", "-c", "0", "-i", "0",
+                    personalDataPartitionEncryption ? mapperDevice : device);
+            if (exitValue != 0) {
+                LOGGER.severe(PROCESS_EXECUTOR.getOutput());
+                String errorMessage = STRINGS.getString(
+                        "Error_Tune_Data_Partition");
+                LOGGER.severe(errorMessage);
+                throw new IOException(errorMessage);
+            }
         }
 
         // We have to wait a little for dbus to get to know the new filesystem.
