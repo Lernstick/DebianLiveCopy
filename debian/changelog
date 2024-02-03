@@ -1,3 +1,1023 @@
+dlcopy (202402032130-1) lernstick-12; urgency=medium
+
+  * [228613] added support for btrfs on persictence partition
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 03 Feb 2024 21:30:54 +0100
+
+dlcopy (202302161540-1) lernstick-11; urgency=medium
+
+  [ Ronny Standtke ]
+  * [52e1d1] added overview UML diagram
+  * [09995a] separated IsoCreator and IsoCreatorSwingWorker
+
+  [ WJ ]
+  * [76eddf] Fix IsoCreatorSwingWorker import
+  * [085aec] Separated SquashFSCreator and SquashFSCreatorSwingWorker
+
+  [ Ronny Standtke ]
+  * [edf868] removed imports from the same package
+  * [6e0975] added isMountedReadWrite() to core DLCopy class
+  * [dea834] added isBootPersistent() to core DLCopy class
+  * [0e35c5] added some javadoc
+  * [bfc273] use Partition.getFullDeviceAndNumber() from current lernstickTools lib
+  * [d26862] use StorageDevice.getFullDevice() from current lernstickTools lib
+
+  [ WJ ]
+  * [1e8517] Separated SquashFSCreator and ISOCreator callbacks
+  * [03354c] chore(VT342105-68): Add GitLab CI
+
+  [ user ]
+  * [a6236f] feat(VT342105-63): Add Javafx
+  * [cbb591] feat(VT342105-63): Add Javafx
+
+  [ WJ ]
+  * [3f6f3b] chore(VT342105-63): First commit
+
+  [ Debian Live user ]
+  * [d2d385] chore(VT342105-68): nbproject files added
+
+  [ WJ ]
+  * [05027b] chore(VT342105-68): fix relative path to lernstickTools
+
+  [ Philipp Hutter ]
+  * [57bf99] feat(VT342105-00): Test
+  * [0a4103] feat(VT342105-00): Test
+
+  [ WJ ]
+  * [cfeff2] fix(VT342105-68): Revert "chore(VT342105-68): nbproject files added"
+  * [3893e1] chore(VT342105-124): Include OpenJFX
+  * [33bad2] style(VT342105-00): Code style
+
+  [ David Wyss ]
+  * [ae81b7] chore(VT342105-67): Added checks.xml
+
+  [ WJ ]
+  * [098acb] chore(VT342105-67): Implement checkstyle in CI
+
+  [ lukas.gysin ]
+  * [b40ae2] feat(VT342105-104): Choose the interface throw command line arguments
+
+  [ Debian Live user ]
+  * [f4fc69] feat(VT342105-104): Directory Structure
+  * [0d72a8] feat(VT342105-104): Create Startscreen
+  * [076aeb] feat(VT342105-104): Detect Button in Code
+  * [4e4c61] feat(VT342105-104): Switch between Panes
+
+  [ lukas-gysin ]
+  * [d8f0ba] feat(VT342105-63): Connect IntelliJ
+
+  [ lukas.gysin ]
+  * [ae3e80] chore(VT342105-63): Config NetBeans
+
+  [ philipp.hutter ]
+  * [95d17e] feat(VT342105-98): Add textfield for DVD Label (id: txtDVDLabel)
+
+  [ lukas.gysin ]
+  * [814501] fix(VT342105-104): Rename feature toggle
+  * [7e8a59] refactor(VT342105-104): Remove unnessacary Interface
+  * [fb914d] refactor(VT342105-104): Add a general Interface for better encapseling
+  * [cd5fa4] fix(VT342105-104): Forgett to add the Interface ;)
+  * [520d5d] refactor(VT342105-104): Rename to acctual usage
+  * [748089] feat(VT342105-28): Add FXML for temp. dir
+  * [5940fc] refactor(VT342105-28): Load from FXML
+  * [668480] feat(VT342105-28): Add Back Navigation
+
+  [ WJ ]
+  * [2cf08e] fix(VT342105-104): Fix merge conflict leftovers
+
+  [ Debian Live user ]
+  * [6eaac6] chore(VT342105-104): set startup screen
+
+  [ WJ ]
+  * [e53d75] fix(VT342105-104): Move fxml to new resources folder
+  * [a22a62] fix(VT342105-104): Revert error prone merge of build-impl.xml
+  * [5e6c57] fix(VT342105-104): Fix more merge conflict leftovers
+
+  [ lukas.gysin ]
+  * [baee00] feat(VT342105-104): Insert startupscreen from David
+
+  [ david.wyss@students.fhnw.ch ]
+  * [33355d] chore(VT342105-28): implemented basic nonfunctional ui
+  * [15585a] chore(VT342105-28): Implemented basic logic and UI, only a good polish missing. Almost done.
+  * [2914bb] chore(VT342105-28): small polish
+
+  [ WJ ]
+  * [6b97a0] fix(VT342105-00): Use correct JavaFx version
+  * [ccb251] fix(VT342105-00): Fix nullpointer
+  * [35c8fd] docs(VT342105-132): Add INSTALL.md
+  * [2e61ae] docs(VT342105-132): Fix typos in INSTALL.md
+  * [0a37d5] chore(VT342105-00): allow failure for SonarQube
+
+  [ RS121212 ]
+  * [dc227d] docs(VT342105-150): Add startscreen.fxml
+
+  [ Debian Live user ]
+  * [8a4594] feat(VT342105-150): changed color of startscreen.xml
+  * [9570a4] feat(VT342105-150): added view template, startscreen final, css
+  * [8bd9cb] feat(VT342105-150): modified exportdata.fxml, global css
+  * [d395f6] feat(VT342105-150):added load.fxml
+
+  [ PH ]
+  * [14a734] feat(VT342105-159): Reworked Startscreen in JavaFX
+
+  [ Debian Live user ]
+  * [8c9a09] feat(VT342105-150):modified startscreen, exportdata and load fmxl file
+  * [e0ce9d] feat(VT342105-150): dataexport
+
+  [ PH ]
+  * [7d42a5] feat(VT342105-150): Improved UI for export path
+
+  [ RS121212 ]
+  * [dd5b46] feat(VT342105-150): added fxid
+
+  [ WJ ]
+  * [d61a06] feat(VT342105-00): Compress all PNG files
+
+  [ @raphael.sutter ]
+  * [3e45da] feat(VT342105-150): changed javafx version to 11
+
+  [ lukas.gysin ]
+  * [e9b608] fix(VT342105-00): Copy IsoCreatorSwingWorker
+
+  [ Debian Live user ]
+  * [dc9fc3] feat(VT342105-104): WIP: Export ISO
+  * [94fe80] feat(VT342105-104): Show progress
+
+  [ lukas.gysin ]
+  * [72a245] feat(VT342105-104): Select correct dir
+
+  [ WJ ]
+  * [eb3bce] feat(VT342105-104): Implement isoCreationFinished and fix ProgressUI init
+  * [1932d9] feat(VT342105-104): Fix JavaFX version
+  * [a6a04b] style(VT342105-104): Format code
+  * [1e9c5b] feat(VT342105-104): Log mkfs error
+  * [9e8249] feat(VT342105-104): Drop swing dependency
+  * [b6034e] feat(VT342105-104): Warn if partition is mounted
+  * [272a61] style(VT342105-104): Review imports
+  * [a11ff1] feat(VT342105-104): Assign dummy button action
+  * [02a81e] feat(VT342105-104): Revert build system changes (fix build)
+
+  [ lukas.gysin ]
+  * [ace35a] feat(VT342105-98): Process DVD label
+
+  [ WJ ]
+  * [b1d34b] feat(VT342105-104): More verbose logging
+  * [7c45c6] feat(VT342105-98): Add DVD label
+  * [96f323] feat(VT342105-104): Add minimal UI for error message
+  * [dfc02e] feat(VT342105-98): Solve merge failure
+  * [e98e99] feat(VT342105-00): Adopt upstream refactoring
+  * [93d3ce] feat(VT342105-00): Adopt StartscreeUI button label change
+  * [f1831b] chore(VT342105-00): Add CI Dockerfile to cache setup
+
+  [ Raphael ]
+  * [a0d045] feat(VT342105-27): made some respomsive changes on template and css file
+
+  [ RS121212 ]
+  * [dff7b5] feat(VT342105-27): changed template
+  * [baed7b] feat(VT342105-27): added content grid
+
+  [ lukas.gysin ]
+  * [a3e353] feat(VT342105-178): German Strings
+
+  [ RS121212 ]
+  * [6d25e6] feat(VT342105-27): changed folder structure
+  * [338379] feat(VT342105-27): changed template
+  * [b89947] feat(VT342105-27): different css files for resolutions, exportdata views
+  * [6b833b] feat(VT342105-27): dataexportpath without fxid
+
+  [ lukas.gysin ]
+  * [b39427] feat(VT342105-00): Add Presentation Model
+  * [d0be9a] feat(VT342105-00): Resize Image
+  * [d6ef8b] feat(VT342105-00): Resize Images of Startscreen and Load
+
+  [ RS121212 ]
+  * [9314fe] feat(VT342105-101): exportSystem Path and added Button for directory
+
+  [ lukas.gysin ]
+  * [6b03ba] feat(VT342105-212): Multilanguage Support for
+  * [d3177d] feat(VT342105-212): Multilanguage Support for
+  * [5fb9dc] feat(VT342105-212): Multilanguage Support for
+  * [20864c] feat(VT342105-179): Set Resource in Backend
+  * [bfaf05] fix: Fix Rebase
+  * [3e0e5b] feat: Multilanguage Support for Systemexport
+  * [db0eac] feat: Show Datapartition mods
+
+  [ PH ]
+  * [735772] feat: Startscreen Responsive
+  * [c97ac7] feat: Chnaged css values for scalability
+
+  [ lukas.gysin ]
+  * [8ccdc4] refactor: Move Code to new Package with new Frontend
+
+  [ RS121212 ]
+  * [1d1b29] feat: modified exportSystem views and added javafxid
+  * [60e110] feat: Show Datapartition mods - merge
+
+  [ WJ ]
+  * [469136] feat(VT342105-199): Add SwitchButton
+  * [394e24] feat(VT342105-199): Remove inline styles
+  * [c6f692] style: Format code
+  * [f71d75] feat(VT342105-194): Call new systemexport UI
+
+  [ david.wyss@students.fhnw.ch ]
+  * [cd1efc] feat(VT342105-194): Added hoverabl Startscreen buttons
+
+  [ WJ ]
+  * [9221d3] feat(VT342105-194): Show logo
+  * [72a517] feat(VT342105-181): Add Autostart Checkbox
+  * [fbb494] feat(VT342105-192): Add InfoUI class
+  * [742b60] feat: Separated SquashFSCreator and SquashFSCreatorSwingWorker
+
+  [ PH ]
+  * [d89920] style: Changed Startscreen css links
+  * [53c0f1] style: Reworked window sizes and removed old style
+
+  [ RS121212 ]
+  * [39bcd8] feat: changed some picture sizes and added white picture
+
+  [ PH ]
+  * [3f0183] fix: Fixed css values and order
+  * [50d50e] style: Change to image size on startscreen.fxml
+
+  [ RS121212 ]
+  * [552f12] feat: added switchbutton to dataexport
+
+  [ WJ ]
+  * [c3303b] feat: Added switchbutton to systemexport
+
+  [ lukas.gysin ]
+  * [c586c8] feat: Resize Images on Startscreen
+  * [56e6a6] feat: Resize Images on Dataexport
+  * [fd325b] feat: Resize Images on Load
+  * [689aa3] feat: Resize Images on Info
+  * [103dae] feat: Resize Images on Systemexport
+  * [80cd83] feat: Resize Images on Load
+  * [dcbde9] feat: Resize Images on Info
+  * [cd7e97] style: Delete unused Imports
+  * [9a538e] feat: Multilanguagesupport
+
+  [ david.wyss@students.fhnw.ch ]
+  * [4ac19e] feat(VT342105-184): Added expertvalues untested.
+  * [3787b0] chore: uncommented line
+  * [d3041a] chore: rebase
+  * [d7d8b5] chore: fix for merge
+
+  [ WJ ]
+  * [1a6595] fix: Use correct DataExportUI
+  * [e7602c] fix: lblWriteableDisplay and default value
+  * [033be8] refactor: Apply new logic
+  * [368ef4] style: Format
+  * [3fe06e] refactor: Use core isMountedReadWrite
+
+  [ david.wyss@students.fhnw.ch ]
+  * [02a44b] feat: added expert switch
+  * [3cd6b8] feat: add expert mode data value
+
+  [ WJ ]
+  * [c80082] style: Format CSS and XML
+
+  [ lukas.gysi ]
+  * [7b4dc6] feat: Set Title
+  * [f43735] feat: Set Icon
+
+  [ WJ ]
+  * [e65d3f] style: Compress PNG
+  * [223d6f] feat: Add style for disk ro/rw/na lbl
+
+  [ RS121212 ]
+  * [0a7459] feat: exportsystem combobx width to max
+  * [173b02] feat: systemexport changed info location
+  * [4346a1] feat: changed initial state of imgTargetDirectory
+
+  [ @raphael.sutter ]
+  * [b58fe3] feat: removed imgtargetdirectory bindings
+  * [01b14d] feat: changed systemxport combobox width to pref
+
+  [ WJ ]
+  * [9403fc] style: JavaFx namespace
+
+  [ RS121212 ]
+  * [dc3bff] feat: dataexport changed info location
+  * [acf555] feat: changed initial state of imgTargetDirectory
+
+  [ Raphael ]
+  * [f184ce] feat: changed fitheigt - width value in backend
+
+  [ @raphael.sutter ]
+  * [bc47bc] feat: deleted imgtargetdirectory bindings
+
+  [ Raphael Sutter ]
+  * [d01d1e] feat: Update formatting of dataexport.fxml
+
+  [ david.wyss@students.fhnw.ch ]
+  * [0ca226] feat: validation
+  * [f475c9] chore: switched len > 0 with blank
+
+  [ PH ]
+  * [91c7c4] feat: front-end skeleton for back-end
+
+  [ philipp.hutter@students.fhnw.ch ]
+  * [62106a] style: Added imageview to install/info
+
+  [ WJ ]
+  * [f1671a] style: Format XML
+
+  [ PH ]
+  * [448f3f] fix: Default-values for n/a and camel-case fix
+
+  [ WJ ]
+  * [a74001] refactor: Deduplicate parts in isUnmountedPersistenceAvailable()
+
+  [ lukas.gysin ]
+  * [1514ec] fix: Umlaute
+  * [a9f88e] feat: Multilanuage support for
+  * [5fff5b] feat: Multilanuage support for
+  * [eb1c59] feat: Multilanuage support for
+  * [8afc51] feat: Multilanuage support for
+  * [cf6f74] feat: Multilanuage support for
+  * [8050f3] feat: Multilanuage support for
+  * [90c934] feat: Multilanuage support for
+  * [cd17d5] feat: Multilanuage support for
+  * [5a77ef] feat: Multilanuage support for
+  * [07900a] feat: Multilanuage support for
+  * [f217ae] feat: Multilanuage support for
+  * [a9bcf9] feat: Multilanuage support for
+  * [998c9e] feat: Multilanuage support for
+  * [94ad6d] feat: Multilanuage support for
+  * [c78bc6] feat: Multilanuage support for
+  * [84ce63] feat: Multilanuage support for
+  * [aa7626] feat: English support for
+  * [49a72d] feat: English support for
+  * [10bbe7] feat: English translation
+  * [55b16c] style: Alphabetic order
+  * [71a97e] feat: Internationalized String for
+  * [b4347f] fix: Choose correct resource bundle
+  * [899cca] feat: Multilanguage support for
+  * [a42421] feat: International strings in SystemexportUI
+  * [8d5286] chore: Some leftovers
+
+  [ david.wyss@students.fhnw.ch ]
+  * [6db171] fix: export button is now showing
+
+  [ PH ]
+  * [b32305] style: Changed colors of ComboBox in global.css
+  * [5cd973] fix: Resolves wrong colors for list-view of cmb
+  * [9be570] fix: Fixed Combobox contrast with new border
+  * [a1c414] style: Added darker input for text-field
+  * [1fc717] fix: Added missing semi-colons to global.css
+  * [a23402] fix: Text color in default cell in global.css
+
+  [ Debian Live user ]
+  * [4750c8] fix: Text color in default cell in global.css
+
+  [ WJ ]
+  * [92b9a7] feat: add SquashFS callbacks
+
+  [ david.wyss@students.fhnw.ch ]
+  * [e9df23] fix: renaming
+
+  [ WJ ]
+  * [0b9abc] style: Consistent naming of export classes and ressources
+  * [a43eaa] fix: Typo
+  * [545ead] fix: Move all icons to resources (VT342105-283)
+  * [dda8c9] feat: compress icon
+
+  [ PH ]
+  * [0e5eec] fix: Frontend labels fixed (ids)
+
+  [ Debian Live user ]
+  * [0697a1] fix: applied required backend fixes
+
+  [ WJ ]
+  * [b888ae] fix: remove duplicated set
+  * [a60471] fix: filename case
+
+  [ PH ]
+  * [3df842] fix: Frontend labels fixed (ids)
+
+  [ Philipp Hutter ]
+  * [92d0a3] fix: required front and backend fixes applied
+
+  [ WJ ]
+  * [e2cb97] fix: change wording
+  * [a2ca2d] fix: fix string name
+  * [3c67af] chore(VT342105-63): First commit
+
+  [ PH ]
+  * [ee9f3c] fix: Frontend labels fixed (ids)
+
+  [ Philipp Hutter ]
+  * [5cf5bb] fix: required front and backend fixes applied
+
+  [ lukas.gysin ]
+  * [54393e] feat: Make the device list view callable from the startscreen
+  * [c64892] feat: Get the devices
+  * [c326f3] feat: Display the list in the view
+  * [8a998a] feat: Update device list
+  * [ba3316] feat: Deinitalice view
+  * [e49e7f] style: Clean-up
+  * [c6a288] feat: Back button
+  * [5ac4e3] feat: Keep Selection
+  * [1e0b81] feat: Styling and Placeholder
+  * [e9d2fd] feat: Start the installation
+  * [577ffa] docs: Add comments for the cunstroctor
+  * [3e20d1] feat: Remove at the moment unused checks
+  * [7a8f6c] feat: Remove unused checks
+
+  [ WJ ]
+  * [d01ffd] chore: Code style
+  * [32aafa] chore: Code style
+  * [377c8f] chore: Code style
+  * [07d08d] chore: Code style
+  * [7d74bb] chore: Code style
+  * [1def5d] fix: JavaFX Version
+  * [c2ed85] chore: Code style
+  * [01ffe3] chore: add xmllint
+  * [401066] fix: JavaFX namespace
+  * [f276f7] fix: add jdk to INSTALL
+  * [b28023] feat: Refactor SwitchButton for translation
+  * [add9e1] style: Unix line endings
+
+  [ lukas.gysin ]
+  * [935ec7] fix: Translation on startup
+
+  [ WJ ]
+  * [7e6aaa] style: format
+
+  [ RS121212 ]
+  * [35da12] feat: refactored dataexport and startscreen
+
+  [ Raphael ]
+  * [b60f49] feat: switchbutton disabled
+  * [1b06c6] feat: added for info, load and systemexport refactor version
+
+  [ RS121212 ]
+  * [e0aba6] feat: checked the global strings
+
+  [ Raphael ]
+  * [94101d] feat: deleted old ui and added new UI
+
+  [ RS121212 ]
+  * [fef251] feat: some final changes
+
+  [ Raphael ]
+  * [55f74f] feat: changed the javafx version back to 11
+  * [26989c] fix: fixed java version and property string issues
+  * [3c941e] feat: string file and uncomment switchbutton
+  * [95a085] fix: fxid and global string
+  * [939853] fix: fxid
+  * [ec2474] fix: closed children
+  * [9fe3a0] fix: changed javafx version to 11
+
+  [ WJ ]
+  * [94033f] fix: deduplicate css
+  * [f4da31] feat: call the info and load UI
+  * [bd9ad8] feat: Implement LoadUI with arguments
+  * [3bdf6c] feat: Implement InfoUI with arguments
+
+  [ lukas.gysin ]
+  * [6ca211] feat: Show Installation Report View
+  * [b76b56] feat: Add table to the view
+  * [8e4d7f] feat: Style Table in darkmode
+  * [e65320] feat: Eng. Name of columns
+  * [13196b] feat: Show Mountpoint
+  * [c293e3] feat: Show More Data
+  * [451e29] feat: Improve Resizing
+  * [9152b3] refactor: Change DLCopyGui Interface
+  * [d2561d] feat: Show Start Time
+  * [657465] feat: Show Finish Time
+  * [a37658] fix: Only one Scrollbar
+  * [374aa7] feat: Show number
+  * [b453eb] feat: Show Duration
+  * [f9dfaa] refactor: Proper Refresh function
+  * [eef52f] feat: Show Error
+  * [41c1f5] feat: Show Status
+  * [ef604b] fix: If the Installing is pending
+  * [cf7d6f] feat: Show Still Mounted?
+  * [54d649] refactor: Remove duplicated string
+  * [a66dd6] fix: JavaFx Version
+  * [fab2d8] fix: Restore Strings
+  * [c6ed3a] chore: Delete unused file
+  * [2785a8] chore: Delete unused file
+  * [237a5e] refactor: Rename FXML
+
+  [ Raphael ]
+  * [ea5445] fix: changed height of main elements
+  * [4a0907] fix: adjust height of exportsystem.fxml core elements
+  * [db4082] fix: added template, visibility of checkbox element at exportdata
+  * [68cd61] fix: changed combobox style
+  * [3891cc] fix: uncommented the switchbutton again
+  * [5ab6f0] fix: changed javafx versions to 11 and deleted old ui template
+
+  [ WJ ]
+  * [0aa669] fix: cast percent to double
+  * [c2f633] fix: escape single quote
+  * [f4fb51] fix: Condition for next button
+
+  [ Raphael ]
+  * [db7b9c] feat: added info, load and selection view of the installation path
+  * [b458ff] feat: added requiredDiskspace Label
+  * [211fdb] fix: changed javafx version on xml to 11
+
+  [ WJ ]
+  * [a49c2f] fix: fxid of togglegroup
+
+  [ Raphael ]
+  * [988fca] feat: added listview with fxid lvDevice again to the scene
+  * [18f7d9] fix: javafx version
+
+  [ @raphael.sutter ]
+  * [2f6996] fix: changed fxid of install button on device view
+
+  [ WJ ]
+  * [b4b42d] fix: fix case sensitive fxml path
+  * [d46761] fix: typo
+  * [048979] feat: Add sizeString
+  * [2bf001] fix: add lblRequiredDiskspace
+  * [743ea5] fix: Use new string bundle
+  * [8cc5f7] fix: add default value for status
+  * [a7330a] fix: duplicated import
+
+  [ David Wyss ]
+  * [b53276] feat: Nontested Nonconnected progressbar + bullet points
+  * [627b0a] feat: progress bar + progressinfo
+
+  [ Debian Live user ]
+  * [e5a68f] fix: previously commited holdover of last local version was not up to date.
+
+  [ David Wyss ]
+  * [699e2d] fix: Replace LoadUI.java because it was mistaken for install version
+  * [855700] fix: Reset accidental changes
+  * [303df4] fix: Readded what was broken by previous merge
+
+  [ Debian Live user ]
+  * [71aeaf] fix: moved file to correct directory
+
+  [ David Wyss ]
+  * [ea7760] fix: fixed LoadUI mess I made
+  * [241e2d] fix: implemented fixes
+  * [885ae0] fix: added global properties for LoadUI
+  * [113c90] fix: Update OverwriteRandomTimerTask.java. Forgot  removing the old Strings class.
+  * [aaa13e] fix: Forgot removing unused swing exports.
+  * [59c1eb] fix: mistakenly forgot to upload  OverwriteRandomTimerTask file
+  * [8b1714] fix: Update LoadUI.java
+
+  [ Raphael ]
+  * [c29be9] feat: visibility of expert mode checkboxes
+
+  [ WJ ]
+  * [c7c201] Revert "fix: duplicated import"
+
+  [ Raphael ]
+  * [fac8dd] feat: added elements for the exchange and datapartition mode
+  * [f37b24] feat: changed javafx to 11
+
+  [ WJ ]
+  * [cd1816] feat: super
+
+  [ Raphael ]
+  * [3b69bc] feat: super super
+
+  [ Debian Live user ]
+  * [d9aed2] feat: added iod_confirm.
+
+  [ David Wyss ]
+  * [709597] fix: accidental deletion of btnBack Action Event
+  * [387533] fix: netbeans does not understand unicode. Manual fix of äöü
+
+  [ Debian Live user ]
+  * [a44142] fix: fixed readded btnBack
+
+  [ David Wyss ]
+  * [31895d] fix: made the error message a lot clearer
+  * [3fb267] fix: rename bad function name.
+
+  [ Debian Live user ]
+  * [971879] fix: Fixed german version too
+
+  [ WJ ]
+  * [3a4012] fix: unicode encoding
+  * [a92cf9] feat: read partition checkboxes
+  * [aa8c69] fix: add missing string
+
+  [ Debian Live user ]
+  * [386076] feat: added all functionality
+  * [4bda20] fix: equals instead of ==
+  * [a51332] fix: added suggsetion
+
+  [ lukas.gysin ]
+  * [6880bf] feat: Switch between LoadUI and InstallationReport
+  * [00e722] fix: Namining and German translation
+
+  [ RS121212 ]
+  * [af2332] feat: added tabpane and second scene for the details
+  * [de845a] feat: changed fxid's and a global string naming
+  * [58343b] feat: changed visiblity of datapartition mode
+
+  [ WJ ]
+  * [2bb24f] fix: add missing translations
+  * [b41951] fix: cast percent to double
+
+  [ lukas.gysin ]
+  * [be0b52] feat: Hide info string per default
+  * [9fc9c4] feat: Add info string on focus
+  * [61d7ef] feat: Add info string on hover
+  * [f22910] refactor: Remove code duplication and simplyfy workflow
+  * [efdf9f] feat: Add info string on hover
+  * [28936d] feat: Add info string on hover 'lblWriteableDisplay'
+  * [c723f2] feat: Add info string on hover 'lblFreeSpace'
+  * [3a377d] feat: Add info string on hover 'lblFreeSpaceDisplay'
+  * [a9957f] feat: Add info string on hover 'lblFreeSpaceDisplay'
+  * [6979bb] feat: Add info string on hover 'lblFreeSpaceDisplay'
+  * [4599c3] feat: Add info string on hover 'lblFreeSpaceDisplay'
+  * [61301c] feat: Add info string on hover 'lblFreeSpaceDisplay'
+  * [b128e1] feat: i18n
+  * [be0114] feat: i18n
+  * [f93c5f] feat: Show error
+  * [c0c2f2] feat: Show error
+  * [178358] feat: Add Tooltips
+  * [154273] fix: Special Characters
+  * [91b4f0] feat: Add Error Messages
+  * [8f498c] feat: Add Tooltips
+
+  [ WJ ]
+  * [54d1d3] feat: add supported filesystems
+  * [7c2c9e] feat: add exchange partition filesystem
+  * [07c8f1] fix: add default value
+  * [32f585] fix: simplify selection
+  * [f38e68] feat: refactor checkbox validation
+  * [da8e59] feat: set exchange partition size
+  * [89d71e] feat: refactor DataPartionModeEntry
+  * [46a92b] chore: build deb
+
+  [ Raphael ]
+  * [0e0b1b] feat: changed layout and added fxids
+  * [3b5ead] feat: fxml version
+
+  [ @raphael.sutter ]
+  * [766076] fix: fxid
+
+  [ Raphael Sutter ]
+  * [cefe79] fix: changed back lubel to label
+
+  [ @raphael.sutter ]
+  * [b58fec] feat: removed targetdirectory folder
+
+  [ Raphael ]
+  * [5bbbd4] feat: changed design
+
+  [ @raphael.sutter ]
+  * [27be9b] feat: added setOnAction to tft
+  * [f1f524] feat:changed tooltip for button to tft
+
+  [ WJ ]
+  * [59d03f] feat: Display harddrives
+  * [ae8792] feat: Add check copies feature
+  * [c2bf0f] feat: log error
+  * [5066d2] fix: add missing translations for iso creation error
+  * [105771] fix: add missing translations for export completion
+  * [02d609] fix: next button in load UI
+  * [0c43ed] fix: info output location
+
+  [ Raphael ]
+  * [798d41] feat: added buttonbar
+  * [359dd7] feat: changed look and feel - element min size
+  * [6e28fc] feat: added scrollpane
+  * [4eec08] feat: changed numbering feature desing
+  * [32ea78] feat: width of scrollpanel
+  * [9f638d] feat: scrollpanel fit width
+  * [e4dd63] feat: design of scrollbar
+  * [639d92] feat: scrollbar color
+
+  [ WJ ]
+  * [dd6f96] feat: changed inter string
+  * [06fa4d] feat: delete an unneeded line
+  * [f442ad] feat: changed umlaute
+
+  [ lukas.gysin ]
+  * [d4ff3f] feat: Improve log messages
+  * [cfbfb1] chore: Provide a Git Message template
+  * [eaf3eb] feat: Improve Log Messages
+  * [459785] fix: Disable Install Button
+  * [960953] fix: Uncoment code with no impact
+  * [4648ec] refactor: Make the DLCopyGui more usefull
+  * [4ae893] docs: Add documentation for the `InstallController`
+  * [2b283f] refactor: InstallControler as Callback-Class
+  * [f7fa59] feat: Show `LoadUI`
+  * [36dc92] refactor: Class `Installation` as a storage of all information
+  * [3d70b8] fix: Add Elements to Array
+  * [5c663c] feat: Info View
+  * [035ddb] fix: Remove DEBUG artefacts
+  * [dcd4e1] refactor: Update Progress Bar
+  * [39e7d4] style: Clean-up
+
+  [ WJ ]
+  * [e68e62] feat: implement encryption
+  * [2c0897] feat: add tooltips and warnings
+  * [7c6cd5] fix: abort installation with empty password
+  * [2ae19f] fix: get correct password value
+  * [4406c8] feat: show/hide password feature
+  * [b42793] feat: data partition filesystem
+  * [c43a2f] fix: typos
+  * [6cbbb7] feat: export in background thread
+  * [70f6bd] chore: document Sonarqube soft fail behaviour
+  * [a1b866] fix: exchange partition id
+  * [428435] fix: translate warning dialogue
+  * [a2e08f] feat: implement checks and warning dialogues
+
+  [ Debian Live user ]
+  * [e14257] feat: autonr backend
+
+  [ Raphael ]
+  * [2e01af] feat: added elements and fxid of update view
+  * [a3b96b] feat: changed fxversion
+
+  [ Debian Live user ]
+  * [6d93da] feat: multiselect
+  * [17d881] fix: removed redundant
+
+  [ WJ ]
+  * [381669] fix:
+
+  [ Debian Live user ]
+  * [c0ae88] fix: pipeline
+
+  [ Raphael ]
+  * [fa17b8] feat: added white icons and made some style adjustments
+  * [9099b4] feat: changed fx version to 11
+  * [d9ca8f] feat: added buttonbar, togglebuttongroup, disable buttons
+  * [b41429] feat: info label with scrollbar
+  * [30a7dc] feat: tooltips upgrade
+
+  [ @raphael.sutter ]
+  * [4ad16a] feat: changed tooltip strategy
+  * [f7cb8f] feat: added info method again
+  * [1b7c5a] feat: wraping tooltip text
+  * [ff03ed] feat: changed fx version
+
+  [ Raphael ]
+  * [357375] feat: added scrollpane where needed
+
+  [ WJ ]
+  * [a287fc] fix: changed passsword to password
+
+  [ Debian Live user ]
+  * [a35058] feat: update path and back button
+
+  [ Raphael ]
+  * [f7a127] feat: added placeholder for autonumbering
+  * [8b9148] feat: added internationalized strings
+  * [bd3ab9] fix: changed fx version
+
+  [ WJ ]
+  * [d854ad] docs: fix instance name
+  * [072798] fix: export data progress bar
+  * [9e576a] fix: export system progress bar
+  * [3230c1] fix: cleanup strings
+  * [191d38] Add GitHub Actions
+
+  [ Debian Live user ]
+  * [34f2bb] feat: autonumber number only
+  * [f20431] fix: works now
+
+  [ lukas.gysin ]
+  * [4c223b] feat: WIP
+  * [1bb180] feat: Add TestFX
+  * [cc1e00] feat: After Consulting
+  * [d59e6d] fix: Pipeline
+  * [ceb17c] fix: Remove private properties
+
+  [ WJ ]
+  * [efddea]  Das ist eine Kombination aus 10 Commits.
+
+  [ lukas.gysin ]
+  * [1cc446] test: Basic Graphical Test
+  * [092a0f] fix: Add Mockito
+  * [428eae] chore: Delete the ClickApplication
+  * [837f90] chore: Add Mockito
+  * [ded8bc] fix: English String
+
+  [ WJ ]
+  * [0525cd] chore: use same junit version as in debian/control
+  * [cb8327] chore: merge install step
+
+  [ lukas.gysin ]
+  * [57205e] feat: Change Language
+  * [418a59] test: German Buttons on `StartscreenUI`
+  * [028c29] style: Remove Newline
+  * [4ee1b1] test: Show correct Image and Label
+  * [9c3b79] test: Click on Button on `StartscreenUI`
+  * [82e39a] fix: Create files for version check
+  * [d95060] fix: Remove tests witch run only on the Lernstick
+
+  [ WJ ]
+  * [44f017] fix: fix failing test case
+  * [7d35e3] chore: Allow the testFX pipeline to fail
+
+  [ lukas.gysin ]
+  * [b5c015] fix: Uncoment commented test cases
+  * [e22b85] fix: Remove multi language support
+  * [4ea132] chore: Don't allow pipeline to fail
+  * [c2c521] fix: Remove Language Observer lefover
+
+  [ Debian Live user ]
+  * [2f0591] feat: multiselect + show harddisks.
+
+  [ lukas.gysin ]
+  * [e8649e] fix: Terminate on close
+
+  [ Debian Live user ]
+  * [47c17c] feat: data migration frontend
+  * [edd260] fix: javafx version
+
+  [ Raphael ]
+  * [582f48] feat: changed the update-datatransfer ui
+  * [88bd3f] feat: some little design changes
+  * [346dfa] feat: added the backend for the datamigration
+  * [e702e1] feat: added german strings
+  * [20035c] fix: removed html formatting
+
+  [ Debian Live user ]
+  * [f6938e] fix: removed duplicated String
+  * [2b10c3] feat: new icons
+
+  [ WJ ]
+  * [7fd235] chore: check css
+  * [180173] fix: cleanup strings
+
+  [ Raphael ]
+  * [d1d402] feat: tooltip filesystemtable
+  * [0c902a] feat: added filesystem table for hover effect
+  * [333a9c] feat: tooltip filesystemtable
+
+  [ @raphael.sutter ]
+  * [197119] feat: listener to lblFilesystem
+
+  [ Raphael ]
+  * [bab2d4] feat: styling of gridpaneFilesystem
+  * [424664] feat: styling of code and textarea wrapttext and unmodifiable
+
+  [ @raphael.sutter ]
+  * [4c38cd] fix: merge request
+  * [df4922] fix: deletetd sysout
+
+  [ Debian Live user ]
+  * [638a6f] feat:confirmation alertbox frontend
+  * [fc5966] fix: string keys improved
+  * [5d9fbe] fix: images deleted to create a new branch
+  * [53ea98] fix: trigger button
+
+  [ WJ ]
+  * [1b9a3d] feat: toggle visibility of installation details
+
+  [ Raphael ]
+  * [dd5466] feat: ISO Textfield
+
+  [ @raphael.sutter ]
+  * [2610ff] fix: tfISO logic
+
+  [ Raphael ]
+  * [5cf824] feat: disabled tfISO and fixed FX Version
+
+  [ WJ ]
+  * [548a4c] feat: add translation strings
+  * [088c89] feat: implement iso source handler
+
+  [ lukas.gysin ]
+  * [bbb847] style: Code Celanup
+  * [2c3835] feat: Add files to the list
+  * [6a1591] feat: Add remove button
+  * [25fbe2] feat: Edit files
+  * [317907] feat: Export Files to file
+  * [af94a2] feat: Import files
+  * [f0af19] feat: Move files up
+  * [5c2914] feat: Move file down
+  * [fbd0fc] feat: Sort List
+  * [ed6d5b] feat: Give the values to the backend
+  * [ecf99d] style: Run Code cleanup
+
+  [ WJ ]
+  * [0505d9] fix: fix button
+  * [67d83a] feat: add multiple files
+  * [086cd0] feat: add repartition strategy
+  * [877c7a] feat: refactor NumericTextField to enable it for other paths
+  * [30ee12] fix: use NumericTextField for partition size
+  * [5d7225] feat: choose backup location
+  * [3d72b8] feat: add sanity checks
+
+  [ lukas.gysin ]
+  * [72f0d7] feat: Add a slider for the exchange partition size
+  * [b66bee] feat: Bind Textfield to Slider
+  * [e76c53] feat: Display custom cell
+  * [c06f6a] feat: Display Preview
+  * [f98db8] feat: Correct Range
+  * [a74d3d] feat: Set Text
+  * [c61139] feat: Calc max slider size
+  * [b640fb] feat: Label Format
+  * [80a827] fix: FXML Version
+  * [2671da] fix: Initial Label
+
+  [ WJ ]
+  * [4b13ed] fix: hardcoded exchange partition label
+
+  [ Raphael ]
+  * [d2277e] feat: changes
+
+  [ @raphael.sutter ]
+  * [a00a8d] feat: fixed listview style
+
+  [ Raphael ]
+  * [294fdb] feat: changed overview on left side
+  * [e7515e] fix: lbl to textarea
+  * [e19f25] fix: selectedlabel
+  * [026f0a] feat: styling installationreport
+  * [a9d9e8] fix: padding scrollpane
+  * [a1a586] fix:column size
+  * [22e89a] fix: changes to column size
+  * [a5e9a7] fix: changed tableview policy
+  * [faf3b3] fix: just maxvalue
+
+  [ @raphael.sutter ]
+  * [d4eaef] fix: removed binding
+
+  [ Raphael ]
+  * [54be8b] fix: fix width
+  * [761caa] fix: bla
+  * [a50843] fix: size column
+
+  [ @raphael.sutter ]
+  * [07c261] fix: do
+  * [bff2fc] fix: fx version
+  * [430402] fix: removed fix coded column width in backend
+
+  [ WJ ]
+  * [113e01] feat: add tooltips
+
+  [ lukas.gysin ]
+  * [e729fd] feat: Select correct ISO source
+  * [725bcc] fix: Check for selected ISO
+  * [113fc4] fix: Check Selection
+
+  [ WJ ]
+  * [e11aea] feat: use NumericTextField for exchage partition size
+
+  [ Raphael ]
+  * [fb42a3] feat: disabled checkboxes and added default value
+  * [fec19b] feat: disabled to true
+
+  [ @raphael.sutter ]
+  * [8d405d] feat: changed alert messages to a readable way
+
+  [ Debian Live user ]
+  * [2b6f7e] feat: disable reset path
+  * [931419] fix: german strings
+
+  [ WJ ]
+  * [9e2b92] feat: german translation
+
+  [ lukas.gysin ]
+  * [781b64] feat: Human readable size
+
+  [ WJ ]
+  * [faedd9] fix: use logger, hide stack trace
+  * [b2b95f] style: format code
+
+  [ Debian Live user ]
+  * [09cc67] fix: disabled autoupdate
+  * [5913a9] feat: disabled text
+  * [e1f537] fix: No caps lock
+  * [1e672d] fix: extra Label
+
+  [ WJ ]
+  * [d99e5a] fix: fix html string
+
+  [ Debian Live user ]
+  * [7b099d] fix: confirmation cancel
+
+  [ WJ ]
+  * [a17be7] fix: unicode char in translation
+
+  [ lukas.gysin ]
+  * [b59044] docs: Add inline doc for `NumericTextField`
+  * [2df6cb] docs: Add inline doc for `StorageMediaManagement`
+  * [7a1db4] docs: Add inline doc for `SwitchButton`
+  * [edb1b2] docs: Add inline doc for `StorageMediaManagement`
+  * [34660e] docs: Add inline doc for `View`
+  * [f61663] docs: Improve Inlne documentation
+
+  [ @raphael.sutter ]
+  * [fadac1] fix: inputfield alert
+
+  [ WJ ]
+  * [e0a65d] fix: exclamation mark is a yaml keyword
+
+  [ Ronny Standtke ]
+  * [fa7a61] fixed code formatting
+  * [68b472] added start.bat and readme.pdf to EFI copy pattern
+  * [89afb3] revert default to Swing UI
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 16 Feb 2023 15:37:54 +0100
+
 dlcopy (202109132044-1) lernstick-11; urgency=medium
 
   * [ff236e] fixed handling of ISO installation source
