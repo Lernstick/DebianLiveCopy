@@ -1,3 +1,9 @@
+dlcopy (202402032233-1) lernstick-12; urgency=medium
+
+  * [ea61c6] improved btrfs support
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 03 Feb 2024 22:33:23 +0100
+
 dlcopy (202402032130-1) lernstick-12; urgency=medium
 
   * [228613] added support for btrfs on persictence partition
