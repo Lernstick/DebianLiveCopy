@@ -32,7 +32,7 @@ Package: dlcopy-common
 Architecture: all
 Replaces: dlcopy (<< 201403091913)
 Breaks: dlcopy (<< 201403091913)
-Depends: auto-gdk-scale, java8-runtime, squashfs-tools, cpio, xorriso, syslinux, extlinux, syslinux-common, dbus, libdbus-java, libmatthew-debug-java, libunixsocket-java, parted, policykit-1, exfatprogs, fatattr, isolinux
+Depends: auto-gdk-scale, java8-runtime, squashfs-tools, cpio, xorriso, syslinux, extlinux, syslinux-common, dbus, libdbus-java, libmatthew-debug-java, libunixsocket-java, parted, policykit-1, exfatprogs, fatattr, isolinux, btrfs-progs
 Description: an application to copy Debian Live to other storage media
  This is a small application that copies Debian Live to other storage media like
  USB flash drives, USB hard drives or SD memory cards. It has hot-plug support
