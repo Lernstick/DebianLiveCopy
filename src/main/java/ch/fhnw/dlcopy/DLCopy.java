@@ -682,7 +682,7 @@ public class DLCopy {
             throw new IOException(errorMessage);
         }
 
-        // tuning
+        // ext{2..4} tuning
         if (fileSystem.startsWith("ext")) {
             exitValue = PROCESS_EXECUTOR.executeProcess(
                     "/sbin/tune2fs", "-m", "0", "-c", "0", "-i", "0",
@@ -709,7 +709,6 @@ public class DLCopy {
         }
         settleUdev();
 
-        // create default persistence configuration file
         Partition persistencePartition
                 = Partition.getPartitionFromDeviceAndNumber(
                         device.substring(5));
@@ -717,6 +716,13 @@ public class DLCopy {
         if (mountPath == null) {
             throw new IOException("could not mount persistence partition");
         }
+
+        // create btrfs subvolumes
+        if (fileSystem.equals("btrfs")) {
+            createBtrfsSubvolumes(persistencePartition);
+        }
+
+        // create default persistence configuration file
         writePersistenceConf(mountPath);
 
         if (getMajorDebianVersion() >= 9) {
@@ -1146,6 +1152,31 @@ public class DLCopy {
             throw ex;
         }
         return persistenceBoot;
+    }
+
+    private static void createBtrfsSubvolumes(Partition persistencePartition)
+            throws DBusException, IOException {
+        
+        String mountPath = persistencePartition.getMountPath();
+        
+        // use flat layout for better snapshot management
+
+        // create subvolume "root" (for the file system root)
+        String rootPath = Path.of(mountPath, "root").toString();
+        PROCESS_EXECUTOR.executeProcess("btrfs", "subvolume", "create",
+                rootPath);
+        // set subvolume "root" as the default subvolume when mounting the
+        // file system without any special options
+        PROCESS_EXECUTOR.executeProcess("btrfs", "subvolume", "set-default",
+                rootPath);
+
+        // create subvolume "snapshots" for storing all file system snapshots
+        PROCESS_EXECUTOR.executeProcess("btrfs", "subvolume", "create",
+                Path.of(mountPath, "snapshots").toString());
+        
+        // remount persistencePartition with new default root partition
+        persistencePartition.umount();
+        persistencePartition.mount();
     }
 
     private static PartitionSizes getPartitionSizes(SystemSource source,
