@@ -1,3 +1,9 @@
+dlcopy (202402041627-1) lernstick-12; urgency=medium
+
+  * [d33dbd] use flat layout for btrfs subvolumes to improve snapshot handling
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 04 Feb 2024 16:27:18 +0100
+
 dlcopy (202402032233-1) lernstick-12; urgency=medium
 
   * [ea61c6] improved btrfs support
