@@ -60,6 +60,7 @@ public class ResetterPanels
     private final DefaultListModel<StorageDevice> storageDeviceListModel;
     private final DefaultListModel<String> snapshotsListModel;
     private final ResetStorageDeviceRenderer storageDeviceRenderer;
+    private final SimpleDateFormat snapshotDateFormat;
 
     private DLCopySwingGUI dlCopySwingGUI;
     private SystemSource runningSystemSource;
@@ -86,6 +87,8 @@ public class ResetterPanels
                 backupDestinationSubdirectoryTable, Boolean.class);
         setEnabledRespectingDefaultRenderer(
                 backupDestinationSubdirectoryTable, String.class);
+
+        snapshotDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
         snapshotsListModel = new DefaultListModel<>();
         snaphotsList.setModel(snapshotsListModel);
@@ -539,6 +542,7 @@ public class ResetterPanels
         snapshotsListScrollPane = new javax.swing.JScrollPane();
         snaphotsList = new javax.swing.JList<>();
         deleteSnapshotButton = new javax.swing.JButton();
+        createSnapshotButton = new javax.swing.JButton();
         rebootIntoSnapshotButton = new javax.swing.JButton();
         resetPanel = new javax.swing.JPanel();
         currentlyResettingDeviceLabel = new javax.swing.JLabel();
@@ -1251,6 +1255,15 @@ public class ResetterPanels
         gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 10);
         snapshotManagementPanel.add(deleteSnapshotButton, gridBagConstraints);
 
+        createSnapshotButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/list-add.png"))); // NOI18N
+        createSnapshotButton.setText(bundle.getString("Create_Snapshot")); // NOI18N
+        createSnapshotButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                createSnapshotButtonActionPerformed(evt);
+            }
+        });
+        snapshotManagementPanel.add(createSnapshotButton, new java.awt.GridBagConstraints());
+
         rebootIntoSnapshotButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/edit-reset.png"))); // NOI18N
         rebootIntoSnapshotButton.setText(bundle.getString("Reboot_Into_Snapshot")); // NOI18N
         rebootIntoSnapshotButton.addActionListener(new java.awt.event.ActionListener() {
@@ -1542,9 +1555,7 @@ public class ResetterPanels
             Path snapshotsPath = tempDir.resolve("snapshots");
 
             // create new read-only snapshot for currently running system
-            SimpleDateFormat dateFormat = new SimpleDateFormat(
-                    "yyyy-MM-dd HH:mm:ss");
-            String timestamp = dateFormat.format(new Date());
+            String timestamp = snapshotDateFormat.format(new Date());
             processExecutor.executeProcess(true, true,
                     "btrfs", "subvolume", "snapshot", "-r",
                     rootPath.toString(),
@@ -1577,6 +1588,21 @@ public class ResetterPanels
             LOGGER.log(Level.SEVERE, "", ex);
         }
     }//GEN-LAST:event_rebootIntoSnapshotButtonActionPerformed
+
+    private void createSnapshotButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createSnapshotButtonActionPerformed
+        Partition dataPartition = runningSystemSource.getDataPartition();
+        try {
+            String mountPath = dataPartition.getMountPath();
+            ProcessExecutor processExecutor = new ProcessExecutor(true);
+            String timestamp = snapshotDateFormat.format(new Date());
+            processExecutor.executeProcess(true, true,
+                    "btrfs", "subvolume", "snapshot", "-r",
+                    mountPath,
+                    "/snapshots/" + timestamp + " manually");
+        } catch (DBusException | IOException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+        }
+    }//GEN-LAST:event_createSnapshotButtonActionPerformed
 
     private void updateResetDataPartitionButtonState() {
         boolean selected = deleteFilesRadioButton.isSelected();
@@ -1647,6 +1673,7 @@ public class ResetterPanels
     private javax.swing.JPanel backupPanel;
     private javax.swing.JPanel backupSourcePanel;
     private javax.swing.JTextField backupSourceTextField;
+    private javax.swing.JButton createSnapshotButton;
     private javax.swing.JLabel currentlyResettingDeviceLabel;
     private javax.swing.JLabel dataDefinitionLabel;
     private javax.swing.ButtonGroup deleteDataPartitionButtonGroup;
