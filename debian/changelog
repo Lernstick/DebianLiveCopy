@@ -1,3 +1,9 @@
+dlcopy (202402051901-1) lernstick-12; urgency=medium
+
+  * [92dea9] added button for creating manual snapshots
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Mon, 05 Feb 2024 19:01:05 +0100
+
 dlcopy (202402051743-1) lernstick-12; urgency=medium
 
   * [7e8ccf] updated path in string sorting script
