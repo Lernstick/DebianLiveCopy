@@ -3,6 +3,7 @@ package ch.fhnw.dlcopy.gui.swing;
 import ch.fhnw.dlcopy.DLCopy;
 import ch.fhnw.dlcopy.Resetter.AutoPrintMode;
 import ch.fhnw.dlcopy.Subdirectory;
+import ch.fhnw.dlcopy.SystemSource;
 import ch.fhnw.dlcopy.gui.swing.preferences.DLCopySwingGUIPreferencesHandler;
 import ch.fhnw.dlcopy.gui.swing.preferences.ResetBackupPreferences;
 import ch.fhnw.dlcopy.gui.swing.preferences.ResetDeletePreferences;
@@ -11,13 +12,19 @@ import ch.fhnw.dlcopy.gui.swing.preferences.ResetRestorePreferences;
 import ch.fhnw.dlcopy.gui.swing.preferences.ResetSelectionPreferences;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.LernstickFileTools;
+import ch.fhnw.util.MountInfo;
 import ch.fhnw.util.Partition;
+import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
 import java.awt.Component;
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -29,6 +36,7 @@ import javax.swing.JPanel;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
 import javax.swing.SwingUtilities;
+import javax.swing.Timer;
 import javax.swing.event.ListDataEvent;
 import javax.swing.event.ListDataListener;
 import javax.swing.event.ListSelectionEvent;
@@ -50,13 +58,16 @@ public class ResetterPanels
             = Logger.getLogger(ResetterPanels.class.getName());
 
     private final DefaultListModel<StorageDevice> storageDeviceListModel;
+    private final DefaultListModel<String> snapshotsListModel;
     private final ResetStorageDeviceRenderer storageDeviceRenderer;
 
     private DLCopySwingGUI dlCopySwingGUI;
+    private SystemSource runningSystemSource;
     private String runningSystemSourceDeviceName;
     private List<Subdirectory> orderedSubdirectoriesEntries;
     private SubdirectoryTableModel subdirectoryTableModel;
     private ResetPrintPreferences resetPrintPreferences;
+    private Timer snapshotTimer;
 
     /**
      * Creates new form ResetterPanels
@@ -75,16 +86,21 @@ public class ResetterPanels
                 backupDestinationSubdirectoryTable, Boolean.class);
         setEnabledRespectingDefaultRenderer(
                 backupDestinationSubdirectoryTable, String.class);
+
+        snapshotsListModel = new DefaultListModel<>();
+        snaphotsList.setModel(snapshotsListModel);
     }
 
     // post-constructor initialization
     public void init(DLCopySwingGUI dlCopySwingGUI,
-            String runningSystemSourceDeviceName,
+            SystemSource runningSystemSource,
             DLCopySwingGUIPreferencesHandler preferencesHandler,
             ComboBoxModel<String> exchangePartitionFileSystemsModel) {
 
         this.dlCopySwingGUI = dlCopySwingGUI;
-        this.runningSystemSourceDeviceName = runningSystemSourceDeviceName;
+        this.runningSystemSource = runningSystemSource;
+        this.runningSystemSourceDeviceName
+                = runningSystemSource.getDeviceName();
 
         String countString = DLCopy.STRINGS.getString("Selection_Count");
         countString = MessageFormat.format(countString, 0, 0);
@@ -515,6 +531,15 @@ public class ResetterPanels
         restorePanel = new javax.swing.JPanel();
         restoreDataCheckBox = new javax.swing.JCheckBox();
         restoreConfigurationPanel = new ch.fhnw.dlcopy.gui.swing.OverwriteConfigurationPanel();
+        snapshotsPanel = new javax.swing.JPanel();
+        snapshotsErrorPanel = new javax.swing.JPanel();
+        snapShotsErrorLabel = new javax.swing.JLabel();
+        snapshotManagementPanel = new javax.swing.JPanel();
+        snapshotsListLabel = new javax.swing.JLabel();
+        snapshotsListScrollPane = new javax.swing.JScrollPane();
+        snaphotsList = new javax.swing.JList<>();
+        deleteSnapshotButton = new javax.swing.JButton();
+        rebootIntoSnapshotButton = new javax.swing.JButton();
         resetPanel = new javax.swing.JPanel();
         currentlyResettingDeviceLabel = new javax.swing.JLabel();
         jSeparator5 = new javax.swing.JSeparator();
@@ -542,6 +567,11 @@ public class ResetterPanels
 
         add(infoPanel, "infoPanel");
 
+        selectionAndConfigurationTabbedPane.addChangeListener(new javax.swing.event.ChangeListener() {
+            public void stateChanged(javax.swing.event.ChangeEvent evt) {
+                selectionAndConfigurationTabbedPaneStateChanged(evt);
+            }
+        });
         selectionAndConfigurationTabbedPane.addComponentListener(new java.awt.event.ComponentAdapter() {
             public void componentShown(java.awt.event.ComponentEvent evt) {
                 selectionAndConfigurationTabbedPaneComponentShown(evt);
@@ -1176,6 +1206,68 @@ public class ResetterPanels
 
         selectionAndConfigurationTabbedPane.addTab(bundle.getString("DLCopySwingGUI.resetRestorePanel.TabConstraints.tabTitle"), restorePanel); // NOI18N
 
+        snapshotsPanel.setLayout(new java.awt.CardLayout());
+
+        snapshotsErrorPanel.setLayout(new java.awt.GridBagLayout());
+
+        snapShotsErrorLabel.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/dialog-warning.png"))); // NOI18N
+        snapshotsErrorPanel.add(snapShotsErrorLabel, new java.awt.GridBagConstraints());
+
+        snapshotsPanel.add(snapshotsErrorPanel, "snapshotsErrorPanel");
+
+        snapshotManagementPanel.setLayout(new java.awt.GridBagLayout());
+
+        snapshotsListLabel.setText(bundle.getString("Available_Snapshots")); // NOI18N
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 0, 0);
+        snapshotManagementPanel.add(snapshotsListLabel, gridBagConstraints);
+
+        snaphotsList.addListSelectionListener(new javax.swing.event.ListSelectionListener() {
+            public void valueChanged(javax.swing.event.ListSelectionEvent evt) {
+                snaphotsListValueChanged(evt);
+            }
+        });
+        snapshotsListScrollPane.setViewportView(snaphotsList);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 0, 10);
+        snapshotManagementPanel.add(snapshotsListScrollPane, gridBagConstraints);
+
+        deleteSnapshotButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/list-remove.png"))); // NOI18N
+        deleteSnapshotButton.setText(bundle.getString("Delete_Snapshots")); // NOI18N
+        deleteSnapshotButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                deleteSnapshotButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.EAST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 0, 10, 10);
+        snapshotManagementPanel.add(deleteSnapshotButton, gridBagConstraints);
+
+        rebootIntoSnapshotButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/edit-reset.png"))); // NOI18N
+        rebootIntoSnapshotButton.setText(bundle.getString("Reboot_Into_Snapshot")); // NOI18N
+        rebootIntoSnapshotButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                rebootIntoSnapshotButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 0);
+        snapshotManagementPanel.add(rebootIntoSnapshotButton, gridBagConstraints);
+
+        snapshotsPanel.add(snapshotManagementPanel, "snapshotManagementPanel");
+
+        selectionAndConfigurationTabbedPane.addTab(bundle.getString("Snapshots"), snapshotsPanel); // NOI18N
+
         add(selectionAndConfigurationTabbedPane, "selectionAndConfigurationTabbedPane");
 
         resetPanel.setLayout(new java.awt.GridBagLayout());
@@ -1385,6 +1477,107 @@ public class ResetterPanels
         }
     }//GEN-LAST:event_selectionAndConfigurationTabbedPaneComponentShown
 
+    private void selectionAndConfigurationTabbedPaneStateChanged(javax.swing.event.ChangeEvent evt) {//GEN-FIRST:event_selectionAndConfigurationTabbedPaneStateChanged
+
+        Component selectedComponent
+                = selectionAndConfigurationTabbedPane.getSelectedComponent();
+
+        if (selectedComponent == snapshotsPanel) {
+            // snapshot management is only available if only one single device
+            // is selected and if this device is the boot device
+            if (storageDeviceList.getSelectedIndices().length == 1
+                    && storageDeviceList.getSelectedValue().getDevice().equals(
+                            runningSystemSourceDeviceName)) {
+                DLCopySwingGUI.showCard(
+                        snapshotsPanel, "snapshotManagementPanel");
+                if (snapshotTimer == null) {
+                    // start updating the list of snapshots
+                    snapshotTimer = new Timer(1000,
+                            new SnapshotsUpdateActionListener(
+                                    snaphotsList, snapshotsListModel));
+                    snapshotTimer.setInitialDelay(0);
+                    snapshotTimer.start();
+                }
+            } else {
+                snapShotsErrorLabel.setText(DLCopy.STRINGS.getString(
+                        "Warning_Snapshots_Only_Boot_Device"));
+                DLCopySwingGUI.showCard(
+                        snapshotsPanel, "snapshotsErrorPanel");
+            }
+        }
+    }//GEN-LAST:event_selectionAndConfigurationTabbedPaneStateChanged
+
+    private void deleteSnapshotButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteSnapshotButtonActionPerformed
+        ProcessExecutor processExecutor = new ProcessExecutor(true);
+        for (String snapshot : snaphotsList.getSelectedValuesList()) {
+            processExecutor.executeProcess(true, true,
+                    "btrfs", "subvolume", "delete", "/snapshots/" + snapshot);
+        }
+    }//GEN-LAST:event_deleteSnapshotButtonActionPerformed
+
+    private void snaphotsListValueChanged(javax.swing.event.ListSelectionEvent evt) {//GEN-FIRST:event_snaphotsListValueChanged
+        int[] selectedIndices = snaphotsList.getSelectedIndices();
+        deleteSnapshotButton.setEnabled(selectedIndices.length > 0);
+        rebootIntoSnapshotButton.setEnabled(selectedIndices.length == 1);
+    }//GEN-LAST:event_snaphotsListValueChanged
+
+    private void rebootIntoSnapshotButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_rebootIntoSnapshotButtonActionPerformed
+
+        if (!dlCopySwingGUI.showConfirmDialog(
+                DLCopy.STRINGS.getString("Warning"),
+                DLCopy.STRINGS.getString("Warning_Reboot_Into_Snapshot"))) {
+            return;
+        }
+
+        String snapshot = snaphotsList.getSelectedValue();
+        try {
+            // mount administrative Btrfs root (subvol "/")
+            Partition dataPartition = runningSystemSource.getDataPartition();
+            String device = dataPartition.getFullDeviceAndNumber();
+            Path tempDir = Files.createTempDirectory("dlcopy");
+            ProcessExecutor processExecutor = new ProcessExecutor(true);
+            processExecutor.executeProcess(true, true, "mount",
+                    "-o", "subvol=/", device, tempDir.toString());
+            Path rootPath = tempDir.resolve("root");
+            Path snapshotsPath = tempDir.resolve("snapshots");
+
+            // create new read-only snapshot for currently running system
+            SimpleDateFormat dateFormat = new SimpleDateFormat(
+                    "yyyy-MM-dd HH:mm:ss");
+            String timestamp = dateFormat.format(new Date());
+            processExecutor.executeProcess(true, true,
+                    "btrfs", "subvolume", "snapshot", "-r",
+                    rootPath.toString(),
+                    snapshotsPath.resolve(timestamp + " reboot").toString());
+
+            // orphan currently running system
+            // (should be cleaned up by live-config at next boot)
+            Path orphanedPath = tempDir.resolve("orphaned");
+            if (Files.exists(orphanedPath)) {
+                // remove leftover orphaned snapshot
+                // (should not be there if everything works as expected)
+                processExecutor.executeProcess(true, true,
+                        "btrfs", "subvolume", "delete", orphanedPath.toString());
+            }
+            Files.move(rootPath, orphanedPath);
+
+            // create new read-write root subvolume from selected snapshot
+            processExecutor.executeProcess(true, true,
+                    "btrfs", "subvolume", "snapshot",
+                    snapshotsPath.resolve(snapshot).toString(),
+                    rootPath.toString());
+
+            // make the new root subvolume the default subvolume
+            processExecutor.executeProcess(true, true,
+                    "btrfs", "subvolume", "set-default", rootPath.toString());
+
+            // reboot
+            processExecutor.executeProcess(true, true, "reboot");
+        } catch (IOException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+        }
+    }//GEN-LAST:event_rebootIntoSnapshotButtonActionPerformed
+
     private void updateResetDataPartitionButtonState() {
         boolean selected = deleteFilesRadioButton.isSelected();
         deleteSystemFilesCheckBox.setEnabled(selected);
@@ -1463,6 +1656,7 @@ public class ResetterPanels
     private javax.swing.JCheckBox deleteFromDataPartitionCheckBox;
     private javax.swing.JCheckBox deleteHomeDirectoryCheckBox;
     private javax.swing.JPanel deletePanel;
+    private javax.swing.JButton deleteSnapshotButton;
     private javax.swing.JCheckBox deleteSystemFilesCheckBox;
     private javax.swing.JLabel exchangeDefinitionLabel;
     private javax.swing.ButtonGroup exchangePartitionLabelButtonGroup;
@@ -1504,6 +1698,7 @@ public class ResetterPanels
     private javax.swing.JPanel printingDirectoryPanel;
     private javax.swing.JProgressBar progressBar;
     private javax.swing.JPanel progressPanel;
+    private javax.swing.JButton rebootIntoSnapshotButton;
     private javax.swing.JPanel resetCardPanel;
     private javax.swing.JLabel resetInfoLabel;
     private javax.swing.JPanel resetPanel;
@@ -1522,6 +1717,13 @@ public class ResetterPanels
     private javax.swing.ButtonGroup selectionModeButtonGroup;
     private javax.swing.JPanel selectionPanel;
     private javax.swing.JCheckBox showHardDisksCheckBox;
+    private javax.swing.JLabel snapShotsErrorLabel;
+    private javax.swing.JList<String> snaphotsList;
+    private javax.swing.JPanel snapshotManagementPanel;
+    private javax.swing.JPanel snapshotsErrorPanel;
+    private javax.swing.JLabel snapshotsListLabel;
+    private javax.swing.JScrollPane snapshotsListScrollPane;
+    private javax.swing.JPanel snapshotsPanel;
     private javax.swing.JPanel spacerPanel;
     private javax.swing.JList<StorageDevice> storageDeviceList;
     private javax.swing.JScrollPane storageDeviceListScrollPane;

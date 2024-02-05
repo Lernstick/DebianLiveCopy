@@ -82,7 +82,8 @@ public class DLCopy {
     public static final String[] DATA_PARTITION_FS = new String[]{
         "ext2",
         "ext3",
-        "ext4"
+        "ext4",
+        "btrfs"
     };
 
     /**

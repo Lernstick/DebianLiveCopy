@@ -307,8 +307,8 @@ public class DLCopySwingGUI extends JFrame
         installerPanels.init(this, runningSystemSource, preferencesHandler,
                 exchangePartitionFileSystemsModel);
         upgraderPanels.init(this, runningSystemSource, preferencesHandler);
-        resetterPanels.init(this, runningSystemSource.getDeviceName(),
-                preferencesHandler, exchangePartitionFileSystemsModel);
+        resetterPanels.init(this, runningSystemSource, preferencesHandler,
+                exchangePartitionFileSystemsModel);
 
         preferencesHandler.load();
 
