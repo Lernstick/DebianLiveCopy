@@ -1,12 +1,10 @@
 package ch.fhnw.dlcopy.gui.swing;
 
-import ch.fhnw.util.StorageDevice;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.swing.DefaultListModel;
 import javax.swing.JList;
 
@@ -35,17 +33,23 @@ public class SnapshotsUpdateActionListener implements ActionListener {
 
     @Override
     public void actionPerformed(ActionEvent e) {
-        List<String> selectedValues = snapshotsList.getSelectedValuesList();
-
-        snapshotsListModel.clear();
-        snapshotsListModel.addAll(Arrays.asList(
-                new File("/snapshots/").list()));
         
-        // try to restore the previous selection
-        for (String selectedValue : selectedValues) {
-            int index = snapshotsListModel.indexOf(selectedValue);
-            if (index != -1) {
-                snapshotsList.addSelectionInterval(index, index);
+        File snapshotsDir = new File("/snapshots/");
+        if (snapshotsDir.exists()) {
+            
+            // remember selected values in the snapshots list
+            List<String> selectedValues = snapshotsList.getSelectedValuesList();
+
+            // update snapshots list
+            snapshotsListModel.clear();
+            snapshotsListModel.addAll(Arrays.asList(snapshotsDir.list()));
+            
+            // try to restore the previous selection in the snapshots list
+            for (String selectedValue : selectedValues) {
+                int index = snapshotsListModel.indexOf(selectedValue);
+                if (index != -1) {
+                    snapshotsList.addSelectionInterval(index, index);
+                }
             }
         }
     }

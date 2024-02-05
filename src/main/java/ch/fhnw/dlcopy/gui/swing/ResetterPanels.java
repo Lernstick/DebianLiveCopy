@@ -1244,6 +1244,7 @@ public class ResetterPanels
 
         deleteSnapshotButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/list-remove.png"))); // NOI18N
         deleteSnapshotButton.setText(bundle.getString("Delete_Snapshots")); // NOI18N
+        deleteSnapshotButton.setEnabled(false);
         deleteSnapshotButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteSnapshotButtonActionPerformed(evt);
@@ -1266,6 +1267,7 @@ public class ResetterPanels
 
         rebootIntoSnapshotButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/edit-reset.png"))); // NOI18N
         rebootIntoSnapshotButton.setText(bundle.getString("Reboot_Into_Snapshot")); // NOI18N
+        rebootIntoSnapshotButton.setEnabled(false);
         rebootIntoSnapshotButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 rebootIntoSnapshotButtonActionPerformed(evt);
@@ -1503,6 +1505,8 @@ public class ResetterPanels
                             runningSystemSourceDeviceName)) {
                 DLCopySwingGUI.showCard(
                         snapshotsPanel, "snapshotManagementPanel");
+                createSnapshotButton.setEnabled(
+                        Files.exists(Path.of("/snapshots")));
                 if (snapshotTimer == null) {
                     // start updating the list of snapshots
                     snapshotTimer = new Timer(1000,
