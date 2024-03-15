@@ -95,6 +95,8 @@ public class DLCopy {
         "NTFS"
     };
 
+    public static final String ARCHITECTURE = detectArchitecture();
+
     /**
      * the label to use for the system partition
      */
@@ -174,6 +176,14 @@ public class DLCopy {
         } else {
             return PartitionState.TOO_SMALL;
         }
+    }
+
+   /**
+    * returns the current architecture
+    * @return the architecture the program is currently running on
+    */
+    private static String detectArchitecture() {
+        return System.getProperty("os.arch");
     }
 
     /**
@@ -445,10 +455,13 @@ public class DLCopy {
         copyPersistence(source, installerOrUpgrader,
                 destinationDataPartition, dlCopyGUI);
 
-        // make storage device bootable
-        installerOrUpgrader.showWritingBootSector();
-        makeBootable(source, device, destinationBootPartition);
 
+        if (!DLCopy.ARCHITECTURE.equals("aarch64")) {
+            // make storage device bootable
+            installerOrUpgrader.showWritingBootSector();
+            makeBootable(source, device, destinationBootPartition);
+        }
+        
         if (!umount(destinationBootPartition, dlCopyGUI)) {
             String errorMessage = "could not umount destination boot partition";
             throw new IOException(errorMessage);

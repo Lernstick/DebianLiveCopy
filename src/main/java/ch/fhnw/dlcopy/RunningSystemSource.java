@@ -45,7 +45,7 @@ public final class RunningSystemSource extends SystemSource {
     public RunningSystemSource(ProcessExecutor processExecutor)
             throws DBusException, IOException {
         this.processExecutor = processExecutor;
-        runningVersion = DebianLiveVersion.getRunningVersion();
+        runningVersion = DebianLiveVersion.getRunningVersion(DLCopy.ARCHITECTURE);
         if (runningVersion == null) {
             throw new IllegalArgumentException(
                     "Unable to detect running system version");
