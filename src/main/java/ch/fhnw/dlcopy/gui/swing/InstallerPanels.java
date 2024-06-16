@@ -1379,7 +1379,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         fileSystemPanel.setBorder(javax.swing.BorderFactory.createTitledBorder(bundle.getString("FileSystem"))); // NOI18N
         fileSystemPanel.setLayout(new java.awt.GridBagLayout());
 
-        dataPartitionFileSystemComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ext2", "ext3", "ext4", "btrfs" }));
+        dataPartitionFileSystemComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "ext4", "btrfs" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
