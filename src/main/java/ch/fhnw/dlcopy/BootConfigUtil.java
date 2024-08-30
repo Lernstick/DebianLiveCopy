@@ -90,7 +90,10 @@ public class BootConfigUtil {
     public static void setDataPartitionMode(
             DataPartitionMode destinationDataPartitionMode, String imagePath) {
 
-        setDataPartitionModeXmlBoot(destinationDataPartitionMode, imagePath);
+        if (!DLCopy.ARCHITECTURE.equals("aarch64")) {
+            setDataPartitionModeXmlBoot(destinationDataPartitionMode, imagePath);
+        }
+        
         setDataPartitionModeGrub(destinationDataPartitionMode, imagePath);
     }
 

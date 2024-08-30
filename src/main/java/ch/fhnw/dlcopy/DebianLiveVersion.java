@@ -54,13 +54,14 @@ public enum DebianLiveVersion {
     /**
      * tries to detect the running Debian Live version
      *
+     * @param architecture the system runs on
      * @return the detected Debian Live version
      */
-    public static DebianLiveVersion getRunningVersion() {
+    public static DebianLiveVersion getRunningVersion(String architecture) {
         for (DebianLiveVersion version : values()) {
             File liveDir = new File(version.liveSystemPath);
             File mbrFile = new File(version.mbrFilePath);
-            if (liveDir.exists() && mbrFile.exists()) {
+            if (liveDir.exists() && (architecture.equals("aarch64") || mbrFile.exists())) {
                 return version;
             }
         }

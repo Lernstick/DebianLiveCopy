@@ -29,10 +29,29 @@ Description: an application to copy Debian Live to other storage media
  This is the version for the Lernstick exam environment distribution.
 
 Package: dlcopy-common
-Architecture: all
+Architecture: any
+Multi-Arch: allowed
 Replaces: dlcopy (<< 201403091913)
 Breaks: dlcopy (<< 201403091913)
-Depends: auto-gdk-scale, java8-runtime, squashfs-tools, cpio, xorriso, syslinux, extlinux, syslinux-common, dbus, libdbus-java, libmatthew-debug-java, libunixsocket-java, parted, policykit-1, exfatprogs, fatattr, isolinux, btrfs-progs
+Depends: 
+ auto-gdk-scale, 
+ java8-runtime, 
+ squashfs-tools, 
+ cpio, 
+ xorriso, 
+ syslinux [amd64], 
+ extlinux [amd64], 
+ syslinux-common [amd64], 
+ dbus, 
+ libdbus-java, 
+ libmatthew-debug-java, 
+ libunixsocket-java, 
+ parted, 
+ policykit-1, 
+ exfatprogs, 
+ fatattr, 
+ isolinux [amd64], 
+ btrfs-progs
 Description: an application to copy Debian Live to other storage media
  This is a small application that copies Debian Live to other storage media like
  USB flash drives, USB hard drives or SD memory cards. It has hot-plug support
