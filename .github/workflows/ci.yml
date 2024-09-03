@@ -151,19 +151,19 @@ jobs:
           fetch-depth: 1
 
       - name: Fetch jbackpack
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: jbackpack
           path: jbackpack
 
       - name: Fetch lernstickTools
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: lernstickTools
           path: lernstickTools
 
       - name: Fetch nbproperties
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: nbproperties
           path: nbproject/private
@@ -189,19 +189,19 @@ jobs:
           fetch-depth: 1
 
       - name: Fetch jbackpack
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: jbackpack
           path: jbackpack
 
       - name: Fetch lernstickTools
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: lernstickTools
           path: lernstickTools
 
       - name: Fetch nbproperties
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: nbproperties
           path: nbproject/private
@@ -227,31 +227,31 @@ jobs:
           fetch-depth: 1
 
       - name: Fetch jbackpack
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: jbackpack
           path: jbackpack
 
       - name: Fetch lernstickTools
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: lernstickTools
           path: lernstickTools
 
       - name: Fetch nbproperties
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: nbproperties
           path: nbproject/private
 
       - name: Fetch Javadoc
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: Javadoc
           path: dist/javadoc
 
       - name: Fetch DLCopy
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: DLCopy
           path: dist
@@ -282,31 +282,31 @@ jobs:
           fetch-depth: 1
 
       - name: Fetch jbackpack
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: jbackpack
           path: jbackpack
 
       - name: Fetch lernstickTools
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: lernstickTools
           path: lernstickTools
 
       - name: Fetch nbproperties
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: nbproperties
           path: nbproject/private
 
       - name: Fetch Javadoc
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: Javadoc
           path: dist/javadoc
 
       - name: Fetch DLCopy
-        uses: actions/download-artifact@v3
+        uses: actions/download-artifact@v4.1.7
         with:
           name: DLCopy
           path: dist
