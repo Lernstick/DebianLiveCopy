@@ -1,3 +1,12 @@
+dlcopy (202409291950-1) lernstick-12; urgency=medium
+
+  * [3edcff] removed ext2 and ext3 from data partition file systems list (both are deprecated in favor of ext4)
+  * [4056fa] code cleanup
+  * [5ffc7d] enlarge EFI partition to 1 GB to enable firmware updates
+  * [dc39e6] accept Debian 12 ISO as installation source
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 28 Sep 2024 19:50:24 +0200
+
 dlcopy (202402051945-1) lernstick-12; urgency=medium
 
   * [0aa2f3] small bug fixes for non-Btrfs systems
