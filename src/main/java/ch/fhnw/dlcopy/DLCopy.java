@@ -1157,11 +1157,10 @@ public class DLCopy {
 
     private static void createBtrfsSubvolumes(Partition persistencePartition)
             throws DBusException, IOException {
-        
-        String mountPath = persistencePartition.getMountPath();
-        
-        // use flat layout for better snapshot management
 
+        String mountPath = persistencePartition.getMountPath();
+
+        // use flat layout for better snapshot management
         // create subvolume "root" (for the file system root)
         String rootPath = Path.of(mountPath, "root").toString();
         PROCESS_EXECUTOR.executeProcess("btrfs", "subvolume", "create",
@@ -1174,7 +1173,7 @@ public class DLCopy {
         // create subvolume "snapshots" for storing all file system snapshots
         PROCESS_EXECUTOR.executeProcess("btrfs", "subvolume", "create",
                 Path.of(mountPath, "snapshots").toString());
-        
+
         // remount persistencePartition with new default root partition
         persistencePartition.umount();
         persistencePartition.mount();
@@ -1258,10 +1257,11 @@ public class DLCopy {
         int exchangeMB = partitionSizes.getExchangeMB();
         int persistenceMB = partitionSizes.getPersistenceMB();
         if (LOGGER.isLoggable(Level.FINEST)) {
-            LOGGER.log(Level.FINEST, "size of {0} = {1} Byte\n"
-                    + "overhead = {2} Byte\n"
-                    + "exchangeMB = {3} MiB\n"
-                    + "persistenceMB = {4} MiB",
+            LOGGER.log(Level.FINEST, """
+                                     size of {0} = {1} Byte
+                                     overhead = {2} Byte
+                                     exchangeMB = {3} MiB
+                                     persistenceMB = {4} MiB""",
                     new Object[]{device, storageDeviceSize, overhead,
                         exchangeMB, persistenceMB
                     });
@@ -1607,8 +1607,7 @@ public class DLCopy {
         // define CopyJob for exchange paritition
         String destinationExchangePath = null;
         CopyJob exchangeCopyJob = null;
-        if (installerOrUpgrader instanceof Installer) {
-            Installer installer = (Installer) installerOrUpgrader;
+        if (installerOrUpgrader instanceof Installer installer) {
             if (installer.isCopyExchangePartitionSelected()) {
                 destinationExchangePath
                         = destinationExchangePartition.mount().getMountPath();
@@ -1647,8 +1646,7 @@ public class DLCopy {
         isolinuxToSyslinux(destinationEfiPath, dlCopyGUI);
 
         // change data partition mode on target (if needed)
-        if (installerOrUpgrader instanceof Installer) {
-            Installer installer = (Installer) installerOrUpgrader;
+        if (installerOrUpgrader instanceof Installer installer) {
             DataPartitionMode dataPartitionMode
                     = installer.getDataPartitionMode();
             setDataPartitionMode(source, dataPartitionMode,
@@ -2160,9 +2158,10 @@ public class DLCopy {
     private static StorageDevice getStorageDevice(
             String path, boolean includeHardDisks) throws DBusException {
 
-        LOGGER.log(Level.FINE, "\n"
-                + "    thread: {0}\n"
-                + "    path: {1}",
+        LOGGER.log(Level.FINE, """
+                               
+                                   thread: {0}
+                                   path: {1}""",
                 new Object[]{Thread.currentThread().getName(), path});
 
         String busName;
@@ -2224,13 +2223,14 @@ public class DLCopy {
     private static void logPath(String path, boolean isDrive, boolean isLoop,
             long size, String deviceFile, boolean accepted) {
 
-        LOGGER.log(Level.FINE,
-                "\npath={0}\n"
-                + "    isDrive: {1}\n"
-                + "    isLoop: {2}\n"
-                + "    size: {3}\n"
-                + "    deviceFile: {4}\n"
-                + "    {5}",
+        LOGGER.log(Level.FINE, """
+                               
+                               path={0}
+                                   isDrive: {1}
+                                   isLoop: {2}
+                                   size: {3}
+                                   deviceFile: {4}
+                                   {5}""",
                 new Object[]{path, isDrive, isLoop, size, deviceFile,
                     "--> " + (accepted
                             ? "accepted (detected as real drive)"
