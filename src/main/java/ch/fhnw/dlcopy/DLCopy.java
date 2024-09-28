@@ -63,9 +63,14 @@ public class DLCopy {
     public static final ResourceBundle STRINGS
             = ResourceBundle.getBundle("ch/fhnw/dlcopy/Strings");
     /**
-     * the size of the EFI partition (given in MiB)
+     * This defines the size of the EFI partition (given in MiB).
+     * EFI partitions are now used for firmware updates. Our EFI partition must
+     * therefore be much larger than the sum of our own files. Other
+     * distributions recommend a size of at least 512 MB. To be future-proof, we
+     * use 1 GB. More details can be found here:
+     * https://fedoraproject.org/wiki/Changes/BiggerESP
      */
-    public static final long EFI_PARTITION_SIZE = 200;
+    public static final long EFI_PARTITION_SIZE = 1024;
 
     /**
      * the known and supported data partition modes
