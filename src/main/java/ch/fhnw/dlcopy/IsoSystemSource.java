@@ -269,8 +269,9 @@ public class IsoSystemSource extends SystemSource {
                     || signature.contains("Stretch")) {
                 return DebianLiveVersion.DEBIAN_8_to_9;
             } else if (signature.contains("Buster")
-                    || signature.contains("Bullseye")) {
-                return DebianLiveVersion.DEBIAN_10_to_11;
+                    || signature.contains("Bullseye")
+                    || signature.contains("Bookworm")) {
+                return DebianLiveVersion.DEBIAN_10_to_12;
             }
             LOGGER.log(Level.SEVERE, "Invalid version signature:  {0}",
                     signature);
