@@ -1,3 +1,15 @@
+dlcopy (202410121303-1) lernstick-12; urgency=medium
+
+  * [f07aa8] run partprobe after mkfs.* so that the kernel and udev really
+             know about the new filesystem
+  * [183904] small code cleanups
+  * [6283a5] create dedicated subvolume "swap" for storing swap files, because
+             subvolumes can't be snapshotted if they contain any active
+             swapfiles, see here:
+             https://btrfs.readthedocs.io/en/latest/Swapfile.html
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 12 Oct 2024 13:03:13 +0200
+
 dlcopy (202409291950-1) lernstick-12; urgency=medium
 
   * [3edcff] removed ext2 and ext3 from data partition file systems list (both are deprecated in favor of ext4)
