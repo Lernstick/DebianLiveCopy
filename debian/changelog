@@ -1,3 +1,11 @@
+dlcopy (202410121654-1) lernstick-12; urgency=medium
+
+  * [e64cb2] run partprobe on all devices after creating a new filesystem
+  * [15e007] keep LUKS open when remounting btrfs with new default root subvolume
+  * [5c9753] try to close all open LUKS partitions on target devices
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sat, 12 Oct 2024 16:54:42 +0200
+
 dlcopy (202410121303-1) lernstick-12; urgency=medium
 
   * [f07aa8] run partprobe after mkfs.* so that the kernel and udev really
