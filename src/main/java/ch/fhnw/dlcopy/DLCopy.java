@@ -689,12 +689,12 @@ public class DLCopy {
             throw new IOException(errorMessage);
         }
 
-        // Here have to trigger a rescan of the device partitions. Otherwise
-        // udisks sometimes just doesn't know about the new partitions and we
-        // will later get exceptions similar to this one:
+        // Here have to trigger a rescan of the partition table information.
+        // Otherwise udisks sometimes just doesn't know about the new partitions
+        // and we will later get exceptions similar to this one:
         // org.freedesktop.dbus.exceptions.DBusExecutionException:
         // No such interface 'org.freedesktop.UDisks2.Filesystem'
-        PROCESS_EXECUTOR.executeProcess("partprobe", device);
+        PROCESS_EXECUTOR.executeProcess("partprobe");
         // Sigh... even after partprobe exits, we have to give udisks even more
         // time to get its act together and finally know about the new
         // partitions.
