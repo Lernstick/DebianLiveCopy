@@ -549,6 +549,7 @@ public class DLCopy {
      * @return <code>true</code>, if unmounting was successfull,
      * <code>false</code> otherwise
      * @throws DBusException
+     * @throws java.io.IOException if an I/O exception occurs
      */
     public static boolean umount(Partition partition, DLCopyGUI dlCopyGUI)
             throws DBusException, IOException {
@@ -1456,8 +1457,7 @@ public class DLCopy {
         TimeUnit.SECONDS.sleep(3);
 
         // repartition device
-        String[] commandArray = partedCommandList.toArray(
-                new String[partedCommandList.size()]);
+        String[] commandArray = partedCommandList.toArray(String[]::new);
 
         exitValue = PROCESS_EXECUTOR.executeProcess(commandArray);
         if (exitValue != 0) {
