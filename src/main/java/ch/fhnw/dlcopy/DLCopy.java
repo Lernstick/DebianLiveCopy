@@ -1184,6 +1184,12 @@ public class DLCopy {
         PROCESS_EXECUTOR.executeProcess("btrfs", "subvolume", "create",
                 Path.of(mountPath, "snapshots").toString());
 
+        // create dedicated subvolume "swap" for storing swap files, because
+        // subvolumes can't be snapshotted if it contains any active swapfiles,
+        // see here: https://btrfs.readthedocs.io/en/latest/Swapfile.html
+        PROCESS_EXECUTOR.executeProcess("btrfs", "subvolume", "create",
+                Path.of(mountPath, "swap").toString());
+
         // remount persistencePartition with new default root partition
         persistencePartition.umount();
         persistencePartition.mount();
