@@ -703,7 +703,7 @@ public class DLCopy {
             TimeUnit.SECONDS.sleep(10);
         } catch (InterruptedException ex) {
             LOGGER.log(Level.SEVERE, "", ex);
-        }        
+        }
         settleUdev();
 
         // ext{2..4} tuning
@@ -1387,6 +1387,8 @@ public class DLCopy {
 
         // umount all mounted partitions of device
         umountPartitions(device, dlCopyGUI);
+        // close all open LUKS devices
+        luksClosePartitions(device);
 
         // We must wipe the whole storage device before creating the partitions,
         // otherwise USB flash drives previously written with a dd'ed ISO
@@ -2079,6 +2081,34 @@ public class DLCopy {
             String mountedPartition = mount.split(" ")[0];
             if (mountedPartition.startsWith(device)) {
                 umount(mountedPartition, dlCopyGUI);
+            }
+        }
+    }
+
+    private static void luksClosePartitions(String device) throws IOException {
+        LOGGER.log(Level.FINEST, "luksClosePartitions({0})", device);
+
+        ProcessExecutor processExecutor = new ProcessExecutor(true);
+
+        // get all partitions of device
+        String script = "lsblk -lno PATH " + device
+                + " | grep -E '^/dev/sda[0-9]'";
+        processExecutor.executeScript(true, true, script);
+        List<String> partitions = processExecutor.getStdOutList();
+
+        for (String partition : partitions) {
+            // check if partition is an open LUKS device
+            script = "lsblk -no TYPE " + partition
+                    + "| awk '$1 == \"crypt\" {print $1}'";
+            processExecutor.executeScript(true, true, script);
+            if (!processExecutor.getStdOut().isBlank()) {
+                // OK, it is an open LUKS device, get its LUKS ID
+                script = "lsblk -nl -o NAME,TYPE " + partition
+                        + " | " + "grep crypt$ | awk '{ print $1 }'";
+                processExecutor.executeScript(true, true, script);
+                String luksID = processExecutor.getStdOut().stripTrailing();
+                processExecutor.executeProcess(true, true,
+                        "cryptsetup", "luksClose", luksID);
             }
         }
     }
