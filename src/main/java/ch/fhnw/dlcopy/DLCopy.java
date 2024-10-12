@@ -1191,7 +1191,7 @@ public class DLCopy {
                 Path.of(mountPath, "swap").toString());
 
         // remount persistencePartition with new default root partition
-        persistencePartition.umount();
+        persistencePartition.umount(true);
         persistencePartition.mount();
     }
 
