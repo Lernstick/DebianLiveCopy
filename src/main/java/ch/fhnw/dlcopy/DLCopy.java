@@ -688,6 +688,23 @@ public class DLCopy {
             throw new IOException(errorMessage);
         }
 
+        // Here have to trigger a rescan of the device partitions. Otherwise
+        // udisks sometimes just doesn't know about the new partitions and we
+        // will later get exceptions similar to this one:
+        // org.freedesktop.dbus.exceptions.DBusExecutionException:
+        // No such interface 'org.freedesktop.UDisks2.Filesystem'
+        PROCESS_EXECUTOR.executeProcess("partprobe", device);
+        // Sigh... even after partprobe exits, we have to give udisks even more
+        // time to get its act together and finally know about the new
+        // partitions.
+        try {
+            // 5 seconds were not enough!
+            TimeUnit.SECONDS.sleep(10);
+        } catch (InterruptedException ex) {
+            LOGGER.log(Level.SEVERE, "", ex);
+        }        
+        settleUdev();
+
         // ext{2..4} tuning
         if (fileSystem.startsWith("ext")) {
             exitValue = PROCESS_EXECUTOR.executeProcess(
@@ -701,19 +718,6 @@ public class DLCopy {
                 throw new IOException(errorMessage);
             }
         }
-
-        // We have to wait a little for dbus to get to know the new filesystem.
-        // Otherwise we will sometimes get the following exception in the calls
-        // below:
-        // org.freedesktop.dbus.exceptions.DBusExecutionException:
-        // No such interface 'org.freedesktop.UDisks2.Filesystem'
-        // 5 seconds were too short!
-        try {
-            TimeUnit.SECONDS.sleep(10);
-        } catch (InterruptedException ex) {
-            LOGGER.log(Level.SEVERE, "", ex);
-        }
-        settleUdev();
 
         Partition persistencePartition
                 = Partition.getPartitionFromDeviceAndNumber(
