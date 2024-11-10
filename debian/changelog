@@ -1,3 +1,9 @@
+dlcopy (202411101425-1) lernstick-12; urgency=medium
+
+  * [b77bab] added "start_manual.bat" to EFI copy pattern
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 10 Nov 2024 14:30:24 +0100
+
 dlcopy (202410121654-1) lernstick-12; urgency=medium
 
   * [e64cb2] run partprobe on all devices after creating a new filesystem
