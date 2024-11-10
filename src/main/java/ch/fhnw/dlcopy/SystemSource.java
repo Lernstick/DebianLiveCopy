@@ -32,6 +32,7 @@ public abstract class SystemSource {
             + "md5sum.txt|"
             + "readme.pdf|"
             + "start.bat|"
+            + "start_manual.bat|"
             + "syslinux.*|"
             + "\\.disk.*|"
             + "\\.VolumeIcon.icns";
