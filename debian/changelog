@@ -1,3 +1,10 @@
+dlcopy (202411141036-1) lernstick-12; urgency=medium
+
+  * rebuild with updated lernstickTools library to support new EFI partition
+    label
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 14 Nov 2024 10:36:42 +0100
+
 dlcopy (202411101425-1) lernstick-12; urgency=medium
 
   * [b77bab] added "start_manual.bat" to EFI copy pattern
