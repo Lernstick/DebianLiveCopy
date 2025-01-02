@@ -2225,6 +2225,7 @@ public class DLCopy {
         String busName;
         Boolean isDrive = null;
         Boolean isLoop = null;
+        Boolean isNVMeNamespace = null;
         long size;
         String deviceFile;
         if (DbusTools.DBUS_VERSION == DbusTools.DbusVersion.V1) {
@@ -2244,6 +2245,7 @@ public class DLCopy {
                 List<String> interfaceNames = DbusTools.getInterfaceNames(path);
                 isDrive = !interfaceNames.contains(prefix + "Partition");
                 isLoop = interfaceNames.contains(prefix + "Loop");
+                isNVMeNamespace = interfaceNames.contains(prefix + "NVMe.Namespace");
             } catch (IOException | SAXException
                     | ParserConfigurationException ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
@@ -2258,7 +2260,7 @@ public class DLCopy {
 
         // early return for non-drives
         // (partitions, loop devices, empty optical drives, ...)
-        if ((!isDrive) || isLoop || (size <= 0)) {
+        if ((!isDrive) || isLoop || (size <= 0) || isNVMeNamespace) {
             logPath(path, isDrive, isLoop, size, deviceFile, false/*accepted*/);
             return null;
         }
