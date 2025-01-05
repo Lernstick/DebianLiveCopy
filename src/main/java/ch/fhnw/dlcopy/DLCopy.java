@@ -1325,7 +1325,6 @@ public class DLCopy {
                 mkpart(partedCommandList, "0%", efiBorder);
                 mkpart(partedCommandList, efiBorder, "100%");
                 setFlag(partedCommandList, "1", "boot", "on");
-                setFlag(partedCommandList, "1", "lba", "on");
                 break;
 
             case PERSISTENCE:
@@ -1337,7 +1336,6 @@ public class DLCopy {
                 mkpart(partedCommandList, efiBorder, persistenceBorder);
                 mkpart(partedCommandList, persistenceBorder, "100%");
                 setFlag(partedCommandList, "1", "boot", "on");
-                setFlag(partedCommandList, "1", "lba", "on");
                 break;
 
             case EXCHANGE:
@@ -1350,8 +1348,6 @@ public class DLCopy {
                     mkpart(partedCommandList, efiBorder, persistenceBorder);
                     mkpart(partedCommandList, persistenceBorder, "100%");
                     setFlag(partedCommandList, "1", "boot", "on");
-                    setFlag(partedCommandList, "1", "lba", "on");
-
                 } else {
                     // first two partitions: efi, exchange
                     efiBorder = EFI_PARTITION_SIZE + "MiB";
@@ -1372,8 +1368,6 @@ public class DLCopy {
                                 secondBorder, persistenceBorder);
                         mkpart(partedCommandList, persistenceBorder, "100%");
                     }
-                    setFlag(partedCommandList, "1", "lba", "on");
-                    setFlag(partedCommandList, "2", "lba", "on");
                 }
                 break;
 
