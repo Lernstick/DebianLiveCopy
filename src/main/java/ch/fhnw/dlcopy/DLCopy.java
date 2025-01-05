@@ -1842,14 +1842,23 @@ public class DLCopy {
      * returns the major Debian version
      *
      * @return the major Debian version
-     * @throws IOException if reading or parsing /etc/debian_version fails
+     * @throws IOException if reading or parsing /etc/os-release fails
      */
     public static int getMajorDebianVersion() throws IOException {
 
-        String debianVersionPath = "/etc/debian_version";
+        String debianVersionPath = "/etc/os-release";
+        String versionIDPrefix = "VERSION_ID=";
         List<String> debianVersionFile = LernstickFileTools.readFile(
                 new File(debianVersionPath));
-        String versionString = debianVersionFile.get(0);
+
+        String versionString = "";
+        for (String line: debianVersionFile) {
+            if (line.startsWith(versionIDPrefix)) {
+                // Strip prefix and quotation
+                versionString = line.substring(versionIDPrefix.length() + 1 , line.length() - 1);
+                break;
+            }
+        }
 
         // first try pattern <major>.<minor>
         Pattern versionPattern = Pattern.compile("(\\p{Digit}*)\\..*");
@@ -1871,11 +1880,8 @@ public class DLCopy {
             return majorDebianVersion;
         }
 
-        // maybe a testing version with codenames?
-        if (versionString.startsWith("bullseye")) {
-            return 11;
-        }
-
+        LOGGER.log(Level.WARNING, "Could not extract Debian version from: {0}",
+                versionString);
         throw new IOException("could not parse " + debianVersionPath);
     }
 
