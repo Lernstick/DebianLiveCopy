@@ -1325,7 +1325,6 @@ public class DLCopy {
                 mkpart(partedCommandList, "0%", efiBorder);
                 mkpart(partedCommandList, efiBorder, "100%");
                 setFlag(partedCommandList, "1", "boot", "on");
-                setFlag(partedCommandList, "1", "lba", "on");
                 break;
 
             case PERSISTENCE:
@@ -1337,7 +1336,6 @@ public class DLCopy {
                 mkpart(partedCommandList, efiBorder, persistenceBorder);
                 mkpart(partedCommandList, persistenceBorder, "100%");
                 setFlag(partedCommandList, "1", "boot", "on");
-                setFlag(partedCommandList, "1", "lba", "on");
                 break;
 
             case EXCHANGE:
@@ -1350,8 +1348,6 @@ public class DLCopy {
                     mkpart(partedCommandList, efiBorder, persistenceBorder);
                     mkpart(partedCommandList, persistenceBorder, "100%");
                     setFlag(partedCommandList, "1", "boot", "on");
-                    setFlag(partedCommandList, "1", "lba", "on");
-
                 } else {
                     // first two partitions: efi, exchange
                     efiBorder = EFI_PARTITION_SIZE + "MiB";
@@ -1372,8 +1368,6 @@ public class DLCopy {
                                 secondBorder, persistenceBorder);
                         mkpart(partedCommandList, persistenceBorder, "100%");
                     }
-                    setFlag(partedCommandList, "1", "lba", "on");
-                    setFlag(partedCommandList, "2", "lba", "on");
                 }
                 break;
 
@@ -1848,14 +1842,23 @@ public class DLCopy {
      * returns the major Debian version
      *
      * @return the major Debian version
-     * @throws IOException if reading or parsing /etc/debian_version fails
+     * @throws IOException if reading or parsing /etc/os-release fails
      */
     public static int getMajorDebianVersion() throws IOException {
 
-        String debianVersionPath = "/etc/debian_version";
+        String debianVersionPath = "/etc/os-release";
+        String versionIDPrefix = "VERSION_ID=";
         List<String> debianVersionFile = LernstickFileTools.readFile(
                 new File(debianVersionPath));
-        String versionString = debianVersionFile.get(0);
+
+        String versionString = "";
+        for (String line: debianVersionFile) {
+            if (line.startsWith(versionIDPrefix)) {
+                // Strip prefix and quotation
+                versionString = line.substring(versionIDPrefix.length() + 1 , line.length() - 1);
+                break;
+            }
+        }
 
         // first try pattern <major>.<minor>
         Pattern versionPattern = Pattern.compile("(\\p{Digit}*)\\..*");
@@ -1877,11 +1880,8 @@ public class DLCopy {
             return majorDebianVersion;
         }
 
-        // maybe a testing version with codenames?
-        if (versionString.startsWith("bullseye")) {
-            return 11;
-        }
-
+        LOGGER.log(Level.WARNING, "Could not extract Debian version from: {0}",
+                versionString);
         throw new IOException("could not parse " + debianVersionPath);
     }
 
@@ -2225,6 +2225,7 @@ public class DLCopy {
         String busName;
         Boolean isDrive = null;
         Boolean isLoop = null;
+        Boolean isNVMeNamespace = null;
         long size;
         String deviceFile;
         if (DbusTools.DBUS_VERSION == DbusTools.DbusVersion.V1) {
@@ -2244,6 +2245,7 @@ public class DLCopy {
                 List<String> interfaceNames = DbusTools.getInterfaceNames(path);
                 isDrive = !interfaceNames.contains(prefix + "Partition");
                 isLoop = interfaceNames.contains(prefix + "Loop");
+                isNVMeNamespace = interfaceNames.contains(prefix + "NVMe.Namespace");
             } catch (IOException | SAXException
                     | ParserConfigurationException ex) {
                 LOGGER.log(Level.SEVERE, "", ex);
@@ -2258,7 +2260,7 @@ public class DLCopy {
 
         // early return for non-drives
         // (partitions, loop devices, empty optical drives, ...)
-        if ((!isDrive) || isLoop || (size <= 0)) {
+        if ((!isDrive) || isLoop || (size <= 0) || isNVMeNamespace) {
             logPath(path, isDrive, isLoop, size, deviceFile, false/*accepted*/);
             return null;
         }
