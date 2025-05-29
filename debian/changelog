@@ -1,3 +1,10 @@
+dlcopy (202505291851-1) lernstick-12; urgency=medium
+
+  * [e8f8b7] removed unused import
+  * [dcf63f] allow snapshot management of unused data partition
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 29 May 2025 18:51:25 +0200
+
 dlcopy (202502131708-1) lernstick-12; urgency=medium
 
   [ Thore Sommer ]
