@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -60,6 +61,7 @@ public class ResetterPanels
     private final DefaultListModel<String> snapshotsListModel;
     private final ResetStorageDeviceRenderer storageDeviceRenderer;
     private final SimpleDateFormat snapshotDateFormat;
+    private final String defaultSnapshotsDir = "/snapshots";
 
     private DLCopySwingGUI dlCopySwingGUI;
     private SystemSource runningSystemSource;
@@ -68,6 +70,7 @@ public class ResetterPanels
     private SubdirectoryTableModel subdirectoryTableModel;
     private ResetPrintPreferences resetPrintPreferences;
     private Timer snapshotTimer;
+    private String currentSnapshotsDir;
 
     /**
      * Creates new form ResetterPanels
@@ -1497,20 +1500,46 @@ public class ResetterPanels
                 = selectionAndConfigurationTabbedPane.getSelectedComponent();
 
         if (selectedComponent == snapshotsPanel) {
+
+            StorageDevice storageDevice = storageDeviceList.getSelectedValue();
+
             // snapshot management is only available if only one single device
             // is selected and if this device is the boot device
             if (storageDeviceList.getSelectedIndices().length == 1
-                    && storageDeviceList.getSelectedValue().getDevice().equals(
+                    && storageDevice.getDevice().equals(
                             runningSystemSourceDeviceName)) {
+
                 DLCopySwingGUI.showCard(
                         snapshotsPanel, "snapshotManagementPanel");
-                createSnapshotButton.setEnabled(
-                        Files.exists(Path.of("/snapshots")));
+
+                Partition dataPartition = storageDevice.getDataPartition();
+
+                try {
+                    if (currentSnapshotsDir == null) {
+                        if ((!dataPartition.isMounted())
+                                && dataPartition.getIdType().equals("btrfs")) {
+                            // mount data partition to be able to manage its
+                            // snapshots
+                            currentSnapshotsDir = dataPartition.mount(
+                                    "subvol=snapshots").getMountPath();
+                            createSnapshotButton.setEnabled(false);
+                        } else {
+                            currentSnapshotsDir = defaultSnapshotsDir;
+                            createSnapshotButton.setEnabled(Files.exists(
+                                    Path.of(currentSnapshotsDir)));
+                        }
+                    }
+
+                } catch (DBusException | IOException ex) {
+                    LOGGER.log(Level.WARNING, "", ex);
+                }
+
                 if (snapshotTimer == null) {
                     // start updating the list of snapshots
                     snapshotTimer = new Timer(1000,
                             new SnapshotsUpdateActionListener(
-                                    snaphotsList, snapshotsListModel));
+                                    new File(currentSnapshotsDir), snaphotsList,
+                                    snapshotsListModel));
                     snapshotTimer.setInitialDelay(0);
                     snapshotTimer.start();
                 }
@@ -1526,8 +1555,9 @@ public class ResetterPanels
     private void deleteSnapshotButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteSnapshotButtonActionPerformed
         ProcessExecutor processExecutor = new ProcessExecutor(true);
         for (String snapshot : snaphotsList.getSelectedValuesList()) {
-            processExecutor.executeProcess(true, true,
-                    "btrfs", "subvolume", "delete", "/snapshots/" + snapshot);
+            Path snapshotPath = Paths.get(currentSnapshotsDir, snapshot);
+            processExecutor.executeProcess(true, true, "btrfs", "subvolume",
+                    "delete", snapshotPath.toString());
         }
     }//GEN-LAST:event_deleteSnapshotButtonActionPerformed
 
