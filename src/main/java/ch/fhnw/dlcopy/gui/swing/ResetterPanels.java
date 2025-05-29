@@ -12,7 +12,6 @@ import ch.fhnw.dlcopy.gui.swing.preferences.ResetRestorePreferences;
 import ch.fhnw.dlcopy.gui.swing.preferences.ResetSelectionPreferences;
 import ch.fhnw.filecopier.FileCopier;
 import ch.fhnw.util.LernstickFileTools;
-import ch.fhnw.util.MountInfo;
 import ch.fhnw.util.Partition;
 import ch.fhnw.util.ProcessExecutor;
 import ch.fhnw.util.StorageDevice;
