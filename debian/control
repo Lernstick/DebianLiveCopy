@@ -47,7 +47,7 @@ Depends:
  libmatthew-debug-java, 
  libunixsocket-java, 
  parted, 
- policykit-1, 
+ pkexec,
  exfatprogs, 
  fatattr, 
  isolinux [amd64], 
