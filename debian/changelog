@@ -1,3 +1,9 @@
+dlcopy (202508222258-1) lernstick-13; urgency=medium
+
+  * [fa2ec4] no longer set the "lba" flag (no longer supported by parted)
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 22 Aug 2025 22:58:35 +0200
+
 dlcopy (202508221458-1) lernstick-13; urgency=medium
 
   * [dc7fa1] updated dependency from policykit-1 to pkexec
