@@ -1,3 +1,9 @@
+dlcopy (202508221458-1) lernstick-13; urgency=medium
+
+  * [dc7fa1] updated dependency from policykit-1 to pkexec
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 22 Aug 2025 14:58:51 +0200
+
 dlcopy (202505291851-1) lernstick-12; urgency=medium
 
   * [e8f8b7] removed unused import
