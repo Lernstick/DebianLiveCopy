@@ -1,3 +1,10 @@
+dlcopy (202601161430-1) lernstick-13; urgency=medium
+
+  * [ff6ae1] updated path to ressource bundles
+  * [b75085] show interactive overwrite warning for all internal storage devices
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 16 Jan 2026 14:30:10 +0100
+
 dlcopy (202508222258-1) lernstick-13; urgency=medium
 
   * [fa2ec4] no longer set the "lba" flag (no longer supported by parted)
