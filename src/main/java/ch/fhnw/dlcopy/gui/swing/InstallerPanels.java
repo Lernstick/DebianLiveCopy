@@ -272,13 +272,13 @@ public class InstallerPanels extends JPanel implements DocumentListener {
     public boolean checkSelection(boolean interactive)
             throws IOException, DBusException {
 
-        // check all selected target USB storage devices
-        boolean hardDiskSelected = false;
+        // check all selected target storage devices
+        boolean systemInternalSelected = false;
 
         for (StorageDevice storageDevice : getSelectedDevices()) {
 
-            if (storageDevice.getType() == StorageDevice.Type.HardDrive) {
-                hardDiskSelected = true;
+            if (storageDevice.isSystemInternal()) {
+                systemInternalSelected = true;
             }
 
             PartitionSizes partitionSizes = DLCopy.getInstallPartitionSizes(
@@ -321,11 +321,13 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         }
 
         // show big fat warning dialog
-        if (hardDiskSelected) {
+        if (systemInternalSelected) {
 
-            // show even bigger and fatter dialog when a hard drive was selected
-            String expectedInput = STRINGS.getString("Harddisk_Warning_Input");
-            String message = STRINGS.getString("Harddisk_Warning");
+            // show even bigger and fatter dialog when a system internal storage
+            // device was selected
+            String expectedInput = STRINGS.getString(
+                    "System_Internal_Warning_Input");
+            String message = STRINGS.getString("System_Internal_Warning");
             message = MessageFormat.format(message, expectedInput);
 
             for (boolean correctAnswer = false; !correctAnswer;) {
