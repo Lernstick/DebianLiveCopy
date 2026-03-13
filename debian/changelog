@@ -1,3 +1,10 @@
+dlcopy (202603131711-1) lernstick-13; urgency=medium
+
+  [ Jörg Berkel ]
+  * [fe187a] EFI-copy: fixed missing bat, correct readmes/sha256sum and added license file
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Fri, 13 Mar 2026 17:11:30 +0100
+
 dlcopy (202601161430-1) lernstick-13; urgency=medium
 
   * [ff6ae1] updated path to ressource bundles
