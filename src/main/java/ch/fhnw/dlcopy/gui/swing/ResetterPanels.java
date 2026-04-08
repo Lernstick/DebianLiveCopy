@@ -1579,7 +1579,12 @@ public class ResetterPanels
         try {
             // mount administrative Btrfs root (subvol "/")
             Partition dataPartition = runningSystemSource.getDataPartition();
-            String device = dataPartition.getFullDeviceAndNumber();
+
+            String device = dataPartition.isLuksEncrypted()
+                    ? "/dev/mapper/" + dataPartition.getLUKSMappingName()
+                    : dataPartition.getFullDeviceAndNumber();
+            LOGGER.log(Level.FINE, "dataPartition device: {0}", device);
+
             Path tempDir = Files.createTempDirectory("dlcopy");
             ProcessExecutor processExecutor = new ProcessExecutor(true);
             processExecutor.executeProcess(true, true, "mount",
