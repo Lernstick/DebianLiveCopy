@@ -1,3 +1,10 @@
+dlcopy (202604081147-1) lernstick-13; urgency=medium
+
+  * [aa01b1] code formatting
+  * [8093ad] support booting into snapshots on LUKS partitions
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Wed, 08 Apr 2026 11:47:12 +0200
+
 dlcopy (202603131711-1) lernstick-13; urgency=medium
 
   [ Jörg Berkel ]
