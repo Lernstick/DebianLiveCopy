@@ -1,3 +1,10 @@
+dlcopy (202608202053-1) lernstick-13; urgency=medium
+
+  * [bcd171] fixed password handling
+  * [9f651f] always add a LUKS layer below the data partition
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Thu, 20 Aug 2026 20:53:21 +0200
+
 dlcopy (202604081147-1) lernstick-13; urgency=medium
 
   * [aa01b1] code formatting
