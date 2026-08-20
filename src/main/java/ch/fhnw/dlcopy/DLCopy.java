@@ -113,6 +113,7 @@ public class DLCopy {
             = new ProcessExecutor();
     private static final long MINIMUM_PARTITION_SIZE = 200 * MEGA;
     private static final long MINIMUM_FREE_MEMORY = 300 * MEGA;
+    private static final String DEFAULT_LUKS_PASSWORD = "live";
     private static DBusConnection dbusSystemConnection;
 
     static {
@@ -183,10 +184,11 @@ public class DLCopy {
         }
     }
 
-   /**
-    * returns the current architecture
-    * @return the architecture the program is currently running on
-    */
+    /**
+     * returns the current architecture
+     *
+     * @return the architecture the program is currently running on
+     */
     private static String detectArchitecture() {
         return System.getProperty("os.arch");
     }
@@ -460,13 +462,12 @@ public class DLCopy {
         copyPersistence(source, installerOrUpgrader,
                 destinationDataPartition, dlCopyGUI);
 
-
         if (!DLCopy.ARCHITECTURE.equals("aarch64")) {
             // make storage device bootable
             installerOrUpgrader.showWritingBootSector();
             makeBootable(source, device, destinationBootPartition);
         }
-        
+
         if (!umount(destinationBootPartition, dlCopyGUI)) {
             String errorMessage = "could not umount destination boot partition";
             throw new IOException(errorMessage);
@@ -633,49 +634,57 @@ public class DLCopy {
             umount(device, dlCopyGUI);
         }
 
-        String mapperDevice = null;
+        Partition persistencePartition
+                = Partition.getPartitionFromDeviceAndNumber(
+                        device.substring(5));
+
+        if (randomFillDataPartition) {
+
+            long persistenceSize = persistencePartition.getSize();
+
+            LOGGER.info("filling data partition with random data...");
+            try (FileChannel source = FileChannel.open(
+                    Paths.get("/dev/urandom"), StandardOpenOption.READ);
+                    FileChannel destination = FileChannel.open(
+                            Paths.get(device), StandardOpenOption.WRITE)) {
+                ByteBuffer byteBuffer = ByteBuffer.allocateDirect(MEGA);
+                long written = 0;
+                while (true) {
+                    byteBuffer.clear();
+                    source.read(byteBuffer);
+                    byteBuffer.flip();
+                    written += destination.write(byteBuffer);
+                    dlCopyGUI.showInstallOverwritingDataPartitionWithRandomData(
+                            written, persistenceSize);
+                }
+            } catch (IOException e) {
+                // this exception is thrown when the filling process is done
+                // just ignore it...
+                LOGGER.log(Level.INFO, "", e);
+            }
+            dlCopyGUI.showInstallCreatingFileSystems();
+        }
+
+        String mapperDevice;
         if (personalDataPartitionEncryption) {
 
-            Partition persistencePartition
-                    = Partition.getPartitionFromDeviceAndNumber(
-                            device.substring(5));
-
-            if (randomFillDataPartition) {
-
-                long persistenceSize = persistencePartition.getSize();
-
-                LOGGER.info("filling data partition with random data...");
-                try (FileChannel source = FileChannel.open(
-                        Paths.get("/dev/urandom"), StandardOpenOption.READ); FileChannel destination = FileChannel.open(
-                        Paths.get(device), StandardOpenOption.WRITE)) {
-                    ByteBuffer byteBuffer = ByteBuffer.allocateDirect(MEGA);
-                    long written = 0;
-                    while (true) {
-                        byteBuffer.clear();
-                        source.read(byteBuffer);
-                        byteBuffer.flip();
-                        written += destination.write(byteBuffer);
-                        dlCopyGUI.showInstallOverwritingDataPartitionWithRandomData(
-                                written, persistenceSize);
-                    }
-                } catch (IOException e) {
-                    // this exception is thrown when the filling process is done
-                    // just ignore it...
-                    LOGGER.log(Level.INFO, "", e);
-                }
-                dlCopyGUI.showInstallCreatingFileSystems();
-            }
-
             persistencePartition.luksFormat(personalEncryptionPassword);
-
-            mapperDevice
-                    = persistencePartition.luksOpen(personalEncryptionPassword);
 
             if (secondaryDataPartitionEncryption) {
                 persistencePartition.addSecondaryLuksPassword(
                         personalEncryptionPassword,
                         secondaryEncryptionPassword);
             }
+            
+            mapperDevice = persistencePartition.luksOpen(
+                    personalEncryptionPassword);
+
+        } else {
+
+            persistencePartition.luksFormat(DEFAULT_LUKS_PASSWORD);
+
+            mapperDevice = persistencePartition.luksOpen(
+                    DEFAULT_LUKS_PASSWORD);
         }
 
         // The force flag of mkfs.btrfs is "-f" but for mkfs.ext{2..4} it is
@@ -690,10 +699,10 @@ public class DLCopy {
         // Proceed anyway? (y,n)
         // ------------
         // To make a long story short, this is the reason we have to use the
-        // force flag "-F" here.
+        // force flag here.
         int exitValue = PROCESS_EXECUTOR.executeProcess("/sbin/mkfs."
                 + fileSystem, forceFlag, "-L", Partition.PERSISTENCE_LABEL,
-                personalDataPartitionEncryption ? mapperDevice : device);
+                mapperDevice);
         if (exitValue != 0) {
             LOGGER.severe(PROCESS_EXECUTOR.getOutput());
             String errorMessage = STRINGS.getString(
@@ -702,7 +711,7 @@ public class DLCopy {
             throw new IOException(errorMessage);
         }
 
-        // Here have to trigger a rescan of the partition table information.
+        // Here we have to trigger a rescan of the partition table information.
         // Otherwise udisks sometimes just doesn't know about the new partitions
         // and we will later get exceptions similar to this one:
         // org.freedesktop.dbus.exceptions.DBusExecutionException:
@@ -723,7 +732,7 @@ public class DLCopy {
         if (fileSystem.startsWith("ext")) {
             exitValue = PROCESS_EXECUTOR.executeProcess(
                     "/sbin/tune2fs", "-m", "0", "-c", "0", "-i", "0",
-                    personalDataPartitionEncryption ? mapperDevice : device);
+                    mapperDevice);
             if (exitValue != 0) {
                 LOGGER.severe(PROCESS_EXECUTOR.getOutput());
                 String errorMessage = STRINGS.getString(
@@ -733,7 +742,7 @@ public class DLCopy {
             }
         }
 
-        Partition persistencePartition
+        persistencePartition
                 = Partition.getPartitionFromDeviceAndNumber(
                         device.substring(5));
         String mountPath = persistencePartition.mount().getMountPath();
