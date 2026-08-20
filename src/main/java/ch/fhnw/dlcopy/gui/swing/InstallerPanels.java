@@ -758,7 +758,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
             setISOInstallationSourcePath(isoSource);
         }
         // ... but this will be corrected in the following lines.
-        
+
         if (isoSelected) {
             isoSourceRadioButton.setSelected(true);
         } else {
@@ -1720,7 +1720,8 @@ public class InstallerPanels extends JPanel implements DocumentListener {
     }//GEN-LAST:event_secondaryPasswordToggleButtonActionPerformed
 
     private void secondaryPasswordCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_secondaryPasswordCheckBoxItemStateChanged
-        boolean enabled = secondaryPasswordCheckBox.isSelected();
+        boolean enabled = personalPasswordCheckBox.isSelected()
+                && secondaryPasswordCheckBox.isSelected();
         secondaryPasswordField.setEnabled(enabled);
         secondaryPasswordToggleButton.setEnabled(enabled);
     }//GEN-LAST:event_secondaryPasswordCheckBoxItemStateChanged
@@ -1732,7 +1733,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
     private boolean checkNonEmptyPassword(
             JCheckBox passwordCheckBox, JPasswordField passwordField) {
 
-        if (passwordCheckBox.isSelected()) {
+        if (passwordCheckBox.isSelected() && passwordCheckBox.isEnabled()) {
 
             char[] password = passwordField.getPassword();
 
