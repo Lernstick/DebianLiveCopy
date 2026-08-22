@@ -113,7 +113,6 @@ public class DLCopy {
             = new ProcessExecutor();
     private static final long MINIMUM_PARTITION_SIZE = 200 * MEGA;
     private static final long MINIMUM_FREE_MEMORY = 300 * MEGA;
-    private static final String DEFAULT_LUKS_PASSWORD = "live";
     private static DBusConnection dbusSystemConnection;
 
     static {
@@ -681,10 +680,10 @@ public class DLCopy {
 
         } else {
 
-            persistencePartition.luksFormat(DEFAULT_LUKS_PASSWORD);
+            persistencePartition.luksFormat(Partition.DEFAULT_LUKS_PASSWORD);
 
             mapperDevice = persistencePartition.luksOpen(
-                    DEFAULT_LUKS_PASSWORD);
+                    Partition.DEFAULT_LUKS_PASSWORD);
         }
 
         // The force flag of mkfs.btrfs is "-f" but for mkfs.ext{2..4} it is
