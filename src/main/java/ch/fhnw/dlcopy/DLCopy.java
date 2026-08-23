@@ -262,12 +262,14 @@ public class DLCopy {
      * @param exchangePartitionLabel the label of the exchange partition
      * @param installerOrUpgrader the Installer or Upgrader that is calling this
      * method
-     * @param personalDataPartitionEncryption if the persistence partition
-     * should be encrypted with a personal password
-     * @param personalEncryptionPassword the personal encryption password
-     * @param secondaryDataPartitionEncryption if the persistence partition
-     * should be encrypted with a secondary password
-     * @param secondaryEncryptionPassword the secondary encryption password
+     * @param personalPasswordSet if the persistence partition should be
+     * encrypted with a personal password
+     * @param personalPassword the personal encryption password
+     * @param secondaryPasswordSet if the persistence partition should be
+     * encrypted with a secondary password
+     * @param secondaryPassword the secondary encryption password
+     * @param duressPasswordSet if a duress password is set
+     * @param duressPassword the duress password
      * @param randomFillDataPartition if the data partition should be filled
      * with random data before formatting
      * @param checkCopies if copies should be checked for errors
@@ -282,12 +284,11 @@ public class DLCopy {
             FileCopier fileCopier, StorageDevice storageDevice,
             String exchangePartitionLabel,
             InstallerOrUpgrader installerOrUpgrader,
-            boolean personalDataPartitionEncryption,
-            String personalEncryptionPassword,
-            boolean secondaryDataPartitionEncryption,
-            String secondaryEncryptionPassword, boolean randomFillDataPartition,
-            boolean checkCopies, DLCopyGUI dlCopyGUI)
-            throws InterruptedException, IOException,
+            boolean personalPasswordSet, String personalPassword,
+            boolean secondaryPasswordSet, String secondaryPassword,
+            boolean duressPasswordSet, String duressPassword,
+            boolean randomFillDataPartition, boolean checkCopies,
+            DLCopyGUI dlCopyGUI) throws InterruptedException, IOException,
             DBusException, NoSuchAlgorithmException {
 
         // determine size and state
@@ -355,11 +356,10 @@ public class DLCopy {
             createPartitions(storageDevice, partitionSizes, storageDeviceSize,
                     partitionState, destinationExchangeDevice,
                     exchangePartitionLabel, destinationDataDevice,
-                    personalDataPartitionEncryption, personalEncryptionPassword,
-                    secondaryDataPartitionEncryption,
-                    secondaryEncryptionPassword, randomFillDataPartition,
-                    destinationEfiDevice, destinationSystemDevice,
-                    installerOrUpgrader, dlCopyGUI);
+                    personalPasswordSet, personalPassword, secondaryPasswordSet,
+                    secondaryPassword, duressPasswordSet, duressPassword,
+                    randomFillDataPartition, destinationEfiDevice,
+                    destinationSystemDevice, installerOrUpgrader, dlCopyGUI);
         } catch (IOException iOException) {
             // On some Corsair Flash Voyager GT drives the first sfdisk try
             // failes with the following output:
@@ -408,11 +408,11 @@ public class DLCopy {
             createPartitions(storageDevice, partitionSizes, storageDeviceSize,
                     partitionState, destinationExchangeDevice,
                     exchangePartitionLabel, destinationDataDevice,
-                    personalDataPartitionEncryption, personalEncryptionPassword,
-                    secondaryDataPartitionEncryption,
-                    secondaryEncryptionPassword, randomFillDataPartition,
-                    destinationEfiDevice, destinationSystemDevice,
-                    installerOrUpgrader, dlCopyGUI);
+                    personalPasswordSet, personalPassword,
+                    secondaryPasswordSet, secondaryPassword,
+                    duressPasswordSet, duressPassword,
+                    randomFillDataPartition, destinationEfiDevice,
+                    destinationSystemDevice, installerOrUpgrader, dlCopyGUI);
         }
 
         // Here have to trigger a rescan of the device partitions. Otherwise
@@ -607,12 +607,14 @@ public class DLCopy {
      * on the partition file system
      *
      * @param device the given device (e.g. "/dev/sdb1")
-     * @param personalDataPartitionEncryption if the persistence partition
-     * should be encrypted with a personal password
-     * @param personalEncryptionPassword the personal encryption password
-     * @param secondaryDataPartitionEncryption if the persistence partition
-     * should be encrypted with a secondary password
-     * @param secondaryEncryptionPassword the secondary encryption password
+     * @param personalPasswordSet if the persistence partition should be
+     * encrypted with a personal password
+     * @param personalPassword the personal encryption password
+     * @param secondaryPasswordSet if the persistence partition should be
+     * encrypted with a secondary password
+     * @param secondaryPassword the secondary encryption password
+     * @param duressPasswordSet if a duress password is set
+     * @param duressPassword the duress password
      * @param randomFillDataPartition if the data partition should be filled
      * with random data before formatting
      * @param fileSystem the file system to use
@@ -621,11 +623,11 @@ public class DLCopy {
      * @throws IOException if an IOException occurs
      */
     public static void formatPersistencePartition(String device,
-            boolean personalDataPartitionEncryption,
-            String personalEncryptionPassword,
-            boolean secondaryDataPartitionEncryption,
-            String secondaryEncryptionPassword, boolean randomFillDataPartition,
-            String fileSystem, DLCopyGUI dlCopyGUI)
+            boolean personalPasswordSet, String personalPassword,
+            boolean secondaryPasswordSet, String secondaryPassword,
+            boolean duressPasswordSet, String duressPassword,
+            boolean randomFillDataPartition, String fileSystem,
+            DLCopyGUI dlCopyGUI)
             throws DBusException, IOException {
 
         // make sure that the partition is unmounted
@@ -664,27 +666,22 @@ public class DLCopy {
             dlCopyGUI.showInstallCreatingFileSystems();
         }
 
-        String mapperDevice;
-        if (personalDataPartitionEncryption) {
+        String password = personalPasswordSet
+                ? personalPassword
+                : Partition.DEFAULT_LUKS_PASSWORD;
 
-            persistencePartition.luksFormat(personalEncryptionPassword);
+        persistencePartition.luksFormat(password);
 
-            if (secondaryDataPartitionEncryption) {
-                persistencePartition.addSecondaryLuksPassword(
-                        personalEncryptionPassword,
-                        secondaryEncryptionPassword);
-            }
-            
-            mapperDevice = persistencePartition.luksOpen(
-                    personalEncryptionPassword);
-
-        } else {
-
-            persistencePartition.luksFormat(Partition.DEFAULT_LUKS_PASSWORD);
-
-            mapperDevice = persistencePartition.luksOpen(
-                    Partition.DEFAULT_LUKS_PASSWORD);
+        if (secondaryPasswordSet) {
+            persistencePartition.addSecondaryLuksPassword(
+                    password, secondaryPassword);
         }
+        if (duressPasswordSet) {
+            persistencePartition.addDuressLuksPassword(
+                    password, duressPassword);
+        }
+
+        String mapperDevice = persistencePartition.luksOpen(password);
 
         // The force flag of mkfs.btrfs is "-f" but for mkfs.ext{2..4} it is
         // "-F". Consistency? Please?!
@@ -1274,13 +1271,13 @@ public class DLCopy {
     private static void createPartitions(StorageDevice storageDevice,
             PartitionSizes partitionSizes, long storageDeviceSize,
             final PartitionState partitionState, String exchangeDevice,
-            String exchangePartitionLabel,
-            String persistenceDevice, boolean personalDataPartitionEncryption,
-            String personalEncryptionPassword,
-            boolean secondaryDataPartitionEncryption,
-            String secondaryEncryptionPassword, boolean randomFillDataPartition,
-            String efiDevice, String systemDevice,
-            InstallerOrUpgrader installerOrUpgrader, DLCopyGUI dlCopyGUI)
+            String exchangePartitionLabel, String persistenceDevice,
+            boolean personalPasswordSet, String personalPassword,
+            boolean secondaryPasswordSet, String secondaryPassword,
+            boolean duressPasswordSet, String duressPassword,
+            boolean randomFillDataPartition, String efiDevice,
+            String systemDevice, InstallerOrUpgrader installerOrUpgrader,
+            DLCopyGUI dlCopyGUI)
             throws InterruptedException, IOException, DBusException {
 
         // update GUI
@@ -1589,10 +1586,10 @@ public class DLCopy {
 
             case PERSISTENCE:
                 formatPersistencePartition(persistenceDevice,
-                        personalDataPartitionEncryption,
-                        personalEncryptionPassword,
-                        secondaryDataPartitionEncryption,
-                        secondaryEncryptionPassword, randomFillDataPartition,
+                        personalPasswordSet, personalPassword,
+                        secondaryPasswordSet, secondaryPassword,
+                        duressPasswordSet, duressPassword,
+                        randomFillDataPartition,
                         installerOrUpgrader.getDataPartitionFileSystem(),
                         dlCopyGUI);
                 formatEfiAndSystemPartition(efiDevice, systemDevice);
@@ -1608,10 +1605,9 @@ public class DLCopy {
                 }
                 if (persistenceDevice != null) {
                     formatPersistencePartition(persistenceDevice,
-                            personalDataPartitionEncryption,
-                            personalEncryptionPassword,
-                            secondaryDataPartitionEncryption,
-                            secondaryEncryptionPassword,
+                            personalPasswordSet, personalPassword,
+                            secondaryPasswordSet, secondaryPassword,
+                            duressPasswordSet, duressPassword,
                             randomFillDataPartition,
                             installerOrUpgrader.getDataPartitionFileSystem(),
                             dlCopyGUI);

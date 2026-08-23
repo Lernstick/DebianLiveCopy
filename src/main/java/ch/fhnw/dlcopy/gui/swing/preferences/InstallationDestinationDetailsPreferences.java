@@ -20,8 +20,9 @@ public class InstallationDestinationDetailsPreferences
     private final static String AUTO_NUMBER_INCREMENT = "autoNumberIncrement";
     private final static String AUTO_NUMBER_MIN_DIGITS = "autoNumberMinDigits";
     private final static String EXCHANGE_PARTITION_FILESYSTEM = "exchangePartitionFileSystem";
-    private final static String PERSONAL_ENCRYPTION = "personalEncryption";
-    private final static String SECONDARY_ENCRYPTION = "secondaryEncryption";
+    private final static String SET_PERSONAL_PASSWORD = "setPersonalPassword";
+    private final static String SET_SECONDARY_PASSWORD = "setSecondaryPassword";
+    private final static String SET_DURESS_PASSWORD = "setDuressPassword";
     private final static String RANDOM_OVERWRITE = "randomOverwrite";
     private final static String DATA_PARTITION_FILESYSTEM = "dataPartitionFileSystem";
     private final static String CHECK_COPIES = "checkCopies";
@@ -32,8 +33,9 @@ public class InstallationDestinationDetailsPreferences
     private final JSpinner autoNumberStartSpinner;
     private final JSpinner autoNumberIncrementSpinner;
     private final JSpinner autoNumberMinDigitsSpinner;
-    private final JCheckBox personalEncryptionCheckBox;
-    private final JCheckBox secondaryEncryptionCheckBox;
+    private final JCheckBox personalPasswordCheckBox;
+    private final JCheckBox secondaryPasswordCheckBox;
+    private final JCheckBox duressPasswordCheckBox;
     private final JCheckBox overwriteWithRandomDataCheckBox;
     private final JComboBox dataPartitionFileSystemComboBox;
     private final JCheckBox checkCopiesCheckBox;
@@ -45,8 +47,9 @@ public class InstallationDestinationDetailsPreferences
             JSpinner autoNumberStartSpinner,
             JSpinner autoNumberIncrementSpinner,
             JSpinner autoNumberMinDigitsSpinner,
-            JCheckBox personalEncryptionCheckBox,
-            JCheckBox secondaryEncryptionCheckBox,
+            JCheckBox personalPasswordCheckBox,
+            JCheckBox secondaryPasswordCheckBox,
+            JCheckBox duressPasswordCheckBox,
             JCheckBox overwriteWithRandomDataCheckBox,
             JComboBox dataPartitionFileSystemComboBox,
             JCheckBox checkCopiesCheckBox) {
@@ -57,8 +60,9 @@ public class InstallationDestinationDetailsPreferences
         this.autoNumberStartSpinner = autoNumberStartSpinner;
         this.autoNumberIncrementSpinner = autoNumberIncrementSpinner;
         this.autoNumberMinDigitsSpinner = autoNumberMinDigitsSpinner;
-        this.personalEncryptionCheckBox = personalEncryptionCheckBox;
-        this.secondaryEncryptionCheckBox = secondaryEncryptionCheckBox;
+        this.personalPasswordCheckBox = personalPasswordCheckBox;
+        this.secondaryPasswordCheckBox = secondaryPasswordCheckBox;
+        this.duressPasswordCheckBox = duressPasswordCheckBox;
         this.overwriteWithRandomDataCheckBox = overwriteWithRandomDataCheckBox;
         this.dataPartitionFileSystemComboBox = dataPartitionFileSystemComboBox;
         this.checkCopiesCheckBox = checkCopiesCheckBox;
@@ -79,10 +83,12 @@ public class InstallationDestinationDetailsPreferences
                 preferences.getInt(AUTO_NUMBER_INCREMENT, 1));
         autoNumberMinDigitsSpinner.setValue(
                 preferences.getInt(AUTO_NUMBER_MIN_DIGITS, 1));
-        personalEncryptionCheckBox.setSelected(
-                preferences.getBoolean(PERSONAL_ENCRYPTION, false));
-        secondaryEncryptionCheckBox.setSelected(
-                preferences.getBoolean(SECONDARY_ENCRYPTION, false));
+        personalPasswordCheckBox.setSelected(
+                preferences.getBoolean(SET_PERSONAL_PASSWORD, false));
+        secondaryPasswordCheckBox.setSelected(
+                preferences.getBoolean(SET_SECONDARY_PASSWORD, false));
+        duressPasswordCheckBox.setSelected(
+                preferences.getBoolean(SET_DURESS_PASSWORD, false));
         overwriteWithRandomDataCheckBox.setSelected(
                 preferences.getBoolean(RANDOM_OVERWRITE, false));
         dataPartitionFileSystemComboBox.setSelectedItem(
@@ -105,10 +111,12 @@ public class InstallationDestinationDetailsPreferences
                 ((Number) autoNumberIncrementSpinner.getValue()).intValue());
         preferences.putInt(AUTO_NUMBER_MIN_DIGITS,
                 ((Number) autoNumberMinDigitsSpinner.getValue()).intValue());
-        preferences.putBoolean(PERSONAL_ENCRYPTION, 
-                personalEncryptionCheckBox.isSelected());
-        preferences.putBoolean(SECONDARY_ENCRYPTION, 
-                secondaryEncryptionCheckBox.isSelected());
+        preferences.putBoolean(SET_PERSONAL_PASSWORD, 
+                personalPasswordCheckBox.isSelected());
+        preferences.putBoolean(SET_SECONDARY_PASSWORD, 
+                secondaryPasswordCheckBox.isSelected());
+        preferences.putBoolean(SET_DURESS_PASSWORD, 
+                duressPasswordCheckBox.isSelected());
         preferences.putBoolean(RANDOM_OVERWRITE, 
                 overwriteWithRandomDataCheckBox.isSelected());
         preferences.put(DATA_PARTITION_FILESYSTEM,

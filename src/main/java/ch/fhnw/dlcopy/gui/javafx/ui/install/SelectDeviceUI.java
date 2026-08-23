@@ -35,7 +35,6 @@ import java.util.logging.Logger;
 import javafx.application.Platform;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.LongProperty;
-import javafx.beans.property.Property;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.beans.property.SimpleLongProperty;
 import javafx.beans.value.ObservableValue;
@@ -71,7 +70,7 @@ public class SelectDeviceUI extends View {
 
     private static final Logger LOGGER = Logger.getLogger(SelectDeviceUI.class.getName());
     private static final ProcessExecutor PROCESS_EXECUTOR = new ProcessExecutor();
-    
+
     private static final long GIGA = 1073741824;
 
     private final Timer listUpdateTimer = new Timer();
@@ -87,45 +86,80 @@ public class SelectDeviceUI extends View {
     // corresponding StorageDeviceAdder
     private Lock installLock = new ReentrantLock();
 
-    @FXML private Button btnBack;
-    @FXML private Button btnDataPartitionShowPersonalPassword;
-    @FXML private Button btnDataPartitionShowSecondaryPassword;
-    @FXML private Button btnInstall;
-    @FXML private CheckBox chbCheckCopies;
-    @FXML private CheckBox chbCopyDataPartition;
-    @FXML private CheckBox chbCopyExchangePartition;
-    @FXML private CheckBox chbDataPartitionOverwrite;
-    @FXML private CheckBox chbDataPartitionPersonalPassword;
-    @FXML private CheckBox chbDataPartitionSecondaryPassword;
-    @FXML private CheckBox chbExchangePartition;
-    @FXML private CheckBox chbFirewallSettings;
-    @FXML private CheckBox chbHomeFolder;
-    @FXML private CheckBox chbNetworkSettings;
-    @FXML private CheckBox chbPrinterSettings;
-    @FXML private CheckBox chbShowHarddisk;
-    @FXML private ComboBox cmbDataPartitionFilesystem;
-    @FXML private ComboBox cmbDataPartitionMode;
-    @FXML private ComboBox cmbExchangePartitionFilesystem;
-    @FXML private GridPane gpFilesystem;
-    @FXML private HBox hbDevices;
-    @FXML private HBox hbTarget;
-    @FXML private Label lblFilesystem;
-    @FXML private Label lblRequiredDiskspace;
-    @FXML private ListView<StorageDevice> lvDevices;
-    @FXML private NumericTextField tfExchangePartitionSize;
-    @FXML private NumericTextField tfStartPattern;
-    @FXML private NumericTextField tfSteps;
-    @FXML private PasswordField pfDataPartitionPersonalPassword;
-    @FXML private PasswordField pfDataPartitionSecondaryPassword;
-    @FXML private RadioButton rdbCurrentSystem;
-    @FXML private RadioButton rdbIsoImage;
-    @FXML private Slider slExchangePartitionSize;
-    @FXML private TabPane tpInstallDetails;
-    @FXML private TextField tfExchangePartitionLabel;
-    @FXML private TextField tfISODirectory;
-    @FXML private TextField tfPrefixText;
-
-
+    @FXML
+    private Button btnBack;
+    @FXML
+    private Button btnDataPartitionShowPersonalPassword;
+    @FXML
+    private Button btnDataPartitionShowSecondaryPassword;
+    @FXML
+    private Button btnInstall;
+    @FXML
+    private CheckBox chbCheckCopies;
+    @FXML
+    private CheckBox chbCopyDataPartition;
+    @FXML
+    private CheckBox chbCopyExchangePartition;
+    @FXML
+    private CheckBox chbDataPartitionOverwrite;
+    @FXML
+    private CheckBox chbDataPartitionPersonalPassword;
+    @FXML
+    private CheckBox chbDataPartitionSecondaryPassword;
+    @FXML
+    private CheckBox chbExchangePartition;
+    @FXML
+    private CheckBox chbFirewallSettings;
+    @FXML
+    private CheckBox chbHomeFolder;
+    @FXML
+    private CheckBox chbNetworkSettings;
+    @FXML
+    private CheckBox chbPrinterSettings;
+    @FXML
+    private CheckBox chbShowHarddisk;
+    @FXML
+    private ComboBox cmbDataPartitionFilesystem;
+    @FXML
+    private ComboBox cmbDataPartitionMode;
+    @FXML
+    private ComboBox cmbExchangePartitionFilesystem;
+    @FXML
+    private GridPane gpFilesystem;
+    @FXML
+    private HBox hbDevices;
+    @FXML
+    private HBox hbTarget;
+    @FXML
+    private Label lblFilesystem;
+    @FXML
+    private Label lblRequiredDiskspace;
+    @FXML
+    private ListView<StorageDevice> lvDevices;
+    @FXML
+    private NumericTextField tfExchangePartitionSize;
+    @FXML
+    private NumericTextField tfStartPattern;
+    @FXML
+    private NumericTextField tfSteps;
+    @FXML
+    private PasswordField pfDataPartitionPersonalPassword;
+    @FXML
+    private PasswordField pfDataPartitionSecondaryPassword;
+    @FXML
+    private RadioButton rdbCurrentSystem;
+    @FXML
+    private RadioButton rdbIsoImage;
+    @FXML
+    private Slider slExchangePartitionSize;
+    @FXML
+    private TabPane tpInstallDetails;
+    @FXML
+    private TextField tfExchangePartitionLabel;
+    @FXML
+    private TextField tfISODirectory;
+    @FXML
+    private TextField tfPrefixText;
 
     public SelectDeviceUI() {
 
@@ -143,8 +177,8 @@ public class SelectDeviceUI extends View {
     }
 
     /**
-     * This function is called, when the view should be deinitalized.
-     * It has to be called manually!
+     * This function is called, when the view should be deinitalized. It has to
+     * be called manually!
      */
     @Override
     public void deinitialize() {
@@ -247,8 +281,8 @@ public class SelectDeviceUI extends View {
         lvDevices.getSelectionModel().setSelectionMode(SelectionMode.MULTIPLE);
         lvDevices.getSelectionModel().selectedItemProperty().addListener(
                 (ObservableValue<? extends StorageDevice> ov, StorageDevice old_val, StorageDevice new_val) -> {
-             selectedStds = lvDevices.getSelectionModel().getSelectedItems();
-        });
+                    selectedStds = lvDevices.getSelectionModel().getSelectedItems();
+                });
         lvDevices.setCellFactory(cell -> {
             return new DeviceCell(
                     new SimpleLongProperty(DLCopy.EFI_PARTITION_SIZE * MEGA),
@@ -259,7 +293,7 @@ public class SelectDeviceUI extends View {
         });
         btnInstall.setDisable(false);
 
-        slExchangePartitionSize.setLabelFormatter(new StringConverter<Double> () {
+        slExchangePartitionSize.setLabelFormatter(new StringConverter<Double>() {
             @Override
             public String toString(Double t) {
                 return LernstickFileTools.getDataVolumeString(Double.doubleToLongBits(t), 1);
@@ -270,7 +304,7 @@ public class SelectDeviceUI extends View {
                 throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
             }
         });
-   }
+    }
 
     @Override
     protected void setupBindings() {
@@ -290,38 +324,38 @@ public class SelectDeviceUI extends View {
     @Override
     protected void setupValueChangedListeners() {
         exchangePartitionSize.addListener((observable, oldValue, newValue) -> {
-            if (newValue.longValue() > maxCustomizablePartitionSpace.longValue()){
+            if (newValue.longValue() > maxCustomizablePartitionSpace.longValue()) {
                 exchangePartitionSize.set(maxCustomizablePartitionSpace.longValue());
-            } else if (newValue.longValue() < 0){
+            } else if (newValue.longValue() < 0) {
                 exchangePartitionSize.set(0);
             }
         });
-        
+
         exchangePartitionSize.addListener((observable, oldValue, newValue) -> {
-            if (newValue.longValue() != displayedExchangePartitionSize.multiply(GIGA).longValue()){
+            if (newValue.longValue() != displayedExchangePartitionSize.multiply(GIGA).longValue()) {
                 displayedExchangePartitionSize.set(newValue.longValue() / GIGA);
             }
         });
-        
+
         displayedExchangePartitionSize.addListener((observable, oldValue, newValue) -> {
-            if (newValue.longValue() != exchangePartitionSize.divide(GIGA).longValue()){
+            if (newValue.longValue() != exchangePartitionSize.divide(GIGA).longValue()) {
                 exchangePartitionSize.set(newValue.longValue() * GIGA);
             }
         });
-    }   
+    }
 
     @Override
-    protected void setupEventHandlers() {        
+    protected void setupEventHandlers() {
         btnInstall.setOnAction(event -> {
             try {
-                if (rdbCurrentSystem.isSelected() &&  !checkSelection(selectedStds)) {
+                if (rdbCurrentSystem.isSelected() && !checkSelection(selectedStds)) {
                     return;
                 } else if (rdbIsoImage.isSelected() && tfISODirectory.getText().isEmpty()) {
                     showError(stringBundle.getString("error.emptyIsoPath"));
                     return;
                 }
                 install(selectedStds);
-            } catch (DBusException|IOException e) {
+            } catch (DBusException | IOException e) {
                 LOGGER.log(Level.WARNING, e.getLocalizedMessage());
             }
         });
@@ -368,7 +402,7 @@ public class SelectDeviceUI extends View {
             if (hasFocus) {
                 gpFilesystem.setVisible(true);
             }
-            if (hadFocus){
+            if (hadFocus) {
                 gpFilesystem.setVisible(false);
             }
         });
@@ -398,53 +432,64 @@ public class SelectDeviceUI extends View {
         InstallControler installcontroller = InstallControler.getInstance(context);
         installcontroller.createInstallationList(selectedStds, 1, 1);
         new Installer(
-            getSelectedSource(),    // the system source
-            selectedStds,   // the list of StorageDevices to install
-            tfExchangePartitionLabel.getText(),     // the label of the exchange partition
-            cmbExchangePartitionFilesystem.getValue().toString(),    // the file system of the exchange partition
-            cmbDataPartitionFilesystem.getValue().toString(), // the file system of the data partition
-            new HashMap<String, byte[]>(),  // a global digest cache for speeding up repeated file checks
-            // Register the InstallControler as Callback-Class
-            installcontroller,    // the DLCopyGUI
-            exchangePartitionSize.intValue(),  // the size of the exchange partition
-            valChb(chbCopyExchangePartition),  // if the exchange partition should be copied
-            tfPrefixText.getText(), // the auto numbering pattern
-            getAutoNrStartVal(),  // the auto numbering start value
-            getAutoNrIncrement(),  // the auto numbering increment
-            getAutoNrDigits(),  // the minimal number of digits to use for auto numbering
-            valChb(chbDataPartitionPersonalPassword),  // if the data partition should be encrypted with a personal password
-            pfDataPartitionPersonalPassword.getText(), // the personal password for data partition encryption
-            valChb(chbDataPartitionSecondaryPassword),  // if the data partition should be encrypted with a secondary password
-            pfDataPartitionSecondaryPassword.getText(), // the secondary password for data partition encryption
-            valChb(chbDataPartitionOverwrite),  // if the data partition should be filled with random data before formatting
-            valChb(chbCopyDataPartition),  // if the data partition should be copied
-            getDataPartitionMode(),   // the mode of the data partition to set in the bootloaders config
-            null,   // the device to transfer data from or null, if no data should be transferred
-            valChb(chbExchangePartition),  // if the exchange partition should be transferred
-            valChb(chbHomeFolder),  // if the home folder should be transferred
-            valChb(chbNetworkSettings),  // if the network settings should be transferred
-            valChb(chbPrinterSettings),  // if the printer settings should be transferred
-            valChb(chbFirewallSettings),  // if the firewall settings should be transferred
-            valChb(chbCheckCopies),  // if copies should be checked for errors
-            installLock // the lock to aquire before executing in background
+                getSelectedSource(), // the system source
+                selectedStds, // the list of StorageDevices to install
+                tfExchangePartitionLabel.getText(), // the label of the exchange partition
+                cmbExchangePartitionFilesystem.getValue().toString(), // the file system of the exchange partition
+                cmbDataPartitionFilesystem.getValue().toString(), // the file system of the data partition
+                new HashMap<String, byte[]>(), // a global digest cache for speeding up repeated file checks
+                // Register the InstallControler as Callback-Class
+                installcontroller, // the DLCopyGUI
+                exchangePartitionSize.intValue(), // the size of the exchange partition
+                valChb(chbCopyExchangePartition), // if the exchange partition should be copied
+                tfPrefixText.getText(), // the auto numbering pattern
+                getAutoNrStartVal(), // the auto numbering start value
+                getAutoNrIncrement(), // the auto numbering increment
+                getAutoNrDigits(), // the minimal number of digits to use for auto numbering
+                valChb(chbDataPartitionPersonalPassword), // if the data partition should be encrypted with a personal password
+                pfDataPartitionPersonalPassword.getText(), // the personal password for data partition encryption
+                valChb(chbDataPartitionSecondaryPassword), // if the data partition should be encrypted with a secondary password
+                pfDataPartitionSecondaryPassword.getText(), // the secondary password for data partition encryption
+                false, // if a duress password is set
+                null, // the duress password
+                valChb(chbDataPartitionOverwrite), // if the data partition should be filled with random data before formatting
+                valChb(chbCopyDataPartition), // if the data partition should be copied
+                getDataPartitionMode(), // the mode of the data partition to set in the bootloaders config
+                null, // the device to transfer data from or null, if no data should be transferred
+                valChb(chbExchangePartition), // if the exchange partition should be transferred
+                valChb(chbHomeFolder), // if the home folder should be transferred
+                valChb(chbNetworkSettings), // if the network settings should be transferred
+                valChb(chbPrinterSettings), // if the printer settings should be transferred
+                valChb(chbFirewallSettings), // if the firewall settings should be transferred
+                valChb(chbCheckCopies), // if copies should be checked for errors
+                installLock // the lock to aquire before executing in background
         ).execute();
     }
 
-    public int getAutoNrStartVal(){
+    public int getAutoNrStartVal() {
         int result = 1;
-        try{result = Integer.parseInt(tfStartPattern.getText());} catch(Exception e){;}
+        try {
+            result = Integer.parseInt(tfStartPattern.getText());
+        } catch (Exception e) {;
+        }
         return result;
     }
 
-    public int getAutoNrIncrement(){
+    public int getAutoNrIncrement() {
         int result = 1;
-        try{result = Integer.parseInt(tfSteps.getText());} catch(Exception e){;}
+        try {
+            result = Integer.parseInt(tfSteps.getText());
+        } catch (Exception e) {;
+        }
         return result;
     }
 
-    public int getAutoNrDigits(){
+    public int getAutoNrDigits() {
         int count = 0, num = getAutoNrStartVal();
-        while (num != 0) { num /= 10; ++count;}
+        while (num != 0) {
+            num /= 10;
+            ++count;
+        }
         return tfStartPattern.getText().length() - count;
     }
 
@@ -490,7 +535,7 @@ public class SelectDeviceUI extends View {
     private boolean checkSelection(ObservableList<StorageDevice> devices)
             throws DBusException, IOException {
         boolean harddiskSelected = false;
-        if (devices == null || devices.size() <= 0){
+        if (devices == null || devices.size() <= 0) {
             showError(stringBundle.getString("install.error.noSelection"));
             return false;
         }
@@ -525,7 +570,7 @@ public class SelectDeviceUI extends View {
         }
 
         if (harddiskSelected) {
-            if (!showHarddiskConfirmation()){
+            if (!showHarddiskConfirmation()) {
                 return false;
             }
         }
@@ -634,7 +679,6 @@ public class SelectDeviceUI extends View {
         //lblRequiredDiskspace.setText(MessageFormat.format(
         //        stringBundle.getString("install.system_definition"),
         //        sizeString));
-
         // TODO: update all other parts of the UI
         // see ch.fhnw.dlcopy.gui.swing.InstallerPanels
     }
@@ -745,10 +789,12 @@ public class SelectDeviceUI extends View {
         alert.setHeaderText(answ);
         alert.setTitle(stringBundle.getString("global.warning"));
         alert.setContentText(MessageFormat.format(msg, answ));
-        
+
         Optional<String> result = alert.showAndWait();
-        if (!result.isPresent()){ return false;}
-        if(!alert.getEditor().getText().equals(answ)) {
+        if (!result.isPresent()) {
+            return false;
+        }
+        if (!alert.getEditor().getText().equals(answ)) {
             showError(stringBundle.getString("error.mistypedText"));
             return showHarddiskConfirmation();
         }
@@ -760,17 +806,22 @@ public class SelectDeviceUI extends View {
         return selection.getMode();
     }
 
-    private boolean isWholeNumber(String strNum){
-        if (strNum == null) {return false;}
-        try {int i = Integer.parseInt(strNum);}
-        catch (NumberFormatException nfe) {return false;}
+    private boolean isWholeNumber(String strNum) {
+        if (strNum == null) {
+            return false;
+        }
+        try {
+            int i = Integer.parseInt(strNum);
+        } catch (NumberFormatException nfe) {
+            return false;
+        }
         return true;
     }
 
     private void selectISO() {
         FileChooser chooser = new FileChooser();
         File selectedISO = chooser.showOpenDialog(
-            tfISODirectory.getScene().getWindow());
+                tfISODirectory.getScene().getWindow());
         chooser.setTitle(stringBundle.getString("export.chooseDirectory"));
         if (selectedISO != null) {
             setISOInstallationSourcePath(selectedISO.getAbsolutePath());
@@ -811,7 +862,7 @@ public class SelectDeviceUI extends View {
         }
     }
 
-    private SystemSource getSelectedSource(){
+    private SystemSource getSelectedSource() {
         if (rdbIsoImage.isSelected()) {
             return isoSystemSource;
         }

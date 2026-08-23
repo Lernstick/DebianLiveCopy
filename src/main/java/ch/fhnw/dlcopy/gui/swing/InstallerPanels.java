@@ -212,6 +212,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
                         autoNumberPatternTextField, autoNumberStartSpinner,
                         autoNumberIncrementSpinner, autoNumberMinDigitsSpinner,
                         personalPasswordCheckBox, secondaryPasswordCheckBox,
+                        duressPasswordCheckBox,
                         overwriteWithRandomDataCheckBox,
                         dataPartitionFileSystemComboBox, checkCopiesCheckBox));
 
@@ -319,6 +320,10 @@ public class InstallerPanels extends JPanel implements DocumentListener {
                 secondaryPasswordCheckBox, secondaryPasswordField)) {
             return false;
         }
+        if (!checkNonEmptyPassword(
+                duressPasswordCheckBox, duressPasswordField)) {
+            return false;
+        }
 
         // show big fat warning dialog
         if (systemInternalSelected) {
@@ -422,20 +427,28 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         return exchangePartitionSizeSlider.getValue();
     }
 
-    public boolean isPersonalEncryptionSelected() {
+    public boolean isPersonalPasswordSelected() {
         return personalPasswordCheckBox.isSelected();
     }
 
-    public boolean isSecondaryEncryptionSelected() {
+    public boolean isSecondaryPasswordSelected() {
         return secondaryPasswordCheckBox.isSelected();
     }
 
-    public String getPersonalEncryptionPassword() {
+    public boolean isDuressPasswordSelected() {
+        return duressPasswordCheckBox.isSelected();
+    }
+
+    public String getPersonalPassword() {
         return String.valueOf(personalPasswordField.getPassword());
     }
 
-    public String getSecondaryEncryptionPassword() {
+    public String getSecondaryPassword() {
         return String.valueOf(secondaryPasswordField.getPassword());
+    }
+
+    public String getDuressPassword() {
+        return String.valueOf(duressPasswordField.getPassword());
     }
 
     public boolean isOverwriteDataPartitionWithRandomDataSelected() {
@@ -843,6 +856,9 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         secondaryPasswordCheckBox = new javax.swing.JCheckBox();
         secondaryPasswordField = new javax.swing.JPasswordField();
         secondaryPasswordToggleButton = new javax.swing.JToggleButton();
+        duressPasswordCheckBox = new javax.swing.JCheckBox();
+        duressPasswordField = new javax.swing.JPasswordField();
+        duressPasswordToggleButton = new javax.swing.JToggleButton();
         overwriteWithRandomDataCheckBox = new javax.swing.JCheckBox();
         fileSystemPanel = new javax.swing.JPanel();
         dataPartitionFileSystemComboBox = new javax.swing.JComboBox<>();
@@ -1328,7 +1344,6 @@ public class InstallerPanels extends JPanel implements DocumentListener {
 
         secondaryPasswordCheckBox.setText(bundle.getString("InstallerPanels.secondaryPasswordCheckBox.text")); // NOI18N
         secondaryPasswordCheckBox.setToolTipText(bundle.getString("SecondaryPassword_ToolTipText")); // NOI18N
-        secondaryPasswordCheckBox.setEnabled(false);
         secondaryPasswordCheckBox.addItemListener(new java.awt.event.ItemListener() {
             public void itemStateChanged(java.awt.event.ItemEvent evt) {
                 secondaryPasswordCheckBoxItemStateChanged(evt);
@@ -1362,9 +1377,43 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
         encryptionPanel.add(secondaryPasswordToggleButton, gridBagConstraints);
 
+        duressPasswordCheckBox.setText(bundle.getString("InstallerPanels.duressPasswordCheckBox.text")); // NOI18N
+        duressPasswordCheckBox.setToolTipText(bundle.getString("InstallerPanels.duressPasswordCheckBox.toolTipText")); // NOI18N
+        duressPasswordCheckBox.addItemListener(new java.awt.event.ItemListener() {
+            public void itemStateChanged(java.awt.event.ItemEvent evt) {
+                duressPasswordCheckBoxItemStateChanged(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
+        encryptionPanel.add(duressPasswordCheckBox, gridBagConstraints);
+
+        duressPasswordField.setToolTipText(bundle.getString("InstallerPanels.duressPasswordField.toolTipText")); // NOI18N
+        duressPasswordField.setEnabled(false);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.WEST;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 0);
+        encryptionPanel.add(duressPasswordField, gridBagConstraints);
+
+        duressPasswordToggleButton.setIcon(new javax.swing.ImageIcon(getClass().getResource("/icons/16x16/password-show-on.png"))); // NOI18N
+        duressPasswordToggleButton.setToolTipText(bundle.getString("InstallerPanels.duressPasswordToggleButton.toolTipText")); // NOI18N
+        duressPasswordToggleButton.setEnabled(false);
+        duressPasswordToggleButton.setMargin(new java.awt.Insets(2, 2, 2, 2));
+        duressPasswordToggleButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                duressPasswordToggleButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 0, 5);
+        encryptionPanel.add(duressPasswordToggleButton, gridBagConstraints);
+
         overwriteWithRandomDataCheckBox.setText(bundle.getString("InstallerPanels.overwriteWithRandomDataCheckBox.text")); // NOI18N
         overwriteWithRandomDataCheckBox.setToolTipText(bundle.getString("RandomFill_ToolTipText")); // NOI18N
-        overwriteWithRandomDataCheckBox.setEnabled(false);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.anchor = java.awt.GridBagConstraints.LINE_START;
@@ -1707,11 +1756,6 @@ public class InstallerPanels extends JPanel implements DocumentListener {
         boolean enabled = personalPasswordCheckBox.isSelected();
         personalPasswordField.setEnabled(enabled);
         personalPasswordToggleButton.setEnabled(enabled);
-        secondaryPasswordCheckBox.setEnabled(enabled);
-        boolean bothEnabled = enabled && secondaryPasswordCheckBox.isSelected();
-        secondaryPasswordField.setEnabled(bothEnabled);
-        secondaryPasswordToggleButton.setEnabled(bothEnabled);
-        overwriteWithRandomDataCheckBox.setEnabled(enabled);
     }//GEN-LAST:event_personalPasswordCheckBoxItemStateChanged
 
     private void secondaryPasswordToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_secondaryPasswordToggleButtonActionPerformed
@@ -1720,8 +1764,7 @@ public class InstallerPanels extends JPanel implements DocumentListener {
     }//GEN-LAST:event_secondaryPasswordToggleButtonActionPerformed
 
     private void secondaryPasswordCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_secondaryPasswordCheckBoxItemStateChanged
-        boolean enabled = personalPasswordCheckBox.isSelected()
-                && secondaryPasswordCheckBox.isSelected();
+        boolean enabled = secondaryPasswordCheckBox.isSelected();
         secondaryPasswordField.setEnabled(enabled);
         secondaryPasswordToggleButton.setEnabled(enabled);
     }//GEN-LAST:event_secondaryPasswordCheckBoxItemStateChanged
@@ -1729,6 +1772,17 @@ public class InstallerPanels extends JPanel implements DocumentListener {
     private void isoSourceRadioButtonItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_isoSourceRadioButtonItemStateChanged
         updateInstallSourceGUI();
     }//GEN-LAST:event_isoSourceRadioButtonItemStateChanged
+
+    private void duressPasswordCheckBoxItemStateChanged(java.awt.event.ItemEvent evt) {//GEN-FIRST:event_duressPasswordCheckBoxItemStateChanged
+        boolean enabled = duressPasswordCheckBox.isSelected();
+        duressPasswordField.setEnabled(enabled);
+        duressPasswordToggleButton.setEnabled(enabled);
+    }//GEN-LAST:event_duressPasswordCheckBoxItemStateChanged
+
+    private void duressPasswordToggleButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_duressPasswordToggleButtonActionPerformed
+        handlePasswordToggleButton(
+                duressPasswordToggleButton, duressPasswordField);
+    }//GEN-LAST:event_duressPasswordToggleButtonActionPerformed
 
     private boolean checkNonEmptyPassword(
             JCheckBox passwordCheckBox, JPasswordField passwordField) {
@@ -2215,6 +2269,9 @@ public class InstallerPanels extends JPanel implements DocumentListener {
     private javax.swing.JLabel dataPartitionModeLabel;
     private javax.swing.JSeparator dataPartitionSeparator;
     private javax.swing.JPanel detailsPanel;
+    private javax.swing.JCheckBox duressPasswordCheckBox;
+    private javax.swing.JPasswordField duressPasswordField;
+    private javax.swing.JToggleButton duressPasswordToggleButton;
     private javax.swing.ButtonGroup encryptionButtonGroup;
     private javax.swing.JPanel encryptionPanel;
     private javax.swing.JLabel exchangeDefinitionLabel;
