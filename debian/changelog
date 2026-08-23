@@ -1,3 +1,9 @@
+dlcopy (202608231626-1) lernstick-13; urgency=medium
+
+  * [a1a67a] updated encryption tooltip text
+
+ -- Ronny Standtke <ronny.standtke@gmx.net>  Sun, 23 Aug 2026 16:26:32 +0200
+
 dlcopy (202608231445-1) lernstick-13; urgency=medium
 
   * [e2966c] moved default LUKS password handling into lernstickTools
